@@ -1,170 +1,270 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0,
-        maximum-scale=1.0, user-scalable=no" />
-  <title>Game Prototype â€” playgriff.io</title>
-  <style>
-    /* â”€â”€ Minimal reset â”€â”€ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body {
-      width: 100%; height: 100%;
-      overflow: hidden;
-      background: #080910;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      color: #f1f2f7;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    canvas {
-      position: fixed; inset: 0;
-      width: 100%; height: 100%;
-      display: block;
-    }
-
-    .overlay {
-      position: fixed; inset: 0;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 16px;
-      pointer-events: none;
-      text-align: center;
-      padding: 24px;
-    }
-
-    .game-logo {
-      font-size: clamp(2rem, 8vw, 3.5rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #7c3aed, #06b6d4);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-8px); }
-    }
-
-    .subtitle {
-      font-size: clamp(0.75rem, 3vw, 0.9rem);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: rgba(136, 146, 164, 0.8);
-    }
-
-    .tap-hint {
-      margin-top: 32px;
-      font-size: 0.8rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.35);
-      animation: blink 2s ease-in-out infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 0.35; }
-      50%       { opacity: 0.9; }
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero's Quest: Progression & Social RPG</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <canvas id="c"></canvas>
-  <div class="overlay">
-    <div class="game-logo" id="game-name">Prototype</div>
-    <div class="subtitle">playgriff.io Â· WebGL Demo</div>
-    <div class="tap-hint">Tap to play</div>
+  <!-- Class Selection Screen -->
+  <div id="class-selection-modal" class="modal">
+    <div class="modal-content class-selection-content">
+      <div class="modal-header">
+        <h2>Select Your Character Class</h2>
+      </div>
+      <div class="modal-body class-options">
+        <div class="class-card" data-class="Warrior">
+          <div class="class-icon">🛡️</div>
+          <h3>Warrior</h3>
+          <p>High HP & Defense. Standard melee combatant.</p>
+          <ul class="class-stats-preview">
+            <li>❤️ HP: 120</li>
+            <li>⚔️ Power: 10</li>
+            <li>🛡️ Defense: 8</li>
+          </ul>
+          <button class="btn-action select-class-btn" data-class="Warrior">Select Warrior</button>
+        </div>
+        <div class="class-card" data-class="Ranger">
+          <div class="class-icon">🏹</div>
+          <h3>Ranger</h3>
+          <p>High Power, balanced survival attributes.</p>
+          <ul class="class-stats-preview">
+            <li>❤️ HP: 100</li>
+            <li>⚔️ Power: 12</li>
+            <li>🛡️ Defense: 5</li>
+          </ul>
+          <button class="btn-action select-class-btn" data-class="Ranger">Select Ranger</button>
+        </div>
+        <div class="class-card" data-class="Mage">
+          <div class="class-icon">🔮</div>
+          <h3>Mage</h3>
+          <p>Glass cannon with devastating power.</p>
+          <ul class="class-stats-preview">
+            <li>❤️ HP: 80</li>
+            <li>⚔️ Power: 15</li>
+            <li>🛡️ Defense: 3</li>
+          </ul>
+          <button class="btn-action select-class-btn" data-class="Mage">Select Mage</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <script>
-    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-       Animated star-field / particle canvas.
-       Runs inside the iframe as a stand-in game.
-       Replace this file with your actual game build.
-       â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  <div id="app-container">
+    <header>
+      <h1>⚔️ Hero's Quest ⚔️</h1>
+      <div class="quick-stats">
+        <span>Level: <strong id="header-level">1</strong></span>
+        <span>Gold: <strong id="header-gold">50</strong>💰</span>
+      </div>
+    </header>
 
-    /* Receive game title from parent if possible */
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const title  = params.get('title');
-      if (title) document.getElementById('game-name').textContent = 'Ember Keep';
-    } catch (_) {}
+    <!-- Tab Navigation -->
+    <nav class="tab-navigation">
+      <button class="tab-btn active" data-tab="map-tab">🗺️ Adventure Map</button>
+      <button class="tab-btn" data-tab="character-tab">🛡️ Hero & Shop</button>
+      <button class="tab-btn" data-tab="social-tab">👥 Friends & Leaderboard</button>
+    </nav>
 
-    const canvas = document.getElementById('c');
-    const ctx    = canvas.getContext('2d');
+    <!-- Tab Content Containers -->
+    <main>
+      <!-- Map Tab -->
+      <section id="map-tab" class="tab-content active">
+        <div class="map-container">
+          <h2>Adventure Map</h2>
+          <div class="map-path" id="map-path">
+            <!-- Level nodes will be rendered dynamically here -->
+          </div>
+        </div>
+      </section>
 
-    const COLORS = ['#7c3aed', '#06b6d4', '#a3e635', '#ec4899', '#f59e0b'];
-    let   W, H, stars = [], raf;
+      <!-- Character & Shop Tab -->
+      <section id="character-tab" class="tab-content">
+        <div class="character-shop-layout">
+          <!-- Character Info -->
+          <div class="panel character-panel">
+            <h3>Character Profile</h3>
+            <div class="player-avatar">🧙‍♂️</div>
+            <div class="stat-group">
+              <p>Name: <strong id="char-name">Hero</strong></p>
+              <p>Level: <strong id="char-level">1</strong></p>
+              <p>Power Rating: <strong id="char-power-rating">0</strong></p>
+              <div class="xp-bar-container">
+                <div class="xp-bar-label">XP: <span id="char-xp-text">0/100</span></div>
+                <div class="xp-bar-fill" id="char-xp-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+            <hr>
+            <h4>Attributes</h4>
+            <div class="stats-list">
+              <div class="stat-row">
+                <span>HP: <strong id="stat-hp">100/100</strong></span>
+                <button class="btn-upgrade" id="upgrade-hp-btn">Upgrade (+10 HP) <span class="cost" id="cost-hp">10g</span></button>
+              </div>
+              <div class="stat-row">
+                <span>Power: <strong id="stat-power">10</strong></span>
+                <button class="btn-upgrade" id="upgrade-power-btn">Upgrade (+2 Power) <span class="cost" id="cost-power">10g</span></button>
+              </div>
+              <div class="stat-row">
+                <span>Defense: <strong id="stat-defense">5</strong></span>
+                <button class="btn-upgrade" id="upgrade-defense-btn">Upgrade (+1 Defense) <span class="cost" id="cost-defense">10g</span></button>
+              </div>
+            </div>
+          </div>
 
-    function resize() {
-      W = canvas.width  = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
+          <!-- Shop -->
+          <div class="panel shop-panel">
+            <h3>Equipment Shop</h3>
+            <div class="shop-section">
+              <h4>Weapons</h4>
+              <div id="shop-weapons-container">
+                <!-- Dynamically rendered -->
+              </div>
+            </div>
+            <div class="shop-section">
+              <h4>Armor</h4>
+              <div id="shop-armor-container">
+                <!-- Dynamically rendered -->
+              </div>
+            </div>
+          </div>
 
-    function makeStar() {
-      return {
-        x:     Math.random() * W,
-        y:     Math.random() * H,
-        r:     Math.random() * 1.8 + 0.3,
-        vx:    (Math.random() - 0.5) * 0.3,
-        vy:    Math.random() * 0.6 + 0.2,
-        alpha: Math.random() * 0.6 + 0.2,
-        color: COLORS[Math.floor(Math.random() * COLORS.length)],
-        pulse: Math.random() * Math.PI * 2,
-      };
-    }
+          <!-- Inventory -->
+          <div class="panel inventory-panel">
+            <h3>Inventory</h3>
+            <div class="inventory-list" id="inventory-list">
+              <!-- Dynamically rendered -->
+              <p class="empty-message" style="color: var(--text-muted); text-align: center; padding: 20px;">Your inventory is empty.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    function init() {
-      stars = [];
-      for (let i = 0; i < 120; i++) stars.push(makeStar());
-    }
+      <!-- Social & Leaderboard Tab -->
+      <section id="social-tab" class="tab-content">
+        <div class="social-layout">
+          <!-- Friend Management -->
+          <div class="panel friends-panel">
+            <h3>Add Friends</h3>
+            <div class="add-friend-form">
+              <input type="text" id="friend-username-input" placeholder="Enter username...">
+              <button id="add-friend-btn" class="btn-action">Add Friend</button>
+            </div>
+            <h4>Suggested Players</h4>
+            <ul class="suggested-list" id="suggested-friends-list">
+              <!-- Seeded friends to add will be rendered here -->
+            </ul>
+          </div>
 
-    function draw() {
-      ctx.clearRect(0, 0, W, H);
+          <!-- Leaderboard -->
+          <div class="panel leaderboard-panel">
+            <h3>Leaderboard</h3>
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Player</th>
+                  <th>Highest Level</th>
+                  <th>Power Rating</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body">
+                <!-- Leaderboard rows rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
 
-      /* Dark gradient background */
-      const bg = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.7);
-      bg.addColorStop(0, '#10111e');
-      bg.addColorStop(1, '#080910');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, W, H);
+    <!-- Combat/Level Modal -->
+    <div id="battle-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="battle-title">Level 1: Dark Forest</h2>
+          <button class="close-modal-btn" id="close-battle-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="power-matchup-container">
+            Suggested Power: <span id="suggested-power-val">0</span> vs 
+            Your Power: <span id="player-power-val">0</span> 
+            (<span id="power-matchup-status">Matchup</span>)
+          </div>
+          <div class="battle-arena">
+            <!-- Player vs Enemy representation -->
+            <div class="fighter player-fighter">
+              <div class="fighter-avatar">🧙‍♂️</div>
+              <div class="fighter-name">Hero (You)</div>
+              <div class="hp-bar-container">
+                <div class="hp-bar-fill" id="player-hp-bar" style="width: 100%;"></div>
+                <span class="hp-text" id="player-hp-text">100/100</span>
+              </div>
+            </div>
+            
+            <div class="vs-label">VS</div>
 
-      const t = performance.now() / 1000;
+            <div class="fighter enemy-fighter">
+              <div class="fighter-avatar" id="enemy-avatar">👾</div>
+              <div class="fighter-name" id="enemy-name">Slime</div>
+              <div class="hp-bar-container">
+                <div class="hp-bar-fill" id="enemy-hp-bar" style="width: 100%;"></div>
+                <span class="hp-text" id="enemy-hp-text">30/30</span>
+              </div>
+            </div>
+          </div>
 
-      stars.forEach(s => {
-        s.x += s.vx;
-        s.y += s.vy;
-        s.pulse += 0.04;
+          <div class="battle-log" id="battle-log">
+            <p class="system-message">Press "Start Battle" to begin the adventure!</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="start-battle-btn" class="btn-action">Start Battle</button>
+          <button id="rematch-battle-btn" class="btn-action" style="display: none;">Rematch</button>
+          <button id="close-battle-btn" class="btn-secondary" style="display: none;">Close</button>
+        </div>
+      </div>
+    </div>
 
-        if (s.y > H + 4) Object.assign(s, makeStar(), { y: -4 });
-        if (s.x < -4)    Object.assign(s, makeStar(), { x: W + 4 });
-        if (s.x > W + 4) Object.assign(s, makeStar(), { x: -4 });
+    <!-- Compare & Equip Modal -->
+    <div id="compare-modal" class="modal">
+      <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+          <h2>New Loot Found!</h2>
+          <button class="close-modal-btn" id="close-compare-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="compare-container">
+            <div class="item-compare-card currently-equipped">
+              <h4>Equipped</h4>
+              <div id="compare-equipped-details">
+                <!-- Equipped item details -->
+              </div>
+            </div>
+            <div class="compare-vs">VS</div>
+            <div class="item-compare-card new-loot">
+              <h4>New Loot</h4>
+              <div id="compare-loot-details">
+                <!-- New loot details -->
+              </div>
+            </div>
+          </div>
+          <div class="stat-diff-preview" id="compare-stat-diff">
+            <!-- Stat difference preview -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="equip-loot-btn" class="btn-action">Equip Item</button>
+          <button id="discard-loot-btn" class="btn-secondary">Send to Inventory</button>
+        </div>
+      </div>
+    </div>
 
-        const pulsedAlpha = s.alpha * (0.7 + 0.3 * Math.sin(s.pulse));
-        const grd = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
-        grd.addColorStop(0, s.color + 'ff');
-        grd.addColorStop(1, s.color + '00');
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r * 1.5, 0, Math.PI * 2);
-        ctx.globalAlpha = pulsedAlpha;
-        ctx.fillStyle   = grd;
-        ctx.fill();
-      });
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
 
-      ctx.globalAlpha = 1;
-      raf = requestAnimationFrame(draw);
-    }
-
-    resize();
-    init();
-    draw();
-
-    window.addEventListener('resize', () => { resize(); }, { passive: true });
-  </script>
+  <script src="game.js"></script>
+  <script src="social.js"></script>
 </body>
 </html>
-

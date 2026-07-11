@@ -1,0 +1,906 @@
+/* CSS Styles for Hero's Quest */
+
+:root {
+  --bg-color: #121214;
+  --panel-bg: #1a1a1e;
+  --border-color: #3a3a42;
+  --text-color: #e2e2e8;
+  --text-muted: #8e8e9a;
+  --primary-gold: #ffd700;
+  --accent-green: #2ecc71;
+  --accent-red: #e74c3c;
+  --accent-blue: #3498db;
+  --btn-hover: #2c2c35;
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+#app-container {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: var(--panel-bg);
+  border: 3px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  font-size: 2rem;
+  color: var(--primary-gold);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.quick-stats {
+  font-size: 1.1rem;
+}
+
+.quick-stats span {
+  margin-left: 15px;
+}
+
+/* Navigation Tabs */
+.tab-navigation {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px;
+  background-color: #25252b;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-color);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.tab-btn:hover {
+  background-color: var(--btn-hover);
+}
+
+.tab-btn.active {
+  background-color: var(--primary-gold);
+  color: #121214;
+  border-color: var(--primary-gold);
+}
+
+/* Tab Content Visibility */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Common Panels */
+.panel {
+  background-color: #202026;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+}
+
+.panel h3 {
+  color: var(--primary-gold);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
+  margin-bottom: 15px;
+}
+
+/* Buttons */
+.btn-action {
+  background-color: var(--primary-gold);
+  color: #121214;
+  font-weight: bold;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-action:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: #4a4a5a;
+  color: var(--text-color);
+  font-weight: bold;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: #5a5a6a;
+}
+
+/* Map Tab Styling */
+.map-container {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.map-path {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  margin-top: 30px;
+  position: relative;
+}
+
+.map-path::before {
+  content: '';
+  position: absolute;
+  top: 40px;
+  bottom: 40px;
+  width: 6px;
+  background-color: var(--border-color);
+  z-index: 1;
+}
+
+.level-node {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #25252b;
+  border: 4px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow: var(--shadow);
+}
+
+.level-node span.level-num {
+  font-size: 1.2rem;
+}
+
+.level-node span.level-name {
+  position: absolute;
+  left: 100px;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  background-color: #1a1a1e;
+  padding: 4px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+/* Level States */
+.level-node.completed {
+  background-color: var(--accent-green);
+  border-color: #27ae60;
+  color: white;
+}
+
+.level-node.unlocked {
+  background-color: #2980b9;
+  border-color: var(--accent-blue);
+  color: white;
+  animation: pulse-blue 2s infinite;
+}
+
+.level-node.locked {
+  background-color: #1a1a1e;
+  border-color: #2c2c35;
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@keyframes pulse-blue {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(52, 152, 219, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
+}
+
+/* Character & Shop Tab Layout */
+.character-shop-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 20px;
+}
+
+.player-avatar {
+  font-size: 4rem;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.stat-group {
+  margin-bottom: 15px;
+}
+
+.stat-group p {
+  margin-bottom: 5px;
+  font-size: 1.1rem;
+}
+
+/* XP Bar */
+.xp-bar-container {
+  height: 24px;
+  background-color: #2c2c35;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background-color: var(--accent-blue);
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+.xp-bar-label {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  line-height: 24px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px black;
+  z-index: 2;
+}
+
+/* Stats List Upgrades */
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background-color: #25252b;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.btn-upgrade {
+  background-color: var(--accent-green);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-upgrade:hover {
+  background-color: #27ae60;
+}
+
+.btn-upgrade:disabled {
+  background-color: #4a4a5a;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-upgrade .cost {
+  font-size: 0.85rem;
+  background-color: rgba(0,0,0,0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 5px;
+}
+
+/* Shop Panel */
+.shop-section {
+  margin-bottom: 20px;
+}
+
+.shop-section h4 {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 4px;
+}
+
+.shop-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background-color: #25252b;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 8px;
+}
+
+.item-icon {
+  font-size: 2rem;
+}
+
+.item-details {
+  flex: 1;
+}
+
+.item-details h5 {
+  font-size: 1rem;
+}
+
+.item-details p {
+  font-size: 0.85rem;
+  color: var(--accent-green);
+}
+
+.btn-buy {
+  background-color: var(--primary-gold);
+  color: #121214;
+  font-weight: bold;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-buy:hover {
+  filter: brightness(1.1);
+}
+
+.btn-buy.equipped {
+  background-color: var(--text-muted);
+  color: white;
+  cursor: default;
+}
+
+.btn-buy:disabled {
+  background-color: #4a4a5a;
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* Social & Leaderboard Tab Layout */
+.social-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 20px;
+}
+
+.add-friend-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.add-friend-form input {
+  flex: 1;
+  padding: 10px;
+  background-color: #25252b;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.add-friend-form input:focus {
+  outline: none;
+  border-color: var(--primary-gold);
+}
+
+.suggested-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.suggested-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #25252b;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.suggested-item button {
+  background-color: var(--accent-blue);
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.suggested-item button:hover {
+  background-color: #2980b9;
+}
+
+/* Leaderboard */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.leaderboard-table th {
+  color: var(--primary-gold);
+  font-weight: bold;
+}
+
+.leaderboard-table tr.current-player {
+  background-color: rgba(241, 196, 15, 0.15);
+  border-left: 4px solid var(--primary-gold);
+}
+
+/* Modal Styling */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.active {
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background-color: var(--panel-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  width: 90%;
+  max-width: 550px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: slideIn 0.3s ease;
+}
+
+.modal-header {
+  background-color: #202026;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  color: var(--primary-gold);
+  font-size: 1.4rem;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-modal-btn:hover {
+  color: var(--accent-red);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  background-color: #202026;
+  padding: 15px 20px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Battle Arena Inside Modal */
+.battle-arena {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #25252b;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.fighter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40%;
+}
+
+.fighter-avatar {
+  font-size: 3rem;
+  margin-bottom: 8px;
+}
+
+.fighter-name {
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* Health Bar */
+.hp-bar-container {
+  height: 20px;
+  background-color: #1a1a1e;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  border: 1px solid var(--border-color);
+}
+
+.hp-bar-fill {
+  height: 100%;
+  background-color: var(--accent-red);
+  width: 100%;
+  transition: width 0.2s ease;
+}
+
+.hp-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  line-height: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px black;
+  z-index: 2;
+}
+
+.vs-label {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--accent-red);
+}
+
+/* Battle Log */
+.battle-log {
+  height: 150px;
+  background-color: #121214;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.battle-log p {
+  margin-bottom: 6px;
+}
+
+.battle-log p.combat-player-hit {
+  color: var(--accent-blue);
+}
+
+.battle-log p.combat-enemy-hit {
+  color: var(--accent-red);
+}
+
+.battle-log p.combat-victory {
+  color: var(--accent-green);
+  font-weight: bold;
+}
+
+.battle-log p.combat-defeat {
+  color: var(--text-muted);
+  font-weight: bold;
+}
+
+.battle-log p.system-message {
+  color: var(--text-muted);
+}
+
+/* Toast Notification Styling */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.toast {
+  background-color: var(--panel-bg);
+  border: 2px solid var(--border-color);
+  border-left: 5px solid var(--primary-gold);
+  border-radius: 6px;
+  padding: 12px 20px;
+  min-width: 250px;
+  color: var(--text-color);
+  box-shadow: var(--shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: slideInRight 0.3s ease;
+}
+
+.toast.success {
+  border-left-color: var(--accent-green);
+}
+
+.toast.info {
+  border-left-color: var(--accent-blue);
+}
+
+.toast.error {
+  border-left-color: var(--accent-red);
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Damage Shake Animation */
+.shake {
+  animation: shakeEffect 0.2s ease-in-out;
+}
+
+@keyframes shakeEffect {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
+/* Class Selection Styles */
+.class-selection-content {
+  max-width: 800px;
+}
+
+.class-options {
+  display: flex;
+  gap: 20px;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+.class-card {
+  flex: 1;
+  border: 1px solid var(--border-color);
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  background: #25252b;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.class-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary-gold);
+}
+
+.class-icon {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.class-stats-preview {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.class-stats-preview li {
+  margin-bottom: 5px;
+}
+
+/* Inventory Styles */
+.inventory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.inventory-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background-color: #25252b;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.inventory-item-details {
+  flex: 1;
+}
+
+.inventory-item-details h5 {
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.inventory-item-details p {
+  font-size: 0.8rem;
+  color: var(--accent-green);
+}
+
+.inventory-item-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.btn-sell {
+  background-color: var(--accent-red);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-sell:hover {
+  background-color: #c0392b;
+}
+
+/* Compare Modal Styles */
+.compare-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #25252b;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.item-compare-card {
+  width: 45%;
+  text-align: center;
+}
+
+.item-compare-card h4 {
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.compare-vs {
+  font-weight: bold;
+  color: var(--primary-gold);
+  font-size: 1.2rem;
+}
+
+.stat-diff-preview {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 10px;
+  background: #121214;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.stat-diff-preview .positive {
+  color: var(--accent-green);
+}
+
+.stat-diff-preview .negative {
+  color: var(--accent-red);
+}
+
+.stat-diff-preview .neutral {
+  color: var(--text-color);
+}
+
+.class-card button {
+  width: 100%;
+}
+
+.item-compare-card.currently-equipped h4 {
+  color: var(--text-muted);
+  margin-bottom: 5px;
+}
+
+.item-compare-card.new-loot h4 {
+  color: var(--accent-green);
+  margin-bottom: 5px;
+}
+
+/* Power Matchup Styles */
+.power-matchup-container {
+  text-align: center;
+  margin-bottom: 15px;
+  font-weight: bold;
+  background-color: #25252b;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.power-matchup-good {
+  color: var(--accent-green);
+}
+
+.power-matchup-bad {
+  color: var(--accent-red);
+}
