@@ -1,0 +1,541 @@
+/* ═══════════════════════════════════════════════════════════════
+   playgriff.io — game.css
+   Game Runner Shell
+   Provides: viewport lockdown, iframe sizing, nav bar, safe-area
+   insets, loading/error overlays, and entrance/exit animations.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── DESIGN TOKENS ─────────────────────────────────────────────
+   Mirrors style.css tokens so both files stay in sync.
+   To retheme, edit only this :root block.
+   ──────────────────────────────────────────────────────────────*/
+:root {
+  --clr-bg:             #0c0d14;
+  --clr-surface:        #13151f;
+  --clr-border:         rgba(255, 255, 255, 0.07);
+  --clr-accent-violet:  #7c3aed;
+  --clr-accent-cyan:    #06b6d4;
+  --clr-text-primary:   #f1f2f7;
+  --clr-text-secondary: #8892a4;
+  --clr-text-muted:     #4a5260;
+
+  --grad-brand: linear-gradient(135deg, #7c3aed, #06b6d4);
+
+  --font-body:    'Space Grotesk', system-ui, sans-serif;
+  --font-display: 'Syne',          system-ui, sans-serif;
+
+  --ease-smooth:  cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-snappy:  cubic-bezier(0.22, 0.68, 0, 1.2);
+
+  /* Nav bar height — used in both nav and stage offset calc */
+  --gnav-h: 52px;
+
+  /*
+    CSS env() safe-area insets for notched/island phones.
+    Fall back to 0px if the browser doesn't support viewport-fit=cover.
+  */
+  --sat: env(safe-area-inset-top,    0px);
+  --sar: env(safe-area-inset-right,  0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left,   0px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CRITICAL VIEWPORT CONTAINMENT
+   ═══════════════════════════════════════════════════════════════
+   These rules form the "containment cage" that prevents the mobile
+   browser from stealing touch events intended for the game.
+
+   Root causes guarded against:
+   • iOS Safari rubber-band / bounce scroll      → position:fixed body
+   • Pull-to-refresh (Chrome Android)            → overscroll-behavior:none
+   • Browser pinch-zoom chrome                   → viewport meta + touch-action
+   • Momentum scroll behind iframe              → overflow:hidden everywhere
+   • Double-tap zoom on UI elements             → touch-action:manipulation
+   ─────────────────────────────────────────────────────────────── */
+html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;       /* Chrome/Firefox: kill bounce & pull-refresh */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--clr-bg);
+  color: var(--clr-text-primary);
+  -webkit-font-smoothing: antialiased;
+
+  /* ─── The four pillars of iOS bounce prevention ─── */
+  position: fixed;                 /* Removes body from scroll context entirely   */
+  inset: 0;                        /* top/right/bottom/left: 0                    */
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+
+  /* Block every browser-native gesture on the outer shell.
+     The iframe content is exempted (see .game-iframe below).      */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  display: flex;
+  flex-direction: column;          /* nav stacks above stage vertically           */
+}
+
+/* ── ENTRANCE / EXIT PAGE CURTAIN ──────────────────────────────
+   A full-viewport overlay that fades out on enter, fades back in
+   on "Back to Hub". Controlled by game.js adding/removing .lifted.
+   ──────────────────────────────────────────────────────────────*/
+.page-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--clr-bg);
+  pointer-events: none;         /* Never blocks clicks during game               */
+  opacity: 1;
+  transition: opacity 0.42s var(--ease-smooth);
+}
+
+.page-curtain.lifted {
+  opacity: 0;
+}
+
+/* When exiting, JS adds .dropping which re-opaques the curtain  */
+.page-curtain.dropping {
+  opacity: 1;
+  pointer-events: all;
+  transition: opacity 0.32s var(--ease-smooth);
+}
+
+/* ── NAVIGATION BAR ─────────────────────────────────────────────
+   Glassmorphic top bar, always rendered above the iframe.
+   Slides fully off-screen when .hidden is applied.
+   ──────────────────────────────────────────────────────────────*/
+.gnav {
+  position: relative;
+  z-index: 200;
+  flex-shrink: 0;
+
+  /* Glass effect */
+  background: rgba(12, 13, 20, 0.85);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid var(--clr-border);
+
+  /* Safe-area insets (notch / Dynamic Island) */
+  padding-top: var(--sat);
+  padding-left: var(--sal);
+  padding-right: var(--sar);
+
+  /* Slide-up transition for hide/show */
+  transition: transform 0.38s var(--ease-smooth);
+  will-change: transform;
+}
+
+/* Hidden: slides completely off-screen upward */
+.gnav.hidden {
+  transform: translateY(calc(-100% - var(--sat)));
+}
+
+/* Inner flex row */
+.gnav__inner {
+  height: var(--gnav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  gap: 8px;
+}
+
+/* ── Back button ─────────────────────────────── */
+.gnav__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 8px 14px 8px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--clr-border);
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--clr-text-primary);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+
+  /* Touch-friendly: tap fast, no double-tap zoom */
+  min-height: 40px;
+  min-width: 44px;
+  touch-action: manipulation;
+
+  transition:
+    background   0.15s var(--ease-smooth),
+    border-color 0.15s var(--ease-smooth);
+}
+
+.gnav__back:hover,
+.gnav__back:focus-visible {
+  background:    rgba(124, 58, 237, 0.2);
+  border-color:  rgba(124, 58, 237, 0.5);
+}
+
+.gnav__back:active {
+  background: rgba(124, 58, 237, 0.38);
+  transform: scale(0.96);
+}
+
+.gnav__back-icon {
+  color: var(--clr-accent-violet);
+  flex-shrink: 0;
+  transition: transform 0.15s var(--ease-snappy);
+}
+
+.gnav__back:hover .gnav__back-icon {
+  transform: translateX(-2px);
+}
+
+/* ── Game title ──────────────────────────────── */
+.gnav__title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Fullscreen button ───────────────────────── */
+.gnav__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--clr-border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--clr-text-secondary);
+  cursor: pointer;
+  touch-action: manipulation;
+
+  transition:
+    color        0.15s,
+    background   0.15s,
+    border-color 0.15s;
+}
+
+.gnav__action:hover,
+.gnav__action:focus-visible {
+  color: var(--clr-text-primary);
+  background:   rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.4);
+}
+
+.gnav__action:active {
+  transform: scale(0.92);
+}
+
+/* ── Collapse handle ─────────────────────────── */
+/*
+  A small pill that peeks below the nav bar.
+  Tapping collapses the nav; tapping it again (or the top-edge
+  reveal zone) brings it back.
+*/
+.gnav__handle {
+  display: block;
+  position: absolute;
+  bottom: -20px;           /* peek below the nav border               */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 20px;
+  cursor: pointer;
+  touch-action: manipulation;
+  background: transparent;
+  border: none;
+  padding: 0;
+  z-index: 201;
+
+  /* Draw the pill via pseudo-element */
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 4px;
+}
+
+.gnav__handle::before {
+  content: '';
+  display: block;
+  width: 38px;
+  height: 4px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid var(--clr-border);
+  transition:
+    background 0.18s,
+    width      0.18s var(--ease-snappy);
+}
+
+.gnav__handle:hover::before,
+.gnav__handle:focus-visible::before {
+  background: var(--clr-accent-violet);
+  width: 46px;
+}
+
+/* ── Top-edge reveal zone ────────────────────────────────
+   When the nav is hidden, a wider invisible tap target is
+   exposed at the very top of the screen so thumbs can
+   pull the nav back even in full-screen landscape.
+   ──────────────────────────────────────────────────────*/
+.gnav-reveal-zone {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(28px + var(--sat));
+  z-index: 202;
+  cursor: pointer;
+  touch-action: manipulation;
+  display: none;             /* shown via JS when gnav.hidden */
+}
+
+/* ── Landscape compact mode ──────────────────────────────
+   On short landscape screens (e.g. phones rotated), reduce
+   the nav height so the game gets more vertical space.
+   ──────────────────────────────────────────────────────*/
+@media (orientation: landscape) and (max-height: 480px) {
+  :root { --gnav-h: 38px; }
+
+  .gnav__back-label { display: none; }  /* just show the arrow, save width */
+  .gnav__back { padding: 6px 10px; }
+  .gnav__title { font-size: 0.82rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GAME STAGE
+   The container that fills the remaining viewport below the nav.
+   ═══════════════════════════════════════════════════════════════ */
+.game-stage {
+  flex: 1;                          /* Stretches to fill body after nav bar      */
+  position: relative;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #000;
+
+  /*
+    Bottom safe-area padding so the game doesn't render behind the
+    iOS home-indicator bar or Android gesture nav strip.
+  */
+  padding-bottom: var(--sab);
+
+  /*
+    Force a GPU compositing layer.
+    This keeps WebGL content from tearing and prevents the browser
+    from re-rasterising the stage on every scroll / resize.
+  */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
+}
+
+/* ─── THE IFRAME ─────────────────────────────────────────────── */
+.game-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: block;
+  background: #000;
+
+  /*
+    IMPORTANT: Do NOT set touch-action: none here.
+    The iframe's own document handles all in-game touch events.
+    Setting none here would block the game's pointer listeners.
+    touch-action: auto restores normal browser pass-through.
+  */
+  touch-action: auto;
+  pointer-events: auto;
+
+  /* Fade-in reveal after iframe loads */
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-smooth);
+}
+
+.game-iframe.loaded {
+  opacity: 1;
+}
+
+/* ─── LOADING OVERLAY ─────────────────────────────────────────── */
+.game-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: var(--clr-bg);
+  padding: 32px;
+  text-align: center;
+
+  transition: opacity 0.4s var(--ease-smooth);
+}
+
+.game-loading.done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Pulsing logo */
+.loading-logo {
+  animation: logo-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes logo-pulse {
+  0%, 100% { transform: scale(1);    opacity: 0.85; }
+  50%       { transform: scale(1.1); opacity: 1;    }
+}
+
+/* Game name in loading screen */
+.loading-game-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 5vw, 1.4rem);
+  font-weight: 800;
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Simulated progress bar */
+.loading-bar-track {
+  width: min(260px, 72vw);
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.loading-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  background: var(--grad-brand);
+  /* Ease-out fill simulates typical game asset loading curve */
+  animation: bar-progress 2.4s var(--ease-smooth) forwards;
+}
+
+@keyframes bar-progress {
+  0%   { width:  0%; }
+  25%  { width: 40%; }
+  60%  { width: 72%; }
+  88%  { width: 90%; }
+  100% { width: 100%; }
+}
+
+/* "Tap anywhere" hint */
+.loading-hint {
+  font-size: 0.75rem;
+  letter-spacing: 0.07em;
+  color: var(--clr-text-muted);
+  text-transform: uppercase;
+  animation: hint-blink 1.8s ease-in-out infinite 2s both;
+}
+
+@keyframes hint-blink {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1;   }
+}
+
+/* ─── ERROR OVERLAY ───────────────────────────────────────────── */
+.game-error {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: var(--clr-bg);
+  padding: 40px 32px;
+  text-align: center;
+}
+
+.game-error[hidden] { display: none; }
+
+.error-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.error-heading {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--clr-text-primary);
+}
+
+.error-body {
+  font-size: 0.9rem;
+  color: var(--clr-text-secondary);
+  max-width: 300px;
+  line-height: 1.6;
+}
+
+.error-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  padding: 14px 32px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--grad-brand);
+  min-height: 52px;              /* Touch-friendly */
+  touch-action: manipulation;
+  text-decoration: none;
+  transition: filter 0.15s, transform 0.15s;
+}
+
+.error-back-btn:hover  { filter: brightness(1.15); }
+.error-back-btn:active { transform: scale(0.96); }
+
+/* ── FOCUS STYLES (accessibility) ────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--clr-accent-violet);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ── REDUCED MOTION ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:   0.01ms !important;
+    transition-duration:  0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  /* Still show curtain lift instantly */
+  .page-curtain        { transition: none; }
+  .page-curtain.lifted { opacity: 0; }
+}
