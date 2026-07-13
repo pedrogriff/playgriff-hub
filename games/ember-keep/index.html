@@ -57,6 +57,7 @@
       <div class="quick-stats">
         <span>Level: <strong id="header-level">1</strong></span>
         <span>Gold: <strong id="header-gold">50</strong>💰</span>
+        <span>Stamina: <strong id="header-stamina">100/100</strong>⚡</span>
       </div>
     </header>
 
@@ -85,14 +86,22 @@
           <!-- Character Info -->
           <div class="panel character-panel">
             <h3>Character Profile</h3>
-            <div class="player-avatar">🧙‍♂️</div>
+            <div class="player-avatar" id="char-avatar-container">🧙‍♂️</div>
             <div class="stat-group">
               <p>Name: <strong id="char-name">Hero</strong></p>
               <p>Level: <strong id="char-level">1</strong></p>
               <p>Power Rating: <strong id="char-power-rating">0</strong></p>
-              <div class="xp-bar-container">
-                <div class="xp-bar-label">XP: <span id="char-xp-text">0/100</span></div>
-                <div class="xp-bar-fill" id="char-xp-fill" style="width: 0%;"></div>
+              <div class="xp-container">
+                <span>XP: <span id="char-xp-text">0/100</span></span>
+                <div class="xp-bar-container">
+                  <div class="xp-bar-fill" id="char-xp-fill" style="width: 0%;"></div>
+                </div>
+              </div>
+              <div class="stamina-container" style="margin-top: 15px;">
+                <span>Stamina: <span id="char-stamina-text">100/100</span></span>
+                <div class="stamina-bar-container">
+                  <div class="stamina-bar-fill" id="char-stamina-fill" style="width: 100%;"></div>
+                </div>
               </div>
             </div>
             <hr>
@@ -189,12 +198,13 @@
           <div class="power-matchup-container">
             Suggested Power: <span id="suggested-power-val">0</span> vs 
             Your Power: <span id="player-power-val">0</span> 
-            (<span id="power-matchup-status">Matchup</span>)
+            (<span id="power-matchup-status">Matchup</span>) |
+            Stamina Cost: <span id="battle-stamina-cost">0</span>⚡
           </div>
           <div class="battle-arena">
             <!-- Player vs Enemy representation -->
             <div class="fighter player-fighter">
-              <div class="fighter-avatar">🧙‍♂️</div>
+              <div class="fighter-avatar" id="battle-player-avatar">🧙‍♂️</div>
               <div class="fighter-name">Hero (You)</div>
               <div class="hp-bar-container">
                 <div class="hp-bar-fill" id="player-hp-bar" style="width: 100%;"></div>

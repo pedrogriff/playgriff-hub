@@ -2,31 +2,34 @@
 
 // Levels configuration
 const LEVELS = [
-  { id: 1, name: "Dark Forest", hp: 30, power: 8, defense: 2, goldReward: 20, xpReward: 30, avatar: "👾", suggestedPower: 15 },
-  { id: 2, name: "Goblin Caves", hp: 60, power: 15, defense: 5, goldReward: 40, xpReward: 50, avatar: "👺", suggestedPower: 35 },
-  { id: 3, name: "Orc Outpost", hp: 120, power: 25, defense: 10, goldReward: 80, xpReward: 80, avatar: "👹", suggestedPower: 70 },
-  { id: 4, name: "Spider Nest", hp: 180, power: 35, defense: 15, goldReward: 120, xpReward: 110, avatar: "🕷️", suggestedPower: 100 },
-  { id: 5, name: "Dragon's Lair", hp: 260, power: 50, defense: 22, goldReward: 200, xpReward: 150, avatar: "🐉", suggestedPower: 150 },
-  { id: 6, name: "Ancient Temple", hp: 380, power: 70, defense: 30, goldReward: 300, xpReward: 200, avatar: "🗿", suggestedPower: 210 },
-  { id: 7, name: "Frozen Tundra", hp: 550, power: 95, defense: 40, goldReward: 450, xpReward: 260, avatar: "🥶", suggestedPower: 290 },
-  { id: 8, name: "Volcanic Pit", hp: 800, power: 130, defense: 55, goldReward: 700, xpReward: 350, avatar: "🌋", suggestedPower: 400 },
-  { id: 9, name: "Shadow Citadel", hp: 1200, power: 180, defense: 75, goldReward: 1000, xpReward: 500, avatar: "🏰", suggestedPower: 570 },
-  { id: 10, name: "Chaos Rift", hp: 2000, power: 250, defense: 100, goldReward: 2000, xpReward: 800, avatar: "🌀", suggestedPower: 820 }
+  { id: 1, name: "Dark Forest", hp: 30, power: 8, defense: 2, goldReward: 20, xpReward: 30, avatar: "👾", image: "./images/slime.gif", suggestedPower: 15 },
+  { id: 2, name: "Goblin Caves", hp: 60, power: 15, defense: 5, goldReward: 40, xpReward: 50, avatar: "👺", image: "./images/goblin.gif", suggestedPower: 35 },
+  { id: 3, name: "Orc Outpost", hp: 120, power: 25, defense: 10, goldReward: 80, xpReward: 80, avatar: "👹", image: "./images/orc.gif", suggestedPower: 70 },
+  { id: 4, name: "Spider Nest", hp: 180, power: 35, defense: 15, goldReward: 120, xpReward: 110, avatar: "🕷️", image: "./images/spider.gif", suggestedPower: 100 },
+  { id: 5, name: "Dragon's Lair", hp: 260, power: 50, defense: 22, goldReward: 200, xpReward: 150, avatar: "🐉", image: "./images/dragon.gif", suggestedPower: 150 },
+  { id: 6, name: "Ancient Temple", hp: 380, power: 70, defense: 30, goldReward: 300, xpReward: 200, avatar: "🗿", image: "./images/golem.gif", suggestedPower: 210 },
+  { id: 7, name: "Frozen Tundra", hp: 550, power: 95, defense: 40, goldReward: 450, xpReward: 260, avatar: "🥶", image: "./images/yeti.gif", suggestedPower: 290 },
+  { id: 8, name: "Volcanic Pit", hp: 800, power: 130, defense: 55, goldReward: 700, xpReward: 350, avatar: "🌋", image: "./images/demon.gif", suggestedPower: 400 },
+  { id: 9, name: "Shadow Citadel", hp: 1200, power: 180, defense: 75, goldReward: 1000, xpReward: 500, avatar: "🏰", image: "./images/deathknight.gif", suggestedPower: 570 },
+  { id: 10, name: "Chaos Rift", hp: 2000, power: 250, defense: 100, goldReward: 2000, xpReward: 800, avatar: "🌀", image: "./images/beholder.gif", suggestedPower: 820 }
 ];
 
 // Class Presets
 const CLASS_PRESETS = {
   Warrior: {
     avatar: "🛡️",
-    stats: { maxHp: 120, power: 10, defense: 8 }
+    image: "./images/warrior.png",
+    stats: { maxHp: 120, power: 10, defense: 8, critChance: 0.05, critDamage: 1.5, dodgeChance: 0.05 }
   },
   Ranger: {
     avatar: "🏹",
-    stats: { maxHp: 100, power: 12, defense: 5 }
+    image: "./images/ranger.png",
+    stats: { maxHp: 100, power: 12, defense: 5, critChance: 0.20, critDamage: 1.75, dodgeChance: 0.15 }
   },
   Mage: {
     avatar: "🔮",
-    stats: { maxHp: 80, power: 15, defense: 3 }
+    image: "./images/mage.png",
+    stats: { maxHp: 80, power: 15, defense: 3, critChance: 0.15, critDamage: 2.0, dodgeChance: 0.08 }
   }
 };
 
@@ -63,10 +66,15 @@ const DEFAULT_PLAYER_STATE = {
   xpNeeded: 100,
   gold: 50,
   unlockedLevel: 1,
+  stamina: 100,
+  lastStaminaUpdate: Date.now(),
   stats: {
     maxHp: 100,
     power: 10,
-    defense: 5
+    defense: 5,
+    critChance: 0.05,
+    critDamage: 1.5,
+    dodgeChance: 0.05
   },
   upgrades: {
     hpLevel: 0,
@@ -182,6 +190,12 @@ function closeCompareModal() {
 }
 
 // Load player state from localStorage
+function getMaxStamina(level) {
+  return 100 + (level - 1) * 10;
+}
+
+const STAMINA_REGEN_INTERVAL_MS = 10000; // 1 stamina per 10s
+
 function loadPlayerState() {
   const savedState = localStorage.getItem("rpg_player_state");
   if (savedState) {
@@ -196,7 +210,43 @@ function loadPlayerState() {
   } else {
     playerState = JSON.parse(JSON.stringify(DEFAULT_PLAYER_STATE));
   }
+  
+  if (playerState.class) {
+    recoverOfflineStamina();
+    startStaminaTicker();
+  }
+  
   checkClassSelection();
+}
+
+function recoverOfflineStamina() {
+  const now = Date.now();
+  const elapsedMs = now - playerState.lastStaminaUpdate;
+  const maxStam = getMaxStamina(playerState.level);
+  
+  if (playerState.stamina < maxStam && elapsedMs > 0) {
+    const recovered = Math.floor(elapsedMs / STAMINA_REGEN_INTERVAL_MS);
+    if (recovered > 0) {
+      playerState.stamina = Math.min(maxStam, playerState.stamina + recovered);
+      playerState.lastStaminaUpdate += recovered * STAMINA_REGEN_INTERVAL_MS;
+      savePlayerState();
+    }
+  }
+}
+
+let staminaInterval = null;
+function startStaminaTicker() {
+  if (staminaInterval) clearInterval(staminaInterval);
+  staminaInterval = setInterval(() => {
+    if (!playerState.class) return;
+    const maxStam = getMaxStamina(playerState.level);
+    if (playerState.stamina < maxStam) {
+      playerState.stamina += 1;
+      playerState.lastStaminaUpdate = Date.now();
+      savePlayerState();
+      renderStats();
+    }
+  }, STAMINA_REGEN_INTERVAL_MS);
 }
 
 function checkClassSelection() {
@@ -214,15 +264,16 @@ function selectClass(className) {
   if (!preset) return;
 
   playerState.class = className;
-  playerState.stats.maxHp = preset.stats.maxHp;
-  playerState.stats.power = preset.stats.power;
-  playerState.stats.defense = preset.stats.defense;
+  playerState.stats = { ...preset.stats };
   
+  playerState.stamina = 100;
+  playerState.lastStaminaUpdate = Date.now();
   playerState.equipment.weapon = null;
   playerState.equipment.armor = null;
   playerState.inventory = [];
 
   savePlayerState();
+  startStaminaTicker();
   checkClassSelection();
   
   renderMap();
@@ -259,7 +310,10 @@ function getEffectiveStats() {
   return {
     maxHp: playerState.stats.maxHp,
     power: playerState.stats.power + extraPower,
-    defense: playerState.stats.defense + extraDefense
+    defense: playerState.stats.defense + extraDefense,
+    critChance: playerState.stats.critChance || 0.05,
+    critDamage: playerState.stats.critDamage || 1.5,
+    dodgeChance: playerState.stats.dodgeChance || 0.05
   };
 }
 
@@ -315,6 +369,13 @@ function renderMap() {
     nameSpan.innerText = level.name;
     node.appendChild(nameSpan);
 
+    // Stamina cost display
+    const cost = 5 + (level.id - 1) * 2;
+    const costSpan = document.createElement("span");
+    costSpan.className = "level-stamina-cost";
+    costSpan.innerText = `⚡${cost}`;
+    node.appendChild(costSpan);
+
     // Event listener
     node.addEventListener("click", () => {
       if (stateClass !== "locked") {
@@ -335,6 +396,9 @@ function renderStats() {
   // Header display
   document.getElementById("header-level").innerText = playerState.level;
   document.getElementById("header-gold").innerText = playerState.gold;
+  
+  const maxStam = getMaxStamina(playerState.level);
+  document.getElementById("header-stamina").innerText = `${playerState.stamina}/${maxStam}`;
 
   // Character Profile display
   document.getElementById("char-level").innerText = playerState.level;
@@ -343,10 +407,14 @@ function renderStats() {
   const xpPercent = Math.min(100, (playerState.xp / playerState.xpNeeded) * 100);
   document.getElementById("char-xp-fill").style.width = `${xpPercent}%`;
 
+  document.getElementById("char-stamina-text").innerText = `${playerState.stamina}/${maxStam}`;
+  const staminaPercent = Math.min(100, (playerState.stamina / maxStam) * 100);
+  document.getElementById("char-stamina-fill").style.width = `${staminaPercent}%`;
+
   // Update Avatar and Name with Class
   const preset = CLASS_PRESETS[playerState.class];
   if (preset) {
-    document.querySelector(".player-avatar").innerText = preset.avatar;
+    renderAvatar("char-avatar-container", preset.image, preset.avatar);
     document.getElementById("char-name").innerText = `Hero (${playerState.class})`;
   }
 
@@ -544,7 +612,12 @@ function openBattleModal(level) {
 
   document.getElementById("battle-title").innerText = `Level ${level.id}: ${level.name}`;
   document.getElementById("enemy-name").innerText = level.name;
-  document.getElementById("enemy-avatar").innerText = level.avatar;
+
+  const preset = CLASS_PRESETS[playerState.class];
+  if (preset) {
+    renderAvatar("battle-player-avatar", preset.image, preset.avatar);
+  }
+  renderAvatar("enemy-avatar", level.image, level.avatar);
   
   // Set enemy HP
   document.getElementById("enemy-hp-bar").style.width = "100%";
@@ -576,6 +649,10 @@ function openBattleModal(level) {
       matchupStatusEl.classList.add("power-matchup-bad");
     }
   }
+
+  const staminaCost = 5 + (level.id - 1) * 2;
+  const costEl = document.getElementById("battle-stamina-cost");
+  if (costEl) costEl.innerText = staminaCost;
 
   // Ensure Rematch button is hidden initially
   const rematchBtn = document.getElementById("rematch-battle-btn");
@@ -632,6 +709,20 @@ function initBattleModalControls() {
 
 // Battle Simulation Logic
 function startBattleSimulation(level) {
+  const cost = 5 + (level.id - 1) * 2;
+  if (playerState.stamina < cost) {
+    showToast("Not enough stamina! Wait for it to regenerate.", "error");
+    // Ensure close buttons remain clickable
+    document.getElementById("close-battle-modal-btn").style.display = "inline-block";
+    return;
+  }
+
+  // Deduct stamina
+  playerState.stamina -= cost;
+  playerState.lastStaminaUpdate = Date.now();
+  savePlayerState();
+  renderStats();
+
   // Disable close buttons and fight button during battle
   document.getElementById("start-battle-btn").style.display = "none";
   document.getElementById("close-battle-modal-btn").style.display = "none";
@@ -646,12 +737,34 @@ function startBattleSimulation(level) {
   let playerHp = effStats.maxHp;
   let enemyHp = level.hp;
 
+  const enemyDodgeChance = 0.02 + level.id * 0.01;
+  const enemyCritChance = 0.05 + level.id * 0.005;
+  const enemyCritDamage = 1.5;
+
   const playerFighterEl = document.querySelector(".player-fighter");
   const enemyFighterEl = document.querySelector(".enemy-fighter");
 
   activeBattleInterval = setInterval(() => {
     // 1. Player attacks enemy
-    const playerDamage = Math.max(1, effStats.power - level.defense);
+    let playerDamage = 0;
+    let attackLogText = "";
+    let isPlayerCrit = false;
+    
+    // Roll dodge
+    if (Math.random() < enemyDodgeChance) {
+      attackLogText = `🛡️ ${level.name} dodged your attack!`;
+    } else {
+      playerDamage = Math.max(1, effStats.power - level.defense);
+      // Roll crit
+      if (Math.random() < effStats.critChance) {
+        isPlayerCrit = true;
+        playerDamage = Math.round(playerDamage * effStats.critDamage);
+        attackLogText = `💥 CRITICAL HIT! You deal ${playerDamage} damage to ${level.name}!`;
+      } else {
+        attackLogText = `You deal ${playerDamage} damage to ${level.name}!`;
+      }
+    }
+    
     enemyHp = Math.max(0, enemyHp - playerDamage);
     
     // Update enemy HP UI
@@ -660,17 +773,38 @@ function startBattleSimulation(level) {
     document.getElementById("enemy-hp-text").innerText = `${enemyHp}/${level.hp}`;
     
     // Log player hit
-    appendBattleLog(`You deal ${playerDamage} damage to ${level.name}!`, "combat-player-hit");
-    enemyFighterEl.classList.add("shake");
-    setTimeout(() => enemyFighterEl.classList.remove("shake"), 200);
+    appendBattleLog(attackLogText, playerDamage > 0 ? (isPlayerCrit ? "combat-player-crit" : "combat-player-hit") : "system-message");
+    
+    if (playerDamage > 0) {
+      enemyFighterEl.classList.add("shake");
+      setTimeout(() => enemyFighterEl.classList.remove("shake"), 200);
+    }
 
     if (enemyHp <= 0) {
       handleBattleVictory(level);
       return;
     }
 
-    // 2. Enemy attacks player (with minor delay simulation, here we do it together)
-    const enemyDamage = Math.max(1, level.power - effStats.defense);
+    // 2. Enemy attacks player
+    let enemyDamage = 0;
+    let enemyLogText = "";
+    let isEnemyCrit = false;
+    
+    // Roll dodge
+    if (Math.random() < effStats.dodgeChance) {
+      enemyLogText = `🛡️ You dodged ${level.name}'s attack!`;
+    } else {
+      enemyDamage = Math.max(1, level.power - effStats.defense);
+      // Roll crit
+      if (Math.random() < enemyCritChance) {
+        isEnemyCrit = true;
+        enemyDamage = Math.round(enemyDamage * enemyCritDamage);
+        enemyLogText = `💥 CRITICAL HIT! ${level.name} strikes you for ${enemyDamage} damage!`;
+      } else {
+        enemyLogText = `${level.name} strikes you for ${enemyDamage} damage!`;
+      }
+    }
+    
     playerHp = Math.max(0, playerHp - enemyDamage);
 
     // Update player HP UI
@@ -679,9 +813,12 @@ function startBattleSimulation(level) {
     document.getElementById("player-hp-text").innerText = `${playerHp}/${effStats.maxHp}`;
 
     // Log enemy hit
-    appendBattleLog(`${level.name} strikes you for ${enemyDamage} damage!`, "combat-enemy-hit");
-    playerFighterEl.classList.add("shake");
-    setTimeout(() => playerFighterEl.classList.remove("shake"), 200);
+    appendBattleLog(enemyLogText, enemyDamage > 0 ? (isEnemyCrit ? "combat-enemy-crit" : "combat-enemy-hit") : "system-message");
+    
+    if (enemyDamage > 0) {
+      playerFighterEl.classList.add("shake");
+      setTimeout(() => playerFighterEl.classList.remove("shake"), 200);
+    }
 
     if (playerHp <= 0) {
       handleBattleDefeat();
@@ -719,6 +856,8 @@ function handleBattleVictory(level) {
     playerState.stats.maxHp += 15;
     playerState.stats.power += 3;
     playerState.stats.defense += 2;
+    playerState.stamina = getMaxStamina(playerState.level); // Full restore stamina
+    playerState.lastStaminaUpdate = Date.now();
     appendBattleLog(`⭐ LEVEL UP! You reached Level ${playerState.level}! Attributes increased.`, "combat-victory");
     showToast(`Level UP! Reached level ${playerState.level}!`, "info");
   }
@@ -924,4 +1063,22 @@ function addLootToInventory(lootItem) {
   playerState.inventory.push({ id: lootItem.id });
   savePlayerState();
   renderInventory();
+}
+
+// Render avatar with dynamic loading and robust fallback
+function renderAvatar(containerId, imageSrc, emojiAlt) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  if (imageSrc) {
+    container.innerHTML = `
+      <img src="${imageSrc}" alt="${emojiAlt}" class="avatar-img" 
+           style="width: 1.5em; height: 1.5em; object-fit: contain; vertical-align: middle;" 
+           onload="this.style.display='inline-block'; this.nextElementSibling.style.display='none';" 
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+      <span class="avatar-emoji">${emojiAlt}</span>
+    `;
+  } else {
+    container.innerHTML = `<span class="avatar-emoji">${emojiAlt}</span>`;
+  }
 }
