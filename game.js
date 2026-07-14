@@ -34,6 +34,11 @@ const GAMES = {
     src:         'games/voidshift/index.html',
     themeColor:  '#06b6d4',
   },
+  'aegis-core': {
+    title:       'Aegis Core',
+    src:         'games/aegis-core/index.html',
+    themeColor:  '#00f2fe',   // matches in-game neon cyan palette
+  },
 };
 
 /* ══════════════════════════════════════════════

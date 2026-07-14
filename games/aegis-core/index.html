@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Aegis Core</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="game.js" defer></script>
+</head>
+<body>
+  <div id="game-container">
+    <!-- HUD Overlay -->
+    <div id="hud-overlay">
+      <div>SCORE: <span id="score">0</span></div>
+      <div>LIVES: <span id="lives">♥♥♥</span></div>
+    </div>
+
+    <!-- Game Canvas -->
+    <canvas id="game-canvas" width="1080" height="1920"></canvas>
+
+    <!-- Game Over Overlay -->
+    <div id="game-over-overlay" class="hidden">
+      <h1>GAME OVER</h1>
+      <p>FINAL SCORE: <span id="final-score">0</span></p>
+      <p>HIGH SCORE: <span id="high-score">0</span></p>
+      <button id="restart-button">RESTART</button>
+    </div>
+  </div>
+</body>
+</html>

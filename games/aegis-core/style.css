@@ -1,0 +1,162 @@
+/* Reset and standard styling */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: #05050f; /* Very dark blue/black background */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Game Viewport Container: Centered, responsive 9:16 aspect ratio up to 540x960 */
+#game-container {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  width: min(540px, 100vw, calc(100vh * 9 / 16));
+  width: min(540px, 100vw, calc(100dvh * 9 / 16));
+  height: min(960px, 100vh, calc(100vw * 16 / 9));
+  height: min(960px, 100dvh, calc(100vw * 16 / 9));
+  background-color: #000000;
+  border: 3px solid #00f2fe;
+  border-radius: 8px;
+  box-shadow: 0 0 25px rgba(0, 242, 254, 0.4), inset 0 0 25px rgba(0, 242, 254, 0.1);
+  overflow: hidden;
+  touch-action: none;
+  container-type: size;
+}
+
+/* Game Canvas: scales to fit the container */
+#game-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+/* HUD Overlay: top overlay, elements spread out */
+#hud-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 16px 20px;
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #00f2fe;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  font-size: clamp(12px, 3.7vw, 20px);
+  font-size: clamp(12px, 3.7cqw, 20px);
+  text-shadow: 0 0 8px rgba(0, 242, 254, 0.8);
+  pointer-events: none; /* Let all click/touch interactions pass through to the canvas */
+  z-index: 10;
+}
+
+#hud-overlay span {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Heart symbols in lives overlay */
+#lives {
+  color: #ff007f;
+  text-shadow: 0 0 8px rgba(255, 0, 127, 0.8);
+}
+
+/* Game Over Overlay: overlays the screen and has neon pink styles */
+#game-over-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(5, 5, 15, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #ff007f;
+  font-family: 'Courier New', Courier, monospace;
+  z-index: 20;
+  padding: clamp(8px, 5vw, 30px);
+  padding: clamp(8px, 5cqw, 30px);
+  text-align: center;
+}
+
+#game-over-overlay h1 {
+  font-size: clamp(16px, 8vw, 40px);
+  font-size: clamp(16px, 8cqw, 40px);
+  margin-bottom: clamp(6px, 4vh, 24px);
+  margin-bottom: clamp(6px, 4cqh, 24px);
+  letter-spacing: clamp(2px, 1vw, 4px);
+  letter-spacing: clamp(2px, 1cqw, 4px);
+  text-shadow: 0 0 15px rgba(255, 0, 127, 0.9);
+}
+
+#game-over-overlay p {
+  font-size: clamp(11px, 3.5vw, 18px);
+  font-size: clamp(11px, 3.5cqw, 18px);
+  margin: clamp(2px, 1.5vh, 8px) 0;
+  margin: clamp(2px, 1.5cqh, 8px) 0;
+  color: #ffffff;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+#game-over-overlay span {
+  font-weight: bold;
+  color: #00f2fe;
+  text-shadow: 0 0 8px rgba(0, 242, 254, 0.8);
+}
+
+/* Restart Button: Neon cyan interactive controls */
+#restart-button {
+  margin-top: clamp(8px, 5vh, 32px);
+  margin-top: clamp(8px, 5cqh, 32px);
+  padding: clamp(4px, 2.5vh, 12px) clamp(10px, 6vw, 36px);
+  padding: clamp(4px, 2.5cqh, 12px) clamp(10px, 6cqw, 36px);
+  font-size: clamp(11px, 3.5vw, 18px);
+  font-size: clamp(11px, 3.5cqw, 18px);
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #00f2fe;
+  background-color: transparent;
+  border: 2px solid #00f2fe;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+  text-shadow: 0 0 5px rgba(0, 242, 254, 0.5);
+  pointer-events: auto; /* Re-enable pointer events for interaction */
+  transition: all 0.2s ease-in-out;
+}
+
+#restart-button:hover {
+  background-color: #00f2fe;
+  color: #000000;
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.9);
+  text-shadow: none;
+}
+
+#restart-button:active {
+  transform: scale(0.98);
+}
+
+/* Utility classes */
+.hidden {
+  display: none !important;
+}
