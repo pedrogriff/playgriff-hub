@@ -2,278 +2,452 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hero's Quest: Progression & Social RPG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ember Keep — Forge Your Legend</title>
+  <meta name="description" content="Ember Keep is a dark fantasy RPG. Battle through 30 levels, master powerful skills, forge legendary equipment, and rise to become the champion of the realm.">
+  <meta name="theme-color" content="#0d0d0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta property="og:title" content="Ember Keep — Forge Your Legend">
+  <meta property="og:description" content="Battle through 30 levels, master powerful skills, and forge legendary equipment.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Class Selection Screen -->
-  <div id="class-selection-modal" class="modal">
+
+  <!-- =============================================
+       CLASS SELECTION MODAL
+       ============================================= -->
+  <div id="class-selection-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="class-select-title">
     <div class="modal-content class-selection-content">
-      <div class="modal-header">
-        <h2>Select Your Character Class</h2>
+      <div class="class-modal-header">
+        <div class="ember-logo-mark">🔥</div>
+        <h1 id="class-select-title" class="ember-title">EMBER KEEP</h1>
+        <p class="ember-subtitle">Forge Your Legend</p>
       </div>
-      <div class="modal-body class-options">
-        <div class="class-card" data-class="Warrior">
-          <div class="class-icon">🛡️</div>
-          <h3>Warrior</h3>
-          <p>High HP & Defense. Standard melee combatant.</p>
-          <ul class="class-stats-preview">
-            <li>❤️ HP: 120</li>
-            <li>⚔️ Power: 10</li>
-            <li>🛡️ Defense: 8</li>
-          </ul>
-          <button class="btn-action select-class-btn" data-class="Warrior">Select Warrior</button>
+      <div class="modal-body">
+        <div class="name-input-row">
+          <label for="hero-name-input" class="name-label">Your Hero's Name</label>
+          <input type="text" id="hero-name-input" placeholder="Enter a name..." maxlength="20" autocomplete="off" spellcheck="false">
         </div>
-        <div class="class-card" data-class="Ranger">
-          <div class="class-icon">🏹</div>
-          <h3>Ranger</h3>
-          <p>High Power, balanced survival attributes.</p>
-          <ul class="class-stats-preview">
-            <li>❤️ HP: 100</li>
-            <li>⚔️ Power: 12</li>
-            <li>🛡️ Defense: 5</li>
-          </ul>
-          <button class="btn-action select-class-btn" data-class="Ranger">Select Ranger</button>
-        </div>
-        <div class="class-card" data-class="Mage">
-          <div class="class-icon">🔮</div>
-          <h3>Mage</h3>
-          <p>Glass cannon with devastating power.</p>
-          <ul class="class-stats-preview">
-            <li>❤️ HP: 80</li>
-            <li>⚔️ Power: 15</li>
-            <li>🛡️ Defense: 3</li>
-          </ul>
-          <button class="btn-action select-class-btn" data-class="Mage">Select Mage</button>
+        <p class="class-choose-label">Choose Your Class</p>
+        <div class="class-options" id="class-options-container">
+
+          <div class="class-card" data-class="Warrior" id="class-card-warrior">
+            <div class="class-icon">🛡️</div>
+            <h3>Warrior</h3>
+            <p class="class-desc">Unyielding melee combatant. High HP &amp; Defense.</p>
+            <ul class="class-stats-preview">
+              <li>❤️ HP: 120</li>
+              <li>⚔️ Power: 10</li>
+              <li>🛡️ Defense: 8</li>
+              <li>🔮 Mana: 50</li>
+            </ul>
+            <div class="class-skill-preview">Shield Wall · Battle Cry · Whirlwind</div>
+            <button class="btn-action select-class-btn" data-class="Warrior" id="select-warrior-btn">Select Warrior</button>
+          </div>
+
+          <div class="class-card" data-class="Ranger" id="class-card-ranger">
+            <div class="class-icon">🏹</div>
+            <h3>Ranger</h3>
+            <p class="class-desc">Precision hunter. High critical &amp; evasion rate.</p>
+            <ul class="class-stats-preview">
+              <li>❤️ HP: 100</li>
+              <li>⚔️ Power: 12</li>
+              <li>🛡️ Defense: 5</li>
+              <li>🔮 Mana: 60</li>
+            </ul>
+            <div class="class-skill-preview">Poison Arrow · Eagle Eye · Rain of Arrows</div>
+            <button class="btn-action select-class-btn" data-class="Ranger" id="select-ranger-btn">Select Ranger</button>
+          </div>
+
+          <div class="class-card" data-class="Mage" id="class-card-mage">
+            <div class="class-icon">🔮</div>
+            <h3>Mage</h3>
+            <p class="class-desc">Arcane glass cannon. Devastating burst spellcaster.</p>
+            <ul class="class-stats-preview">
+              <li>❤️ HP: 80</li>
+              <li>⚔️ Power: 15</li>
+              <li>🛡️ Defense: 3</li>
+              <li>🔮 Mana: 100</li>
+            </ul>
+            <div class="class-skill-preview">Frost Nova · Arcane Surge · Mana Shield</div>
+            <button class="btn-action select-class-btn" data-class="Mage" id="select-mage-btn">Select Mage</button>
+          </div>
+
+          <div class="class-card class-card--paladin" data-class="Paladin" id="class-card-paladin">
+            <div class="class-icon">⚜️</div>
+            <h3>Paladin</h3>
+            <p class="class-desc">Holy warrior. Self-healer with divine power and protection.</p>
+            <ul class="class-stats-preview">
+              <li>❤️ HP: 140</li>
+              <li>⚔️ Power: 8</li>
+              <li>🛡️ Defense: 10</li>
+              <li>🔮 Mana: 70</li>
+            </ul>
+            <div class="class-skill-preview">Holy Light · Divine Shield · Consecration</div>
+            <button class="btn-action select-class-btn" data-class="Paladin" id="select-paladin-btn">Select Paladin</button>
+          </div>
+
         </div>
       </div>
     </div>
   </div>
 
-  <div id="app-container">
-    <header>
-      <h1>⚔️ Hero's Quest ⚔️</h1>
-      <div class="quick-stats">
-        <span>Level: <strong id="header-level">1</strong></span>
-        <span>Gold: <strong id="header-gold">50</strong>💰</span>
-        <span>Stamina: <strong id="header-stamina">100/100</strong>⚡</span>
+  <!-- =============================================
+       SKILL POINT ALLOCATION MODAL
+       ============================================= -->
+  <div id="skill-point-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="sp-modal-title">
+    <div class="modal-content sp-modal-content">
+      <div class="modal-header">
+        <h2 id="sp-modal-title">⭐ Allocate Skill Points</h2>
       </div>
+      <div class="modal-body">
+        <p class="sp-subtitle">Distribute <strong id="sp-available">3</strong> skill point(s) to strengthen your hero.</p>
+        <div class="sp-options" id="sp-options">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm-sp-btn" class="btn-action" disabled>Confirm Allocation</button>
+        <button id="cancel-sp-btn" class="btn-secondary">Save for Later</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================
+       SETTINGS MODAL
+       ============================================= -->
+  <div id="settings-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="modal-content settings-content">
+      <div class="modal-header">
+        <h2 id="settings-title">⚙️ Settings</h2>
+        <button class="close-modal-btn" id="close-settings-btn" aria-label="Close settings">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-row">
+          <span class="settings-label">🔊 Sound Effects</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="sound-toggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">⚡ Auto-Equip Better Loot</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="auto-equip-toggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-divider"></div>
+        <div class="settings-danger-zone">
+          <p class="settings-warning">⚠️ This action cannot be undone.</p>
+          <button id="reset-game-btn" class="btn-danger" id="reset-game-btn">🗑️ Reset All Progress</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="close-settings-footer-btn" class="btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================
+       MAIN APP CONTAINER
+       ============================================= -->
+  <div id="app-container">
+
+    <!-- Header -->
+    <header id="main-header">
+      <div class="header-brand">
+        <span class="brand-fire">🔥</span>
+        <h1 class="brand-name">Ember Keep</h1>
+      </div>
+      <div class="quick-stats" id="quick-stats">
+        <span class="stat-pill" id="pill-level">Lv.<strong id="header-level">1</strong></span>
+        <span class="stat-pill" id="pill-gold"><strong id="header-gold">50</strong>💰</span>
+        <span class="stat-pill" id="pill-stamina"><strong id="header-stamina">100/100</strong>⚡</span>
+      </div>
+      <button id="settings-btn" class="icon-btn" title="Settings" aria-label="Open Settings">⚙️</button>
     </header>
 
     <!-- Tab Navigation -->
-    <nav class="tab-navigation">
-      <button class="tab-btn active" data-tab="map-tab">🗺️ Adventure Map</button>
-      <button class="tab-btn" data-tab="character-tab">🛡️ Hero & Shop</button>
-      <button class="tab-btn" data-tab="social-tab">👥 Friends & Leaderboard</button>
+    <nav class="tab-navigation" role="tablist" aria-label="Main navigation">
+      <button class="tab-btn active" data-tab="map-tab" id="tab-map" role="tab" aria-selected="true" aria-controls="map-tab">
+        <span class="tab-icon">🗺️</span>
+        <span class="tab-label">Map</span>
+      </button>
+      <button class="tab-btn" data-tab="character-tab" id="tab-char" role="tab" aria-selected="false" aria-controls="character-tab">
+        <span class="tab-icon">🛡️</span>
+        <span class="tab-label">Hero</span>
+      </button>
+      <button class="tab-btn" data-tab="social-tab" id="tab-social" role="tab" aria-selected="false" aria-controls="social-tab">
+        <span class="tab-icon">👥</span>
+        <span class="tab-label">Social</span>
+      </button>
     </nav>
 
-    <!-- Tab Content Containers -->
-    <main>
-      <!-- Map Tab -->
-      <section id="map-tab" class="tab-content active">
+    <!-- Main Content -->
+    <main id="main-content">
+
+      <!-- ======= MAP TAB ======= -->
+      <section id="map-tab" class="tab-content active" role="tabpanel" aria-labelledby="tab-map">
         <div class="map-container">
-          <h2>Adventure Map</h2>
-          <div class="map-path" id="map-path">
-            <!-- Level nodes will be rendered dynamically here -->
+          <div id="map-wrapper">
+            <!-- Acts, level nodes, and side zones rendered dynamically by game.js -->
           </div>
         </div>
       </section>
 
-      <!-- Character & Shop Tab -->
-      <section id="character-tab" class="tab-content">
-        <div class="character-shop-layout">
-          <!-- Character Info -->
+      <!-- ======= HERO / CHARACTER TAB ======= -->
+      <section id="character-tab" class="tab-content" role="tabpanel" aria-labelledby="tab-char">
+        <div class="character-layout">
+
+          <!-- Character Profile Panel -->
           <div class="panel character-panel">
-            <h3>Character Profile</h3>
+            <h3 class="panel-title">⚔️ Hero Profile</h3>
             <div class="player-avatar" id="char-avatar-container">🧙‍♂️</div>
+            <div class="char-identity">
+              <p class="char-name-display" id="char-name">Hero</p>
+              <p class="char-class-display" id="char-class-display">— Select a Class —</p>
+            </div>
+
             <div class="stat-group">
-              <p>Name: <strong id="char-name">Hero</strong></p>
-              <p>Level: <strong id="char-level">1</strong></p>
-              <p>Power Rating: <strong id="char-power-rating">0</strong></p>
-              <div class="xp-container">
-                <span>XP: <span id="char-xp-text">0/100</span></span>
+              <div class="mini-stat-row">
+                <span class="mini-label">Level</span>
+                <strong id="char-level">1</strong>
+              </div>
+              <div class="bar-group">
+                <div class="bar-label-row">
+                  <span>XP</span><span id="char-xp-text">0/100</span>
+                </div>
                 <div class="xp-bar-container">
-                  <div class="xp-bar-fill" id="char-xp-fill" style="width: 0%;"></div>
+                  <div class="xp-bar-fill" id="char-xp-fill" style="width:0%;"></div>
                 </div>
               </div>
-              <div class="stamina-container" style="margin-top: 15px;">
-                <span>Stamina: <span id="char-stamina-text">100/100</span></span>
+              <div class="bar-group">
+                <div class="bar-label-row">
+                  <span>⚡ Stamina</span><span id="char-stamina-text">100/100</span>
+                </div>
                 <div class="stamina-bar-container">
-                  <div class="stamina-bar-fill" id="char-stamina-fill" style="width: 100%;"></div>
+                  <div class="stamina-bar-fill" id="char-stamina-fill" style="width:100%;"></div>
+                </div>
+              </div>
+              <div class="bar-group">
+                <div class="bar-label-row">
+                  <span>🔮 Mana</span><span id="char-mana-text">50/50</span>
+                </div>
+                <div class="mana-bar-container">
+                  <div class="mana-bar-fill" id="char-mana-fill" style="width:100%;"></div>
                 </div>
               </div>
             </div>
-            <hr>
-            <h4>Attributes</h4>
+
+            <hr class="panel-divider">
+            <div class="section-title-row">
+              <h4>Attributes</h4>
+              <button class="btn-sp" id="open-sp-btn" style="display:none;">✨ Spend Points (<span id="sp-count-badge">0</span>)</button>
+            </div>
             <div class="stats-list">
               <div class="stat-row">
-                <span>HP: <strong id="stat-hp">100/100</strong></span>
-                <button class="btn-upgrade" id="upgrade-hp-btn">Upgrade (+10 HP) <span class="cost" id="cost-hp">10g</span></button>
+                <span>❤️ HP: <strong id="stat-hp">100/100</strong></span>
+                <button class="btn-upgrade" id="upgrade-hp-btn">+10 HP <span class="cost" id="cost-hp">10g</span></button>
               </div>
               <div class="stat-row">
-                <span>Power: <strong id="stat-power">10</strong></span>
-                <button class="btn-upgrade" id="upgrade-power-btn">Upgrade (+2 Power) <span class="cost" id="cost-power">10g</span></button>
+                <span>⚔️ Power: <strong id="stat-power">10</strong></span>
+                <button class="btn-upgrade" id="upgrade-power-btn">+2 Pwr <span class="cost" id="cost-power">10g</span></button>
               </div>
               <div class="stat-row">
-                <span>Defense: <strong id="stat-defense">5</strong></span>
-                <button class="btn-upgrade" id="upgrade-defense-btn">Upgrade (+1 Defense) <span class="cost" id="cost-defense">10g</span></button>
+                <span>🛡️ Defense: <strong id="stat-defense">5</strong></span>
+                <button class="btn-upgrade" id="upgrade-defense-btn">+1 Def <span class="cost" id="cost-defense">10g</span></button>
               </div>
+              <div class="stat-row stat-row--secondary">
+                <span>💥 Crit: <strong id="stat-crit">5%</strong></span>
+                <span>💨 Dodge: <strong id="stat-dodge">5%</strong></span>
+              </div>
+              <div class="stat-row stat-row--secondary">
+                <span>⚡ Power Rating: <strong id="char-power-rating">0</strong></span>
+              </div>
+            </div>
+
+            <hr class="panel-divider">
+            <h4>🎒 Equipped Gear</h4>
+            <div class="equipped-gear-display">
+              <div class="gear-slot-row"><span>⚔️ Weapon:</span> <span id="equipped-weapon-name" class="gear-slot-value">None</span></div>
+              <div class="gear-slot-row"><span>🛡️ Armor:</span> <span id="equipped-armor-name" class="gear-slot-value">None</span></div>
+              <div class="gear-slot-row"><span>💍 Ring:</span> <span id="equipped-ring-name" class="gear-slot-value">None</span></div>
+            </div>
+
+            <hr class="panel-divider">
+            <h4>✨ Active Skills</h4>
+            <div class="skills-list" id="char-skills-list">
+              <p class="empty-message">Skills unlock as you level up.</p>
             </div>
           </div>
 
-          <!-- Shop -->
+          <!-- Shop Panel -->
           <div class="panel shop-panel">
-            <h3>Equipment Shop</h3>
-            <div class="shop-section">
-              <h4>Weapons</h4>
-              <div id="shop-weapons-container">
-                <!-- Dynamically rendered -->
-              </div>
+            <h3 class="panel-title">🏪 Equipment Shop</h3>
+            <div class="shop-tabs" role="tablist">
+              <button class="shop-tab-btn active" data-shop-tab="weapons" id="shop-tab-weapons" role="tab">⚔️ Weapons</button>
+              <button class="shop-tab-btn" data-shop-tab="armor" id="shop-tab-armor" role="tab">🛡️ Armor</button>
+              <button class="shop-tab-btn" data-shop-tab="rings" id="shop-tab-rings" role="tab">💍 Rings</button>
             </div>
-            <div class="shop-section">
-              <h4>Armor</h4>
-              <div id="shop-armor-container">
-                <!-- Dynamically rendered -->
-              </div>
+            <div class="shop-tab-content active" id="shop-weapons-panel" role="tabpanel">
+              <div id="shop-weapons-container"></div>
+            </div>
+            <div class="shop-tab-content" id="shop-armor-panel" role="tabpanel">
+              <div id="shop-armor-container"></div>
+            </div>
+            <div class="shop-tab-content" id="shop-rings-panel" role="tabpanel">
+              <div id="shop-rings-container"></div>
             </div>
           </div>
 
-          <!-- Inventory -->
+          <!-- Inventory Panel -->
           <div class="panel inventory-panel">
-            <h3>Inventory</h3>
+            <h3 class="panel-title">🎒 Inventory</h3>
             <div class="inventory-list" id="inventory-list">
-              <!-- Dynamically rendered -->
-              <p class="empty-message" style="color: var(--text-muted); text-align: center; padding: 20px;">Your inventory is empty.</p>
+              <p class="empty-message">Your inventory is empty.</p>
             </div>
           </div>
+
         </div>
       </section>
 
-      <!-- Social & Leaderboard Tab -->
-      <section id="social-tab" class="tab-content">
+      <!-- ======= SOCIAL TAB ======= -->
+      <section id="social-tab" class="tab-content" role="tabpanel" aria-labelledby="tab-social">
         <div class="social-layout">
-          <!-- Friend Management -->
           <div class="panel friends-panel">
-            <h3>Add Friends</h3>
+            <h3 class="panel-title">👥 Friends</h3>
             <div class="add-friend-form">
-              <input type="text" id="friend-username-input" placeholder="Enter username...">
-              <button id="add-friend-btn" class="btn-action">Add Friend</button>
+              <input type="text" id="friend-username-input" placeholder="Enter username..." autocomplete="off">
+              <button id="add-friend-btn" class="btn-action">Add</button>
             </div>
             <h4>Suggested Players</h4>
-            <ul class="suggested-list" id="suggested-friends-list">
-              <!-- Seeded friends to add will be rendered here -->
-            </ul>
+            <ul class="suggested-list" id="suggested-friends-list"></ul>
           </div>
-
-          <!-- Leaderboard -->
           <div class="panel leaderboard-panel">
-            <h3>Leaderboard</h3>
-            <table class="leaderboard-table">
+            <h3 class="panel-title">🏆 Leaderboard</h3>
+            <table class="leaderboard-table" role="table">
               <thead>
                 <tr>
-                  <th>Rank</th>
-                  <th>Player</th>
-                  <th>Highest Level</th>
-                  <th>Power Rating</th>
+                  <th scope="col">Rank</th>
+                  <th scope="col">Player</th>
+                  <th scope="col">Level</th>
+                  <th scope="col">Power</th>
                 </tr>
               </thead>
-              <tbody id="leaderboard-body">
-                <!-- Leaderboard rows rendered dynamically -->
-              </tbody>
+              <tbody id="leaderboard-body"></tbody>
             </table>
           </div>
         </div>
       </section>
+
     </main>
+  </div><!-- /#app-container -->
 
-    <!-- Combat/Level Modal -->
-    <div id="battle-modal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 id="battle-title">Level 1: Dark Forest</h2>
-          <button class="close-modal-btn" id="close-battle-modal-btn">&times;</button>
+  <!-- =============================================
+       BATTLE MODAL
+       ============================================= -->
+  <div id="battle-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="battle-title">
+    <div class="modal-content battle-modal-content">
+      <div class="modal-header">
+        <h2 id="battle-title">Level 1: Mossy Grotto</h2>
+        <button class="close-modal-btn" id="close-battle-modal-btn" aria-label="Close battle">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="power-matchup-container">
+          <span>Required: <strong id="suggested-power-val">0</strong></span>
+          <span class="matchup-sep">·</span>
+          <span>Yours: <strong id="player-power-val">0</strong></span>
+          <span id="power-matchup-status" class="matchup-badge"></span>
+          <span class="matchup-sep">·</span>
+          <span>Cost: <strong id="battle-stamina-cost">0</strong>⚡</span>
         </div>
-        <div class="modal-body">
-          <div class="power-matchup-container">
-            Suggested Power: <span id="suggested-power-val">0</span> vs 
-            Your Power: <span id="player-power-val">0</span> 
-            (<span id="power-matchup-status">Matchup</span>) |
-            Stamina Cost: <span id="battle-stamina-cost">0</span>⚡
-          </div>
-          <div class="battle-arena">
-            <!-- Player vs Enemy representation -->
-            <div class="fighter player-fighter">
-              <div class="fighter-avatar" id="battle-player-avatar">🧙‍♂️</div>
-              <div class="fighter-name">Hero (You)</div>
-              <div class="hp-bar-container">
-                <div class="hp-bar-fill" id="player-hp-bar" style="width: 100%;"></div>
-                <span class="hp-text" id="player-hp-text">100/100</span>
-              </div>
-            </div>
-            
-            <div class="vs-label">VS</div>
 
-            <div class="fighter enemy-fighter">
-              <div class="fighter-avatar" id="enemy-avatar">👾</div>
-              <div class="fighter-name" id="enemy-name">Slime</div>
-              <div class="hp-bar-container">
-                <div class="hp-bar-fill" id="enemy-hp-bar" style="width: 100%;"></div>
-                <span class="hp-text" id="enemy-hp-text">30/30</span>
-              </div>
+        <div class="battle-arena">
+          <div class="fighter player-fighter" id="player-fighter-el">
+            <div class="fighter-avatar" id="battle-player-avatar">🧙‍♂️</div>
+            <div class="fighter-name" id="battle-player-name">Hero</div>
+            <div class="hp-bar-container">
+              <div class="hp-bar-fill" id="player-hp-bar" style="width:100%;"></div>
+              <span class="hp-text" id="player-hp-text">100/100</span>
+            </div>
+            <div class="mana-bar-container battle-mana-bar">
+              <div class="mana-bar-fill" id="battle-mana-bar" style="width:100%;"></div>
+              <span class="hp-text" id="battle-mana-text">50/50</span>
             </div>
           </div>
 
-          <div class="battle-log" id="battle-log">
-            <p class="system-message">Press "Start Battle" to begin the adventure!</p>
+          <div class="vs-label">VS</div>
+
+          <div class="fighter enemy-fighter" id="enemy-fighter-el">
+            <div class="fighter-avatar" id="enemy-avatar">👾</div>
+            <div class="fighter-name" id="enemy-name">Slime</div>
+            <div class="hp-bar-container">
+              <div class="hp-bar-fill enemy-hp-fill" id="enemy-hp-bar" style="width:100%;"></div>
+              <span class="hp-text" id="enemy-hp-text">30/30</span>
+            </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button id="start-battle-btn" class="btn-action">Start Battle</button>
-          <button id="rematch-battle-btn" class="btn-action" style="display: none;">Rematch</button>
-          <button id="close-battle-btn" class="btn-secondary" style="display: none;">Close</button>
+
+        <!-- Active Skills Bar -->
+        <div class="skill-bar" id="skill-bar" aria-label="Active skills">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <div class="battle-log" id="battle-log" role="log" aria-live="polite">
+          <p class="system-message">Press "Start Battle" to begin!</p>
         </div>
       </div>
-    </div>
-
-    <!-- Compare & Equip Modal -->
-    <div id="compare-modal" class="modal">
-      <div class="modal-content" style="max-width: 500px;">
-        <div class="modal-header">
-          <h2>New Loot Found!</h2>
-          <button class="close-modal-btn" id="close-compare-modal-btn">&times;</button>
-        </div>
-        <div class="modal-body">
-          <div class="compare-container">
-            <div class="item-compare-card currently-equipped">
-              <h4>Equipped</h4>
-              <div id="compare-equipped-details">
-                <!-- Equipped item details -->
-              </div>
-            </div>
-            <div class="compare-vs">VS</div>
-            <div class="item-compare-card new-loot">
-              <h4>New Loot</h4>
-              <div id="compare-loot-details">
-                <!-- New loot details -->
-              </div>
-            </div>
-          </div>
-          <div class="stat-diff-preview" id="compare-stat-diff">
-            <!-- Stat difference preview -->
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button id="equip-loot-btn" class="btn-action">Equip Item</button>
-          <button id="discard-loot-btn" class="btn-secondary">Send to Inventory</button>
-        </div>
+      <div class="modal-footer">
+        <button id="start-battle-btn" class="btn-action">⚔️ Start Battle</button>
+        <button id="rematch-battle-btn" class="btn-action" style="display:none;">🔄 Rematch</button>
+        <button id="close-battle-btn" class="btn-secondary" style="display:none;">✕ Close</button>
       </div>
     </div>
-
-    <!-- Notification Toast Container -->
-    <div id="toast-container" class="toast-container"></div>
   </div>
 
+  <!-- =============================================
+       LOOT COMPARE MODAL
+       ============================================= -->
+  <div id="compare-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="compare-title">
+    <div class="modal-content compare-modal-content">
+      <div class="modal-header">
+        <h2 id="compare-title">🎁 New Loot Found!</h2>
+        <button class="close-modal-btn" id="close-compare-modal-btn" aria-label="Close compare">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="compare-container">
+          <div class="item-compare-card currently-equipped">
+            <h4>Equipped</h4>
+            <div id="compare-equipped-details"></div>
+          </div>
+          <div class="compare-vs">VS</div>
+          <div class="item-compare-card new-loot">
+            <h4>New Loot</h4>
+            <div id="compare-loot-details"></div>
+          </div>
+        </div>
+        <div class="stat-diff-preview" id="compare-stat-diff"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="equip-loot-btn" class="btn-action">✅ Equip Item</button>
+        <button id="discard-loot-btn" class="btn-secondary">📦 To Inventory</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================
+       TOAST NOTIFICATIONS
+       ============================================= -->
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- Scripts -->
+  <script src="audio.js"></script>
   <script src="game.js"></script>
   <script src="social.js"></script>
 </body>

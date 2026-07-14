@@ -1,201 +1,215 @@
-// Social & Friend System for Hero's Quest
+// ================================================================
+// EMBER KEEP — Social System
+// ================================================================
 
-const CLASSES = ["Warrior", "Ranger", "Mage"];
-function getRandomClass() {
-  return CLASSES[Math.floor(Math.random() * CLASSES.length)];
-}
+(function() {
 
-// Seeded pool of mock bots
-const SUGGESTED_FRIENDS = [
-  { name: "Leeroy", baseLevel: 1, basePower: 12, class: "Warrior" },
-  { name: "Jaina", baseLevel: 2, basePower: 22, class: "Mage" },
-  { name: "Kael", baseLevel: 3, basePower: 38, class: "Mage" },
-  { name: "Sylvanas", baseLevel: 4, basePower: 58, class: "Ranger" },
-  { name: "Uther", baseLevel: 5, basePower: 92, class: "Warrior" }
-];
+  const BOT_NAMES = [
+    "AshWarden", "EmberKnight", "NightVeil", "CinderBlade", "SoulForge",
+    "Pyrothane", "GrimLight", "StormShade", "VoidCaster", "DawnStriker",
+    "RuneBreaker", "ShadowPyre", "FrostFang", "IronVeil", "GoldMaw",
+    "BlackEmber", "RedMantle", "StormRager", "DuskWarden", "HolyFire",
+  ];
 
-let friends = [];
+  const BOT_CLASSES = ["Warrior", "Ranger", "Mage", "Paladin"];
 
-// Initialize social elements on DOM load
-document.addEventListener("DOMContentLoaded", () => {
-  loadFriends();
-  renderSuggestedFriends();
-  renderLeaderboard();
+  let friends = [];
 
-  // Listen to player updates to refresh player stats on the leaderboard and simulate friend updates
-  window.addEventListener("playerStateUpdated", (event) => {
-    const updatedPlayerState = event.detail;
-    
-    // Simulate active social environment: friends make progress
-    simulateFriendProgress();
-    
+  // ── Load persisted friends ──
+  function loadFriends() {
+    const saved = localStorage.getItem("rpg_social_friends");
+    if (saved) {
+      try { friends = JSON.parse(saved); } catch(e) { friends = []; }
+    }
+    if (!friends.length) generateInitialBots();
+  }
+
+  function saveFriends() {
+    localStorage.setItem("rpg_social_friends", JSON.stringify(friends));
+  }
+
+  // ── Generate starting bots ──
+  function generateInitialBots() {
+    const shuffle = arr => arr.sort(() => Math.random() - 0.5);
+    const picked  = shuffle([...BOT_NAMES]).slice(0, 12);
+    friends = picked.map((name, i) => ({
+      id:       `bot_${i}_${name}`,
+      name,
+      class:    BOT_CLASSES[Math.floor(Math.random() * BOT_CLASSES.length)],
+      level:    Math.floor(Math.random() * 25) + 1,
+      power:    Math.floor(Math.random() * 8000) + 200,
+      isBot:    true,
+      isOnline: Math.random() > 0.4,
+    }));
+    saveFriends();
+  }
+
+  // ── Simulate bot activity ──
+  function simulateBotActivity() {
+    friends.forEach(friend => {
+      if (!friend.isBot) return;
+      if (Math.random() < 0.15) {
+        friend.power += Math.floor(Math.random() * 60) + 10;
+        if (Math.random() < 0.06) {
+          friend.level = Math.min(30, friend.level + 1);
+          friend.power += 200;
+        }
+        friend.isOnline = Math.random() > 0.3;
+      }
+    });
+    saveFriends();
+  }
+
+  // ── Add friend ──
+  function addFriend(name) {
+    name = name.trim();
+    if (!name) return;
+    if (friends.some(f => f.name.toLowerCase() === name.toLowerCase())) {
+      if (typeof showToast === "function") showToast(`${name} is already your friend!`, "error");
+      return;
+    }
+    const newFriend = {
+      id:       `custom_${Date.now()}`,
+      name,
+      class:    BOT_CLASSES[Math.floor(Math.random() * BOT_CLASSES.length)],
+      level:    Math.floor(Math.random() * 15) + 1,
+      power:    Math.floor(Math.random() * 3000) + 100,
+      isBot:    true,
+      isOnline: true,
+    };
+    friends.push(newFriend);
+    saveFriends();
+    renderSuggested();
+    renderLeaderboard();
+    if (typeof showToast === "function") showToast(`👥 Added ${name} as a friend!`, "success");
+  }
+
+  // ── Render suggested list ──
+  function renderSuggested() {
+    const list = document.getElementById("suggested-friends-list");
+    if (!list) return;
+    list.innerHTML = "";
+
+    const topFriends = friends.slice(0, 8);
+    topFriends.forEach(friend => {
+      const li = document.createElement("li");
+      li.className = "suggested-item";
+      const onlineColor = friend.isOnline ? "#2ecc71" : "#555";
+      li.innerHTML = `
+        <div>
+          <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${onlineColor};margin-right:5px;"></span>
+          <strong>${friend.name}</strong>
+          <span style="color:var(--text-muted);font-size:0.72rem;margin-left:6px;">${friend.class} · Lv.${friend.level}</span>
+        </div>
+        <button onclick="window.removeFriend('${friend.id}')" title="Remove" style="background:var(--danger-dim);">✕</button>
+      `;
+      list.appendChild(li);
+    });
+
+    if (topFriends.length === 0) {
+      list.innerHTML = `<li style="color:var(--text-muted);font-size:0.82rem;padding:8px;">Add friends to see them here.</li>`;
+    }
+  }
+
+  // ── Remove friend ──
+  window.removeFriend = function(id) {
+    friends = friends.filter(f => f.id !== id);
+    saveFriends();
+    renderSuggested();
+    renderLeaderboard();
+  };
+
+  // ── Render leaderboard ──
+  function renderLeaderboard() {
+    const tbody = document.getElementById("leaderboard-body");
+    if (!tbody) return;
+
+    // Build combined list with player
+    const allEntries = friends.map(f => ({
+      name:     f.name,
+      level:    f.level,
+      power:    f.power,
+      isPlayer: false,
+    }));
+
+    // Get player data from game state if available
+    if (typeof playerState !== "undefined" && playerState.class) {
+      const pr = typeof getPlayerPowerRating === "function"
+        ? getPlayerPowerRating(playerState)
+        : playerState.stats?.power || 0;
+      allEntries.push({
+        name:     playerState.name || "You",
+        level:    playerState.level || 1,
+        power:    pr,
+        isPlayer: true,
+      });
+    } else {
+      allEntries.push({ name:"You", level:1, power:0, isPlayer:true });
+    }
+
+    allEntries.sort((a, b) => b.power - a.power);
+    const top20 = allEntries.slice(0, 20);
+
+    tbody.innerHTML = "";
+    top20.forEach((entry, i) => {
+      const rankEmoji = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
+      const tr = document.createElement("tr");
+      if (entry.isPlayer) tr.classList.add("current-player");
+      tr.innerHTML = `
+        <td>${rankEmoji}</td>
+        <td>${entry.isPlayer ? `<strong>${entry.name}</strong> (You)` : entry.name}</td>
+        <td>Lv.${entry.level}</td>
+        <td>${typeof formatNumber === "function" ? formatNumber(entry.power) : entry.power}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ── Input / button ──
+  function initSocialControls() {
+    const input  = document.getElementById("friend-username-input");
+    const addBtn = document.getElementById("add-friend-btn");
+    if (!addBtn) return;
+
+    addBtn.addEventListener("click", () => {
+      const name = input?.value?.trim();
+      if (!name) return;
+      addFriend(name);
+      if (input) input.value = "";
+    });
+
+    input?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") addBtn.click();
+    });
+  }
+
+  // ── Refresh on player state updates ──
+  window.addEventListener("playerStateUpdated", () => {
     renderLeaderboard();
   });
 
-  // Controls for custom friend addition
-  document.getElementById("add-friend-btn").addEventListener("click", () => {
-    const input = document.getElementById("friend-username-input");
-    const username = input.value.trim();
-    if (username) {
-      if (friends.some(f => f.name.toLowerCase() === username.toLowerCase())) {
-        showToast("You are already friends with this player!", "error");
-      } else {
-        addFriend(username, Math.floor(Math.random() * 2) + 1, Math.floor(Math.random() * 15) + 10);
-        input.value = "";
+  // ── Auto-refresh UI on social tab open ──
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.tab === "social-tab") {
+        simulateBotActivity();
+        renderSuggested();
+        renderLeaderboard();
       }
-    }
-  });
-});
-
-// Load friends from localStorage or default to empty
-function loadFriends() {
-  const savedFriends = localStorage.getItem("rpg_social_friends");
-  if (savedFriends) {
-    try {
-      friends = JSON.parse(savedFriends);
-      let updated = false;
-      friends.forEach(f => {
-        if (!f.class) {
-          f.class = getRandomClass();
-          updated = true;
-        }
-        if (f.name.includes("🛡️")) {
-          f.name = f.name.replace(" 🛡️", "");
-          updated = true;
-        }
-      });
-      if (updated) saveFriends();
-    } catch (e) {
-      console.error("Error parsing friends list", e);
-      friends = [];
-    }
-  } else {
-    friends = [
-      { name: "Leeroy", level: 1, power: 12, class: "Warrior" }
-    ];
-    saveFriends();
-  }
-}
-
-// Save friends to localStorage
-function saveFriends() {
-  localStorage.setItem("rpg_social_friends", JSON.stringify(friends));
-}
-
-// Render the list of suggested friends
-function renderSuggestedFriends() {
-  const listEl = document.getElementById("suggested-friends-list");
-  if (!listEl) return;
-
-  listEl.innerHTML = "";
-
-  SUGGESTED_FRIENDS.forEach(bot => {
-    const isAdded = friends.some(f => f.name === bot.name);
-    if (isAdded) return;
-
-    const classIcon = typeof CLASS_PRESETS !== 'undefined' ? (CLASS_PRESETS[bot.class]?.avatar || "") : "";
-
-    const li = document.createElement("li");
-    li.className = "suggested-item";
-    li.innerHTML = `
-      <span>${bot.name} ${classIcon} (Lvl ${bot.baseLevel})</span>
-      <button data-name="${bot.name}">Add</button>
-    `;
-
-    li.querySelector("button").addEventListener("click", () => {
-      addFriend(bot.name, bot.baseLevel, bot.basePower, bot.class);
-      renderSuggestedFriends();
     });
-
-    listEl.appendChild(li);
-  });
-}
-
-function addFriend(name, level, power, className = null) {
-  const friendClass = className || getRandomClass();
-  friends.push({ name, level, power, class: friendClass });
-  saveFriends();
-  renderLeaderboard();
-  showToast(`Added ${name} as a friend!`, "success");
-}
-
-// Compute player's total power rating for leaderboard comparison
-
-
-// Render the dynamic leaderboard
-function renderLeaderboard() {
-  const tbody = document.getElementById("leaderboard-body");
-  if (!tbody) return;
-
-  tbody.innerHTML = "";
-
-  // Get active player state
-  const savedState = localStorage.getItem("rpg_player_state");
-  let localPlayer = { level: 1, power: 10, name: "Hero (You)", isPlayer: true, class: null };
-  if (savedState) {
-    try {
-      const state = JSON.parse(savedState);
-      localPlayer.level = state.unlockedLevel; // Progression rank matches highest unlocked level
-      localPlayer.power = getPlayerPowerRating(state);
-      localPlayer.class = state.class;
-    } catch (e) {}
-  }
-
-  // Combine Player and Friends
-  const leaderboardEntries = [
-    localPlayer,
-    ...friends.map(f => ({ level: f.level, power: f.power, name: f.name, class: f.class, isPlayer: false }))
-  ];
-
-  // Sort: Level descending, then Power descending
-  leaderboardEntries.sort((a, b) => {
-    if (b.level !== a.level) {
-      return b.level - a.level;
-    }
-    return b.power - a.power;
   });
 
-  // Render to DOM
-  leaderboardEntries.forEach((entry, index) => {
-    const tr = document.createElement("tr");
-    if (entry.isPlayer) {
-      tr.className = "current-player";
-    }
+  // ── Init ──
+  document.addEventListener("DOMContentLoaded", () => {
+    loadFriends();
+    initSocialControls();
+    renderSuggested();
+    renderLeaderboard();
 
-    const classIcon = typeof CLASS_PRESETS !== 'undefined' ? (CLASS_PRESETS[entry.class]?.avatar || "") : "";
-    const classText = entry.class ? ` (${entry.class})` : "";
-    const displayName = `${entry.name} ${classIcon}${classText}`.trim();
-
-    tr.innerHTML = `
-      <td>${index + 1}</td>
-      <td>${entry.isPlayer ? "⭐ <strong>" + displayName + "</strong>" : displayName}</td>
-      <td>Level ${entry.level}</td>
-      <td>${entry.power}</td>
-    `;
-
-    tbody.appendChild(tr);
+    // Periodic bot simulation
+    setInterval(() => {
+      simulateBotActivity();
+      renderLeaderboard();
+    }, 45_000);
   });
-}
 
-// Simulate other friends making progress
-function simulateFriendProgress() {
-  if (friends.length === 0) return;
-
-  // 50% chance a friend makes progress when the player updates state (e.g. finishes level)
-  if (Math.random() < 0.50) {
-    const randomIndex = Math.floor(Math.random() * friends.length);
-    const friend = friends[randomIndex];
-
-    // Determine type of progress: Level up or Power up
-    if (Math.random() < 0.4) {
-      friend.level += 1;
-      friend.power += Math.floor(Math.random() * 15) + 10;
-      showToast(`📢 News: ${friend.name} reached Level ${friend.level}!`, "info");
-    } else {
-      friend.power += Math.floor(Math.random() * 12) + 5;
-      showToast(`📢 News: ${friend.name} upgraded their gear!`, "info");
-    }
-
-    saveFriends();
-  }
-}
+})();

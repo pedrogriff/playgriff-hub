@@ -1,65 +1,172 @@
-// Core Game Logic for Hero's Quest
+// ================================================================
+// EMBER KEEP — Core Game Logic (Phase 1)
+// ================================================================
 
-// Levels configuration
-const LEVELS = [
-  { id: 1, name: "Dark Forest", hp: 30, power: 8, defense: 2, goldReward: 20, xpReward: 30, avatar: "👾", image: "./images/slime.gif", suggestedPower: 15 },
-  { id: 2, name: "Goblin Caves", hp: 60, power: 15, defense: 5, goldReward: 40, xpReward: 50, avatar: "👺", image: "./images/goblin.gif", suggestedPower: 35 },
-  { id: 3, name: "Orc Outpost", hp: 120, power: 25, defense: 10, goldReward: 80, xpReward: 80, avatar: "👹", image: "./images/orc.gif", suggestedPower: 70 },
-  { id: 4, name: "Spider Nest", hp: 180, power: 35, defense: 15, goldReward: 120, xpReward: 110, avatar: "🕷️", image: "./images/spider.gif", suggestedPower: 100 },
-  { id: 5, name: "Dragon's Lair", hp: 260, power: 50, defense: 22, goldReward: 200, xpReward: 150, avatar: "🐉", image: "./images/dragon.gif", suggestedPower: 150 },
-  { id: 6, name: "Ancient Temple", hp: 380, power: 70, defense: 30, goldReward: 300, xpReward: 200, avatar: "🗿", image: "./images/golem.gif", suggestedPower: 210 },
-  { id: 7, name: "Frozen Tundra", hp: 550, power: 95, defense: 40, goldReward: 450, xpReward: 260, avatar: "🥶", image: "./images/yeti.gif", suggestedPower: 290 },
-  { id: 8, name: "Volcanic Pit", hp: 800, power: 130, defense: 55, goldReward: 700, xpReward: 350, avatar: "🌋", image: "./images/demon.gif", suggestedPower: 400 },
-  { id: 9, name: "Shadow Citadel", hp: 1200, power: 180, defense: 75, goldReward: 1000, xpReward: 500, avatar: "🏰", image: "./images/deathknight.gif", suggestedPower: 570 },
-  { id: 10, name: "Chaos Rift", hp: 2000, power: 250, defense: 100, goldReward: 2000, xpReward: 800, avatar: "🌀", image: "./images/beholder.gif", suggestedPower: 820 }
+// ================================================================
+// DATA: LEVELS (30 levels, 3 acts)
+// ================================================================
+const ACTS = [
+  { id: 1, name: "Act I: The Cursed Valley",  theme: "Forest & Caves",    color: "#4ade80" },
+  { id: 2, name: "Act II: The Shattered Peaks",theme: "Mountains & Ice",   color: "#60a5fa" },
+  { id: 3, name: "Act III: The Ember Citadel", theme: "Demonic Fortress",  color: "#ff6b35" },
 ];
 
-// Class Presets
+const LEVELS = [
+  // ── ACT I ──
+  { id:1,  name:"Mossy Grotto",   hp:35,     power:8,    defense:2,   gold:20,    xp:30,   avatar:"🐸", suggested:15,   act:1 },
+  { id:2,  name:"Dark Forest",    hp:70,     power:16,   defense:5,   gold:40,    xp:50,   avatar:"👾", suggested:35,   act:1 },
+  { id:3,  name:"Goblin Warren",  hp:125,    power:26,   defense:9,   gold:70,    xp:75,   avatar:"👺", suggested:65,   act:1 },
+  { id:4,  name:"Orc Outpost",    hp:200,    power:38,   defense:14,  gold:105,   xp:105,  avatar:"👹", suggested:100,  act:1 },
+  { id:5,  name:"Spider Nest",    hp:300,    power:52,   defense:21,  gold:150,   xp:140,  avatar:"🕷️", suggested:145,  act:1, isMidBoss:true },
+  { id:6,  name:"Bandit Camp",    hp:430,    power:70,   defense:29,  gold:210,   xp:180,  avatar:"🗡️", suggested:200,  act:1 },
+  { id:7,  name:"Ancient Ruins",  hp:610,    power:91,   defense:38,  gold:285,   xp:225,  avatar:"🗿", suggested:265,  act:1 },
+  { id:8,  name:"Cursed Swamp",   hp:860,    power:117,  defense:49,  gold:380,   xp:275,  avatar:"🧙", suggested:345,  act:1 },
+  { id:9,  name:"Dragon's Den",   hp:1200,   power:149,  defense:62,  gold:500,   xp:335,  avatar:"🐉", suggested:440,  act:1 },
+  { id:10, name:"Chaos Knight",   hp:1700,   power:188,  defense:78,  gold:750,   xp:420,  avatar:"🏰", suggested:560,  act:1, isBoss:true },
+  // ── ACT II ──
+  { id:11, name:"Mountain Pass",  hp:2200,   power:200,  defense:85,  gold:950,   xp:540,  avatar:"🐺", suggested:680,  act:2 },
+  { id:12, name:"Dwarven Ruins",  hp:3000,   power:225,  defense:95,  gold:1200,  xp:680,  avatar:"⚙️", suggested:820,  act:2 },
+  { id:13, name:"Lava Fields",    hp:4000,   power:252,  defense:107, gold:1500,  xp:840,  avatar:"🌋", suggested:980,  act:2 },
+  { id:14, name:"Crystal Caverns",hp:5200,   power:282,  defense:120, gold:1850,  xp:1020, avatar:"💎", suggested:1160, act:2 },
+  { id:15, name:"Storm Lord",     hp:6800,   power:315,  defense:134, gold:2400,  xp:1240, avatar:"⚡", suggested:1380, act:2, isBoss:true },
+  { id:16, name:"Ancient Library",hp:8700,   power:352,  defense:150, gold:3000,  xp:1500, avatar:"📚", suggested:1640, act:2 },
+  { id:17, name:"Frost Citadel",  hp:11000,  power:393,  defense:167, gold:3700,  xp:1800, avatar:"🧊", suggested:1940, act:2 },
+  { id:18, name:"Volcanic Forge", hp:14000,  power:439,  defense:187, gold:4600,  xp:2150, avatar:"🔥", suggested:2290, act:2 },
+  { id:19, name:"Shadow Keep",    hp:17500,  power:491,  defense:208, gold:5700,  xp:2560, avatar:"🌑", suggested:2700, act:2 },
+  { id:20, name:"The Eternal Storm",hp:22000, power:549, defense:232, gold:7500,  xp:3200, avatar:"🌪️", suggested:3190, act:2, isBoss:true },
+  // ── ACT III ──
+  { id:21, name:"Ember Gate",     hp:27000,  power:614,  defense:258, gold:9000,  xp:4000, avatar:"🔥", suggested:3770, act:3 },
+  { id:22, name:"Infernal Bridge",hp:33000,  power:686,  defense:287, gold:11000, xp:4900, avatar:"😈", suggested:4440, act:3 },
+  { id:23, name:"Obsidian Tower", hp:40000,  power:767,  defense:319, gold:13500, xp:5900, avatar:"🗼", suggested:5230, act:3 },
+  { id:24, name:"The Ash Fields", hp:49000,  power:858,  defense:354, gold:16500, xp:7100, avatar:"💀", suggested:6160, act:3 },
+  { id:25, name:"Fire Lord",      hp:59000,  power:959,  defense:393, gold:21000, xp:8600, avatar:"👑", suggested:7260, act:3, isBoss:true },
+  { id:26, name:"Void Corridor",  hp:71000,  power:1072, defense:436, gold:25500, xp:10300,avatar:"🌀", suggested:8550, act:3 },
+  { id:27, name:"Soul Chamber",   hp:86000,  power:1198, defense:483, gold:31000, xp:12300,avatar:"🔮", suggested:10070,act:3 },
+  { id:28, name:"Dark Sanctuary", hp:104000, power:1338, defense:535, gold:38000, xp:14700,avatar:"😇", suggested:11860,act:3 },
+  { id:29, name:"Citadel Apex",   hp:125000, power:1494, defense:592, gold:47000, xp:17600,avatar:"🦂", suggested:13960,act:3 },
+  { id:30, name:"The Ember King", hp:150000, power:1669, defense:655, gold:120000,xp:30000, avatar:"🔥", suggested:16440,act:3, isBoss:true, isFinalBoss:true },
+];
+
+// Optional side zones (not required for main progression)
+const SIDE_ZONES = [
+  { id:"sz_5a",  name:"Haunted Mines",  hp:420,   power:58,  defense:24, gold:280,  xp:200,  avatar:"💀", suggested:170, afterLevel:5,  staminaCost:15, label:"Challenge", zoneType:"challenge" },
+  { id:"sz_5b",  name:"Merchant Road",  hp:310,   power:42,  defense:16, gold:380,  xp:150,  avatar:"🏪", suggested:120, afterLevel:5,  staminaCost:12, label:"Treasure",  zoneType:"treasure" },
+  { id:"sz_15a", name:"Dragon Roost",   hp:9500,  power:360, defense:155,gold:4800, xp:2100, avatar:"🐲", suggested:1550,afterLevel:15, staminaCost:55, label:"Challenge", zoneType:"challenge" },
+  { id:"sz_15b", name:"Giant's Hall",   hp:7200,  power:300, defense:130,gold:5800, xp:1600, avatar:"🧌", suggested:1380,afterLevel:15, staminaCost:50, label:"Treasure",  zoneType:"treasure" },
+];
+
+// ================================================================
+// DATA: CLASSES
+// ================================================================
 const CLASS_PRESETS = {
-  Warrior: {
-    avatar: "🛡️",
-    image: "./images/warrior.png",
-    stats: { maxHp: 120, power: 10, defense: 8, critChance: 0.05, critDamage: 1.5, dodgeChance: 0.05 }
-  },
-  Ranger: {
-    avatar: "🏹",
-    image: "./images/ranger.png",
-    stats: { maxHp: 100, power: 12, defense: 5, critChance: 0.20, critDamage: 1.75, dodgeChance: 0.15 }
-  },
-  Mage: {
-    avatar: "🔮",
-    image: "./images/mage.png",
-    stats: { maxHp: 80, power: 15, defense: 3, critChance: 0.15, critDamage: 2.0, dodgeChance: 0.08 }
-  }
+  Warrior: { avatar:"🛡️", image:"./images/warrior.png", mana:50, manaRegen:8,
+    stats:{ maxHp:120, power:10, defense:8, critChance:0.05, critDamage:1.5, dodgeChance:0.05 } },
+  Ranger:  { avatar:"🏹", image:"./images/ranger.png",  mana:60, manaRegen:10,
+    stats:{ maxHp:100, power:12, defense:5, critChance:0.20, critDamage:1.75,dodgeChance:0.15 } },
+  Mage:    { avatar:"🔮", image:"./images/mage.png",    mana:100,manaRegen:15,
+    stats:{ maxHp:80,  power:15, defense:3, critChance:0.15, critDamage:2.0, dodgeChance:0.08 } },
+  Paladin: { avatar:"⚜️", image:"./images/paladin.png", mana:70, manaRegen:10,
+    stats:{ maxHp:140, power:8,  defense:10,critChance:0.05, critDamage:1.5, dodgeChance:0.05 } },
 };
 
-// Shop items configuration
-const SHOP_ITEMS = {
-  // Warrior
-  warrior_w1: { id: "warrior_w1", class: "Warrior", type: "weapon", name: "Bronze Sword", stat: "power", value: 5, cost: 50, icon: "🗡️", tier: 1 },
-  warrior_w2: { id: "warrior_w2", class: "Warrior", type: "weapon", name: "Iron Sword", stat: "power", value: 15, cost: 150, icon: "⚔️", tier: 2 },
-  warrior_w3: { id: "warrior_w3", class: "Warrior", type: "weapon", name: "Mythril Sword", stat: "power", value: 35, cost: 400, icon: "🔱", tier: 3 },
-  warrior_a1: { id: "warrior_a1", class: "Warrior", type: "armor", name: "Chainmail", stat: "defense", value: 5, cost: 50, icon: "⛓️", tier: 1 },
-  warrior_a2: { id: "warrior_a2", class: "Warrior", type: "armor", name: "Steel Plate", stat: "defense", value: 15, cost: 150, icon: "🛡️", tier: 2 },
-  warrior_a3: { id: "warrior_a3", class: "Warrior", type: "armor", name: "Dragon Plate", stat: "defense", value: 35, cost: 400, icon: "🥇", tier: 3 },
-  // Ranger
-  ranger_w1: { id: "ranger_w1", class: "Ranger", type: "weapon", name: "Shortbow", stat: "power", value: 6, cost: 50, icon: "🏹", tier: 1 },
-  ranger_w2: { id: "ranger_w2", class: "Ranger", type: "weapon", name: "Recurve Bow", stat: "power", value: 18, cost: 150, icon: "🏹", tier: 2 },
-  ranger_w3: { id: "ranger_w3", class: "Ranger", type: "weapon", name: "Elven Bow", stat: "power", value: 40, cost: 400, icon: "🏹", tier: 3 },
-  ranger_a1: { id: "ranger_a1", class: "Ranger", type: "armor", name: "Leather Armor", stat: "defense", value: 4, cost: 50, icon: "🎽", tier: 1 },
-  ranger_a2: { id: "ranger_a2", class: "Ranger", type: "armor", name: "Reinforced Leather", stat: "defense", value: 12, cost: 150, icon: "🥋", tier: 2 },
-  ranger_a3: { id: "ranger_a3", class: "Ranger", type: "armor", name: "Dragonscale Armor", stat: "defense", value: 30, cost: 400, icon: "🐊", tier: 3 },
-  // Mage
-  mage_w1: { id: "mage_w1", class: "Mage", type: "weapon", name: "Apprentice Staff", stat: "power", value: 8, cost: 50, icon: "🪄", tier: 1 },
-  mage_w2: { id: "mage_w2", class: "Mage", type: "weapon", name: "Sorcerer Wand", stat: "power", value: 20, cost: 150, icon: "🔮", tier: 2 },
-  mage_w3: { id: "mage_w3", class: "Mage", type: "weapon", name: "Archmage Staff", stat: "power", value: 45, cost: 400, icon: "🧹", tier: 3 },
-  mage_a1: { id: "mage_a1", class: "Mage", type: "armor", name: "Scholar Robes", stat: "defense", value: 3, cost: 50, icon: "🥻", tier: 1 },
-  mage_a2: { id: "mage_a2", class: "Mage", type: "armor", name: "Mage Robes", stat: "defense", value: 10, cost: 150, icon: "👘", tier: 2 },
-  mage_a3: { id: "mage_a3", class: "Mage", type: "armor", name: "Archmage Robes", stat: "defense", value: 25, cost: 400, icon: "🦹", tier: 3 }
+// ================================================================
+// DATA: ACTIVE SKILLS
+// ================================================================
+const SKILLS = {
+  warrior_1: { id:"warrior_1", class:"Warrior", name:"Shield Wall",   icon:"🛡️", desc:"Block the next enemy attack completely",    manaCost:15, cooldown:3, unlockLevel:5,  effect:"shieldWall" },
+  warrior_2: { id:"warrior_2", class:"Warrior", name:"Battle Cry",    icon:"⚔️", desc:"Power +60% for 3 rounds",                  manaCost:20, cooldown:5, unlockLevel:10, effect:"powerBoost" },
+  warrior_3: { id:"warrior_3", class:"Warrior", name:"Whirlwind",     icon:"🌀", desc:"Deal 3× Power damage ignoring defense",     manaCost:35, cooldown:6, unlockLevel:15, effect:"whirlwind" },
+  ranger_1:  { id:"ranger_1",  class:"Ranger",  name:"Poison Arrow",  icon:"🏹", desc:"Poison: ~25% Power/round for 4 rounds",    manaCost:12, cooldown:4, unlockLevel:5,  effect:"poison" },
+  ranger_2:  { id:"ranger_2",  class:"Ranger",  name:"Eagle Eye",     icon:"🦅", desc:"Guarantee critical hits for 2 attacks",    manaCost:20, cooldown:5, unlockLevel:10, effect:"eagleEye" },
+  ranger_3:  { id:"ranger_3",  class:"Ranger",  name:"Rain of Arrows",icon:"🌧️", desc:"Strike 4 times at 70% Power each",        manaCost:30, cooldown:6, unlockLevel:15, effect:"rainOfArrows" },
+  mage_1:    { id:"mage_1",    class:"Mage",    name:"Frost Nova",    icon:"❄️", desc:"Freeze enemy 1 round + 40% Power burst",  manaCost:15, cooldown:3, unlockLevel:5,  effect:"frostNova" },
+  mage_2:    { id:"mage_2",    class:"Mage",    name:"Arcane Surge",  icon:"✨", desc:"Deal 2.5× Power as pure magic damage",    manaCost:25, cooldown:5, unlockLevel:10, effect:"arcaneSurge" },
+  mage_3:    { id:"mage_3",    class:"Mage",    name:"Mana Shield",   icon:"💜", desc:"Absorb up to 60% Max HP over 3 rounds",   manaCost:35, cooldown:8, unlockLevel:15, effect:"manaShield" },
+  paladin_1: { id:"paladin_1", class:"Paladin", name:"Holy Light",    icon:"✝️", desc:"Heal yourself for 25% of Max HP",         manaCost:20, cooldown:4, unlockLevel:5,  effect:"holyLight" },
+  paladin_2: { id:"paladin_2", class:"Paladin", name:"Divine Shield", icon:"🛡️", desc:"Block ALL damage for 2 rounds",           manaCost:30, cooldown:6, unlockLevel:10, effect:"divineShield" },
+  paladin_3: { id:"paladin_3", class:"Paladin", name:"Consecration",  icon:"☀️", desc:"Deal 2× Power holy damage for 2 rounds", manaCost:25, cooldown:5, unlockLevel:15, effect:"consecration" },
 };
 
-// Default Player State
+// ================================================================
+// DATA: EQUIPMENT (CLASS + UNIVERSAL RINGS)
+// ================================================================
+const CLASS_ITEMS = {
+  // === WARRIOR ===
+  warrior_w1:{ id:"warrior_w1",  class:"Warrior", type:"weapon", name:"Bronze Sword",     stat:"power",   value:5,   cost:50,   icon:"🗡️", tier:1 },
+  warrior_w2:{ id:"warrior_w2",  class:"Warrior", type:"weapon", name:"Iron Sword",        stat:"power",   value:15,  cost:150,  icon:"⚔️", tier:2 },
+  warrior_w3:{ id:"warrior_w3",  class:"Warrior", type:"weapon", name:"Mythril Sword",     stat:"power",   value:35,  cost:400,  icon:"🔱", tier:3 },
+  warrior_w4:{ id:"warrior_w4",  class:"Warrior", type:"weapon", name:"Masterwork Blade",  stat:"power",   value:70,  cost:1200, icon:"🗡️", tier:4 },
+  warrior_w5:{ id:"warrior_w5",  class:"Warrior", type:"weapon", name:"Dragonslayer",      stat:"power",   value:130, cost:4000, icon:"⚔️", tier:5 },
+  warrior_a1:{ id:"warrior_a1",  class:"Warrior", type:"armor",  name:"Chainmail",         stat:"defense", value:5,   cost:50,   icon:"⛓️", tier:1 },
+  warrior_a2:{ id:"warrior_a2",  class:"Warrior", type:"armor",  name:"Steel Plate",       stat:"defense", value:15,  cost:150,  icon:"🛡️", tier:2 },
+  warrior_a3:{ id:"warrior_a3",  class:"Warrior", type:"armor",  name:"Dragon Plate",      stat:"defense", value:35,  cost:400,  icon:"🥇", tier:3 },
+  warrior_a4:{ id:"warrior_a4",  class:"Warrior", type:"armor",  name:"Warlord's Plate",   stat:"defense", value:55,  cost:1200, icon:"🛡️", tier:4 },
+  warrior_a5:{ id:"warrior_a5",  class:"Warrior", type:"armor",  name:"Titan Armor",       stat:"defense", value:100, cost:4000, icon:"🏅", tier:5 },
+  // === RANGER ===
+  ranger_w1: { id:"ranger_w1",   class:"Ranger",  type:"weapon", name:"Shortbow",          stat:"power",   value:6,   cost:50,   icon:"🏹", tier:1 },
+  ranger_w2: { id:"ranger_w2",   class:"Ranger",  type:"weapon", name:"Recurve Bow",       stat:"power",   value:18,  cost:150,  icon:"🏹", tier:2 },
+  ranger_w3: { id:"ranger_w3",   class:"Ranger",  type:"weapon", name:"Elven Bow",         stat:"power",   value:40,  cost:400,  icon:"🏹", tier:3 },
+  ranger_w4: { id:"ranger_w4",   class:"Ranger",  type:"weapon", name:"Eagle's Bow",       stat:"power",   value:75,  cost:1200, icon:"🏹", tier:4 },
+  ranger_w5: { id:"ranger_w5",   class:"Ranger",  type:"weapon", name:"Phoenix Bow",       stat:"power",   value:140, cost:4000, icon:"🏹", tier:5 },
+  ranger_a1: { id:"ranger_a1",   class:"Ranger",  type:"armor",  name:"Leather Armor",     stat:"defense", value:4,   cost:50,   icon:"🎽", tier:1 },
+  ranger_a2: { id:"ranger_a2",   class:"Ranger",  type:"armor",  name:"Reinforced Leather",stat:"defense", value:12,  cost:150,  icon:"🥋", tier:2 },
+  ranger_a3: { id:"ranger_a3",   class:"Ranger",  type:"armor",  name:"Dragonscale Armor", stat:"defense", value:30,  cost:400,  icon:"🐊", tier:3 },
+  ranger_a4: { id:"ranger_a4",   class:"Ranger",  type:"armor",  name:"Stalker's Vest",    stat:"defense", value:50,  cost:1200, icon:"🦺", tier:4 },
+  ranger_a5: { id:"ranger_a5",   class:"Ranger",  type:"armor",  name:"Shadow Leather",    stat:"defense", value:90,  cost:4000, icon:"🎽", tier:5 },
+  // === MAGE ===
+  mage_w1:   { id:"mage_w1",     class:"Mage",    type:"weapon", name:"Apprentice Staff",  stat:"power",   value:8,   cost:50,   icon:"🪄", tier:1 },
+  mage_w2:   { id:"mage_w2",     class:"Mage",    type:"weapon", name:"Sorcerer Wand",     stat:"power",   value:20,  cost:150,  icon:"🔮", tier:2 },
+  mage_w3:   { id:"mage_w3",     class:"Mage",    type:"weapon", name:"Archmage Staff",    stat:"power",   value:45,  cost:400,  icon:"🧹", tier:3 },
+  mage_w4:   { id:"mage_w4",     class:"Mage",    type:"weapon", name:"Void Scepter",      stat:"power",   value:80,  cost:1200, icon:"🪄", tier:4 },
+  mage_w5:   { id:"mage_w5",     class:"Mage",    type:"weapon", name:"Infinity Staff",    stat:"power",   value:150, cost:4000, icon:"🔮", tier:5 },
+  mage_a1:   { id:"mage_a1",     class:"Mage",    type:"armor",  name:"Scholar Robes",     stat:"defense", value:3,   cost:50,   icon:"🥻", tier:1 },
+  mage_a2:   { id:"mage_a2",     class:"Mage",    type:"armor",  name:"Mage Robes",        stat:"defense", value:10,  cost:150,  icon:"👘", tier:2 },
+  mage_a3:   { id:"mage_a3",     class:"Mage",    type:"armor",  name:"Archmage Robes",    stat:"defense", value:25,  cost:400,  icon:"🦹", tier:3 },
+  mage_a4:   { id:"mage_a4",     class:"Mage",    type:"armor",  name:"Arcane Mantle",     stat:"defense", value:42,  cost:1200, icon:"🥻", tier:4 },
+  mage_a5:   { id:"mage_a5",     class:"Mage",    type:"armor",  name:"Ethereal Robes",    stat:"defense", value:75,  cost:4000, icon:"🥷", tier:5 },
+  // === PALADIN ===
+  paladin_w1:{ id:"paladin_w1",  class:"Paladin", type:"weapon", name:"Holy Mace",         stat:"power",   value:5,   cost:50,   icon:"🔨", tier:1 },
+  paladin_w2:{ id:"paladin_w2",  class:"Paladin", type:"weapon", name:"Sacred Hammer",     stat:"power",   value:14,  cost:150,  icon:"⚒️", tier:2 },
+  paladin_w3:{ id:"paladin_w3",  class:"Paladin", type:"weapon", name:"Divine Maul",       stat:"power",   value:32,  cost:400,  icon:"🔱", tier:3 },
+  paladin_w4:{ id:"paladin_w4",  class:"Paladin", type:"weapon", name:"Holy Avenger",      stat:"power",   value:65,  cost:1200, icon:"⚜️", tier:4 },
+  paladin_w5:{ id:"paladin_w5",  class:"Paladin", type:"weapon", name:"Excalibur",         stat:"power",   value:120, cost:4000, icon:"⚔️", tier:5 },
+  paladin_a1:{ id:"paladin_a1",  class:"Paladin", type:"armor",  name:"Battle Vestments",  stat:"defense", value:6,   cost:50,   icon:"🛡️", tier:1 },
+  paladin_a2:{ id:"paladin_a2",  class:"Paladin", type:"armor",  name:"Holy Plate",        stat:"defense", value:16,  cost:150,  icon:"⚜️", tier:2 },
+  paladin_a3:{ id:"paladin_a3",  class:"Paladin", type:"armor",  name:"Paladin's Aegis",   stat:"defense", value:38,  cost:400,  icon:"🛡️", tier:3 },
+  paladin_a4:{ id:"paladin_a4",  class:"Paladin", type:"armor",  name:"Celestial Mail",    stat:"defense", value:60,  cost:1200, icon:"✨", tier:4 },
+  paladin_a5:{ id:"paladin_a5",  class:"Paladin", type:"armor",  name:"Inquisitor's Plate",stat:"defense", value:110, cost:4000, icon:"🏅", tier:5 },
+};
+
+const RING_ITEMS = {
+  ring_1: { id:"ring_1", class:null, type:"ring", name:"Iron Ring",          stat:"power",       value:5,    cost:80,   icon:"💍", tier:1 },
+  ring_2: { id:"ring_2", class:null, type:"ring", name:"Guard Amulet",       stat:"defense",     value:4,    cost:80,   icon:"🔴", tier:1 },
+  ring_3: { id:"ring_3", class:null, type:"ring", name:"Lucky Charm",        stat:"critChance",  value:0.05, cost:200,  icon:"🍀", tier:2 },
+  ring_4: { id:"ring_4", class:null, type:"ring", name:"Shadow Ring",        stat:"dodgeChance", value:0.06, cost:200,  icon:"🖤", tier:2 },
+  ring_5: { id:"ring_5", class:null, type:"ring", name:"Enchanted Band",     stat:"power",       value:18,   cost:600,  icon:"💎", tier:3 },
+  ring_6: { id:"ring_6", class:null, type:"ring", name:"Bulwark Ring",       stat:"defense",     value:15,   cost:600,  icon:"🔷", tier:3 },
+  ring_7: { id:"ring_7", class:null, type:"ring", name:"Thunderstruck Ring", stat:"critChance",  value:0.10, cost:1500, icon:"⚡", tier:4 },
+  ring_8: { id:"ring_8", class:null, type:"ring", name:"Specter's Ring",     stat:"dodgeChance", value:0.12, cost:1500, icon:"👻", tier:4 },
+  ring_9: { id:"ring_9", class:null, type:"ring", name:"Void Ring",          stat:"power",       value:35,   cost:5000, icon:"🌀", tier:5 },
+  ring_10:{ id:"ring_10",class:null, type:"ring", name:"Aegis Pendant",      stat:"defense",     value:30,   cost:5000, icon:"🏺", tier:5 },
+};
+
+const ALL_ITEMS = { ...CLASS_ITEMS, ...RING_ITEMS };
+
+// Skill point upgrade options
+const SP_OPTIONS = [
+  { id:"hp",     label:"❤️ Max HP",      desc:"+10 HP",        stat:"maxHp",       amount:10,   statKey:"stats" },
+  { id:"power",  label:"⚔️ Power",       desc:"+2 Power",      stat:"power",       amount:2,    statKey:"stats" },
+  { id:"defense",label:"🛡️ Defense",     desc:"+1 Defense",    stat:"defense",     amount:1,    statKey:"stats" },
+  { id:"crit",   label:"💥 Crit Chance", desc:"+1% Crit",      stat:"critChance",  amount:0.01, statKey:"stats" },
+  { id:"dodge",  label:"💨 Dodge Chance",desc:"+1% Dodge",     stat:"dodgeChance", amount:0.01, statKey:"stats" },
+  { id:"mana",   label:"🔮 Max Mana",    desc:"+10 Mana",      stat:"maxMana",     amount:10,   statKey:"top" },
+];
+
+// ================================================================
+// DEFAULT PLAYER STATE
+// ================================================================
 const DEFAULT_PLAYER_STATE = {
+  name: "Hero",
   class: null,
   level: 1,
   xp: 0,
@@ -68,187 +175,297 @@ const DEFAULT_PLAYER_STATE = {
   unlockedLevel: 1,
   stamina: 100,
   lastStaminaUpdate: Date.now(),
-  stats: {
-    maxHp: 100,
-    power: 10,
-    defense: 5,
-    critChance: 0.05,
-    critDamage: 1.5,
-    dodgeChance: 0.05
-  },
-  upgrades: {
-    hpLevel: 0,
-    powerLevel: 0,
-    defenseLevel: 0
-  },
-  equipment: {
-    weapon: null,
-    armor: null
-  },
-  inventory: []
+  maxMana: 50,
+  skillPoints: 0,
+  stats: { maxHp:100, power:10, defense:5, critChance:0.05, critDamage:1.5, dodgeChance:0.05 },
+  upgrades: { hpLevel:0, powerLevel:0, defenseLevel:0 },
+  equipment: { weapon:null, armor:null, ring:null },
+  inventory: [],
+  completedSideZones: [],
 };
 
+// ================================================================
+// MODULE-LEVEL STATE
+// ================================================================
 let playerState = {};
 let activeBattleInterval = null;
-let pendingLoot = null; // Global to store loot waiting for comparison
+let pendingLoot = null;
+let staminaInterval = null;
 
-// Initialize on load
+// Battle state (reset per fight)
+let battleEffects = {};
+let skillCooldowns = {};
+let currentBattleMana = 0;
+let battleMaxMana = 0;
+let battleRound = 0;
+let battlePlayerHp = 0;
+let battlePlayerMaxHp = 0;
+let battleEnemyHp = 0;
+let battleEnemyMaxHp = 0;
+let currentBattleLevel = null;
+
+// Settings
+let gameSettings = { sound: true, autoEquip: false };
+
+// ================================================================
+// INIT
+// ================================================================
 document.addEventListener("DOMContentLoaded", () => {
+  loadSettings();
   initTabs();
+  initShopTabs();
   loadPlayerState();
   renderMap();
   renderStats();
   renderShop();
   renderInventory();
+  renderSkills();
   initUpgradeButtons();
   initShopButtons();
   initBattleModalControls();
   initClassSelectionControls();
   initInventoryControls();
   initCompareModalControls();
+  initSettingsModal();
+  initSkillPointModal();
+  document.getElementById("open-sp-btn").addEventListener("click", openSkillPointModal);
 });
 
-// Tab Navigation logic
+// ── TAB NAVIGATION ──
 function initTabs() {
-  const tabs = document.querySelectorAll(".tab-btn");
-  const contents = document.querySelectorAll(".tab-content");
-
-  tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      contents.forEach(c => c.classList.remove("active"));
-
-      tab.classList.add("active");
-      const targetContent = document.getElementById(tab.dataset.tab);
-      if (targetContent) {
-        targetContent.classList.add("active");
-      }
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => { b.classList.remove("active"); b.setAttribute("aria-selected","false"); });
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+      btn.classList.add("active");
+      btn.setAttribute("aria-selected","true");
+      const target = document.getElementById(btn.dataset.tab);
+      if (target) target.classList.add("active");
+      if (typeof playSound === "function") playSound("button");
     });
   });
 }
 
+// ── INNER SHOP TABS ──
+function initShopTabs() {
+  document.querySelectorAll(".shop-tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".shop-tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".shop-tab-content").forEach(c => c.classList.remove("active"));
+      btn.classList.add("active");
+      const panel = document.getElementById(`shop-${btn.dataset.shopTab}-panel`);
+      if (panel) panel.classList.add("active");
+    });
+  });
+}
+
+// ── CLASS SELECTION ──
 function initClassSelectionControls() {
   document.querySelectorAll(".select-class-btn").forEach(btn => {
     btn.addEventListener("click", (e) => {
       const className = e.currentTarget.dataset.class;
-      selectClass(className);
+      const nameInput = document.getElementById("hero-name-input");
+      const heroName = nameInput ? nameInput.value.trim() : "";
+      selectClass(className, heroName);
     });
   });
 }
 
+// ── INVENTORY CONTROLS ──
 function initInventoryControls() {
-  const inventoryList = document.getElementById("inventory-list");
-  if (inventoryList) {
-    inventoryList.addEventListener("click", (e) => {
-      if (e.target.classList.contains("btn-equip")) {
-        const itemId = e.target.dataset.item;
-        const itemIndex = parseInt(e.target.dataset.index);
-        equipItemFromInventory(itemId, itemIndex);
-      } else if (e.target.classList.contains("btn-sell")) {
-        const itemId = e.target.dataset.item;
-        const itemIndex = parseInt(e.target.dataset.index);
-        sellItemFromInventory(itemId, itemIndex);
-      }
-    });
-  }
+  const list = document.getElementById("inventory-list");
+  if (!list) return;
+  list.addEventListener("click", (e) => {
+    if (e.target.classList.contains("btn-equip")) {
+      equipItemFromInventory(e.target.dataset.item, parseInt(e.target.dataset.index));
+    } else if (e.target.classList.contains("btn-sell")) {
+      sellItemFromInventory(e.target.dataset.item, parseInt(e.target.dataset.index));
+    }
+  });
 }
 
+// ── COMPARE MODAL ──
 function initCompareModalControls() {
   const closeBtn = document.getElementById("close-compare-modal-btn");
-  if (closeBtn) {
-    closeBtn.addEventListener("click", closeCompareModal);
-  }
-  
+  if (closeBtn) closeBtn.addEventListener("click", closeCompareModal);
+
   const discardBtn = document.getElementById("discard-loot-btn");
-  if (discardBtn) {
-    discardBtn.addEventListener("click", () => {
-      if (pendingLoot) {
-        addLootToInventory(pendingLoot);
-        pendingLoot = null;
-      }
-      closeCompareModal();
-    });
-  }
-  
+  if (discardBtn) discardBtn.addEventListener("click", () => {
+    if (pendingLoot) { addLootToInventory(pendingLoot); pendingLoot = null; }
+    closeCompareModal();
+  });
+
   const equipBtn = document.getElementById("equip-loot-btn");
-  if (equipBtn) {
-    equipBtn.addEventListener("click", () => {
-      if (pendingLoot) {
-        equipLootImmediately(pendingLoot);
-        pendingLoot = null;
-      }
-      closeCompareModal();
-    });
-  }
+  if (equipBtn) equipBtn.addEventListener("click", () => {
+    if (pendingLoot) { equipLootImmediately(pendingLoot); pendingLoot = null; }
+    closeCompareModal();
+  });
 }
 
 function closeCompareModal() {
-  const modal = document.getElementById("compare-modal");
-  if (modal) {
-    modal.classList.remove("active");
+  document.getElementById("compare-modal").classList.remove("active");
+}
+
+// ── SETTINGS ──
+function initSettingsModal() {
+  const settingsBtn = document.getElementById("settings-btn");
+  const closeBtn1   = document.getElementById("close-settings-btn");
+  const closeBtn2   = document.getElementById("close-settings-footer-btn");
+  const resetBtn    = document.getElementById("reset-game-btn");
+  const soundToggle = document.getElementById("sound-toggle");
+  const autoToggle  = document.getElementById("auto-equip-toggle");
+  const modal       = document.getElementById("settings-modal");
+
+  if (settingsBtn) settingsBtn.addEventListener("click", () => modal.classList.add("active"));
+  if (closeBtn1)   closeBtn1.addEventListener("click", () => modal.classList.remove("active"));
+  if (closeBtn2)   closeBtn2.addEventListener("click", () => modal.classList.remove("active"));
+  if (resetBtn)    resetBtn.addEventListener("click", () => {
+    if (confirm("Reset all progress? This cannot be undone.")) {
+      window.resetGame();
+      modal.classList.remove("active");
+    }
+  });
+  if (soundToggle) {
+    soundToggle.checked = gameSettings.sound;
+    soundToggle.addEventListener("change", () => {
+      gameSettings.sound = soundToggle.checked;
+      if (typeof window.setSoundEnabled === "function") window.setSoundEnabled(gameSettings.sound);
+      saveSettings();
+    });
+  }
+  if (autoToggle) {
+    autoToggle.checked = gameSettings.autoEquip;
+    autoToggle.addEventListener("change", () => {
+      gameSettings.autoEquip = autoToggle.checked;
+      saveSettings();
+    });
   }
 }
 
-// Load player state from localStorage
-function getMaxStamina(level) {
-  return 100 + (level - 1) * 10;
+function loadSettings() {
+  const saved = localStorage.getItem("ember_keep_settings");
+  if (saved) {
+    try { gameSettings = { ...gameSettings, ...JSON.parse(saved) }; } catch(e) {}
+  }
+  if (typeof window.setSoundEnabled === "function") window.setSoundEnabled(gameSettings.sound);
+}
+function saveSettings() {
+  localStorage.setItem("ember_keep_settings", JSON.stringify(gameSettings));
 }
 
-const STAMINA_REGEN_INTERVAL_MS = 10000; // 1 stamina per 10s
+// ================================================================
+// STATE MANAGEMENT
+// ================================================================
+function getMaxStamina(level) { return 100 + (level - 1) * 10; }
+
+const STAMINA_REGEN_MS = 10000; // 1 stamina per 10s
 
 function loadPlayerState() {
-  const savedState = localStorage.getItem("rpg_player_state");
-  if (savedState) {
+  const saved = localStorage.getItem("rpg_player_state");
+  if (saved) {
     try {
-      playerState = JSON.parse(savedState);
-      // Migrate missing properties if any
-      playerState = { ...DEFAULT_PLAYER_STATE, ...playerState };
-    } catch (e) {
-      console.error("Error parsing player state, resetting.", e);
+      const parsed = JSON.parse(saved);
+      // Deep merge — preserve nested objects
+      playerState = {
+        ...DEFAULT_PLAYER_STATE,
+        ...parsed,
+        stats:     { ...DEFAULT_PLAYER_STATE.stats,     ...(parsed.stats || {}) },
+        upgrades:  { ...DEFAULT_PLAYER_STATE.upgrades,  ...(parsed.upgrades || {}) },
+        equipment: { ...DEFAULT_PLAYER_STATE.equipment, ...(parsed.equipment || {}) },
+      };
+    } catch(e) {
       playerState = JSON.parse(JSON.stringify(DEFAULT_PLAYER_STATE));
     }
   } else {
     playerState = JSON.parse(JSON.stringify(DEFAULT_PLAYER_STATE));
   }
-  
+  if (!playerState.completedSideZones) playerState.completedSideZones = [];
+  if (!playerState.maxMana) playerState.maxMana = CLASS_PRESETS[playerState.class]?.mana || 50;
+
   if (playerState.class) {
     recoverOfflineStamina();
     startStaminaTicker();
   }
-  
   checkClassSelection();
+}
+
+function savePlayerState() {
+  localStorage.setItem("rpg_player_state", JSON.stringify(playerState));
+  window.dispatchEvent(new CustomEvent("playerStateUpdated", { detail: playerState }));
 }
 
 function recoverOfflineStamina() {
   const now = Date.now();
-  const elapsedMs = now - playerState.lastStaminaUpdate;
+  const elapsed = now - (playerState.lastStaminaUpdate || now);
   const maxStam = getMaxStamina(playerState.level);
-  
-  if (playerState.stamina < maxStam && elapsedMs > 0) {
-    const recovered = Math.floor(elapsedMs / STAMINA_REGEN_INTERVAL_MS);
+  if (playerState.stamina < maxStam && elapsed > 0) {
+    const recovered = Math.floor(elapsed / STAMINA_REGEN_MS);
     if (recovered > 0) {
       playerState.stamina = Math.min(maxStam, playerState.stamina + recovered);
-      playerState.lastStaminaUpdate += recovered * STAMINA_REGEN_INTERVAL_MS;
+      playerState.lastStaminaUpdate += recovered * STAMINA_REGEN_MS;
       savePlayerState();
     }
   }
 }
 
-let staminaInterval = null;
 function startStaminaTicker() {
   if (staminaInterval) clearInterval(staminaInterval);
   staminaInterval = setInterval(() => {
     if (!playerState.class) return;
     const maxStam = getMaxStamina(playerState.level);
     if (playerState.stamina < maxStam) {
-      playerState.stamina += 1;
+      playerState.stamina++;
       playerState.lastStaminaUpdate = Date.now();
       savePlayerState();
       renderStats();
     }
-  }, STAMINA_REGEN_INTERVAL_MS);
+  }, STAMINA_REGEN_MS);
 }
 
+// ── Effective stats (base + upgrades + equipment) ──
+function getEffectiveStats() {
+  let extraPower = 0, extraDefense = 0, extraCrit = 0, extraDodge = 0;
+
+  const w = ALL_ITEMS[playerState.equipment.weapon];
+  const a = ALL_ITEMS[playerState.equipment.armor];
+  const r = ALL_ITEMS[playerState.equipment.ring];
+
+  if (w) extraPower   += w.value;
+  if (a) extraDefense += a.value;
+  if (r) {
+    if (r.stat === "power")       extraPower   += r.value;
+    if (r.stat === "defense")     extraDefense += r.value;
+    if (r.stat === "critChance")  extraCrit    += r.value;
+    if (r.stat === "dodgeChance") extraDodge   += r.value;
+  }
+  return {
+    maxHp:      playerState.stats.maxHp,
+    power:      playerState.stats.power   + extraPower,
+    defense:    playerState.stats.defense + extraDefense,
+    critChance: (playerState.stats.critChance  || 0.05) + extraCrit,
+    critDamage: playerState.stats.critDamage  || 1.5,
+    dodgeChance:(playerState.stats.dodgeChance || 0.05) + extraDodge,
+  };
+}
+
+function getPlayerPowerRating(state) {
+  if (!state?.stats) return 0;
+  let pwr = state.stats.power, def = state.stats.defense, hp = state.stats.maxHp;
+  const w = ALL_ITEMS[state.equipment?.weapon];
+  const a = ALL_ITEMS[state.equipment?.armor];
+  const r = ALL_ITEMS[state.equipment?.ring];
+  if (w) pwr += w.value;
+  if (a) def += a.value;
+  if (r) {
+    if (r.stat === "power")   pwr += r.value;
+    if (r.stat === "defense") def += r.value;
+  }
+  return Math.round(pwr * 2 + def * 1.5 + hp * 0.1);
+}
+
+// ================================================================
+// CLASS SELECTION
+// ================================================================
 function checkClassSelection() {
   const modal = document.getElementById("class-selection-modal");
   if (!modal) return;
@@ -259,446 +476,630 @@ function checkClassSelection() {
   }
 }
 
-function selectClass(className) {
+function selectClass(className, heroName) {
   const preset = CLASS_PRESETS[className];
   if (!preset) return;
 
-  playerState.class = className;
-  playerState.stats = { ...preset.stats };
-  
-  playerState.stamina = 100;
+  playerState.class    = className;
+  playerState.name     = heroName || className + " Hero";
+  playerState.stats    = { ...preset.stats };
+  playerState.maxMana  = preset.mana;
+  playerState.stamina  = 100;
   playerState.lastStaminaUpdate = Date.now();
-  playerState.equipment.weapon = null;
-  playerState.equipment.armor = null;
+  playerState.equipment = { weapon:null, armor:null, ring:null };
   playerState.inventory = [];
 
   savePlayerState();
   startStaminaTicker();
   checkClassSelection();
-  
   renderMap();
   renderStats();
   renderShop();
   renderInventory();
-  
-  showToast(`You have selected the ${className} class!`, "success");
+  renderSkills();
+  showToast(`⚜️ Welcome, ${playerState.name} the ${className}!`, "success");
+  if (typeof playSound === "function") playSound("level_up");
 }
 
-// Save player state to localStorage
-function savePlayerState() {
-  localStorage.setItem("rpg_player_state", JSON.stringify(playerState));
-  // Dispatch custom event to notify social system of progression change
-  const event = new CustomEvent("playerStateUpdated", { detail: playerState });
-  window.dispatchEvent(event);
-}
+// ================================================================
+// RENDERING
+// ================================================================
 
-// Calculate effective stats (including gear upgrades)
-function getEffectiveStats() {
-  let extraPower = 0;
-  let extraDefense = 0;
-
-  if (playerState.equipment.weapon) {
-    const weapon = SHOP_ITEMS[playerState.equipment.weapon];
-    if (weapon) extraPower += weapon.value;
-  }
-
-  if (playerState.equipment.armor) {
-    const armor = SHOP_ITEMS[playerState.equipment.armor];
-    if (armor) extraDefense += armor.value;
-  }
-
-  return {
-    maxHp: playerState.stats.maxHp,
-    power: playerState.stats.power + extraPower,
-    defense: playerState.stats.defense + extraDefense,
-    critChance: playerState.stats.critChance || 0.05,
-    critDamage: playerState.stats.critDamage || 1.5,
-    dodgeChance: playerState.stats.dodgeChance || 0.05
-  };
-}
-
-// Calculate player's power rating based on state
-function getPlayerPowerRating(state) {
-  if (!state || !state.stats) return 0;
-  let power = state.stats.power;
-  let defense = state.stats.defense;
-  let hp = state.stats.maxHp;
-
-  if (state.equipment.weapon) {
-    const weapon = SHOP_ITEMS[state.equipment.weapon];
-    if (weapon) power += weapon.value;
-  }
-
-  if (state.equipment.armor) {
-    const armor = SHOP_ITEMS[state.equipment.armor];
-    if (armor) defense += armor.value;
-  }
-
-  return Math.round(power * 2 + defense * 1.5 + hp * 0.1);
-}
-
-// Render adventure map level nodes
+// ── MAP ──
 function renderMap() {
-  const mapPath = document.getElementById("map-path");
-  if (!mapPath) return;
+  const wrapper = document.getElementById("map-wrapper");
+  if (!wrapper) return;
+  wrapper.innerHTML = "";
 
-  mapPath.innerHTML = "";
+  // Group levels by act
+  ACTS.forEach(act => {
+    const actLevels = LEVELS.filter(l => l.act === act.id);
 
-  LEVELS.forEach(level => {
-    const node = document.createElement("div");
-    node.className = "level-node";
-    
-    let stateClass = "locked";
-    if (level.id < playerState.unlockedLevel) {
-      stateClass = "completed";
-    } else if (level.id === playerState.unlockedLevel) {
-      stateClass = "unlocked";
-    }
+    const section = document.createElement("div");
+    section.className = "act-section";
+    section.dataset.act = act.id;
 
-    node.classList.add(stateClass);
-    node.id = `level-node-${level.id}`;
+    // Act header
+    const header = document.createElement("div");
+    header.className = "act-header";
+    header.innerHTML = `<span>${act.id === 1 ? "🌲" : act.id === 2 ? "❄️" : "🔥"}</span>
+                        <span>${act.name}</span>
+                        <span style="font-family:Inter;font-size:0.65rem;opacity:0.7;">${act.theme}</span>`;
+    section.appendChild(header);
 
-    // Inside content
-    const numSpan = document.createElement("span");
-    numSpan.className = "level-num";
-    numSpan.innerText = level.id < playerState.unlockedLevel ? "⭐" : level.id;
-    node.appendChild(numSpan);
+    // Horizontal levels row
+    const row = document.createElement("div");
+    row.className = "act-levels-row";
 
-    const nameSpan = document.createElement("span");
-    nameSpan.className = "level-name";
-    nameSpan.innerText = level.name;
-    node.appendChild(nameSpan);
+    actLevels.forEach((level, idx) => {
+      const node = createLevelNode(level);
+      row.appendChild(node);
 
-    // Stamina cost display
-    const cost = 5 + (level.id - 1) * 2;
-    const costSpan = document.createElement("span");
-    costSpan.className = "level-stamina-cost";
-    costSpan.innerText = `⚡${cost}`;
-    node.appendChild(costSpan);
-
-    // Event listener
-    node.addEventListener("click", () => {
-      if (stateClass !== "locked") {
-        openBattleModal(level);
-      } else {
-        showToast("This level is locked! Complete previous levels first.", "error");
+      // Add connector between nodes (except last)
+      if (idx < actLevels.length - 1) {
+        const conn = document.createElement("div");
+        const isCompleted = level.id < playerState.unlockedLevel;
+        conn.className = "level-connector" + (isCompleted ? " done" : "");
+        row.appendChild(conn);
       }
     });
 
-    mapPath.appendChild(node);
+    section.appendChild(row);
+
+    // Optional side zones after certain levels (insert between acts)
+    const forkZones = SIDE_ZONES.filter(sz => sz.afterLevel === actLevels[actLevels.length - 1].id);
+    if (forkZones.length > 0) {
+      const fork = createSideFork(forkZones);
+      section.appendChild(fork);
+    }
+
+    wrapper.appendChild(section);
   });
 }
 
-// Render character status and attributes panel
-function renderStats() {
-  if (!playerState.class) return;
+function createLevelNode(level) {
+  const node = document.createElement("div");
+  node.className = "level-node";
+  if (level.isBoss || level.isMidBoss) node.classList.add("boss-node");
+  node.id = `level-node-${level.id}`;
 
-  // Header display
-  document.getElementById("header-level").innerText = playerState.level;
-  document.getElementById("header-gold").innerText = playerState.gold;
-  
-  const maxStam = getMaxStamina(playerState.level);
-  document.getElementById("header-stamina").innerText = `${playerState.stamina}/${maxStam}`;
+  // Determine state
+  const isCompleted = level.id < playerState.unlockedLevel;
+  const isUnlocked  = level.id === playerState.unlockedLevel;
+  const isLocked    = level.id > playerState.unlockedLevel;
 
-  // Character Profile display
-  document.getElementById("char-level").innerText = playerState.level;
-  document.getElementById("char-xp-text").innerText = `${playerState.xp}/${playerState.xpNeeded}`;
-  
-  const xpPercent = Math.min(100, (playerState.xp / playerState.xpNeeded) * 100);
-  document.getElementById("char-xp-fill").style.width = `${xpPercent}%`;
+  if (isCompleted) node.classList.add("completed");
+  else if (isUnlocked) node.classList.add("unlocked");
+  else node.classList.add("locked");
 
-  document.getElementById("char-stamina-text").innerText = `${playerState.stamina}/${maxStam}`;
-  const staminaPercent = Math.min(100, (playerState.stamina / maxStam) * 100);
-  document.getElementById("char-stamina-fill").style.width = `${staminaPercent}%`;
+  const staminaCost = getStaminaCost(level);
 
-  // Update Avatar and Name with Class
-  const preset = CLASS_PRESETS[playerState.class];
-  if (preset) {
-    renderAvatar("char-avatar-container", preset.image, preset.avatar);
-    document.getElementById("char-name").innerText = `Hero (${playerState.class})`;
-  }
+  node.innerHTML = `
+    <span class="level-num">${isCompleted ? "⭐" : level.id}</span>
+    <span class="level-icon">${level.isBoss ? "👑" : level.isMidBoss ? "⚠️" : ""}</span>
+    <span class="level-name">${level.name}</span>
+    <span class="level-cost">⚡${staminaCost}</span>
+  `;
 
-  const effStats = getEffectiveStats();
-  document.getElementById("stat-hp").innerText = `${effStats.maxHp}/${effStats.maxHp}`;
-  
-  // Update Power Rating
-  const powerRating = getPlayerPowerRating(playerState);
-  const powerRatingEl = document.getElementById("char-power-rating");
-  if (powerRatingEl) {
-    powerRatingEl.innerText = powerRating;
-  }
-  document.getElementById("stat-power").innerText = `${effStats.power} (${playerState.stats.power} + ${effStats.power - playerState.stats.power})`;
-  document.getElementById("stat-defense").innerText = `${effStats.defense} (${playerState.stats.defense} + ${effStats.defense - playerState.stats.defense})`;
+  node.addEventListener("click", () => {
+    if (!isLocked) {
+      openBattleModal(level);
+    } else {
+      showToast("🔒 Complete the previous level to unlock this one.", "error");
+    }
+  });
 
-  // Upgrade costs (scaling cost: 10 + level * 15)
-  const hpCost = 10 + playerState.upgrades.hpLevel * 15;
-  const powerCost = 10 + playerState.upgrades.powerLevel * 15;
-  const defenseCost = 10 + playerState.upgrades.defenseLevel * 15;
-
-  document.getElementById("cost-hp").innerText = `${hpCost}g`;
-  document.getElementById("cost-power").innerText = `${powerCost}g`;
-  document.getElementById("cost-defense").innerText = `${defenseCost}g`;
-
-  // Enable/disable buttons based on gold
-  document.getElementById("upgrade-hp-btn").disabled = playerState.gold < hpCost;
-  document.getElementById("upgrade-power-btn").disabled = playerState.gold < powerCost;
-  document.getElementById("upgrade-defense-btn").disabled = playerState.gold < defenseCost;
+  return node;
 }
 
-// Render shop and weapon/armor buy status
+function createSideFork(zones) {
+  const fork = document.createElement("div");
+  fork.className = "side-fork-section";
+
+  const label = document.createElement("div");
+  label.className = "side-fork-label";
+  label.textContent = "⚡ Optional Side Challenges";
+  fork.appendChild(label);
+
+  const nodesDiv = document.createElement("div");
+  nodesDiv.className = "side-fork-nodes";
+
+  zones.forEach(zone => {
+    const isCompleted = playerState.completedSideZones.includes(zone.id);
+    const isAvailable = playerState.unlockedLevel > zone.afterLevel;
+
+    const node = document.createElement("div");
+    node.className = `side-zone-node ${zone.zoneType}-type`;
+    if (isCompleted) node.classList.add("completed");
+    if (!isAvailable) node.classList.add("locked");
+
+    node.innerHTML = `
+      <span class="side-zone-avatar">${zone.avatar}</span>
+      <div class="side-zone-info">
+        <div class="side-zone-name">${zone.name} ${isCompleted ? "✅" : ""}</div>
+        <span class="side-zone-tag ${zone.zoneType}">${zone.label}</span>
+        <div class="side-zone-cost">⚡${zone.staminaCost} · Suggested: ${formatNumber(zone.suggested)} PR</div>
+      </div>
+    `;
+
+    node.addEventListener("click", () => {
+      if (isAvailable) {
+        openBattleModal(zone);
+      } else {
+        showToast(`🔒 Complete Level ${zone.afterLevel} to unlock this.`, "error");
+      }
+    });
+
+    nodesDiv.appendChild(node);
+  });
+
+  fork.appendChild(nodesDiv);
+  return fork;
+}
+
+// ── STATS ──
+function renderStats() {
+  if (!playerState.class) return;
+  const effStats = getEffectiveStats();
+  const maxStam  = getMaxStamina(playerState.level);
+  const pr       = getPlayerPowerRating(playerState);
+
+  // Header
+  _setText("header-level", playerState.level);
+  _setText("header-gold",  playerState.gold);
+  _setText("header-stamina", `${playerState.stamina}/${maxStam}`);
+
+  // Character panel
+  _setText("char-name",           playerState.name || "Hero");
+  _setText("char-class-display",  playerState.class);
+  _setText("char-level",          playerState.level);
+  _setText("char-xp-text",        `${playerState.xp}/${playerState.xpNeeded}`);
+  _setText("char-stamina-text",   `${playerState.stamina}/${maxStam}`);
+  _setText("char-mana-text",      `${playerState.maxMana}/${playerState.maxMana}`);
+  _setText("char-power-rating",   pr);
+
+  // Progress bars
+  _setWidth("char-xp-fill",      (playerState.xp / playerState.xpNeeded) * 100);
+  _setWidth("char-stamina-fill", (playerState.stamina / maxStam) * 100);
+  _setWidth("char-mana-fill",    100);
+
+  // Avatar
+  const preset = CLASS_PRESETS[playerState.class];
+  if (preset) renderAvatar("char-avatar-container", preset.image, preset.avatar);
+
+  // Stats
+  _setText("stat-hp",      `${effStats.maxHp}/${effStats.maxHp}`);
+  _setText("stat-power",   `${effStats.power} (+${effStats.power - playerState.stats.power})`);
+  _setText("stat-defense", `${effStats.defense} (+${effStats.defense - playerState.stats.defense})`);
+  _setText("stat-crit",    `${Math.round(effStats.critChance * 100)}%`);
+  _setText("stat-dodge",   `${Math.round(effStats.dodgeChance * 100)}%`);
+
+  // Upgrade costs
+  const hpCost  = 10 + playerState.upgrades.hpLevel * 15;
+  const pwrCost = 10 + playerState.upgrades.powerLevel * 15;
+  const defCost = 10 + playerState.upgrades.defenseLevel * 15;
+  _setText("cost-hp",      `${hpCost}g`);
+  _setText("cost-power",   `${pwrCost}g`);
+  _setText("cost-defense", `${defCost}g`);
+  _setDisabled("upgrade-hp-btn",      playerState.gold < hpCost);
+  _setDisabled("upgrade-power-btn",   playerState.gold < pwrCost);
+  _setDisabled("upgrade-defense-btn", playerState.gold < defCost);
+
+  // Equipped gear display
+  const wItem = ALL_ITEMS[playerState.equipment.weapon];
+  const aItem = ALL_ITEMS[playerState.equipment.armor];
+  const rItem = ALL_ITEMS[playerState.equipment.ring];
+  _setText("equipped-weapon-name", wItem ? wItem.name : "None");
+  _setText("equipped-armor-name",  aItem ? aItem.name : "None");
+  _setText("equipped-ring-name",   rItem ? rItem.name : "None");
+
+  // Skill point badge
+  const spBadge = document.getElementById("sp-count-badge");
+  const spBtn   = document.getElementById("open-sp-btn");
+  if (spBadge) spBadge.textContent = playerState.skillPoints || 0;
+  if (spBtn)   spBtn.style.display = playerState.skillPoints > 0 ? "inline-flex" : "none";
+}
+
+// ── SHOP ──
 function renderShop() {
   if (!playerState.class) return;
 
-  const weaponsContainer = document.getElementById("shop-weapons-container");
-  const armorContainer = document.getElementById("shop-armor-container");
-  
-  if (!weaponsContainer || !armorContainer) return;
+  const weaponsCont = document.getElementById("shop-weapons-container");
+  const armorCont   = document.getElementById("shop-armor-container");
+  const ringsCont   = document.getElementById("shop-rings-container");
+  if (!weaponsCont || !armorCont || !ringsCont) return;
 
-  weaponsContainer.innerHTML = "";
-  armorContainer.innerHTML = "";
+  weaponsCont.innerHTML = "";
+  armorCont.innerHTML   = "";
+  ringsCont.innerHTML   = "";
 
-  for (const itemId in SHOP_ITEMS) {
-    const item = SHOP_ITEMS[itemId];
-    
-    // Only show items for player's class
-    if (item.class !== playerState.class) continue;
+  // Class-specific weapons and armor
+  Object.values(CLASS_ITEMS).forEach(item => {
+    if (item.class !== playerState.class) return;
+    const el = createShopItemEl(item);
+    if (item.type === "weapon") weaponsCont.appendChild(el);
+    else armorCont.appendChild(el);
+  });
 
-    const isWeaponEquipped = playerState.equipment.weapon === itemId;
-    const isArmorEquipped = playerState.equipment.armor === itemId;
-    const isEquipped = isWeaponEquipped || isArmorEquipped;
-    const isOwned = isEquipped || playerState.inventory.some(i => i.id === itemId);
+  // Universal rings
+  Object.values(RING_ITEMS).forEach(item => {
+    ringsCont.appendChild(createShopItemEl(item));
+  });
+}
 
-    const itemEl = document.createElement("div");
-    itemEl.className = "shop-item";
-    itemEl.id = `item-${itemId.replace(/_/g, '-')}`;
-    itemEl.innerHTML = `
-      <div class="item-icon">${item.icon}</div>
-      <div class="item-details">
-        <h5>${item.name}</h5>
-        <p>${item.stat === "power" ? "Power" : "Defense"} +${item.value}</p>
+function createShopItemEl(item) {
+  const isWeaponEquipped = playerState.equipment.weapon === item.id;
+  const isArmorEquipped  = playerState.equipment.armor  === item.id;
+  const isRingEquipped   = playerState.equipment.ring   === item.id;
+  const isEquipped = isWeaponEquipped || isArmorEquipped || isRingEquipped;
+  const isOwned    = isEquipped || playerState.inventory.some(i => i.id === item.id);
+
+  const tierLabels = ["","★","★★","★★★","★★★★","★★★★★"];
+  const statLabel = item.stat === "power" ? "Power" : item.stat === "defense" ? "Defense" :
+                    item.stat === "critChance" ? "Crit" : "Dodge";
+  const statValue = item.stat.includes("Chance") ? `+${Math.round(item.value * 100)}%` : `+${item.value}`;
+
+  const el = document.createElement("div");
+  el.className = "shop-item";
+  el.id = `item-${item.id}`;
+  el.innerHTML = `
+    <div class="item-icon">${item.icon}</div>
+    <div class="item-details">
+      <h5>${item.name}</h5>
+      <p>${statLabel} ${statValue}</p>
+      <span class="item-tier" style="color:var(--gold);font-size:0.65rem;">${tierLabels[item.tier] || ""} Tier ${item.tier}</span>
+    </div>
+    <button class="btn-buy ${isEquipped ? "equipped" : ""}"
+            data-item="${item.id}"
+            ${isEquipped ? "disabled" : ""}
+            ${(!isEquipped && isOwned) ? "disabled" : ""}
+            ${(!isOwned && playerState.gold < item.cost) ? "disabled" : ""}>
+      ${isEquipped ? "Equipped" : isOwned ? "Owned" : `Buy <span class="cost">${formatNumber(item.cost)}g</span>`}
+    </button>
+  `;
+  return el;
+}
+
+// ── SKILLS ──
+function renderSkills() {
+  const list = document.getElementById("char-skills-list");
+  if (!list || !playerState.class) {
+    if (list) list.innerHTML = `<p class="empty-message">Select a class to see skills.</p>`;
+    return;
+  }
+  list.innerHTML = "";
+  const classSkills = Object.values(SKILLS).filter(s => s.class === playerState.class);
+
+  classSkills.forEach(skill => {
+    const unlocked = playerState.level >= skill.unlockLevel;
+    const el = document.createElement("div");
+    el.className = "skill-item" + (unlocked ? "" : " locked-skill");
+    el.innerHTML = `
+      <span class="skill-item-icon">${skill.icon}</span>
+      <div class="skill-item-info">
+        <div class="skill-item-name">${skill.name}</div>
+        <div class="skill-item-desc">${skill.desc}</div>
       </div>
-      <button class="btn-buy ${isEquipped ? 'equipped' : ''}" 
-              data-item="${itemId}" 
-              ${isEquipped ? 'disabled' : ''}
-              ${(!isEquipped && isOwned) ? 'disabled' : ''}
-              ${(!isOwned && playerState.gold < item.cost) ? 'disabled' : ''}>
-        ${isEquipped ? 'Equipped' : (isOwned ? 'Owned' : `Buy <span class="cost">${item.cost}g</span>`)}
-      </button>
+      ${unlocked
+        ? `<span class="skill-item-cost">${skill.manaCost}🔮</span>`
+        : `<span class="skill-item-lock">🔒 Level ${skill.unlockLevel}</span>`}
     `;
+    list.appendChild(el);
+  });
+}
 
-    if (item.type === "weapon") {
-      weaponsContainer.appendChild(itemEl);
-    } else if (item.type === "armor") {
-      armorContainer.appendChild(itemEl);
-    }
+// ── INVENTORY ──
+function renderInventory() {
+  const list = document.getElementById("inventory-list");
+  if (!list) return;
+  list.innerHTML = "";
+
+  if (!playerState.inventory?.length) {
+    list.innerHTML = `<p class="empty-message">Your inventory is empty.</p>`;
+    return;
+  }
+
+  playerState.inventory.forEach((inv, idx) => {
+    const item = ALL_ITEMS[inv.id];
+    if (!item) return;
+    const statLabel = item.stat === "power" ? "Power" : item.stat === "defense" ? "Defense" :
+                      item.stat === "critChance" ? "Crit Chance" : "Dodge Chance";
+    const statValue = item.stat.includes("Chance") ? `+${Math.round(item.value * 100)}%` : `+${item.value}`;
+    const el = document.createElement("div");
+    el.className = "inventory-item";
+    el.innerHTML = `
+      <div class="item-icon">${item.icon}</div>
+      <div class="item-details"><h5>${item.name}</h5><p>${statLabel} ${statValue}</p></div>
+      <div class="inventory-item-actions">
+        <button class="btn-upgrade btn-equip" data-item="${item.id}" data-index="${idx}">Equip</button>
+        <button class="btn-sell" data-item="${item.id}" data-index="${idx}">Sell ${Math.round(item.cost * 0.5)}g</button>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+// ── AVATAR ──
+function renderAvatar(containerId, imageSrc, emojiAlt) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  if (imageSrc) {
+    c.innerHTML = `
+      <img src="${imageSrc}" alt="${emojiAlt}"
+           style="width:1.5em;height:1.5em;object-fit:contain;vertical-align:middle;"
+           onload="this.style.display='inline-block';this.nextElementSibling.style.display='none';"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='inline';">
+      <span>${emojiAlt}</span>`;
+  } else {
+    c.innerHTML = `<span>${emojiAlt}</span>`;
   }
 }
 
-// Initialize Upgrade Buttons
+// ================================================================
+// UPGRADES
+// ================================================================
 function initUpgradeButtons() {
   document.getElementById("upgrade-hp-btn").addEventListener("click", () => {
     const cost = 10 + playerState.upgrades.hpLevel * 15;
     if (playerState.gold >= cost) {
       playerState.gold -= cost;
       playerState.stats.maxHp += 10;
-      playerState.upgrades.hpLevel += 1;
-      savePlayerState();
-      renderStats();
-      renderShop();
-      showToast("HP upgraded successfully!", "success");
+      playerState.upgrades.hpLevel++;
+      savePlayerState(); renderStats(); renderShop();
+      showToast("❤️ HP upgraded!", "success");
+      if (typeof playSound === "function") playSound("purchase");
     }
   });
-
   document.getElementById("upgrade-power-btn").addEventListener("click", () => {
     const cost = 10 + playerState.upgrades.powerLevel * 15;
     if (playerState.gold >= cost) {
       playerState.gold -= cost;
       playerState.stats.power += 2;
-      playerState.upgrades.powerLevel += 1;
-      savePlayerState();
-      renderStats();
-      renderShop();
-      showToast("Power upgraded successfully!", "success");
+      playerState.upgrades.powerLevel++;
+      savePlayerState(); renderStats(); renderShop();
+      showToast("⚔️ Power upgraded!", "success");
+      if (typeof playSound === "function") playSound("purchase");
     }
   });
-
   document.getElementById("upgrade-defense-btn").addEventListener("click", () => {
     const cost = 10 + playerState.upgrades.defenseLevel * 15;
     if (playerState.gold >= cost) {
       playerState.gold -= cost;
       playerState.stats.defense += 1;
-      playerState.upgrades.defenseLevel += 1;
-      savePlayerState();
-      renderStats();
-      renderShop();
-      showToast("Defense upgraded successfully!", "success");
+      playerState.upgrades.defenseLevel++;
+      savePlayerState(); renderStats(); renderShop();
+      showToast("🛡️ Defense upgraded!", "success");
+      if (typeof playSound === "function") playSound("purchase");
     }
   });
 }
 
-// Initialize Shop Equipment Buttons
+// ================================================================
+// SHOP
+// ================================================================
 function initShopButtons() {
   const handleBuy = (e) => {
     const btn = e.target.closest(".btn-buy");
-    if (btn) {
-      const itemId = btn.dataset.item;
-      buyItem(itemId);
-    }
+    if (btn && !btn.disabled) buyItem(btn.dataset.item);
   };
-  
-  const weaponsContainer = document.getElementById("shop-weapons-container");
-  const armorContainer = document.getElementById("shop-armor-container");
-  
-  if (weaponsContainer) weaponsContainer.addEventListener("click", handleBuy);
-  if (armorContainer) armorContainer.addEventListener("click", handleBuy);
+  ["shop-weapons-container","shop-armor-container","shop-rings-container"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("click", handleBuy);
+  });
 }
 
 function buyItem(itemId) {
-  const item = SHOP_ITEMS[itemId];
+  const item = ALL_ITEMS[itemId];
   if (!item) return;
-
-  // Double check if already owned to prevent duplicate buying
-  const isOwned = playerState.equipment.weapon === itemId || 
-                  playerState.equipment.armor === itemId || 
+  const isOwned = playerState.equipment.weapon === itemId ||
+                  playerState.equipment.armor   === itemId ||
+                  playerState.equipment.ring    === itemId ||
                   playerState.inventory.some(i => i.id === itemId);
-  if (isOwned) {
-    showToast("You already own this item!", "error");
-    return;
-  }
+  if (isOwned) { showToast("You already own this item!", "error"); return; }
+  if (playerState.gold < item.cost) { showToast("Not enough gold!", "error"); return; }
 
-  if (playerState.gold >= item.cost) {
-    playerState.gold -= item.cost;
-    equipItem(itemId);
-    showToast(`Purchased and equipped ${item.name}!`, "success");
-  } else {
-    showToast("Not enough gold!", "error");
-  }
+  playerState.gold -= item.cost;
+  equipItem(itemId);
+  showToast(`✅ Purchased & equipped ${item.name}!`, "success");
+  if (typeof playSound === "function") playSound("purchase");
 }
 
 function equipItem(itemId) {
-  const item = SHOP_ITEMS[itemId];
+  const item = ALL_ITEMS[itemId];
   if (!item) return;
+  let oldId = null;
+  if (item.type === "weapon") { oldId = playerState.equipment.weapon; playerState.equipment.weapon = itemId; }
+  else if (item.type === "armor")  { oldId = playerState.equipment.armor;  playerState.equipment.armor  = itemId; }
+  else if (item.type === "ring")   { oldId = playerState.equipment.ring;   playerState.equipment.ring   = itemId; }
 
-  let oldItemId = null;
-  if (item.type === "weapon") {
-    oldItemId = playerState.equipment.weapon;
-    playerState.equipment.weapon = itemId;
-  } else if (item.type === "armor") {
-    oldItemId = playerState.equipment.armor;
-    playerState.equipment.armor = itemId;
-  }
+  if (oldId) playerState.inventory.push({ id: oldId });
+  const invIdx = playerState.inventory.findIndex(i => i.id === itemId);
+  if (invIdx > -1) playerState.inventory.splice(invIdx, 1);
 
-  // Move old item to inventory
-  if (oldItemId) {
-    playerState.inventory.push({ id: oldItemId });
-  }
-
-  // Remove new item from inventory if it was there
-  const itemIndex = playerState.inventory.findIndex(i => i.id === itemId);
-  if (itemIndex > -1) {
-    playerState.inventory.splice(itemIndex, 1);
-  }
-
-  savePlayerState();
-  renderStats();
-  renderShop();
-  renderInventory();
+  savePlayerState(); renderStats(); renderShop(); renderInventory();
 }
 
-// Modal controls
+function equipItemFromInventory(itemId) {
+  equipItem(itemId);
+  showToast(`✅ Equipped ${ALL_ITEMS[itemId]?.name}!`, "success");
+}
+
+function sellItemFromInventory(itemId, index) {
+  const item = ALL_ITEMS[itemId];
+  if (!item) return;
+  const price = Math.round(item.cost * 0.5);
+  playerState.gold += price;
+  playerState.inventory.splice(index, 1);
+  savePlayerState(); renderStats(); renderShop(); renderInventory();
+  showToast(`💰 Sold ${item.name} for ${price}g!`, "success");
+}
+
+// ================================================================
+// SKILL POINT ALLOCATION
+// ================================================================
+function initSkillPointModal() {
+  const cancelBtn = document.getElementById("cancel-sp-btn");
+  if (cancelBtn) cancelBtn.addEventListener("click", () => {
+    document.getElementById("skill-point-modal").classList.remove("active");
+  });
+}
+
+function openSkillPointModal() {
+  const available = playerState.skillPoints || 0;
+  if (available <= 0) return;
+
+  const modal       = document.getElementById("skill-point-modal");
+  const availableEl = document.getElementById("sp-available");
+  const optionsEl   = document.getElementById("sp-options");
+  const confirmBtn  = document.getElementById("confirm-sp-btn");
+
+  if (!modal) return;
+  if (availableEl) availableEl.textContent = available;
+
+  // Allocation state
+  const allocations = {};
+  SP_OPTIONS.forEach(o => allocations[o.id] = 0);
+  let remaining = available;
+
+  // Render options
+  optionsEl.innerHTML = "";
+  SP_OPTIONS.forEach(opt => {
+    const card = document.createElement("div");
+    card.className = "sp-option-card";
+    card.innerHTML = `
+      <div class="sp-option-info">
+        <div class="sp-option-label">${opt.label}</div>
+        <div class="sp-option-desc">${opt.desc}</div>
+      </div>
+      <div class="sp-option-controls">
+        <button class="sp-btn sp-minus" data-opt="${opt.id}" disabled>−</button>
+        <span class="sp-count" id="sp-count-${opt.id}">0</span>
+        <button class="sp-btn sp-plus" data-opt="${opt.id}">+</button>
+      </div>`;
+    optionsEl.appendChild(card);
+  });
+
+  function refresh() {
+    if (availableEl) availableEl.textContent = remaining;
+    SP_OPTIONS.forEach(opt => {
+      const countEl = document.getElementById(`sp-count-${opt.id}`);
+      if (countEl) countEl.textContent = allocations[opt.id];
+      const minus = optionsEl.querySelector(`.sp-minus[data-opt="${opt.id}"]`);
+      const plus  = optionsEl.querySelector(`.sp-plus[data-opt="${opt.id}"]`);
+      if (minus) minus.disabled = allocations[opt.id] === 0;
+      if (plus)  plus.disabled  = remaining === 0;
+    });
+    if (confirmBtn) confirmBtn.disabled = remaining === available; // must spend at least 1
+  }
+
+  optionsEl.addEventListener("click", (e) => {
+    const plus  = e.target.closest(".sp-plus");
+    const minus = e.target.closest(".sp-minus");
+    if (plus && remaining > 0) { allocations[plus.dataset.opt]++; remaining--; refresh(); }
+    if (minus && allocations[minus.dataset.opt] > 0) { allocations[minus.dataset.opt]--; remaining++; refresh(); }
+  });
+
+  if (confirmBtn) {
+    confirmBtn.onclick = () => {
+      SP_OPTIONS.forEach(opt => {
+        if (allocations[opt.id] <= 0) return;
+        if (opt.statKey === "top") {
+          playerState[opt.stat] = (playerState[opt.stat] || 0) + opt.amount * allocations[opt.id];
+        } else {
+          playerState.stats[opt.stat] = (playerState.stats[opt.stat] || 0) + opt.amount * allocations[opt.id];
+        }
+      });
+      playerState.skillPoints -= (available - remaining);
+      savePlayerState(); renderStats(); renderSkills();
+      modal.classList.remove("active");
+      showToast("✨ Skill points allocated!", "success");
+    };
+  }
+
+  refresh();
+  modal.classList.add("active");
+}
+
+// ================================================================
+// BATTLE SYSTEM
+// ================================================================
+function getStaminaCost(level) {
+  if (level.staminaCost !== undefined) return level.staminaCost;
+  return 5 + (level.id - 1) * 2;
+}
+
 function openBattleModal(level) {
+  currentBattleLevel = level;
   const modal = document.getElementById("battle-modal");
   modal.classList.add("active");
 
-  document.getElementById("battle-title").innerText = `Level ${level.id}: ${level.name}`;
-  document.getElementById("enemy-name").innerText = level.name;
+  const staminaCost = getStaminaCost(level);
+  const effStats    = getEffectiveStats();
+  const playerPR    = getPlayerPowerRating(playerState);
 
+  _setText("battle-title",      `${typeof level.id === "number" ? "Level " + level.id + ": " : ""}${level.name}`);
+  _setText("enemy-name",        level.name);
+  _setText("suggested-power-val",formatNumber(level.suggested || 0));
+  _setText("player-power-val",  playerPR);
+  _setText("battle-stamina-cost",staminaCost);
+  _setText("battle-player-name",playerState.name || "Hero");
+
+  // Matchup status
+  const matchEl = document.getElementById("power-matchup-status");
+  if (matchEl) {
+    matchEl.className = "matchup-badge " + (playerPR >= (level.suggested || 0) ? "good" : "bad");
+    matchEl.textContent = playerPR >= (level.suggested || 0) ? "✅ Ready" : "⚠️ Underpowered";
+  }
+
+  // Player HP bar
+  _setWidth("player-hp-bar", 100);
+  _setText("player-hp-text", `${effStats.maxHp}/${effStats.maxHp}`);
+
+  // Battle mana
   const preset = CLASS_PRESETS[playerState.class];
-  if (preset) {
-    renderAvatar("battle-player-avatar", preset.image, preset.avatar);
-  }
-  renderAvatar("enemy-avatar", level.image, level.avatar);
-  
-  // Set enemy HP
-  document.getElementById("enemy-hp-bar").style.width = "100%";
-  document.getElementById("enemy-hp-text").innerText = `${level.hp}/${level.hp}`;
+  const manaMax = playerState.maxMana || preset?.mana || 50;
+  _setWidth("battle-mana-bar", 100);
+  _setText("battle-mana-text", `${manaMax}/${manaMax}`);
 
-  // Set player HP
-  const effStats = getEffectiveStats();
-  document.getElementById("player-hp-bar").style.width = "100%";
-  document.getElementById("player-hp-text").innerText = `${effStats.maxHp}/${effStats.maxHp}`;
+  // Enemy HP
+  _setWidth("enemy-hp-bar", 100);
+  _setText("enemy-hp-text", `${formatNumber(level.hp)}/${formatNumber(level.hp)}`);
 
-  // Set Power Rating Comparison
-  const playerPower = getPlayerPowerRating(playerState);
-  const suggestedPower = level.suggestedPower || 0;
-  
-  const playerPowerValEl = document.getElementById("player-power-val");
-  const suggestedPowerValEl = document.getElementById("suggested-power-val");
-  const matchupStatusEl = document.getElementById("power-matchup-status");
-  
-  if (playerPowerValEl) playerPowerValEl.innerText = playerPower;
-  if (suggestedPowerValEl) suggestedPowerValEl.innerText = suggestedPower;
-  
-  if (matchupStatusEl) {
-    matchupStatusEl.className = ""; // Reset classes
-    if (playerPower >= suggestedPower) {
-      matchupStatusEl.innerText = "Strong Matchup";
-      matchupStatusEl.classList.add("power-matchup-good");
-    } else {
-      matchupStatusEl.innerText = "Underpowered";
-      matchupStatusEl.classList.add("power-matchup-bad");
-    }
-  }
+  // Avatars
+  if (preset) renderAvatar("battle-player-avatar", preset.image, preset.avatar);
+  renderAvatar("enemy-avatar", null, level.avatar || "👾");
 
-  const staminaCost = 5 + (level.id - 1) * 2;
-  const costEl = document.getElementById("battle-stamina-cost");
-  if (costEl) costEl.innerText = staminaCost;
+  // Render skill bar
+  renderSkillBar();
 
-  // Ensure Rematch button is hidden initially
+  // Reset log
+  document.getElementById("battle-log").innerHTML = `<p class="system-message">Press "Start Battle" to challenge ${level.name}!</p>`;
+
+  // Buttons
+  _show("start-battle-btn");
+  _hide("rematch-battle-btn");
+  _hide("close-battle-btn");
+  _show("close-battle-modal-btn");
+
+  document.getElementById("start-battle-btn").onclick = () => startBattleSimulation(level);
+
   const rematchBtn = document.getElementById("rematch-battle-btn");
-  if (rematchBtn) rematchBtn.style.display = "none";
-
-  // Reset Battle Log
-  const logEl = document.getElementById("battle-log");
-  logEl.innerHTML = `<p class="system-message">Press "Start Battle" to challenge ${level.name}!</p>`;
-
-  // Adjust modal buttons
-  document.getElementById("start-battle-btn").style.display = "inline-block";
-  document.getElementById("close-battle-btn").style.display = "none";
-  document.getElementById("close-battle-modal-btn").style.display = "inline-block";
-
-  // Cache level on the button
-  document.getElementById("start-battle-btn").onclick = () => {
+  if (rematchBtn) rematchBtn.onclick = () => {
+    const eff = getEffectiveStats();
+    const pMax = playerState.maxMana || preset?.mana || 50;
+    _setWidth("player-hp-bar", 100);
+    _setText("player-hp-text", `${eff.maxHp}/${eff.maxHp}`);
+    _setWidth("enemy-hp-bar", 100);
+    _setText("enemy-hp-text", `${formatNumber(level.hp)}/${formatNumber(level.hp)}`);
+    _setWidth("battle-mana-bar", 100);
+    _setText("battle-mana-text", `${pMax}/${pMax}`);
+    document.getElementById("battle-log").innerHTML = `<p class="system-message">Rematch starting!</p>`;
     startBattleSimulation(level);
   };
-
-  // Cache level and reset logic on Rematch button
-  const rematchBtnEl = document.getElementById("rematch-battle-btn");
-  if (rematchBtnEl) {
-    rematchBtnEl.onclick = () => {
-      // Reset player HP UI
-      const effStats = getEffectiveStats();
-      document.getElementById("player-hp-bar").style.width = "100%";
-      document.getElementById("player-hp-text").innerText = `${effStats.maxHp}/${effStats.maxHp}`;
-
-      // Reset enemy HP UI
-      document.getElementById("enemy-hp-bar").style.width = "100%";
-      document.getElementById("enemy-hp-text").innerText = `${level.hp}/${level.hp}`;
-
-      // Reset Battle Log
-      const logEl = document.getElementById("battle-log");
-      logEl.innerHTML = `<p class="system-message">Rematch started!</p>`;
-
-      startBattleSimulation(level);
-    };
-  }
 }
 
 function closeBattleModal() {
-  if (activeBattleInterval) {
-    clearInterval(activeBattleInterval);
-    activeBattleInterval = null;
-  }
+  if (activeBattleInterval) { clearInterval(activeBattleInterval); activeBattleInterval = null; }
   document.getElementById("battle-modal").classList.remove("active");
 }
 
@@ -707,314 +1108,440 @@ function initBattleModalControls() {
   document.getElementById("close-battle-btn").addEventListener("click", closeBattleModal);
 }
 
-// Battle Simulation Logic
+// ── SKILL BAR RENDERING ──
+function renderSkillBar() {
+  const bar = document.getElementById("skill-bar");
+  if (!bar || !playerState.class) return;
+  bar.innerHTML = "";
+
+  const classSkills = Object.values(SKILLS).filter(s => s.class === playerState.class);
+  if (classSkills.length === 0) {
+    bar.innerHTML = `<span style="font-size:0.75rem;color:var(--text-muted);">No skills yet — level up to unlock!</span>`;
+    return;
+  }
+
+  classSkills.forEach((skill, i) => {
+    const unlocked = playerState.level >= skill.unlockLevel;
+    const btn = document.createElement("button");
+    btn.className = "skill-btn" + (unlocked ? "" : " skill-btn--locked");
+    btn.id = `skill-btn-${i}`;
+    btn.disabled = !unlocked;
+    btn.title = skill.desc;
+    btn.innerHTML = `
+      <span class="skill-btn-icon">${skill.icon}</span>
+      <span class="skill-btn-name">${skill.name}</span>
+      <span class="skill-cooldown" id="skill-cd-${i}">${unlocked ? skill.manaCost + "🔮" : "Lv " + skill.unlockLevel}</span>`;
+    btn.addEventListener("click", () => handleSkillActivation(skill.id, i));
+    bar.appendChild(btn);
+  });
+}
+
+function updateSkillBar() {
+  const classSkills = Object.values(SKILLS).filter(s => s.class === playerState.class);
+  classSkills.forEach((skill, i) => {
+    const btn = document.getElementById(`skill-btn-${i}`);
+    const cdEl = document.getElementById(`skill-cd-${i}`);
+    if (!btn) return;
+    const unlocked    = playerState.level >= skill.unlockLevel;
+    const onCooldown  = (skillCooldowns[skill.id] || 0) > 0;
+    const hasMana     = currentBattleMana >= skill.manaCost;
+    const inBattle    = !!activeBattleInterval;
+    btn.disabled = !unlocked || onCooldown || !hasMana || !inBattle;
+    if (cdEl) {
+      if (!unlocked)   cdEl.textContent = `Lv ${skill.unlockLevel}`;
+      else if (onCooldown) cdEl.textContent = `${skillCooldowns[skill.id]}⏱`;
+      else             cdEl.textContent = `${skill.manaCost}🔮`;
+    }
+  });
+}
+
+function handleSkillActivation(skillId, btnIndex) {
+  const skill = SKILLS[skillId];
+  if (!skill || !activeBattleInterval) return;
+  if ((skillCooldowns[skillId] || 0) > 0) {
+    showToast(`${skill.name} is on cooldown! (${skillCooldowns[skillId]} rounds)`, "error"); return;
+  }
+  if (currentBattleMana < skill.manaCost) {
+    showToast(`Not enough mana for ${skill.name}!`, "error"); return;
+  }
+
+  currentBattleMana -= skill.manaCost;
+  skillCooldowns[skillId] = skill.cooldown;
+  const effStats = getEffectiveStats();
+
+  switch(skill.effect) {
+    case "shieldWall":
+      battleEffects.blockNextHit = true;
+      appendBattleLog(`🛡️ [${skill.name}] Shield Wall raised! Next hit blocked!`, "skill-activation"); break;
+    case "powerBoost":
+      battleEffects.powerBoostMult = 1.6;
+      battleEffects.powerBoostRounds = 3;
+      appendBattleLog(`⚔️ [${skill.name}] Power boosted by 60% for 3 rounds!`, "skill-activation"); break;
+    case "whirlwind": {
+      const dmg = Math.round(effStats.power * 3);
+      battleEnemyHp = Math.max(0, battleEnemyHp - dmg);
+      updateEnemyHpUI();
+      appendBattleLog(`🌀 [${skill.name}] ${dmg} damage ignoring defense!`, "combat-player-crit");
+      if (battleEnemyHp <= 0) { handleBattleVictory(currentBattleLevel); return; }
+      break;
+    }
+    case "poison":
+      battleEffects.poisonDamage = Math.round(effStats.power * 0.25);
+      battleEffects.poisonRounds = 4;
+      appendBattleLog(`🏹 [${skill.name}] Poisoned! ${battleEffects.poisonDamage}/round for 4 rounds!`, "skill-activation"); break;
+    case "eagleEye":
+      battleEffects.eagleEyeHits = 2;
+      appendBattleLog(`🦅 [${skill.name}] Eagle Eye! Next 2 attacks guaranteed crits!`, "skill-activation"); break;
+    case "rainOfArrows":
+      battleEffects.rainOfArrowsHits = 4;
+      appendBattleLog(`🌧️ [${skill.name}] Rain of Arrows! 4 hits incoming!`, "skill-activation"); break;
+    case "frostNova": {
+      const burstDmg = Math.round(effStats.power * 0.4);
+      battleEffects.stunRounds = 1;
+      battleEnemyHp = Math.max(0, battleEnemyHp - burstDmg);
+      updateEnemyHpUI();
+      appendBattleLog(`❄️ [${skill.name}] ${burstDmg} burst damage + enemy frozen 1 round!`, "combat-player-crit");
+      if (battleEnemyHp <= 0) { handleBattleVictory(currentBattleLevel); return; }
+      break;
+    }
+    case "arcaneSurge": {
+      const surgeDmg = Math.round(effStats.power * 2.5);
+      battleEnemyHp = Math.max(0, battleEnemyHp - surgeDmg);
+      updateEnemyHpUI();
+      appendBattleLog(`✨ [${skill.name}] ${surgeDmg} pure magic damage!`, "combat-player-crit");
+      if (battleEnemyHp <= 0) { handleBattleVictory(currentBattleLevel); return; }
+      break;
+    }
+    case "manaShield":
+      battleEffects.manaShieldAbsorb = Math.round(effStats.maxHp * 0.6);
+      battleEffects.manaShieldRounds = 3;
+      appendBattleLog(`💜 [${skill.name}] Absorbing up to ${battleEffects.manaShieldAbsorb} damage for 3 rounds!`, "skill-activation"); break;
+    case "holyLight": {
+      const healAmt = Math.round(effStats.maxHp * 0.25);
+      battlePlayerHp = Math.min(battlePlayerMaxHp, battlePlayerHp + healAmt);
+      updatePlayerHpUI();
+      appendBattleLog(`✝️ [${skill.name}] Healed for ${healAmt} HP!`, "combat-victory"); break;
+    }
+    case "divineShield":
+      battleEffects.divineShieldRounds = 2;
+      appendBattleLog(`🛡️ [${skill.name}] Divine Shield! All damage blocked for 2 rounds!`, "skill-activation"); break;
+    case "consecration":
+      battleEffects.consecrationDamage = Math.round(effStats.power * 2);
+      battleEffects.consecrationRounds = 2;
+      appendBattleLog(`☀️ [${skill.name}] ${battleEffects.consecrationDamage} holy damage for 2 rounds!`, "skill-activation"); break;
+  }
+
+  if (typeof playSound === "function") playSound("skill");
+  updateBattleManaUI();
+  updateSkillBar();
+}
+
+// ── BATTLE SIMULATION ──
 function startBattleSimulation(level) {
-  const cost = 5 + (level.id - 1) * 2;
-  if (playerState.stamina < cost) {
+  const staminaCost = getStaminaCost(level);
+  if (playerState.stamina < staminaCost) {
     showToast("Not enough stamina! Wait for it to regenerate.", "error");
-    // Ensure close buttons remain clickable
-    document.getElementById("close-battle-modal-btn").style.display = "inline-block";
+    _show("close-battle-modal-btn");
     return;
   }
 
   // Deduct stamina
-  playerState.stamina -= cost;
+  playerState.stamina -= staminaCost;
   playerState.lastStaminaUpdate = Date.now();
-  savePlayerState();
-  renderStats();
+  savePlayerState(); renderStats();
 
-  // Disable close buttons and fight button during battle
-  document.getElementById("start-battle-btn").style.display = "none";
-  document.getElementById("close-battle-modal-btn").style.display = "none";
-  document.getElementById("close-battle-btn").style.display = "none";
-  const rematchBtn = document.getElementById("rematch-battle-btn");
-  if (rematchBtn) rematchBtn.style.display = "none";
-
-  const logEl = document.getElementById("battle-log");
-  logEl.innerHTML = `<p class="system-message">The battle has begun!</p>`;
+  // Reset battle state
+  battleEffects = {
+    blockNextHit: false, powerBoostMult: 1, powerBoostRounds: 0,
+    poisonDamage: 0, poisonRounds: 0, eagleEyeHits: 0,
+    stunRounds: 0, manaShieldAbsorb: 0, manaShieldRounds: 0,
+    rainOfArrowsHits: 0, divineShieldRounds: 0,
+    consecrationDamage: 0, consecrationRounds: 0,
+  };
+  skillCooldowns = {};
+  battleRound = 0;
 
   const effStats = getEffectiveStats();
-  let playerHp = effStats.maxHp;
-  let enemyHp = level.hp;
+  const preset   = CLASS_PRESETS[playerState.class];
+  battleMaxMana     = playerState.maxMana || preset?.mana || 50;
+  currentBattleMana = battleMaxMana;
+  battlePlayerHp    = effStats.maxHp;
+  battlePlayerMaxHp = effStats.maxHp;
+  battleEnemyHp     = level.hp;
+  battleEnemyMaxHp  = level.hp;
+
+  updateBattleManaUI();
+  updatePlayerHpUI();
+  updateEnemyHpUI();
+
+  // UI lock
+  _hide("start-battle-btn");
+  _hide("close-battle-modal-btn");
+  _hide("close-battle-btn");
+  _hide("rematch-battle-btn");
+
+  const playerEl = document.getElementById("player-fighter-el");
+  const enemyEl  = document.getElementById("enemy-fighter-el");
 
   const enemyDodgeChance = 0.02 + level.id * 0.01;
-  const enemyCritChance = 0.05 + level.id * 0.005;
-  const enemyCritDamage = 1.5;
+  const enemyCritChance  = 0.05 + level.id * 0.005;
+  const enemyCritDamage  = 1.5;
 
-  const playerFighterEl = document.querySelector(".player-fighter");
-  const enemyFighterEl = document.querySelector(".enemy-fighter");
+  document.getElementById("battle-log").innerHTML = `<p class="system-message">⚔️ Battle began!</p>`;
+  updateSkillBar();
 
   activeBattleInterval = setInterval(() => {
-    // 1. Player attacks enemy
-    let playerDamage = 0;
-    let attackLogText = "";
-    let isPlayerCrit = false;
-    
-    // Roll dodge
+    battleRound++;
+    const currentEffStats = getEffectiveStats();
+
+    // ── Mana regen ──
+    currentBattleMana = Math.min(battleMaxMana, currentBattleMana + (preset?.manaRegen || 8));
+
+    // ── Cooldown tick ──
+    Object.keys(skillCooldowns).forEach(sid => { if (skillCooldowns[sid] > 0) skillCooldowns[sid]--; });
+
+    // ── Consecration damage ──
+    if (battleEffects.consecrationRounds > 0) {
+      const cDmg = battleEffects.consecrationDamage;
+      battleEnemyHp = Math.max(0, battleEnemyHp - cDmg);
+      appendBattleLog(`☀️ Consecration burns for ${cDmg} holy damage!`, "combat-player-crit");
+      battleEffects.consecrationRounds--;
+      updateEnemyHpUI();
+      if (battleEnemyHp <= 0) { handleBattleVictory(level); return; }
+    }
+
+    // ── Poison tick ──
+    if (battleEffects.poisonRounds > 0) {
+      battleEnemyHp = Math.max(0, battleEnemyHp - battleEffects.poisonDamage);
+      appendBattleLog(`🏹 Poison: ${battleEffects.poisonDamage} damage! (${battleEffects.poisonRounds - 1} rounds left)`, "combat-player-hit");
+      battleEffects.poisonRounds--;
+      updateEnemyHpUI();
+      if (battleEnemyHp <= 0) { handleBattleVictory(level); return; }
+    }
+
+    // ── PLAYER ATTACKS ──
+    let playerDamage = 0, attackLog = "", isPlayerCrit = false;
+    let hitCount = 1, hitMult = 1;
+    if (battleEffects.rainOfArrowsHits > 0) { hitCount = battleEffects.rainOfArrowsHits; hitMult = 0.7; battleEffects.rainOfArrowsHits = 0; }
+
     if (Math.random() < enemyDodgeChance) {
-      attackLogText = `🛡️ ${level.name} dodged your attack!`;
+      attackLog = `🛡️ ${level.name} dodged your attack!`;
     } else {
-      playerDamage = Math.max(1, effStats.power - level.defense);
-      // Roll crit
-      if (Math.random() < effStats.critChance) {
+      let baseDmg = Math.max(1, currentEffStats.power - level.defense) * hitMult;
+      if (battleEffects.powerBoostRounds > 0) { baseDmg *= battleEffects.powerBoostMult; battleEffects.powerBoostRounds--; }
+      const isCrit = battleEffects.eagleEyeHits > 0 || Math.random() < currentEffStats.critChance;
+      if (battleEffects.eagleEyeHits > 0) battleEffects.eagleEyeHits--;
+      if (isCrit) {
         isPlayerCrit = true;
-        playerDamage = Math.round(playerDamage * effStats.critDamage);
-        attackLogText = `💥 CRITICAL HIT! You deal ${playerDamage} damage to ${level.name}!`;
+        playerDamage = Math.round(baseDmg * currentEffStats.critDamage) * hitCount;
+        attackLog = hitCount > 1
+          ? `🌧️ Rain CRITS! ${hitCount} hits for ${playerDamage} total!`
+          : `💥 CRITICAL! You deal ${playerDamage} damage to ${level.name}!`;
       } else {
-        attackLogText = `You deal ${playerDamage} damage to ${level.name}!`;
+        playerDamage = Math.round(baseDmg) * hitCount;
+        attackLog = hitCount > 1
+          ? `🌧️ Rain of Arrows! ${hitCount}× for ${playerDamage} total!`
+          : `You deal ${playerDamage} damage to ${level.name}!`;
       }
     }
-    
-    enemyHp = Math.max(0, enemyHp - playerDamage);
-    
-    // Update enemy HP UI
-    const enemyHpPercent = (enemyHp / level.hp) * 100;
-    document.getElementById("enemy-hp-bar").style.width = `${enemyHpPercent}%`;
-    document.getElementById("enemy-hp-text").innerText = `${enemyHp}/${level.hp}`;
-    
-    // Log player hit
-    appendBattleLog(attackLogText, playerDamage > 0 ? (isPlayerCrit ? "combat-player-crit" : "combat-player-hit") : "system-message");
-    
-    if (playerDamage > 0) {
-      enemyFighterEl.classList.add("shake");
-      setTimeout(() => enemyFighterEl.classList.remove("shake"), 200);
-    }
 
-    if (enemyHp <= 0) {
-      handleBattleVictory(level);
-      return;
-    }
+    battleEnemyHp = Math.max(0, battleEnemyHp - playerDamage);
+    updateEnemyHpUI();
+    appendBattleLog(attackLog, playerDamage > 0 ? (isPlayerCrit ? "combat-player-crit" : "combat-player-hit") : "system-message");
+    if (playerDamage > 0 && enemyEl) { enemyEl.classList.add("shake"); setTimeout(() => enemyEl.classList.remove("shake"), 250); }
+    if (typeof playSound === "function" && playerDamage > 0) playSound(isPlayerCrit ? "critical" : "hit");
+    if (battleEnemyHp <= 0) { handleBattleVictory(level); return; }
 
-    // 2. Enemy attacks player
-    let enemyDamage = 0;
-    let enemyLogText = "";
-    let isEnemyCrit = false;
-    
-    // Roll dodge
-    if (Math.random() < effStats.dodgeChance) {
-      enemyLogText = `🛡️ You dodged ${level.name}'s attack!`;
+    // ── ENEMY ATTACKS ──
+    if (battleEffects.stunRounds > 0) {
+      appendBattleLog(`❄️ ${level.name} is frozen and cannot act!`, "system-message");
+      battleEffects.stunRounds--;
+    } else if (battleEffects.divineShieldRounds > 0) {
+      appendBattleLog(`🛡️ Divine Shield blocks ${level.name}'s attack!`, "system-message");
+      battleEffects.divineShieldRounds--;
+    } else if (battleEffects.blockNextHit) {
+      appendBattleLog(`🛡️ Shield Wall blocks ${level.name}'s attack!`, "system-message");
+      battleEffects.blockNextHit = false;
     } else {
-      enemyDamage = Math.max(1, level.power - effStats.defense);
-      // Roll crit
-      if (Math.random() < enemyCritChance) {
-        isEnemyCrit = true;
-        enemyDamage = Math.round(enemyDamage * enemyCritDamage);
-        enemyLogText = `💥 CRITICAL HIT! ${level.name} strikes you for ${enemyDamage} damage!`;
+      let enemyDamage = 0, enemyLog = "", isEnemyCrit = false;
+      if (Math.random() < currentEffStats.dodgeChance) {
+        enemyLog = `💨 You dodged ${level.name}'s attack!`;
       } else {
-        enemyLogText = `${level.name} strikes you for ${enemyDamage} damage!`;
+        let rawDmg = Math.max(1, level.power - currentEffStats.defense);
+        if (Math.random() < enemyCritChance) {
+          isEnemyCrit = true;
+          rawDmg = Math.round(rawDmg * enemyCritDamage);
+          enemyLog = `💥 CRIT! ${level.name} strikes for ${rawDmg} damage!`;
+        } else {
+          enemyLog = `${level.name} strikes you for ${rawDmg} damage!`;
+        }
+        // Mana shield absorption
+        if (battleEffects.manaShieldRounds > 0 && battleEffects.manaShieldAbsorb > 0) {
+          const absorbed = Math.min(rawDmg, battleEffects.manaShieldAbsorb);
+          rawDmg -= absorbed;
+          battleEffects.manaShieldAbsorb -= absorbed;
+          enemyLog += ` (${absorbed} absorbed!)`;
+          if (battleEffects.manaShieldAbsorb <= 0) battleEffects.manaShieldRounds = 0;
+          else battleEffects.manaShieldRounds--;
+        } else if (battleEffects.manaShieldRounds > 0) {
+          battleEffects.manaShieldRounds--;
+        }
+        enemyDamage = rawDmg;
       }
-    }
-    
-    playerHp = Math.max(0, playerHp - enemyDamage);
 
-    // Update player HP UI
-    const playerHpPercent = (playerHp / effStats.maxHp) * 100;
-    document.getElementById("player-hp-bar").style.width = `${playerHpPercent}%`;
-    document.getElementById("player-hp-text").innerText = `${playerHp}/${effStats.maxHp}`;
-
-    // Log enemy hit
-    appendBattleLog(enemyLogText, enemyDamage > 0 ? (isEnemyCrit ? "combat-enemy-crit" : "combat-enemy-hit") : "system-message");
-    
-    if (enemyDamage > 0) {
-      playerFighterEl.classList.add("shake");
-      setTimeout(() => playerFighterEl.classList.remove("shake"), 200);
+      battlePlayerHp = Math.max(0, battlePlayerHp - enemyDamage);
+      updatePlayerHpUI();
+      appendBattleLog(enemyLog, enemyDamage > 0 ? (isEnemyCrit ? "combat-enemy-crit" : "combat-enemy-hit") : "system-message");
+      if (enemyDamage > 0 && playerEl) { playerEl.classList.add("shake"); setTimeout(() => playerEl.classList.remove("shake"), 250); }
+      if (typeof playSound === "function" && enemyDamage > 0) playSound("enemy_hit");
+      if (battlePlayerHp <= 0) { handleBattleDefeat(); return; }
     }
 
-    if (playerHp <= 0) {
-      handleBattleDefeat();
-      return;
-    }
-  }, 350); // Speed of round: 350ms
+    updateBattleManaUI();
+    updateSkillBar();
+  }, 480);
 }
 
-function appendBattleLog(text, className) {
-  const logEl = document.getElementById("battle-log");
+// ── HP / MANA UI HELPERS ──
+function updatePlayerHpUI() {
+  _setWidth("player-hp-bar", (battlePlayerHp / battlePlayerMaxHp) * 100);
+  _setText("player-hp-text", `${formatNumber(battlePlayerHp)}/${formatNumber(battlePlayerMaxHp)}`);
+}
+function updateEnemyHpUI() {
+  _setWidth("enemy-hp-bar", (battleEnemyHp / battleEnemyMaxHp) * 100);
+  _setText("enemy-hp-text", `${formatNumber(battleEnemyHp)}/${formatNumber(battleEnemyMaxHp)}`);
+}
+function updateBattleManaUI() {
+  _setWidth("battle-mana-bar", (currentBattleMana / battleMaxMana) * 100);
+  _setText("battle-mana-text", `${currentBattleMana}/${battleMaxMana}`);
+}
+
+// ── BATTLE LOG ──
+function appendBattleLog(text, cssClass) {
+  const log = document.getElementById("battle-log");
   const p = document.createElement("p");
-  p.className = className;
-  p.innerText = text;
-  logEl.appendChild(p);
-  logEl.scrollTop = logEl.scrollHeight;
+  p.className = cssClass || "";
+  p.textContent = text;
+  log.appendChild(p);
+  log.scrollTop = log.scrollHeight;
 }
 
-// Victory Handler
+// ── VICTORY ──
 function handleBattleVictory(level) {
   clearInterval(activeBattleInterval);
   activeBattleInterval = null;
 
-  appendBattleLog(`🏆 Victory! You have defeated ${level.name}!`, "combat-victory");
-  showToast(`Level ${level.id} completed! Earned ${level.goldReward}g and ${level.xpReward} XP.`, "success");
+  const isSideZone = typeof level.id === "string";
 
-  // Rewards
-  playerState.gold += level.goldReward;
-  playerState.xp += level.xpReward;
+  appendBattleLog(`🏆 Victory! You defeated ${level.name}!`, "combat-victory");
+  showToast(`⭐ Victory! +${level.gold}g and +${level.xp} XP!`, "success");
+  if (typeof playSound === "function") playSound("victory");
 
-  // Level Up Check
-  if (playerState.xp >= playerState.xpNeeded) {
+  playerState.gold += level.gold;
+  playerState.xp   += level.xp;
+
+  // Level up check
+  while (playerState.xp >= playerState.xpNeeded) {
     playerState.xp -= playerState.xpNeeded;
-    playerState.level += 1;
-    playerState.xpNeeded = Math.round(playerState.xpNeeded * 1.5);
-    playerState.stats.maxHp += 15;
-    playerState.stats.power += 3;
+    playerState.level++;
+    playerState.xpNeeded = Math.round(playerState.xpNeeded * 1.55);
+    playerState.stats.maxHp   += 15;
+    playerState.stats.power   += 3;
     playerState.stats.defense += 2;
-    playerState.stamina = getMaxStamina(playerState.level); // Full restore stamina
+    playerState.stamina = getMaxStamina(playerState.level);
     playerState.lastStaminaUpdate = Date.now();
-    appendBattleLog(`⭐ LEVEL UP! You reached Level ${playerState.level}! Attributes increased.`, "combat-victory");
-    showToast(`Level UP! Reached level ${playerState.level}!`, "info");
+    playerState.skillPoints = (playerState.skillPoints || 0) + 3;
+    appendBattleLog(`⭐ LEVEL UP! Now Level ${playerState.level}! Stats increased. +3 Skill Points!`, "combat-victory");
+    showToast(`⭐ Level ${playerState.level}! +3 Skill Points available!`, "info");
+    if (typeof playSound === "function") playSound("level_up");
   }
 
-  // Progress Unlocks
-  if (level.id === playerState.unlockedLevel && playerState.unlockedLevel < LEVELS.length) {
-    playerState.unlockedLevel += 1;
-    showToast(`Level ${playerState.unlockedLevel} has been unlocked on the map!`, "info");
+  // Unlock next main level
+  if (!isSideZone && level.id === playerState.unlockedLevel && playerState.unlockedLevel < LEVELS.length) {
+    playerState.unlockedLevel++;
+    showToast(`🗺️ Level ${playerState.unlockedLevel} unlocked on the map!`, "info");
+  }
+
+  // Track side zone completion
+  if (isSideZone && !playerState.completedSideZones.includes(level.id)) {
+    playerState.completedSideZones.push(level.id);
   }
 
   checkForLootDrop(level);
-
   savePlayerState();
   renderMap();
   renderStats();
   renderShop();
+  renderSkills();
 
-  // Enable close buttons
-  document.getElementById("close-battle-modal-btn").style.display = "inline-block";
-  document.getElementById("close-battle-btn").style.display = "inline-block";
-  const rematchBtn = document.getElementById("rematch-battle-btn");
-  if (rematchBtn) rematchBtn.style.display = "inline-block";
+  _show("close-battle-modal-btn");
+  _show("close-battle-btn");
+  _show("rematch-battle-btn");
 }
 
-// Defeat Handler
+// ── DEFEAT ──
 function handleBattleDefeat() {
   clearInterval(activeBattleInterval);
   activeBattleInterval = null;
 
   appendBattleLog(`💀 Defeat! You were knocked out...`, "combat-defeat");
-  showToast(`You died! Try upgrading your attributes or getting better gear.`, "error");
+  showToast("💀 Defeated! Upgrade your stats and try again.", "error");
+  if (typeof playSound === "function") playSound("defeat");
 
-  // Enable close buttons
-  document.getElementById("close-battle-modal-btn").style.display = "inline-block";
-  document.getElementById("close-battle-btn").style.display = "inline-block";
-  const rematchBtn = document.getElementById("rematch-battle-btn");
-  if (rematchBtn) rematchBtn.style.display = "inline-block";
+  _show("close-battle-modal-btn");
+  _show("close-battle-btn");
+  _show("rematch-battle-btn");
 }
 
-// Toast System
-function showToast(message, type = "info") {
-  const container = document.getElementById("toast-container");
-  if (!container) return;
-
-  const toast = document.createElement("div");
-  toast.className = `toast ${type}`;
-  toast.innerHTML = `<span>${message}</span>`;
-  
-  container.appendChild(toast);
-
-  // Auto remove after 3.5 seconds
-  setTimeout(() => {
-    toast.style.animation = "slideInRight 0.3s ease reverse";
-    setTimeout(() => {
-      if (toast.parentNode === container) {
-        container.removeChild(toast);
-      }
-    }, 300);
-  }, 3500);
-}
-
-function renderInventory() {
-  const inventoryList = document.getElementById("inventory-list");
-  if (!inventoryList) return;
-
-  inventoryList.innerHTML = "";
-
-  if (!playerState.inventory || playerState.inventory.length === 0) {
-    inventoryList.innerHTML = '<p class="empty-message" style="color: var(--text-muted); text-align: center; padding: 20px;">Your inventory is empty.</p>';
-    return;
-  }
-
-  playerState.inventory.forEach((invItem, index) => {
-    const item = SHOP_ITEMS[invItem.id];
-    if (!item) return;
-
-    const itemEl = document.createElement("div");
-    itemEl.className = "inventory-item";
-    itemEl.innerHTML = `
-      <div class="item-icon">${item.icon}</div>
-      <div class="item-details">
-        <h5>${item.name}</h5>
-        <p>${item.stat === "power" ? "Power" : "Defense"} +${item.value}</p>
-      </div>
-      <div class="inventory-item-actions">
-        <button class="btn-upgrade btn-equip" data-item="${invItem.id}" data-index="${index}">Equip</button>
-        <button class="btn-sell" data-item="${invItem.id}" data-index="${index}">Sell (${Math.round(item.cost * 0.5)}g)</button>
-      </div>
-    `;
-    inventoryList.appendChild(itemEl);
-  });
-}
-
-function equipItemFromInventory(itemId, index) {
-  equipItem(itemId);
-  showToast(`Equipped ${SHOP_ITEMS[itemId].name}!`, "success");
-}
-
-function sellItemFromInventory(itemId, index) {
-  const item = SHOP_ITEMS[itemId];
-  if (!item) return;
-
-  const sellPrice = Math.round(item.cost * 0.5);
-  playerState.gold += sellPrice;
-  
-  playerState.inventory.splice(index, 1);
-
-  savePlayerState();
-  renderStats();
-  renderShop();
-  renderInventory();
-  
-  showToast(`Sold ${item.name} for ${sellPrice}g!`, "success");
-}
-
-// Reset Game state (for testing use or debug console)
-window.resetGame = () => {
-  localStorage.removeItem("rpg_player_state");
-  localStorage.removeItem("rpg_social_friends"); // clear friends too
-  loadPlayerState();
-  renderMap();
-  renderStats();
-  renderShop();
-  renderInventory();
-  showToast("Game state reset to default.", "info");
-};
-
+// ================================================================
+// LOOT SYSTEM
+// ================================================================
 function checkForLootDrop(level) {
-  if (Math.random() < 0.4) {
+  if (Math.random() > 0.45) return; // 45% drop chance
+
+  const isRingDrop = Math.random() < 0.28; // 28% chance for ring
+  if (isRingDrop) {
     let tier = 1;
-    if (level.id >= 4 && level.id <= 7) {
-      tier = 2;
-    } else if (level.id >= 8) {
-      tier = 3;
-    }
+    if (typeof level.id === "number" && level.id >= 6) tier = 2;
+    if (typeof level.id === "number" && level.id >= 16) tier = 3;
+    if (typeof level.id === "string" && level.id.includes("15")) tier = 3;
 
-    const possibleLoot = Object.values(SHOP_ITEMS).filter(item => 
-      item.class === playerState.class && item.tier === tier
-    );
+    const possibleRings = Object.values(RING_ITEMS).filter(r => r.tier === tier);
+    if (!possibleRings.length) return;
+    const loot = possibleRings[Math.floor(Math.random() * possibleRings.length)];
+    const equippedRing = playerState.equipment.ring ? ALL_ITEMS[playerState.equipment.ring] : null;
 
-    if (possibleLoot.length === 0) return;
-
-    const lootItem = possibleLoot[Math.floor(Math.random() * possibleLoot.length)];
-    
-    const equippedItemId = lootItem.type === "weapon" ? playerState.equipment.weapon : playerState.equipment.armor;
-    const equippedItem = equippedItemId ? SHOP_ITEMS[equippedItemId] : null;
-
-    const equippedValue = equippedItem ? equippedItem.value : 0;
-    
-    if (lootItem.value > equippedValue) {
-      pendingLoot = lootItem;
-      showCompareModal(equippedItem, lootItem);
+    if (gameSettings.autoEquip && (!equippedRing || loot.value > equippedRing.value)) {
+      equipLootImmediately(loot);
+      showToast(`💍 Auto-equipped ${loot.name}!`, "success");
     } else {
-      addLootToInventory(lootItem);
-      showToast(`Found loot: ${lootItem.name}! (Sent to inventory)`, "info");
+      pendingLoot = loot;
+      showCompareModal(equippedRing, loot);
+    }
+  } else {
+    let tier = 1;
+    const levelId = typeof level.id === "number" ? level.id : 6;
+    if (levelId >= 4 && levelId <= 10) tier = 2;
+    if (levelId >= 11 && levelId <= 20) tier = 3;
+    if (levelId >= 21 && levelId <= 25) tier = 4;
+    if (levelId >= 26) tier = 5;
+
+    const possible = Object.values(CLASS_ITEMS).filter(i => i.class === playerState.class && i.tier === tier);
+    if (!possible.length) return;
+    const loot = possible[Math.floor(Math.random() * possible.length)];
+    const equipped = loot.type === "weapon" ? playerState.equipment.weapon : playerState.equipment.armor;
+    const equippedItem = equipped ? ALL_ITEMS[equipped] : null;
+
+    if (gameSettings.autoEquip && (!equippedItem || loot.value > equippedItem.value)) {
+      equipLootImmediately(loot);
+      showToast(`🎁 Auto-equipped ${loot.name}!`, "success");
+    } else {
+      pendingLoot = loot;
+      showCompareModal(equippedItem, loot);
     }
   }
+
+  if (typeof playSound === "function") playSound("loot");
 }
 
 function showCompareModal(equippedItem, newLoot) {
@@ -1022,63 +1549,88 @@ function showCompareModal(equippedItem, newLoot) {
   if (!modal) return;
 
   const equippedDetails = document.getElementById("compare-equipped-details");
-  const lootDetails = document.getElementById("compare-loot-details");
-  const statDiff = document.getElementById("compare-stat-diff");
+  const lootDetails     = document.getElementById("compare-loot-details");
+  const statDiff        = document.getElementById("compare-stat-diff");
 
-  if (equippedItem) {
-    equippedDetails.innerHTML = `
-      <div style="font-size: 2.5rem;">${equippedItem.icon}</div>
-      <strong>${equippedItem.name}</strong>
-      <p>${equippedItem.stat === "power" ? "Power" : "Defense"} +${equippedItem.value}</p>
-    `;
-  } else {
-    equippedDetails.innerHTML = `
-      <div style="font-size: 2.5rem; color: var(--text-muted);">❌</div>
-      <strong>None</strong>
-      <p>No item equipped</p>
-    `;
-  }
+  const statFmt = (item) => {
+    if (!item) return "";
+    const s = item.stat.includes("Chance") ? `${Math.round(item.value * 100)}%` : `+${item.value}`;
+    const label = item.stat === "power" ? "Power" : item.stat === "defense" ? "Defense" :
+                  item.stat === "critChance" ? "Crit" : "Dodge";
+    return `${label} ${s}`;
+  };
+
+  equippedDetails.innerHTML = equippedItem ? `
+    <div style="font-size:2rem;">${equippedItem.icon}</div>
+    <strong>${equippedItem.name}</strong>
+    <p>${statFmt(equippedItem)}</p>` : `
+    <div style="font-size:2rem;opacity:0.4;">❌</div>
+    <strong style="color:var(--text-muted);">None</strong>
+    <p>Empty slot</p>`;
 
   lootDetails.innerHTML = `
-    <div style="font-size: 2.5rem;">${newLoot.icon}</div>
-    <strong>${newLoot.name}</strong>
-    <p>${newLoot.stat === "power" ? "Power" : "Defense"} +${newLoot.value}</p>
-  `;
+    <div style="font-size:2rem;">${newLoot.icon}</div>
+    <strong style="color:var(--gold);">${newLoot.name}</strong>
+    <p>${statFmt(newLoot)}</p>`;
 
-  const equippedVal = equippedItem ? equippedItem.value : 0;
-  const diff = newLoot.value - equippedVal;
-  const statName = newLoot.stat === "power" ? "Power" : "Defense";
-
-  statDiff.innerHTML = `${statName} difference: <span class="positive">+${diff}</span>`;
+  const eVal = equippedItem ? equippedItem.value : 0;
+  const diff = newLoot.value - eVal;
+  const label = newLoot.stat.includes("Chance") ? `${Math.round(diff * 100)}%` : diff;
+  const sname = newLoot.stat === "power" ? "Power" : newLoot.stat === "defense" ? "Defense" :
+                newLoot.stat === "critChance" ? "Crit" : "Dodge";
+  statDiff.innerHTML = `${sname} change: <span class="${diff >= 0 ? "positive" : "negative"}">${diff >= 0 ? "+" : ""}${label}</span>`;
 
   modal.classList.add("active");
 }
 
-function equipLootImmediately(lootItem) {
-  equipItem(lootItem.id);
-  showToast(`Equipped ${lootItem.name}!`, "success");
+function equipLootImmediately(loot) {
+  equipItem(loot.id);
+  showToast(`✅ Equipped ${loot.name}!`, "success");
 }
 
-function addLootToInventory(lootItem) {
-  playerState.inventory.push({ id: lootItem.id });
+function addLootToInventory(loot) {
+  playerState.inventory.push({ id: loot.id });
   savePlayerState();
   renderInventory();
 }
 
-// Render avatar with dynamic loading and robust fallback
-function renderAvatar(containerId, imageSrc, emojiAlt) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-
-  if (imageSrc) {
-    container.innerHTML = `
-      <img src="${imageSrc}" alt="${emojiAlt}" class="avatar-img" 
-           style="width: 1.5em; height: 1.5em; object-fit: contain; vertical-align: middle;" 
-           onload="this.style.display='inline-block'; this.nextElementSibling.style.display='none';" 
-           onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
-      <span class="avatar-emoji">${emojiAlt}</span>
-    `;
-  } else {
-    container.innerHTML = `<span class="avatar-emoji">${emojiAlt}</span>`;
-  }
+// ================================================================
+// UTILITY
+// ================================================================
+function formatNumber(n) {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
+  if (n >= 10_000)    return (n / 1_000).toFixed(1) + "K";
+  return Math.round(n).toString();
 }
+
+function showToast(message, type = "info") {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = "toastIn 0.3s ease reverse";
+    setTimeout(() => { if (toast.parentNode === container) container.removeChild(toast); }, 300);
+  }, 3500);
+}
+
+// DOM helpers
+function _setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+function _setWidth(id, pct) { const el = document.getElementById(id); if (el) el.style.width = `${Math.min(100, Math.max(0, pct))}%`; }
+function _setDisabled(id, val) { const el = document.getElementById(id); if (el) el.disabled = val; }
+function _show(id) { const el = document.getElementById(id); if (el) el.style.display = ""; }
+function _hide(id) { const el = document.getElementById(id); if (el) el.style.display = "none"; }
+
+// Reset
+window.resetGame = () => {
+  localStorage.removeItem("rpg_player_state");
+  localStorage.removeItem("rpg_social_friends");
+  if (staminaInterval) clearInterval(staminaInterval);
+  if (activeBattleInterval) clearInterval(activeBattleInterval);
+  playerState = {};
+  loadPlayerState();
+  renderMap(); renderStats(); renderShop(); renderInventory(); renderSkills();
+  showToast("🔄 Game reset.", "info");
+};
