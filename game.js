@@ -39,6 +39,11 @@ const GAMES = {
     src:         'games/aegis-core/index.html',
     themeColor:  '#00f2fe',   // matches in-game neon cyan palette
   },
+  'profita': {
+    title:       'Profita',
+    src:         'games/profita/index.html',
+    themeColor:  '#10b981',   // emerald green — matches in-game primary
+  },
 };
 
 /* ══════════════════════════════════════════════

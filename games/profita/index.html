@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profita: Wealth Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ── Toast Notification Container ── -->
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- ── Welcome / Onboarding Modal ── -->
+    <div id="modal-welcome" class="modal-overlay" aria-modal="true" role="dialog" aria-labelledby="welcome-title">
+        <div class="modal-box">
+            <div class="modal-icon">💰</div>
+            <h2 id="welcome-title">Welcome to Profita</h2>
+            <p class="modal-subtitle">Build your fortune from <strong>$10,000</strong> to <strong>$2,000,000</strong> before age 65.</p>
+            <ul class="onboarding-steps">
+                <li><span class="step-icon">💼</span><span>Pick a <strong>Career</strong> to start earning a salary</span></li>
+                <li><span class="step-icon">📈</span><span>Invest in <strong>Stocks, Crypto & Real Estate</strong></span></li>
+                <li><span class="step-icon">🎓</span><span><strong>Upskill</strong> to earn raises and climb the ladder</span></li>
+                <li><span class="step-icon">⏭️</span><span>Hit <strong>Advance Month</strong> to progress time</span></li>
+            </ul>
+            <button id="btn-welcome-start" class="btn btn-buy btn-modal-primary">
+                Let's Get Rich →
+            </button>
+        </div>
+    </div>
+
+    <!-- ── Game Over Modal ── -->
+    <div id="modal-gameover" class="modal-overlay" hidden aria-modal="true" role="dialog" aria-labelledby="gameover-title">
+        <div class="modal-box">
+            <div id="gameover-icon" class="modal-icon">🏁</div>
+            <h2 id="gameover-title">Retirement!</h2>
+            <p class="modal-subtitle">You've reached age 65.</p>
+            <div class="gameover-stats">
+                <div class="gameover-stat">
+                    <span class="label">Final Net Worth</span>
+                    <span id="gameover-networth" class="value wealth-text">$0</span>
+                </div>
+                <div class="gameover-stat">
+                    <span class="label">Leaderboard Rank</span>
+                    <span id="gameover-rank" class="value">#1</span>
+                </div>
+                <div class="gameover-stat">
+                    <span class="label">Goal Progress</span>
+                    <span id="gameover-goal" class="value">0%</span>
+                </div>
+            </div>
+            <p id="gameover-message" class="modal-message"></p>
+            <button id="btn-gameover-restart" class="btn btn-buy btn-modal-primary">Play Again</button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Top Status Bar -->
+        <header class="status-bar">
+            <div class="status-item">
+                <span class="label">Age</span>
+                <span id="player-age" class="value">22</span>
+            </div>
+            <div class="status-item">
+                <span class="label">Net Worth</span>
+                <span id="player-net-worth" class="value wealth-text">$10,000</span>
+                <span id="player-nw-delta" class="nw-delta"></span>
+            </div>
+            <div class="status-item">
+                <span class="label">Cash Flow</span>
+                <span id="player-cash-flow" class="value cashflow-text">-$1,200/mo</span>
+            </div>
+        </header>
+
+        <!-- Main Content (Tab Panels) -->
+        <main class="main-content">
+
+            <!-- Dashboard Tab -->
+            <section id="tab-dashboard" class="tab-panel active">
+                <h2>Financial Dashboard</h2>
+                <div class="card summary-card">
+                    <div class="metric">
+                        <span class="label">Cash Balance</span>
+                        <span id="metric-cash" class="value">$10,000</span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Total Debt</span>
+                        <span id="metric-debt" class="value">$0</span>
+                    </div>
+                </div>
+
+                <div class="card chart-card">
+                    <h3>Net Worth Growth (Monthly)</h3>
+                    <div class="chart-container">
+                        <svg id="net-worth-chart" viewBox="0 0 500 200" width="100%" height="100%">
+                            <defs>
+                                <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#10b981" stop-opacity="0.3"/>
+                                    <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+                                </linearGradient>
+                            </defs>
+                            <polygon id="chart-fill" fill="url(#chart-gradient)" points="0,200 0,200 500,200"/>
+                            <polyline id="chart-path" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="0,200"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="card goals-card">
+                    <h3>🎯 Retirement Target</h3>
+                    <div class="goal-item">
+                        <div class="goal-header">
+                            <span id="goal-name" class="goal-title">Net Worth Goal</span>
+                            <span id="goal-progress-text" class="goal-value">0% ($0 / $2M)</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="goal-progress-fill" class="progress-bar-fill" style="width: 0%"></div>
+                        </div>
+                        <p id="goal-years-left" class="goal-hint">43 years until retirement</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Career Tab -->
+            <section id="tab-career" class="tab-panel">
+                <h2>Career & Growth</h2>
+                <div class="card current-career-card">
+                    <h3>Current Role: <span id="career-title" class="value">Unemployed</span></h3>
+                    <div class="career-stats">
+                        <div class="metric">
+                            <span class="label">Monthly Salary</span>
+                            <span id="career-salary" class="value">$0</span>
+                        </div>
+                        <div class="metric">
+                            <span class="label">Monthly Expenses</span>
+                            <span id="career-expenses" class="value">$1,200</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card upskilling-card">
+                    <h3>🎓 Up-skilling</h3>
+                    <div id="course-list"><!-- Filled by JS --></div>
+                </div>
+
+                <div class="card job-listings-card">
+                    <h3>📋 Available Careers</h3>
+                    <div id="job-list"><!-- Filled by JS --></div>
+                </div>
+            </section>
+
+            <!-- Assets Tab -->
+            <section id="tab-assets" class="tab-panel">
+                <h2>Investment Markets</h2>
+                <div class="assets-market-grid">
+                    <!-- Stocks -->
+                    <div class="card asset-market-card" id="market-stocks">
+                        <h3>📊 S&P 500 Index</h3>
+                        <div class="market-status">
+                            <span>Price: <strong id="stock-price" class="value">$100.00</strong></span>
+                            <span>Owned: <strong id="stock-owned" class="value">0</strong></span>
+                        </div>
+                        <div id="stock-value-row" class="asset-value-row"></div>
+                        <div class="action-buttons">
+                            <button id="btn-buy-stock" class="btn btn-buy">Buy 1</button>
+                            <button id="btn-sell-stock" class="btn btn-sell">Sell 1</button>
+                        </div>
+                    </div>
+
+                    <!-- Crypto -->
+                    <div class="card asset-market-card" id="market-crypto">
+                        <h3>₿ Crypto (BTC)</h3>
+                        <div class="market-status">
+                            <span>Price: <strong id="crypto-price" class="value">$30,000</strong></span>
+                            <span>Owned: <strong id="crypto-owned" class="value">0</strong></span>
+                        </div>
+                        <div id="crypto-value-row" class="asset-value-row"></div>
+                        <div class="action-buttons">
+                            <button id="btn-buy-crypto" class="btn btn-buy">Buy 0.1</button>
+                            <button id="btn-sell-crypto" class="btn btn-sell">Sell 0.1</button>
+                        </div>
+                    </div>
+
+                    <!-- Bonds -->
+                    <div class="card asset-market-card" id="market-bonds">
+                        <h3>🏛️ Gov. Bonds (3%/yr)</h3>
+                        <div class="market-status">
+                            <span>Yield: <strong>3.0% / yr</strong></span>
+                            <span>Held: <strong id="bonds-held" class="value">$0</strong></span>
+                        </div>
+                        <div class="action-inputs">
+                            <input type="number" id="input-bond-amount" placeholder="Amount ($)" min="100">
+                        </div>
+                        <div class="action-buttons">
+                            <button id="btn-buy-bonds" class="btn btn-buy">Invest</button>
+                            <button id="btn-sell-bonds" class="btn btn-sell">Liquidate</button>
+                        </div>
+                    </div>
+
+                    <!-- Properties -->
+                    <div class="card asset-market-card" id="market-properties">
+                        <h3>🏠 Real Estate Markets</h3>
+                        <div id="property-list"><!-- Filled by JS --></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Leaderboard Tab -->
+            <section id="tab-leaderboard" class="tab-panel">
+                <h2>Social Leaderboard</h2>
+                <div class="card leaderboard-card">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Net Worth</th>
+                                <th>Annual Return</th>
+                                <th>Strategy</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body"><!-- Filled by JS --></tbody>
+                    </table>
+                </div>
+
+                <div class="card share-card">
+                    <h3>🤝 Compare with Friends</h3>
+                    <p>Export your game code and send it to a friend to rank against each other!</p>
+                    <div class="share-actions">
+                        <button id="btn-export-code" class="btn">Export My Code</button>
+                        <input type="text" id="input-import-code" placeholder="Paste friend's code here...">
+                        <button id="btn-import-code" class="btn btn-buy">Import & Rank</button>
+                    </div>
+                    <div id="export-output-container" class="export-box" style="display: none;">
+                        <textarea id="text-export-code" readonly onclick="this.select()"></textarea>
+                        <p class="hint">Copy this code and share it!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Tab -->
+            <section id="tab-settings" class="tab-panel">
+                <h2>Settings</h2>
+                <div class="card api-keys-card">
+                    <h3>🔑 API Keys (Stored Locally)</h3>
+                    <p class="description">Add public API keys to track real asset prices. Leave blank for simulated mode.</p>
+                    <div class="form-group">
+                        <label for="key-alphavantage">Alpha Vantage API Key (Stocks)</label>
+                        <input type="password" id="key-alphavantage" placeholder="Enter API Key">
+                    </div>
+                    <div class="form-group">
+                        <label for="key-coingecko">CoinGecko Demo Key (Crypto)</label>
+                        <input type="password" id="key-coingecko" placeholder="Enter API Key">
+                    </div>
+                    <button id="btn-save-keys" class="btn btn-buy">Save Keys</button>
+                    <span id="settings-status" class="status-msg"></span>
+                </div>
+
+                <div class="card danger-zone-card">
+                    <h3>⚠️ Danger Zone</h3>
+                    <p class="hint" style="margin-bottom:0.75rem">This will erase all progress and cannot be undone.</p>
+                    <button id="btn-reset-game" class="btn btn-danger">Reset Simulator</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="navigation-bar" aria-label="Game navigation">
+            <button class="nav-button active" data-tab="tab-dashboard" id="nav-dashboard">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Dashboard</span>
+            </button>
+            <button class="nav-button" data-tab="tab-career" id="nav-career">
+                <span class="nav-icon">💼</span>
+                <span class="nav-label">Career</span>
+            </button>
+            <button class="nav-button" data-tab="tab-assets" id="nav-assets">
+                <span class="nav-icon">📈</span>
+                <span class="nav-label">Invest</span>
+            </button>
+            <button class="nav-button" data-tab="tab-leaderboard" id="nav-leaderboard">
+                <span class="nav-icon">🏆</span>
+                <span class="nav-label">Rankings</span>
+            </button>
+            <button class="nav-button" data-tab="tab-settings" id="nav-settings">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">Settings</span>
+            </button>
+        </nav>
+
+        <!-- Advance Turn Button (Sticky bottom) -->
+        <div class="action-bar">
+            <button id="btn-advance-month" class="btn-advance">
+                <span class="btn-title">⏭ Advance Month</span>
+                <span id="turn-indicator" class="btn-subtitle">Month 1 (Year 1)</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
