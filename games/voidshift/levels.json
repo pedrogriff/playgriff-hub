@@ -1,0 +1,4380 @@
+[
+  {
+    "id": 1,
+    "name": "Shift 1 (Moves: 1)",
+    "width": 5,
+    "height": 5,
+    "goal": {
+      "x": 2,
+      "y": 0
+    },
+    "target": {
+      "x": 2,
+      "y": 4
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 4,
+        "y": 2,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 2,
+    "name": "Shift 2 (Moves: 1)",
+    "width": 5,
+    "height": 5,
+    "goal": {
+      "x": 2,
+      "y": 4
+    },
+    "target": {
+      "x": 2,
+      "y": 1
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 0,
+        "y": 3,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 3,
+    "name": "Shift 3 (Moves: 2)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 5,
+      "y": 0
+    },
+    "target": {
+      "x": 1,
+      "y": 2
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 2,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 4,
+    "name": "Shift 4 (Moves: 3)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 0,
+      "y": 5
+    },
+    "target": {
+      "x": 4,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 0,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 2,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 5,
+    "name": "Shift 5 (Moves: 1)",
+    "width": 5,
+    "height": 5,
+    "goal": {
+      "x": 4,
+      "y": 2
+    },
+    "target": {
+      "x": 2,
+      "y": 2
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 0,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 2,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 6,
+    "name": "Shift 6 (Moves: 2)",
+    "width": 5,
+    "height": 5,
+    "goal": {
+      "x": 0,
+      "y": 0
+    },
+    "target": {
+      "x": 3,
+      "y": 4
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 2,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 7,
+    "name": "Shift 7 (Moves: 3)",
+    "width": 5,
+    "height": 5,
+    "goal": {
+      "x": 4,
+      "y": 1
+    },
+    "target": {
+      "x": 3,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 1,
+        "y": 2,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 8,
+    "name": "Shift 8 (Moves: 3)",
+    "width": 5,
+    "height": 5,
+    "goal": {
+      "x": 4,
+      "y": 0
+    },
+    "target": {
+      "x": 3,
+      "y": 3
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 1,
+        "y": 3,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 9,
+    "name": "Shift 9 (Moves: 1)",
+    "width": 5,
+    "height": 5,
+    "goal": {
+      "x": 2,
+      "y": 0
+    },
+    "target": {
+      "x": 2,
+      "y": 2
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 4,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 10,
+    "name": "Shift 10 (Moves: 3)",
+    "width": 5,
+    "height": 5,
+    "goal": {
+      "x": 0,
+      "y": 3
+    },
+    "target": {
+      "x": 1,
+      "y": 2
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 1,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 11,
+    "name": "Shift 11 (Moves: 3)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 5,
+      "y": 3
+    },
+    "target": {
+      "x": 4,
+      "y": 1
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 5,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 2,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 5,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 12,
+    "name": "Shift 12 (Moves: 2)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 0,
+      "y": 5
+    },
+    "target": {
+      "x": 4,
+      "y": 1
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 13,
+    "name": "Shift 13 (Moves: 1)",
+    "width": 5,
+    "height": 5,
+    "goal": {
+      "x": 4,
+      "y": 4
+    },
+    "target": {
+      "x": 1,
+      "y": 4
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 0,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 3,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 14,
+    "name": "Shift 14 (Moves: 2)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 0,
+      "y": 5
+    },
+    "target": {
+      "x": 0,
+      "y": 1
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 1,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 2,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 15,
+    "name": "Shift 15 (Moves: 2)",
+    "width": 5,
+    "height": 5,
+    "goal": {
+      "x": 0,
+      "y": 4
+    },
+    "target": {
+      "x": 1,
+      "y": 1
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 2,
+        "y": 2,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 16,
+    "name": "Shift 16 (Moves: 4)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 4,
+      "y": 2
+    },
+    "target": {
+      "x": 1,
+      "y": 3
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 1,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 5,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 17,
+    "name": "Shift 17 (Moves: 4)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 2,
+      "y": 0
+    },
+    "target": {
+      "x": 4,
+      "y": 4
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 2,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 5,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 1,
+          "y": 5
+        },
+        "b": {
+          "x": 5,
+          "y": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Shift 18 (Moves: 5)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 4,
+      "y": 4
+    },
+    "target": {
+      "x": 0,
+      "y": 5
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 4,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 1,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 1,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 5,
+          "y": 1
+        },
+        "b": {
+          "x": 4,
+          "y": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "name": "Shift 19 (Moves: 5)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 4,
+      "y": 4
+    },
+    "target": {
+      "x": 1,
+      "y": 2
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 4,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 2,
+        "y": 4,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 2,
+          "y": 2
+        },
+        "b": {
+          "x": 3,
+          "y": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "name": "Shift 20 (Moves: 4)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 3,
+      "y": 5
+    },
+    "target": {
+      "x": 5,
+      "y": 2
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 5,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 1,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 5,
+        "y": 3,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 5,
+          "y": 4
+        },
+        "b": {
+          "x": 2,
+          "y": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "name": "Shift 21 (Moves: 4)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 5,
+      "y": 4
+    },
+    "target": {
+      "x": 4,
+      "y": 2
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 1,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 22,
+    "name": "Shift 22 (Moves: 5)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 4,
+      "y": 3
+    },
+    "target": {
+      "x": 1,
+      "y": 5
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 1,
+        "y": 2,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 5,
+          "y": 1
+        },
+        "b": {
+          "x": 1,
+          "y": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "name": "Shift 23 (Moves: 4)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 4,
+      "y": 2
+    },
+    "target": {
+      "x": 3,
+      "y": 5
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 1,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 5,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 24,
+    "name": "Shift 24 (Moves: 5)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 3,
+      "y": 4
+    },
+    "target": {
+      "x": 5,
+      "y": 5
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 5,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 5,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 4,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 4,
+          "y": 2
+        },
+        "b": {
+          "x": 2,
+          "y": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Shift 25 (Moves: 4)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 3,
+      "y": 0
+    },
+    "target": {
+      "x": 2,
+      "y": 4
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 2,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 2,
+        "y": 2,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 26,
+    "name": "Shift 26 (Moves: 4)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 0,
+      "y": 1
+    },
+    "target": {
+      "x": 3,
+      "y": 4
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 2,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 1,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 4,
+        "y": 4,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 5,
+          "y": 3
+        },
+        "b": {
+          "x": 5,
+          "y": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "name": "Shift 27 (Moves: 4)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 4,
+      "y": 2
+    },
+    "target": {
+      "x": 5,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 5,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 2,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 28,
+    "name": "Shift 28 (Moves: 6)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 4,
+      "y": 4
+    },
+    "target": {
+      "x": 1,
+      "y": 3
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 5,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 2,
+        "y": 2,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 29,
+    "name": "Shift 29 (Moves: 6)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 2,
+      "y": 4
+    },
+    "target": {
+      "x": 4,
+      "y": 2
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 5,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 2,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 5,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 0,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 30,
+    "name": "Shift 30 (Moves: 4)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 4,
+      "y": 3
+    },
+    "target": {
+      "x": 0,
+      "y": 2
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 5,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 0,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 1,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 2,
+          "y": 1
+        },
+        "b": {
+          "x": 1,
+          "y": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Shift 31 (Moves: 6)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 3,
+      "y": 2
+    },
+    "target": {
+      "x": 3,
+      "y": 5
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 1,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 1,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 3,
+        "y": 3,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 5,
+          "y": 3
+        },
+        "b": {
+          "x": 5,
+          "y": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 32,
+    "name": "Shift 32 (Moves: 5)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 0,
+      "y": 2
+    },
+    "target": {
+      "x": 4,
+      "y": 3
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 2,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 5,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 2,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 1,
+          "y": 1
+        },
+        "b": {
+          "x": 3,
+          "y": 4
+        }
+      }
+    ]
+  },
+  {
+    "id": 33,
+    "name": "Shift 33 (Moves: 5)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 1,
+      "y": 2
+    },
+    "target": {
+      "x": 3,
+      "y": 3
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 1,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 5,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 3,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 34,
+    "name": "Shift 34 (Moves: 5)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 5,
+      "y": 3
+    },
+    "target": {
+      "x": 1,
+      "y": 4
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 1,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 0,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 2,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 35,
+    "name": "Shift 35 (Moves: 5)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 2,
+      "y": 3
+    },
+    "target": {
+      "x": 0,
+      "y": 1
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 4,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 2,
+        "y": 4,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 36,
+    "name": "Shift 36 (Moves: 5)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 2,
+      "y": 0
+    },
+    "target": {
+      "x": 5,
+      "y": 3
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 5,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 5,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 1,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 2,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 1,
+          "y": 3
+        },
+        "b": {
+          "x": 4,
+          "y": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 37,
+    "name": "Shift 37 (Moves: 4)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 0,
+      "y": 2
+    },
+    "target": {
+      "x": 4,
+      "y": 5
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 1,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 2,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 38,
+    "name": "Shift 38 (Moves: 4)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 4,
+      "y": 5
+    },
+    "target": {
+      "x": 5,
+      "y": 1
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 4,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 1,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 0,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 39,
+    "name": "Shift 39 (Moves: 5)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 0,
+      "y": 4
+    },
+    "target": {
+      "x": 4,
+      "y": 5
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 2,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 5,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": []
+  },
+  {
+    "id": 40,
+    "name": "Shift 40 (Moves: 4)",
+    "width": 6,
+    "height": 6,
+    "goal": {
+      "x": 1,
+      "y": 2
+    },
+    "target": {
+      "x": 5,
+      "y": 3
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 1,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 1,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 2,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 1,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 5,
+          "y": 1
+        },
+        "b": {
+          "x": 4,
+          "y": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": 41,
+    "name": "Shift 41 (Moves: 7)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 3,
+      "y": 1
+    },
+    "target": {
+      "x": 6,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 6,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 5,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 6,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 6,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 5,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 5,
+          "y": 5
+        },
+        "b": {
+          "x": 5,
+          "y": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 42,
+    "name": "Shift 42 (Moves: 7)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 1,
+      "y": 3
+    },
+    "target": {
+      "x": 6,
+      "y": 6
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 2,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 6,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 0,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 0,
+          "y": 3
+        },
+        "b": {
+          "x": 5,
+          "y": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": 43,
+    "name": "Shift 43 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 4,
+      "y": 4
+    },
+    "target": {
+      "x": 3,
+      "y": 6
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 0,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 5,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 0,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 3,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 6,
+          "y": 4
+        },
+        "b": {
+          "x": 0,
+          "y": 6
+        }
+      }
+    ]
+  },
+  {
+    "id": 44,
+    "name": "Shift 44 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 3,
+      "y": 3
+    },
+    "target": {
+      "x": 6,
+      "y": 4
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 5,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 1,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 0,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 5,
+        "y": 4,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 3,
+          "y": 2
+        },
+        "b": {
+          "x": 1,
+          "y": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 45,
+    "name": "Shift 45 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 0,
+      "y": 4
+    },
+    "target": {
+      "x": 4,
+      "y": 3
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 0,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 2,
+        "y": 4,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 5,
+          "y": 1
+        },
+        "b": {
+          "x": 0,
+          "y": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": 46,
+    "name": "Shift 46 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 1,
+      "y": 1
+    },
+    "target": {
+      "x": 2,
+      "y": 3
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 6,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 6,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 5,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 3,
+        "y": 2,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 0,
+          "y": 5
+        },
+        "b": {
+          "x": 4,
+          "y": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 47,
+    "name": "Shift 47 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 3,
+      "y": 2
+    },
+    "target": {
+      "x": 5,
+      "y": 5
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 6,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 3,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 4,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 6,
+        "y": 4,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 0,
+          "y": 3
+        },
+        "b": {
+          "x": 2,
+          "y": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": 48,
+    "name": "Shift 48 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 2,
+      "y": 1
+    },
+    "target": {
+      "x": 6,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 4,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 6,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 3,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 3,
+        "y": 4,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 1,
+          "y": 0
+        },
+        "b": {
+          "x": 1,
+          "y": 6
+        }
+      }
+    ]
+  },
+  {
+    "id": 49,
+    "name": "Shift 49 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 2,
+      "y": 3
+    },
+    "target": {
+      "x": 3,
+      "y": 1
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 6,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 3,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 0,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 2,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 5,
+          "y": 5
+        },
+        "b": {
+          "x": 2,
+          "y": 4
+        }
+      }
+    ]
+  },
+  {
+    "id": 50,
+    "name": "Shift 50 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 4,
+      "y": 2
+    },
+    "target": {
+      "x": 6,
+      "y": 6
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 6,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 2,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 0,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 2,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 2,
+          "y": 3
+        },
+        "b": {
+          "x": 6,
+          "y": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": 51,
+    "name": "Shift 51 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 2,
+      "y": 4
+    },
+    "target": {
+      "x": 4,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 6,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 1,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 0,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 6,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 2,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 4,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 3,
+          "y": 4
+        },
+        "b": {
+          "x": 1,
+          "y": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 52,
+    "name": "Shift 52 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 2,
+      "y": 5
+    },
+    "target": {
+      "x": 0,
+      "y": 3
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 4,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 5,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 0,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 2,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 3,
+          "y": 2
+        },
+        "b": {
+          "x": 2,
+          "y": 4
+        }
+      }
+    ]
+  },
+  {
+    "id": 53,
+    "name": "Shift 53 (Moves: 5)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 1,
+      "y": 4
+    },
+    "target": {
+      "x": 6,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 6,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 5,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 6,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 0,
+          "y": 1
+        },
+        "b": {
+          "x": 2,
+          "y": 6
+        }
+      }
+    ]
+  },
+  {
+    "id": 54,
+    "name": "Shift 54 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 5,
+      "y": 4
+    },
+    "target": {
+      "x": 3,
+      "y": 5
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 1,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 2,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 3,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 1,
+        "y": 4,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 4,
+          "y": 2
+        },
+        "b": {
+          "x": 2,
+          "y": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 55,
+    "name": "Shift 55 (Moves: 5)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 4,
+      "y": 5
+    },
+    "target": {
+      "x": 2,
+      "y": 2
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 4,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 2,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 6,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 3,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 6,
+          "y": 3
+        },
+        "b": {
+          "x": 6,
+          "y": 6
+        }
+      }
+    ]
+  },
+  {
+    "id": 56,
+    "name": "Shift 56 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 0,
+      "y": 4
+    },
+    "target": {
+      "x": 4,
+      "y": 6
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 6,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 4,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 1,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 5,
+          "y": 6
+        },
+        "b": {
+          "x": 3,
+          "y": 6
+        }
+      }
+    ]
+  },
+  {
+    "id": 57,
+    "name": "Shift 57 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 5,
+      "y": 2
+    },
+    "target": {
+      "x": 3,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 1,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 2,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 6,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 1,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 3,
+        "y": 6,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 6,
+          "y": 1
+        },
+        "b": {
+          "x": 4,
+          "y": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 58,
+    "name": "Shift 58 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 5,
+      "y": 3
+    },
+    "target": {
+      "x": 4,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 6,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 1,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 3,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 6,
+        "y": 6,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 1,
+          "y": 0
+        },
+        "b": {
+          "x": 2,
+          "y": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": 59,
+    "name": "Shift 59 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 2,
+      "y": 3
+    },
+    "target": {
+      "x": 0,
+      "y": 5
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 0,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 3,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 5,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 6,
+        "y": 6,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 3,
+          "y": 0
+        },
+        "b": {
+          "x": 3,
+          "y": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 60,
+    "name": "Shift 60 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 1,
+      "y": 3
+    },
+    "target": {
+      "x": 4,
+      "y": 6
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 6,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 1,
+        "y": 6,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 5,
+          "y": 1
+        },
+        "b": {
+          "x": 4,
+          "y": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": 61,
+    "name": "Shift 61 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 3,
+      "y": 4
+    },
+    "target": {
+      "x": 6,
+      "y": 2
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 1,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 2,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 2,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 6,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 4,
+          "y": 3
+        },
+        "b": {
+          "x": 4,
+          "y": 4
+        }
+      }
+    ]
+  },
+  {
+    "id": 62,
+    "name": "Shift 62 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 3,
+      "y": 4
+    },
+    "target": {
+      "x": 1,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 6,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 5,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 4,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 5,
+          "y": 3
+        },
+        "b": {
+          "x": 2,
+          "y": 4
+        }
+      }
+    ]
+  },
+  {
+    "id": 63,
+    "name": "Shift 63 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 3,
+      "y": 1
+    },
+    "target": {
+      "x": 5,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 0,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 6,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 5,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 5,
+        "y": 4,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 4,
+          "y": 6
+        },
+        "b": {
+          "x": 0,
+          "y": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 64,
+    "name": "Shift 64 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 5,
+      "y": 3
+    },
+    "target": {
+      "x": 2,
+      "y": 4
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 6,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 1,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 6,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 3,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 4,
+          "y": 2
+        },
+        "b": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": 65,
+    "name": "Shift 65 (Moves: 6)",
+    "width": 7,
+    "height": 7,
+    "goal": {
+      "x": 5,
+      "y": 2
+    },
+    "target": {
+      "x": 0,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 0,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 1,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 3,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 0,
+        "y": 3,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 6,
+          "y": 5
+        },
+        "b": {
+          "x": 0,
+          "y": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 66,
+    "name": "Shift 66 (Moves: 5)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 6,
+      "y": 1
+    },
+    "target": {
+      "x": 7,
+      "y": 5
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 1,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 5,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 4,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 4,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 3,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 2,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 9,
+        "x": 0,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 1,
+          "y": 3
+        },
+        "b": {
+          "x": 5,
+          "y": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": 67,
+    "name": "Shift 67 (Moves: 5)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 3,
+      "y": 0
+    },
+    "target": {
+      "x": 0,
+      "y": 3
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 6,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 1,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 6,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 5,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 1,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 9,
+        "x": 0,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 4,
+          "y": 0
+        },
+        "b": {
+          "x": 4,
+          "y": 3
+        }
+      },
+      {
+        "a": {
+          "x": 2,
+          "y": 3
+        },
+        "b": {
+          "x": 4,
+          "y": 4
+        }
+      }
+    ]
+  },
+  {
+    "id": 68,
+    "name": "Shift 68 (Moves: 4)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 6,
+      "y": 0
+    },
+    "target": {
+      "x": 1,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 4,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 2,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 2,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 7,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 1,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 3,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 2,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 9,
+        "x": 3,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 10,
+        "x": 0,
+        "y": 7,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 3,
+          "y": 0
+        },
+        "b": {
+          "x": 1,
+          "y": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": 69,
+    "name": "Shift 69 (Moves: 4)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 1,
+      "y": 1
+    },
+    "target": {
+      "x": 0,
+      "y": 7
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 3,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 4,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 0,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 2,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 3,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 6,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 9,
+        "x": 3,
+        "y": 6,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 4,
+          "y": 0
+        },
+        "b": {
+          "x": 2,
+          "y": 5
+        }
+      },
+      {
+        "a": {
+          "x": 3,
+          "y": 5
+        },
+        "b": {
+          "x": 5,
+          "y": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": 70,
+    "name": "Shift 70 (Moves: 4)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 6,
+      "y": 4
+    },
+    "target": {
+      "x": 3,
+      "y": 5
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 6,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 2,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 1,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 3,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 1,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 0,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 2,
+          "y": 0
+        },
+        "b": {
+          "x": 2,
+          "y": 5
+        }
+      },
+      {
+        "a": {
+          "x": 7,
+          "y": 7
+        },
+        "b": {
+          "x": 7,
+          "y": 4
+        }
+      }
+    ]
+  },
+  {
+    "id": 71,
+    "name": "Shift 71 (Moves: 4)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 2,
+      "y": 7
+    },
+    "target": {
+      "x": 3,
+      "y": 1
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 7,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 2,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 3,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 5,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 6,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 0,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 6,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 9,
+        "x": 6,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 10,
+        "x": 4,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 11,
+        "x": 6,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 12,
+        "x": 1,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 6,
+          "y": 7
+        },
+        "b": {
+          "x": 7,
+          "y": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 72,
+    "name": "Shift 72 (Moves: 4)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 6,
+      "y": 2
+    },
+    "target": {
+      "x": 6,
+      "y": 6
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 2,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 0,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 7,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 1,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 2,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 2,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 9,
+        "x": 5,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 6,
+          "y": 4
+        },
+        "b": {
+          "x": 7,
+          "y": 7
+        }
+      }
+    ]
+  },
+  {
+    "id": 73,
+    "name": "Shift 73 (Moves: 4)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 6,
+      "y": 7
+    },
+    "target": {
+      "x": 1,
+      "y": 3
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 7,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 1,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 7,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 4,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 7,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 3,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 1,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 0,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 9,
+        "x": 3,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 1,
+          "y": 6
+        },
+        "b": {
+          "x": 2,
+          "y": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": 74,
+    "name": "Shift 74 (Moves: 4)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 0,
+      "y": 1
+    },
+    "target": {
+      "x": 5,
+      "y": 6
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 6,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 4,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 6,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 1,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 2,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 4,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 4,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 3,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 9,
+        "x": 0,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 10,
+        "x": 1,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 11,
+        "x": 2,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 12,
+        "x": 5,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 4,
+          "y": 3
+        },
+        "b": {
+          "x": 2,
+          "y": 0
+        }
+      },
+      {
+        "a": {
+          "x": 3,
+          "y": 3
+        },
+        "b": {
+          "x": 3,
+          "y": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": 75,
+    "name": "Shift 75 (Moves: 4)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 5,
+      "y": 1
+    },
+    "target": {
+      "x": 1,
+      "y": 0
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 6,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 0,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 0,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 5,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 3,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 3,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 1,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 9,
+        "x": 0,
+        "y": 1,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 3,
+          "y": 3
+        },
+        "b": {
+          "x": 5,
+          "y": 6
+        }
+      }
+    ]
+  },
+  {
+    "id": 76,
+    "name": "Shift 76 (Moves: 4)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 7,
+      "y": 0
+    },
+    "target": {
+      "x": 4,
+      "y": 6
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 2,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 2,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 3,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 7,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 0,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 6,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 7,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 9,
+        "x": 4,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 5,
+          "y": 3
+        },
+        "b": {
+          "x": 1,
+          "y": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": 77,
+    "name": "Shift 77 (Moves: 4)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 0,
+      "y": 0
+    },
+    "target": {
+      "x": 4,
+      "y": 7
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 0,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 2,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 7,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 7,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 6,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 4,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 2,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 0,
+        "y": 2,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 0,
+          "y": 6
+        },
+        "b": {
+          "x": 5,
+          "y": 0
+        }
+      },
+      {
+        "a": {
+          "x": 4,
+          "y": 2
+        },
+        "b": {
+          "x": 2,
+          "y": 4
+        }
+      }
+    ]
+  },
+  {
+    "id": 78,
+    "name": "Shift 78 (Moves: 4)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 5,
+      "y": 7
+    },
+    "target": {
+      "x": 2,
+      "y": 2
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 1,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 4,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 7,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 1,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 1,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 0,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 2,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 9,
+        "x": 0,
+        "y": 4,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 4,
+          "y": 7
+        },
+        "b": {
+          "x": 7,
+          "y": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": 79,
+    "name": "Shift 79 (Moves: 4)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 0,
+      "y": 5
+    },
+    "target": {
+      "x": 6,
+      "y": 1
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 2,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 3,
+        "y": 2,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 1,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 7,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 4,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 3,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 4,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 1,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 9,
+        "x": 6,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 10,
+        "x": 2,
+        "y": 1,
+        "type": "obstacle"
+      },
+      {
+        "id": 11,
+        "x": 1,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 12,
+        "x": 3,
+        "y": 5,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 1,
+          "y": 2
+        },
+        "b": {
+          "x": 7,
+          "y": 5
+        }
+      },
+      {
+        "a": {
+          "x": 1,
+          "y": 7
+        },
+        "b": {
+          "x": 4,
+          "y": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": 80,
+    "name": "Shift 80 (Moves: 5)",
+    "width": 8,
+    "height": 8,
+    "goal": {
+      "x": 3,
+      "y": 4
+    },
+    "target": {
+      "x": 7,
+      "y": 2
+    },
+    "blocks": [
+      {
+        "id": 1,
+        "x": 7,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 2,
+        "x": 7,
+        "y": 4,
+        "type": "obstacle"
+      },
+      {
+        "id": 3,
+        "x": 3,
+        "y": 6,
+        "type": "obstacle"
+      },
+      {
+        "id": 4,
+        "x": 7,
+        "y": 3,
+        "type": "obstacle"
+      },
+      {
+        "id": 5,
+        "x": 3,
+        "y": 5,
+        "type": "obstacle"
+      },
+      {
+        "id": 6,
+        "x": 5,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 7,
+        "x": 6,
+        "y": 7,
+        "type": "obstacle"
+      },
+      {
+        "id": 8,
+        "x": 4,
+        "y": 0,
+        "type": "obstacle"
+      },
+      {
+        "id": 9,
+        "x": 5,
+        "y": 0,
+        "type": "obstacle"
+      }
+    ],
+    "portals": [
+      {
+        "a": {
+          "x": 6,
+          "y": 0
+        },
+        "b": {
+          "x": 1,
+          "y": 2
+        }
+      },
+      {
+        "a": {
+          "x": 0,
+          "y": 1
+        },
+        "b": {
+          "x": 2,
+          "y": 6
+        }
+      }
+    ]
+  }
+]
