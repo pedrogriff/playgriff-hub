@@ -21,7 +21,7 @@
 const GAMES = {
   'neon-drift': {
     title:       'Neon Drift',
-    src:         'games/neon-drift/index.html',
+    src:         'games/neon_drift/index.html',
     themeColor:  '#7c3aed',
   },
   'ember-keep': {
@@ -36,7 +36,7 @@ const GAMES = {
   },
   'aegis-core': {
     title:       'Aegis Core',
-    src:         'games/aegis-core/index.html',
+    src:         'games/aegis_core/index.html',
     themeColor:  '#00f2fe',   // matches in-game neon cyan palette
   },
   'profita': {
