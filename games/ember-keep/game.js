@@ -1,4 +1,4 @@
-// ================================================================
+﻿// ================================================================
 // EMBER KEEP — Core Game Logic (Phase 1)
 // ================================================================
 
@@ -312,6 +312,7 @@ function initSettingsModal() {
   const closeBtn1   = document.getElementById("close-settings-btn");
   const closeBtn2   = document.getElementById("close-settings-footer-btn");
   const resetBtn    = document.getElementById("reset-game-btn");
+  const newCharBtn  = document.getElementById("new-char-btn");
   const soundToggle = document.getElementById("sound-toggle");
   const autoToggle  = document.getElementById("auto-equip-toggle");
   const modal       = document.getElementById("settings-modal");
@@ -322,6 +323,12 @@ function initSettingsModal() {
   if (resetBtn)    resetBtn.addEventListener("click", () => {
     if (confirm("Reset all progress? This cannot be undone.")) {
       window.resetGame();
+      modal.classList.remove("active");
+    }
+  });
+  if (newCharBtn) newCharBtn.addEventListener("click", () => {
+    if (confirm("Start a new character? Your current hero will be lost.")) {
+      window.newCharacter();
       modal.classList.remove("active");
     }
   });
@@ -1632,5 +1639,19 @@ window.resetGame = () => {
   playerState = {};
   loadPlayerState();
   renderMap(); renderStats(); renderShop(); renderInventory(); renderSkills();
-  showToast("🔄 Game reset.", "info");
+  showToast("\uD83D\uDD04 Game reset.", "info");
+};
+
+// New character -- resets character state only, keeps settings & social
+window.newCharacter = () => {
+  if (staminaInterval) clearInterval(staminaInterval);
+  if (activeBattleInterval) clearInterval(activeBattleInterval);
+  playerState = JSON.parse(JSON.stringify(DEFAULT_PLAYER_STATE));
+  playerState.lastStaminaUpdate = Date.now();
+  savePlayerState();
+  const nameInput = document.getElementById('hero-name-input');
+  if (nameInput) nameInput.value = '';
+  checkClassSelection();
+  renderMap(); renderShop(); renderInventory(); renderSkills();
+  showToast('Create your new hero!', 'info');
 };
