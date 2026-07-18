@@ -320,18 +320,45 @@ function initSettingsModal() {
   if (settingsBtn) settingsBtn.addEventListener("click", () => modal.classList.add("active"));
   if (closeBtn1)   closeBtn1.addEventListener("click", () => modal.classList.remove("active"));
   if (closeBtn2)   closeBtn2.addEventListener("click", () => modal.classList.remove("active"));
-  if (resetBtn)    resetBtn.addEventListener("click", () => {
-    if (confirm("Reset all progress? This cannot be undone.")) {
-      window.resetGame();
-      modal.classList.remove("active");
-    }
-  });
-  if (newCharBtn) newCharBtn.addEventListener("click", () => {
-    if (confirm("Start a new character? Your current hero will be lost.")) {
-      window.newCharacter();
-      modal.classList.remove("active");
-    }
-  });
+  let resetConfirmTimeout = null;
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      if (resetBtn.dataset.confirming === "true") {
+        clearTimeout(resetConfirmTimeout);
+        resetBtn.dataset.confirming = "false";
+        resetBtn.textContent = "🗑️ Reset All Progress";
+        window.resetGame();
+        modal.classList.remove("active");
+      } else {
+        resetBtn.dataset.confirming = "true";
+        resetBtn.textContent = "⚠️ Confirm Reset?";
+        resetConfirmTimeout = setTimeout(() => {
+          resetBtn.dataset.confirming = "false";
+          resetBtn.textContent = "🗑️ Reset All Progress";
+        }, 3000);
+      }
+    });
+  }
+
+  let newCharConfirmTimeout = null;
+  if (newCharBtn) {
+    newCharBtn.addEventListener("click", () => {
+      if (newCharBtn.dataset.confirming === "true") {
+        clearTimeout(newCharConfirmTimeout);
+        newCharBtn.dataset.confirming = "false";
+        newCharBtn.textContent = "🧙 New Character";
+        window.newCharacter();
+        modal.classList.remove("active");
+      } else {
+        newCharBtn.dataset.confirming = "true";
+        newCharBtn.textContent = "⚠️ Confirm New Hero?";
+        newCharConfirmTimeout = setTimeout(() => {
+          newCharBtn.dataset.confirming = "false";
+          newCharBtn.textContent = "🧙 New Character";
+        }, 3000);
+      }
+    });
+  }
   if (soundToggle) {
     soundToggle.checked = gameSettings.sound;
     soundToggle.addEventListener("change", () => {
