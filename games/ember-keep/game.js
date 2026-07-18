@@ -1,4 +1,4 @@
-﻿// ================================================================
+// ================================================================
 // EMBER KEEP — Core Game Logic (Phase 1)
 // ================================================================
 
@@ -1290,8 +1290,9 @@ function startBattleSimulation(level) {
   const playerEl = document.getElementById("player-fighter-el");
   const enemyEl  = document.getElementById("enemy-fighter-el");
 
-  const enemyDodgeChance = 0.02 + level.id * 0.01;
-  const enemyCritChance  = 0.05 + level.id * 0.005;
+  const numericId = typeof level.id === "number" ? level.id : (level.botLevel || 1);
+  const enemyDodgeChance = 0.02 + numericId * 0.01;
+  const enemyCritChance  = 0.05 + numericId * 0.005;
   const enemyCritDamage  = 1.5;
 
   document.getElementById("battle-log").innerHTML = `<p class="system-message">⚔️ Battle began!</p>`;
@@ -1438,7 +1439,7 @@ function handleBattleVictory(level) {
   clearInterval(activeBattleInterval);
   activeBattleInterval = null;
 
-  const isSideZone = typeof level.id === "string";
+  const isSideZone = typeof level.id === "string" && !level.isBotDuel;
 
   appendBattleLog(`🏆 Victory! You defeated ${level.name}!`, "combat-victory");
   showToast(`⭐ Victory! +${level.gold}g and +${level.xp} XP!`, "success");
@@ -1446,6 +1447,19 @@ function handleBattleVictory(level) {
 
   playerState.gold += level.gold;
   playerState.xp   += level.xp;
+
+  if (level.isBotDuel) {
+    if (typeof window.getFriendById === "function" && typeof window.updateFriendPower === "function") {
+      const bot = window.getFriendById(level.id);
+      if (bot) {
+        const powerLoss = Math.round(bot.power * 0.05);
+        const newPower = Math.max(10, bot.power - powerLoss);
+        window.updateFriendPower(bot.id, newPower);
+        appendBattleLog(`🏆 Duel Won! ${bot.name}'s power rating reduced by -5% (-${powerLoss} PR)!`, "combat-victory");
+        showToast(`🏆 Duel Won! Reduced bot's power!`, "success");
+      }
+    }
+  }
 
   // Level up check
   while (playerState.xp >= playerState.xpNeeded) {
@@ -1509,8 +1523,9 @@ function checkForLootDrop(level) {
   const isRingDrop = Math.random() < 0.28; // 28% chance for ring
   if (isRingDrop) {
     let tier = 1;
-    if (typeof level.id === "number" && level.id >= 6) tier = 2;
-    if (typeof level.id === "number" && level.id >= 16) tier = 3;
+    const refId = typeof level.id === "number" ? level.id : (level.botLevel || 1);
+    if (refId >= 6 && refId < 16) tier = 2;
+    if (refId >= 16) tier = 3;
     if (typeof level.id === "string" && level.id.includes("15")) tier = 3;
 
     const possibleRings = Object.values(RING_ITEMS).filter(r => r.tier === tier);
@@ -1527,7 +1542,7 @@ function checkForLootDrop(level) {
     }
   } else {
     let tier = 1;
-    const levelId = typeof level.id === "number" ? level.id : 6;
+    const levelId = typeof level.id === "number" ? level.id : (level.botLevel || 6);
     if (levelId >= 4 && levelId <= 10) tier = 2;
     if (levelId >= 11 && levelId <= 20) tier = 3;
     if (levelId >= 21 && levelId <= 25) tier = 4;
@@ -1634,24 +1649,62 @@ function _hide(id) { const el = document.getElementById(id); if (el) el.style.di
 window.resetGame = () => {
   localStorage.removeItem("rpg_player_state");
   localStorage.removeItem("rpg_social_friends");
-  if (staminaInterval) clearInterval(staminaInterval);
-  if (activeBattleInterval) clearInterval(activeBattleInterval);
-  playerState = {};
-  loadPlayerState();
-  renderMap(); renderStats(); renderShop(); renderInventory(); renderSkills();
-  showToast("\uD83D\uDD04 Game reset.", "info");
+  window.location.reload();
 };
 
 // New character -- resets character state only, keeps settings & social
 window.newCharacter = () => {
-  if (staminaInterval) clearInterval(staminaInterval);
-  if (activeBattleInterval) clearInterval(activeBattleInterval);
-  playerState = JSON.parse(JSON.stringify(DEFAULT_PLAYER_STATE));
-  playerState.lastStaminaUpdate = Date.now();
-  savePlayerState();
-  const nameInput = document.getElementById('hero-name-input');
-  if (nameInput) nameInput.value = '';
-  checkClassSelection();
-  renderMap(); renderShop(); renderInventory(); renderSkills();
-  showToast('Create your new hero!', 'info');
+  localStorage.removeItem("rpg_player_state");
+  window.location.reload();
+};
+
+window.startPvPDuel = (botId) => {
+  if (typeof window.getFriendById !== "function") return;
+  const bot = window.getFriendById(botId);
+  if (!bot) return;
+
+  const P = bot.power;
+  const C = bot.class || "Warrior";
+
+  // Calculate bot stats based on class and power rating
+  let powerVal = 0, defVal = 0, hpVal = 0;
+  if (C === "Warrior") {
+    powerVal = P * 0.15;
+    defVal = P * 0.133;
+    hpVal = P * 5.0;
+  } else if (C === "Mage") {
+    powerVal = P * 0.25;
+    defVal = P * 0.053;
+    hpVal = P * 4.2;
+  } else if (C === "Ranger") {
+    powerVal = P * 0.20;
+    defVal = P * 0.080;
+    hpVal = P * 4.8;
+  } else if (C === "Paladin") {
+    powerVal = P * 0.13;
+    defVal = P * 0.160;
+    hpVal = P * 5.0;
+  } else {
+    // Default fallback
+    powerVal = P * 0.18;
+    defVal = P * 0.100;
+    hpVal = P * 4.5;
+  }
+
+  const mockLevel = {
+    id: bot.id,
+    name: `${bot.name} (${C})`,
+    avatar: CLASS_PRESETS[C]?.avatar || "🤖",
+    hp: Math.round(hpVal),
+    power: Math.round(powerVal),
+    defense: Math.round(defVal),
+    gold: Math.round(P * 0.15),
+    xp: Math.round(P * 0.10),
+    suggested: P,
+    staminaCost: 10,
+    isBotDuel: true,
+    botLevel: bot.level,
+  };
+
+  openBattleModal(mockLevel);
 };

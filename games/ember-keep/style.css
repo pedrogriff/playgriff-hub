@@ -950,6 +950,31 @@ body {
 .leaderboard-table tr.current-player { background: rgba(255,215,0,0.06); border-left: 3px solid var(--gold); }
 .leaderboard-table tr:last-child td { border-bottom: none; }
 
+.btn-challenge {
+  background: linear-gradient(135deg, var(--ember-dim), var(--ember));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.7rem;
+  border: none;
+  padding: 4px 8px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  float: right;
+  min-height: 24px;
+}
+.btn-challenge:hover {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+}
+.btn-challenge:disabled {
+  background: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* ================================================================
    MODALS
    ================================================================ */

@@ -119,6 +119,19 @@
     renderLeaderboard();
   };
 
+  window.getFriendById = function(id) {
+    return friends.find(f => f.id === id);
+  };
+
+  window.updateFriendPower = function(id, newPower) {
+    const friend = friends.find(f => f.id === id);
+    if (friend) {
+      friend.power = newPower;
+      saveFriends();
+      renderLeaderboard();
+    }
+  };
+
   // ── Render leaderboard ──
   function renderLeaderboard() {
     const tbody = document.getElementById("leaderboard-body");
@@ -126,7 +139,9 @@
 
     // Build combined list with player
     const allEntries = friends.map(f => ({
+      id:       f.id,
       name:     f.name,
+      class:    f.class,
       level:    f.level,
       power:    f.power,
       isPlayer: false,
@@ -138,13 +153,14 @@
         ? getPlayerPowerRating(playerState)
         : playerState.stats?.power || 0;
       allEntries.push({
+        id:       "player",
         name:     playerState.name || "You",
         level:    playerState.level || 1,
         power:    pr,
         isPlayer: true,
       });
     } else {
-      allEntries.push({ name:"You", level:1, power:0, isPlayer:true });
+      allEntries.push({ id:"player", name:"You", level:1, power:0, isPlayer:true });
     }
 
     allEntries.sort((a, b) => b.power - a.power);
@@ -155,11 +171,17 @@
       const rankEmoji = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
       const tr = document.createElement("tr");
       if (entry.isPlayer) tr.classList.add("current-player");
+      
+      const actionHtml = entry.isPlayer 
+        ? `<span style="color: var(--text-muted); opacity: 0.5;">-</span>`
+        : `<button class="btn-challenge" data-bot-id="${entry.id}">⚔️ Duel</button>`;
+
       tr.innerHTML = `
         <td>${rankEmoji}</td>
         <td>${entry.isPlayer ? `<strong>${entry.name}</strong> (You)` : entry.name}</td>
         <td>Lv.${entry.level}</td>
-        <td>${typeof formatNumber === "function" ? formatNumber(entry.power) : entry.power}</td>`;
+        <td>${typeof formatNumber === "function" ? formatNumber(entry.power) : entry.power}</td>
+        <td style="text-align: right;">${actionHtml}</td>`;
       tbody.appendChild(tr);
     });
   }
@@ -168,6 +190,20 @@
   function initSocialControls() {
     const input  = document.getElementById("friend-username-input");
     const addBtn = document.getElementById("add-friend-btn");
+    const tbody  = document.getElementById("leaderboard-body");
+
+    if (tbody) {
+      tbody.addEventListener("click", (e) => {
+        const btn = e.target.closest(".btn-challenge");
+        if (btn) {
+          const botId = btn.dataset.botId;
+          if (typeof window.startPvPDuel === "function") {
+            window.startPvPDuel(botId);
+          }
+        }
+      });
+    }
+
     if (!addBtn) return;
 
     addBtn.addEventListener("click", () => {
