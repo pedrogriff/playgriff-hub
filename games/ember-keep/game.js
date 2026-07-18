@@ -1102,7 +1102,7 @@ function initShopButtons() {
     const btn = e.target.closest(".btn-buy");
     if (btn && !btn.disabled) buyItem(btn.dataset.item);
   };
-  ["shop-weapons-container","shop-armor-container","shop-rings-container"].forEach(id => {
+    ["shop-weapons-container","shop-armor-container","shop-rings-container","shop-consumables-container"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("click", handleBuy);
   });
