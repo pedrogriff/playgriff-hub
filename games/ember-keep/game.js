@@ -150,7 +150,25 @@ const RING_ITEMS = {
   ring_10:{ id:"ring_10",class:null, type:"ring", name:"Aegis Pendant",      stat:"defense",     value:30,   cost:5000, icon:"🏺", tier:5 },
 };
 
-const ALL_ITEMS = { ...CLASS_ITEMS, ...RING_ITEMS };
+const CONSUMABLE_ITEMS = {
+  potion_minor_hp: { id:"potion_minor_hp", type:"consumable", name:"Minor Health Potion", stat:"restoreHp", value:50, cost:20, icon:"🧪", tier:1, desc:"Restores 50 HP." },
+  potion_major_hp: { id:"potion_major_hp", type:"consumable", name:"Major Health Potion", stat:"restoreHp", value:150, cost:60, icon:"🍷", tier:2, desc:"Restores 150 HP." },
+};
+
+const MATERIAL_ITEMS = {
+  mat_herb:  { id:"mat_herb", type:"material", name:"Healing Herb", cost:5, icon:"🌿", tier:1, desc:"Used for crafting." },
+  mat_vial:  { id:"mat_vial", type:"material", name:"Empty Vial", cost:5, icon:"🫙", tier:1, desc:"Used for crafting." },
+  mat_shard: { id:"mat_shard", type:"material", name:"Magic Shard", cost:15, icon:"🔮", tier:2, desc:"Used for crafting." },
+};
+
+const CRAFTING_RECIPES = [
+  { id: "recipe_minor_hp", resultId: "potion_minor_hp", name: "Craft Minor Health Potion", cost: 10,
+    ingredients: [{ id: "mat_herb", qty: 1 }, { id: "mat_vial", qty: 1 }] },
+  { id: "recipe_major_hp", resultId: "potion_major_hp", name: "Craft Major Health Potion", cost: 25,
+    ingredients: [{ id: "mat_herb", qty: 3 }, { id: "mat_shard", qty: 1 }, { id: "mat_vial", qty: 1 }] }
+];
+
+const ALL_ITEMS = { ...CLASS_ITEMS, ...RING_ITEMS, ...CONSUMABLE_ITEMS, ...MATERIAL_ITEMS };
 
 // Skill point upgrade options
 const SP_OPTIONS = [
@@ -178,6 +196,7 @@ const DEFAULT_PLAYER_STATE = {
   maxMana: 50,
   skillPoints: 0,
   stats: { maxHp:100, power:10, defense:5, critChance:0.05, critDamage:1.5, dodgeChance:0.05 },
+  currentHp: 100,
   upgrades: { hpLevel:0, powerLevel:0, defenseLevel:0 },
   equipment: { weapon:null, armor:null, ring:null },
   inventory: [],
@@ -220,11 +239,14 @@ document.addEventListener("DOMContentLoaded", () => {
   renderShop();
   renderInventory();
   renderSkills();
+  renderMaterials();
+  renderForge();
   initUpgradeButtons();
   initShopButtons();
   initBattleModalControls();
   initClassSelectionControls();
   initInventoryControls();
+  initForgeControls();
   initCompareModalControls();
   initSettingsModal();
   initSkillPointModal();
@@ -280,6 +302,8 @@ function initInventoryControls() {
       equipItemFromInventory(e.target.dataset.item, parseInt(e.target.dataset.index));
     } else if (e.target.classList.contains("btn-sell")) {
       sellItemFromInventory(e.target.dataset.item, parseInt(e.target.dataset.index));
+    } else if (e.target.classList.contains("btn-use")) {
+      useConsumableFromInventory(e.target.dataset.item, parseInt(e.target.dataset.index));
     }
   });
 }
@@ -432,10 +456,17 @@ function recoverOfflineStamina() {
   const now = Date.now();
   const elapsed = now - (playerState.lastStaminaUpdate || now);
   const maxStam = getMaxStamina(playerState.level);
-  if (playerState.stamina < maxStam && elapsed > 0) {
+  const effStats = getEffectiveStats();
+  if (elapsed > 0) {
     const recovered = Math.floor(elapsed / STAMINA_REGEN_MS);
     if (recovered > 0) {
       playerState.stamina = Math.min(maxStam, playerState.stamina + recovered);
+      
+      const hpRegenRate = Math.max(1, Math.floor(effStats.maxHp * 0.01));
+      if (playerState.currentHp < effStats.maxHp) {
+        playerState.currentHp = Math.min(effStats.maxHp, playerState.currentHp + (hpRegenRate * recovered));
+      }
+      
       playerState.lastStaminaUpdate += recovered * STAMINA_REGEN_MS;
       savePlayerState();
     }
@@ -447,8 +478,20 @@ function startStaminaTicker() {
   staminaInterval = setInterval(() => {
     if (!playerState.class) return;
     const maxStam = getMaxStamina(playerState.level);
+    const effStats = getEffectiveStats();
+    let changed = false;
+
     if (playerState.stamina < maxStam) {
       playerState.stamina++;
+      changed = true;
+    }
+    if (playerState.currentHp < effStats.maxHp) {
+      const hpRegenRate = Math.max(1, Math.floor(effStats.maxHp * 0.01));
+      playerState.currentHp = Math.min(effStats.maxHp, playerState.currentHp + hpRegenRate);
+      changed = true;
+    }
+
+    if (changed) {
       playerState.lastStaminaUpdate = Date.now();
       savePlayerState();
       renderStats();
@@ -702,7 +745,7 @@ function renderStats() {
   if (preset) renderAvatar("char-avatar-container", preset.image, preset.avatar);
 
   // Stats
-  _setText("stat-hp",      `${effStats.maxHp}/${effStats.maxHp}`);
+  _setText("stat-hp",      `${Math.floor(playerState.currentHp)}/${effStats.maxHp}`);
   _setText("stat-power",   `${effStats.power} (+${effStats.power - playerState.stats.power})`);
   _setText("stat-defense", `${effStats.defense} (+${effStats.defense - playerState.stats.defense})`);
   _setText("stat-crit",    `${Math.round(effStats.critChance * 100)}%`);
@@ -741,11 +784,13 @@ function renderShop() {
   const weaponsCont = document.getElementById("shop-weapons-container");
   const armorCont   = document.getElementById("shop-armor-container");
   const ringsCont   = document.getElementById("shop-rings-container");
+  const consCont    = document.getElementById("shop-consumables-container");
   if (!weaponsCont || !armorCont || !ringsCont) return;
 
   weaponsCont.innerHTML = "";
   armorCont.innerHTML   = "";
   ringsCont.innerHTML   = "";
+  if (consCont) consCont.innerHTML = "";
 
   // Class-specific weapons and armor
   Object.values(CLASS_ITEMS).forEach(item => {
@@ -759,6 +804,11 @@ function renderShop() {
   Object.values(RING_ITEMS).forEach(item => {
     ringsCont.appendChild(createShopItemEl(item));
   });
+
+  // Consumables
+  Object.values(CONSUMABLE_ITEMS).forEach(item => {
+    if (consCont) consCont.appendChild(createShopItemEl(item));
+  });
 }
 
 function createShopItemEl(item) {
@@ -766,12 +816,14 @@ function createShopItemEl(item) {
   const isArmorEquipped  = playerState.equipment.armor  === item.id;
   const isRingEquipped   = playerState.equipment.ring   === item.id;
   const isEquipped = isWeaponEquipped || isArmorEquipped || isRingEquipped;
-  const isOwned    = isEquipped || playerState.inventory.some(i => i.id === item.id);
+  
+  const isConsumable = item.type === "consumable";
+  const isOwned = !isConsumable && (isEquipped || playerState.inventory.some(i => i.id === item.id));
 
   const tierLabels = ["","★","★★","★★★","★★★★","★★★★★"];
-  const statLabel = item.stat === "power" ? "Power" : item.stat === "defense" ? "Defense" :
+  const statLabel = isConsumable ? "" : item.stat === "power" ? "Power" : item.stat === "defense" ? "Defense" :
                     item.stat === "critChance" ? "Crit" : "Dodge";
-  const statValue = item.stat.includes("Chance") ? `+${Math.round(item.value * 100)}%` : `+${item.value}`;
+  const statValue = isConsumable ? item.desc : item.stat.includes("Chance") ? `+${Math.round(item.value * 100)}%` : `+${item.value}`;
 
   const el = document.createElement("div");
   el.className = "shop-item";
@@ -822,31 +874,165 @@ function renderSkills() {
   });
 }
 
-// ── INVENTORY ──
+// ── FORGE ──
+function renderMaterials() {
+  const list = document.getElementById("materials-list");
+  if (!list) return;
+  list.innerHTML = "";
+  
+  const materials = (playerState.inventory || []).filter(inv => {
+    const item = ALL_ITEMS[inv.id];
+    return item && item.type === "material";
+  });
+  
+  if (!materials.length) {
+    list.innerHTML = `<p class="empty-message">You have no materials.</p>`;
+    return;
+  }
+  
+  materials.forEach((inv) => {
+    const item = ALL_ITEMS[inv.id];
+    const qtyStr = (inv.qty && inv.qty > 1) ? ` (x${inv.qty})` : "";
+    const el = document.createElement("div");
+    el.className = "inventory-item";
+    el.innerHTML = `
+      <div class="item-icon">${item.icon}</div>
+      <div class="item-details"><h5>${item.name}${qtyStr}</h5><p>${item.desc}</p></div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function renderForge() {
+  const list = document.getElementById("crafting-list");
+  if (!list) return;
+  list.innerHTML = "";
+  
+  CRAFTING_RECIPES.forEach(recipe => {
+    const resultItem = ALL_ITEMS[recipe.resultId];
+    if (!resultItem) return;
+    
+    // Check ingredients
+    let canCraft = true;
+    let reqHtml = recipe.ingredients.map(ing => {
+      const mat = ALL_ITEMS[ing.id];
+      const invItem = playerState.inventory.find(i => i.id === ing.id);
+      const hasQty = invItem ? (invItem.qty || 1) : 0;
+      const hasEnough = hasQty >= ing.qty;
+      if (!hasEnough) canCraft = false;
+      return `<span style="color: ${hasEnough ? 'var(--gold)' : 'red'};">${mat.name} x${ing.qty} (${hasQty})</span>`;
+    }).join("<br>");
+    
+    if (playerState.gold < recipe.cost) canCraft = false;
+    
+    const el = document.createElement("div");
+    el.className = "inventory-item";
+    el.style.alignItems = "center";
+    el.innerHTML = `
+      <div class="item-icon">${resultItem.icon}</div>
+      <div class="item-details">
+        <h5>${recipe.name}</h5>
+        <p style="font-size: 0.8rem;">Requires:<br>${reqHtml}</p>
+      </div>
+      <div class="inventory-item-actions">
+        <button class="btn-upgrade btn-craft" data-recipe="${recipe.id}" ${canCraft ? "" : "disabled"}>Craft ${recipe.cost}g</button>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function initForgeControls() {
+  const list = document.getElementById("crafting-list");
+  if (!list) return;
+  list.addEventListener("click", (e) => {
+    if (e.target.classList.contains("btn-craft")) {
+      craftItem(e.target.dataset.recipe);
+    }
+  });
+}
+
+function craftItem(recipeId) {
+  const recipe = CRAFTING_RECIPES.find(r => r.id === recipeId);
+  if (!recipe) return;
+  
+  let canCraft = playerState.gold >= recipe.cost;
+  recipe.ingredients.forEach(ing => {
+    const invItem = playerState.inventory.find(i => i.id === ing.id);
+    const hasQty = invItem ? (invItem.qty || 1) : 0;
+    if (hasQty < ing.qty) canCraft = false;
+  });
+  
+  if (!canCraft) {
+    showToast("Not enough materials or gold!", "error");
+    return;
+  }
+  
+  playerState.gold -= recipe.cost;
+  recipe.ingredients.forEach(ing => {
+    const invIdx = playerState.inventory.findIndex(i => i.id === ing.id);
+    const invItem = playerState.inventory[invIdx];
+    if (invItem.qty > ing.qty) {
+      invItem.qty -= ing.qty;
+    } else {
+      playerState.inventory.splice(invIdx, 1);
+    }
+  });
+  
+  const existing = playerState.inventory.find(i => i.id === recipe.resultId);
+  if (existing) {
+    existing.qty = (existing.qty || 1) + 1;
+  } else {
+    playerState.inventory.push({ id: recipe.resultId, qty: 1 });
+  }
+  
+  savePlayerState(); renderStats(); renderMaterials(); renderForge(); renderInventory();
+  showToast(`🔨 Crafted ${ALL_ITEMS[recipe.resultId].name}!`, "success");
+  if (typeof playSound === "function") playSound("purchase");
+}
+
 function renderInventory() {
   const list = document.getElementById("inventory-list");
   if (!list) return;
   list.innerHTML = "";
 
-  if (!playerState.inventory?.length) {
+  const inventoryItems = (playerState.inventory || []).filter(inv => {
+    const item = ALL_ITEMS[inv.id];
+    return item && item.type !== "material";
+  });
+
+  if (!inventoryItems.length) {
     list.innerHTML = `<p class="empty-message">Your inventory is empty.</p>`;
     return;
   }
 
-  playerState.inventory.forEach((inv, idx) => {
+  inventoryItems.forEach((inv) => {
+    const realIdx = playerState.inventory.indexOf(inv);
     const item = ALL_ITEMS[inv.id];
     if (!item) return;
-    const statLabel = item.stat === "power" ? "Power" : item.stat === "defense" ? "Defense" :
-                      item.stat === "critChance" ? "Crit Chance" : "Dodge Chance";
-    const statValue = item.stat.includes("Chance") ? `+${Math.round(item.value * 100)}%` : `+${item.value}`;
+    const isConsumable = item.type === "consumable";
+    const qtyStr = (inv.qty && inv.qty > 1) ? ` (x${inv.qty})` : "";
+    
+    let statsHtml = "";
+    if (isConsumable) {
+      statsHtml = `<p>${item.desc}</p>`;
+    } else {
+      const statLabel = item.stat === "power" ? "Power" : item.stat === "defense" ? "Defense" :
+                        item.stat === "critChance" ? "Crit Chance" : "Dodge Chance";
+      const statValue = item.stat.includes("Chance") ? `+${Math.round(item.value * 100)}%` : `+${item.value}`;
+      statsHtml = `<p>${statLabel} ${statValue}</p>`;
+    }
+
     const el = document.createElement("div");
     el.className = "inventory-item";
     el.innerHTML = `
       <div class="item-icon">${item.icon}</div>
-      <div class="item-details"><h5>${item.name}</h5><p>${statLabel} ${statValue}</p></div>
+      <div class="item-details"><h5>${item.name}${qtyStr}</h5>${statsHtml}</div>
       <div class="inventory-item-actions">
-        <button class="btn-upgrade btn-equip" data-item="${item.id}" data-index="${idx}">Equip</button>
-        <button class="btn-sell" data-item="${item.id}" data-index="${idx}">Sell ${Math.round(item.cost * 0.5)}g</button>
+        ${isConsumable 
+          ? `<button class="btn-upgrade btn-use" data-item="${item.id}" data-index="${realIdx}">Use</button>`
+          : `<button class="btn-upgrade btn-equip" data-item="${item.id}" data-index="${realIdx}">Equip</button>`}
+        <button class="btn-sell" data-item="${item.id}" data-index="${realIdx}">Sell ${Math.round(item.cost * 0.5)}g</button>
       </div>
     `;
     list.appendChild(el);
@@ -925,6 +1111,23 @@ function initShopButtons() {
 function buyItem(itemId) {
   const item = ALL_ITEMS[itemId];
   if (!item) return;
+
+  if (item.type === "consumable" || item.type === "material") {
+    if (playerState.gold < item.cost) { showToast("Not enough gold!", "error"); return; }
+    playerState.gold -= item.cost;
+    const existing = playerState.inventory.find(i => i.id === itemId);
+    if (existing) {
+      existing.qty = (existing.qty || 1) + 1;
+    } else {
+      playerState.inventory.push({ id: itemId, qty: 1 });
+    }
+    savePlayerState(); renderStats(); renderShop(); renderInventory();
+    if (typeof renderMaterials === "function") renderMaterials();
+    showToast(`✅ Purchased ${item.name}!`, "success");
+    if (typeof playSound === "function") playSound("purchase");
+    return;
+  }
+
   const isOwned = playerState.equipment.weapon === itemId ||
                   playerState.equipment.armor   === itemId ||
                   playerState.equipment.ring    === itemId ||
@@ -961,11 +1164,44 @@ function equipItemFromInventory(itemId) {
 function sellItemFromInventory(itemId, index) {
   const item = ALL_ITEMS[itemId];
   if (!item) return;
+  const inv = playerState.inventory[index];
   const price = Math.round(item.cost * 0.5);
+  
   playerState.gold += price;
-  playerState.inventory.splice(index, 1);
+  if (inv.qty && inv.qty > 1) {
+    inv.qty--;
+  } else {
+    playerState.inventory.splice(index, 1);
+  }
+  
   savePlayerState(); renderStats(); renderShop(); renderInventory();
+  if (typeof renderMaterials === "function") renderMaterials();
   showToast(`💰 Sold ${item.name} for ${price}g!`, "success");
+}
+
+function useConsumableFromInventory(itemId, index) {
+  const inv = playerState.inventory[index];
+  const item = ALL_ITEMS[itemId];
+  if (!item || !inv) return;
+  
+  if (item.stat === "restoreHp") {
+    const effStats = getEffectiveStats();
+    if (playerState.currentHp >= effStats.maxHp) {
+      showToast("HP is already full!", "error");
+      return;
+    }
+    playerState.currentHp = Math.min(effStats.maxHp, playerState.currentHp + item.value);
+    showToast(`🧪 Used ${item.name}! Restored ${item.value} HP.`, "success");
+    if (typeof playSound === "function") playSound("skill");
+  }
+  
+  if (inv.qty && inv.qty > 1) {
+    inv.qty--;
+  } else {
+    playerState.inventory.splice(index, 1);
+  }
+  
+  savePlayerState(); renderStats(); renderInventory();
 }
 
 // ================================================================
@@ -1086,8 +1322,8 @@ function openBattleModal(level) {
   }
 
   // Player HP bar
-  _setWidth("player-hp-bar", 100);
-  _setText("player-hp-text", `${effStats.maxHp}/${effStats.maxHp}`);
+  _setWidth("player-hp-bar", (playerState.currentHp / effStats.maxHp) * 100);
+  _setText("player-hp-text", `${Math.floor(playerState.currentHp)}/${effStats.maxHp}`);
 
   // Battle mana
   const preset = CLASS_PRESETS[playerState.class];
@@ -1120,9 +1356,13 @@ function openBattleModal(level) {
   const rematchBtn = document.getElementById("rematch-battle-btn");
   if (rematchBtn) rematchBtn.onclick = () => {
     const eff = getEffectiveStats();
+    if (playerState.currentHp <= 0) {
+      showToast("Cannot rematch, HP is 0! Heal up first.", "error");
+      return;
+    }
     const pMax = playerState.maxMana || preset?.mana || 50;
-    _setWidth("player-hp-bar", 100);
-    _setText("player-hp-text", `${eff.maxHp}/${eff.maxHp}`);
+    _setWidth("player-hp-bar", (playerState.currentHp / eff.maxHp) * 100);
+    _setText("player-hp-text", `${Math.floor(playerState.currentHp)}/${eff.maxHp}`);
     _setWidth("enemy-hp-bar", 100);
     _setText("enemy-hp-text", `${formatNumber(level.hp)}/${formatNumber(level.hp)}`);
     _setWidth("battle-mana-bar", 100);
@@ -1272,6 +1512,11 @@ function handleSkillActivation(skillId, btnIndex) {
 
 // ── BATTLE SIMULATION ──
 function startBattleSimulation(level) {
+  if (playerState.currentHp <= 0) {
+    showToast("Your HP is 0! Use a potion or wait to recover.", "error");
+    _show("close-battle-modal-btn");
+    return;
+  }
   const staminaCost = getStaminaCost(level);
   if (playerState.stamina < staminaCost) {
     showToast("Not enough stamina! Wait for it to regenerate.", "error");
@@ -1299,7 +1544,7 @@ function startBattleSimulation(level) {
   const preset   = CLASS_PRESETS[playerState.class];
   battleMaxMana     = playerState.maxMana || preset?.mana || 50;
   currentBattleMana = battleMaxMana;
-  battlePlayerHp    = effStats.maxHp;
+  battlePlayerHp    = playerState.currentHp;
   battlePlayerMaxHp = effStats.maxHp;
   battleEnemyHp     = level.hp;
   battleEnemyMaxHp  = level.hp;
@@ -1472,6 +1717,7 @@ function handleBattleVictory(level) {
   showToast(`⭐ Victory! +${level.gold}g and +${level.xp} XP!`, "success");
   if (typeof playSound === "function") playSound("victory");
 
+  playerState.currentHp = battlePlayerHp;
   playerState.gold += level.gold;
   playerState.xp   += level.xp;
 
@@ -1535,6 +1781,9 @@ function handleBattleDefeat() {
   appendBattleLog(`💀 Defeat! You were knocked out...`, "combat-defeat");
   showToast("💀 Defeated! Upgrade your stats and try again.", "error");
   if (typeof playSound === "function") playSound("defeat");
+  
+  playerState.currentHp = 0;
+  savePlayerState();
 
   _show("close-battle-modal-btn");
   _show("close-battle-btn");

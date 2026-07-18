@@ -864,10 +864,11 @@ body {
   flex-direction: column;
   gap: 5px;
   flex-shrink: 0;
-  min-width: 72px;
+  min-width: min-content;
 }
 .inventory-item-actions .btn-upgrade,
-.inventory-item-actions .btn-sell {
+.inventory-item-actions .btn-sell,
+.inventory-item-actions .btn-craft {
   width: 100%;
   justify-content: center;
   text-align: center;
