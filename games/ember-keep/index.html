@@ -199,7 +199,18 @@
 
       <!-- ======= MAP TAB ======= -->
       <section id="map-tab" class="tab-content active" role="tabpanel" aria-labelledby="tab-map">
-        <div class="map-container">
+        <div class="map-view-switcher">
+          <button class="map-view-btn active" id="btn-world-map">🌍 Mundo</button>
+          <button class="map-view-btn" id="btn-campaign-map">⚔️ Campanha</button>
+        </div>
+
+        <div class="map-container map-view active" id="world-map-view">
+          <div class="world-map-grid" id="world-map-grid">
+            <!-- Renderizado: cards de cada região -->
+          </div>
+        </div>
+
+        <div class="map-container map-view" id="campaign-map-view" style="display:none;">
           <div id="map-wrapper">
             <!-- Acts, level nodes, and side zones rendered dynamically by game.js -->
           </div>
@@ -364,32 +375,87 @@
 
       <!-- ======= SOCIAL TAB ======= -->
       <section id="social-tab" class="tab-content" role="tabpanel" aria-labelledby="tab-social">
-        <div class="social-layout">
-          <div class="panel friends-panel">
-            <h3 class="panel-title">👥 Friends</h3>
-            <div class="add-friend-form">
-              <input type="text" id="friend-username-input" placeholder="Enter username..." autocomplete="off">
-              <button id="add-friend-btn" class="btn-action">Add</button>
+        
+        <div class="social-nav">
+          <button class="social-tab-btn active" data-stab="friends">👥 Friends & Leaderboard</button>
+          <button class="social-tab-btn" data-stab="clan">⚔️ Clan</button>
+        </div>
+
+        <div id="stab-friends" class="social-sub-tab active">
+          <div class="social-layout">
+            <div class="panel friends-panel">
+              <h3 class="panel-title">👥 Friends</h3>
+              <div class="add-friend-form">
+                <input type="text" id="friend-username-input" placeholder="Enter username..." autocomplete="off">
+                <button id="add-friend-btn" class="btn-action">Add</button>
+              </div>
+              <h4>Suggested Players</h4>
+              <ul class="suggested-list" id="suggested-friends-list"></ul>
             </div>
-            <h4>Suggested Players</h4>
-            <ul class="suggested-list" id="suggested-friends-list"></ul>
-          </div>
-          <div class="panel leaderboard-panel">
-            <h3 class="panel-title">🏆 Leaderboard</h3>
-            <table class="leaderboard-table" role="table">
-              <thead>
-                <tr>
-                  <th scope="col">Rank</th>
-                  <th scope="col">Player</th>
-                  <th scope="col">Level</th>
-                  <th scope="col">Power</th>
-                  <th scope="col" style="text-align: right;">Action</th>
-                </tr>
-              </thead>
-              <tbody id="leaderboard-body"></tbody>
-            </table>
+            <div class="panel leaderboard-panel">
+              <h3 class="panel-title">🏆 Leaderboard</h3>
+              <table class="leaderboard-table" role="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Player</th>
+                    <th scope="col">Level</th>
+                    <th scope="col">Power</th>
+                    <th scope="col" style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="leaderboard-body"></tbody>
+              </table>
+            </div>
           </div>
         </div>
+
+        <div id="stab-clan" class="social-sub-tab" style="display:none;">
+          <div class="panel clan-panel">
+            <h3 class="panel-title">⚔️ Clan Hub</h3>
+            
+            <!-- Se não tem clã -->
+            <div id="no-clan-view">
+              <div class="create-clan-form">
+                <input type="text" id="clan-name-input" placeholder="Nome do Clã (ex: Iron Wolves)" maxlength="16">
+                <input type="text" id="clan-tag-input" placeholder="TAG (4 letras)" maxlength="4" style="width:100px;">
+                <select id="clan-icon-select">
+                  <option value="⚔️">⚔️ Espadas</option>
+                  <option value="🛡️">🛡️ Escudo</option>
+                  <option value="🐺">🐺 Lobo</option>
+                  <option value="🦅">🦅 Águia</option>
+                  <option value="🐉">🐉 Dragão</option>
+                  <option value="🌑">🌑 Sombra</option>
+                </select>
+                <button id="create-clan-btn" class="btn-action">Criar (500g)</button>
+              </div>
+              <hr class="panel-divider">
+              <h4>Clãs Recrutando</h4>
+              <ul id="available-clans-list" class="suggested-list"></ul>
+            </div>
+
+            <!-- Se tem clã -->
+            <div id="has-clan-view" style="display:none;">
+              <div class="clan-header">
+                <span class="clan-icon" id="my-clan-icon">⚔️</span>
+                <div>
+                  <h3 id="my-clan-name">[TAG] Clan Name</h3>
+                  <span id="my-clan-stats" class="text-muted">Membros: 1/20 · Power: 100</span>
+                </div>
+                <button id="leave-clan-btn" class="btn-danger" style="margin-left:auto; padding:4px 8px;">Sair</button>
+              </div>
+              
+              <div class="clan-territories" id="my-clan-territories">
+                <!-- Regioes controladas aqui -->
+              </div>
+              
+              <h4 style="margin-top:16px;">Membros</h4>
+              <ul id="my-clan-members-list" class="suggested-list"></ul>
+            </div>
+
+          </div>
+        </div>
+
       </section>
 
     </main>
@@ -543,9 +609,65 @@
        ============================================= -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="false"></div>
 
+  <!-- =============================================
+       VILLAGE MODAL
+       ============================================= -->
+  <div id="village-modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h2 id="village-modal-title">🏰 Vila</h2>
+        <button class="close-modal-btn" onclick="document.getElementById('village-modal').classList.remove('active')">×</button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="social-nav" style="margin-bottom: 12px;">
+          <button class="social-tab-btn active" data-vtab="overview">📍 Visão Geral</button>
+          <button class="social-tab-btn" data-vtab="fortress">🏰 Fortaleza</button>
+          <button class="social-tab-btn" data-vtab="siege">⚔️ Cerco</button>
+        </div>
+
+        <div id="vtab-overview" class="social-sub-tab active">
+          <p id="village-desc">Uma pacata vila...</p>
+          <div class="panel" style="margin-top:12px;">
+            <h4>Controle da Região</h4>
+            <div id="village-control-info">
+              <!-- Renderizado via JS -->
+            </div>
+          </div>
+          <button id="register-village-btn" class="btn-action" style="margin-top:12px; width:100%;">Mudar minha Casa para cá (Grátis)</button>
+        </div>
+
+        <div id="vtab-fortress" class="social-sub-tab" style="display:none;">
+          <h4 id="fortress-name-display">Fortaleza</h4>
+          <p>O clã que controla esta fortaleza recebe bônus especiais em todo o jogo!</p>
+          <div id="fortress-owner-display" class="panel" style="margin-top:12px; text-align:center;">
+            <!-- Quem controla -->
+          </div>
+        </div>
+
+        <div id="vtab-siege" class="social-sub-tab" style="display:none;">
+          <div class="siege-status-panel panel">
+            <h4 id="siege-phase-display">Fase: Inscrição</h4>
+            <p id="siege-time-display">Tempo restante: 3 dias</p>
+          </div>
+          <div id="siege-action-area" style="margin-top:12px;">
+            <button id="siege-register-btn" class="btn-action" style="width:100%;">Inscrever meu Clã</button>
+          </div>
+          <div id="siege-competitors" style="margin-top:16px;">
+            <h4>Participantes</h4>
+            <ul id="siege-competitors-list" class="suggested-list"></ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="audio.js"></script>
   <script src="game.js"></script>
+  <script src="clans.js"></script>
+  <script src="siege.js"></script>
   <script src="social.js"></script>
 </body>
 </html>

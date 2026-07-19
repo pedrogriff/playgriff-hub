@@ -55,6 +55,24 @@ const SIDE_ZONES = [
   { id:"sz_15b", name:"Giant's Hall",   hp:7200,  power:300, defense:130,gold:5800, xp:1600, avatar:"🧌", suggested:1380,afterLevel:15, staminaCost:50, label:"Treasure",  zoneType:"treasure" },
 ];
 
+const REGIONS = [
+  { id:"greenhollow", name:"Greenhollow",  icon:"🌲", theme:"forest",   color:"#4ade80",
+    minLevel:1,  maxLevel:5,  fortressName:"Forte do Vale",       fortressIcon:"🏰",
+    desc:"Uma floresta ancestral protegida por antigas muralhas." },
+  { id:"frosthold",   name:"Frosthold",    icon:"❄️", theme:"ice",      color:"#60a5fa",
+    minLevel:6,  maxLevel:10, fortressName:"Cidadela do Gelo",    fortressIcon:"🏔️",
+    desc:"Picos congelados onde apenas os mais fortes sobrevivem." },
+  { id:"ashenvale",   name:"Ashenvale",    icon:"🌋", theme:"volcanic", color:"#f59e0b",
+    minLevel:11, maxLevel:17, fortressName:"Bastião de Cinzas",   fortressIcon:"🏯",
+    desc:"Terras queimadas por vulcões ativos." },
+  { id:"shadowmere",  name:"Shadowmere",   icon:"🌑", theme:"shadow",   color:"#8b5cf6",
+    minLevel:18, maxLevel:24, fortressName:"Torre das Sombras",   fortressIcon:"🗼",
+    desc:"Pântanos envenenados envoltos em neblina eterna." },
+  { id:"emberpeak",   name:"Emberpeak",    icon:"🔥", theme:"ember",    color:"#ff6b35",
+    minLevel:25, maxLevel:30, fortressName:"Fortaleza Ember",     fortressIcon:"🔥",
+    desc:"O coração ardente do mundo. O prêmio final." },
+];
+
 // ================================================================
 // DATA: CLASSES
 // ================================================================
@@ -408,7 +426,9 @@ const DEFAULT_PLAYER_STATE = {
     slots: [],              // [{ id:"farm_plot", stationTier:1, instanceId: "id1" }, ...]
     decorations: [],        // [{ id:"deco_flower_pot", instanceId: "id1" }, ...]
     unlockedDecorations: [],
+    registeredRegion: null, // "greenhollow", "frosthold", etc.
   },
+  clan: null, // { id, name, role } ou null
 };
 
 // ================================================================
@@ -441,6 +461,12 @@ document.addEventListener("DOMContentLoaded", () => {
   loadSettings();
   initTabs();
   initShopTabs();
+  initMapTabs();
+  initSocialTabs();
+  
+  if (typeof initializeBotClans === "function") initializeBotClans();
+  if (typeof initializeFortresses === "function") initializeFortresses();
+  if (typeof simulateWeeklySiege === "function") simulateWeeklySiege();
   loadPlayerState();
   renderMap();
   renderStats();
@@ -488,6 +514,51 @@ function initShopTabs() {
       btn.classList.add("active");
       const panel = document.getElementById(`shop-${btn.dataset.shopTab}-panel`);
       if (panel) panel.classList.add("active");
+    });
+  });
+}
+
+function initMapTabs() {
+  const wBtn = document.getElementById("btn-world-map");
+  const cBtn = document.getElementById("btn-campaign-map");
+  const wView = document.getElementById("world-map-view");
+  const cView = document.getElementById("campaign-map-view");
+  
+  if(wBtn && cBtn) {
+    wBtn.addEventListener("click", () => {
+      wBtn.classList.add("active"); cBtn.classList.remove("active");
+      wView.classList.add("active"); wView.style.display = "";
+      cView.classList.remove("active"); cView.style.display = "none";
+    });
+    cBtn.addEventListener("click", () => {
+      cBtn.classList.add("active"); wBtn.classList.remove("active");
+      cView.classList.add("active"); cView.style.display = "";
+      wView.classList.remove("active"); wView.style.display = "none";
+    });
+  }
+}
+
+function initSocialTabs() {
+  document.querySelectorAll(".social-tab-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const container = e.currentTarget.closest(".modal-body, #social-tab");
+      
+      // Se é da Vila ou do Social
+      const groupBtns = container.querySelectorAll(".social-tab-btn");
+      groupBtns.forEach(b => b.classList.remove("active"));
+      e.currentTarget.classList.add("active");
+      
+      if (e.currentTarget.dataset.stab) {
+        container.querySelectorAll(".social-sub-tab").forEach(c => { c.classList.remove("active"); c.style.display = "none"; });
+        const target = container.querySelector(`#stab-${e.currentTarget.dataset.stab}`);
+        if(target) { target.classList.add("active"); target.style.display = ""; }
+      }
+      
+      if (e.currentTarget.dataset.vtab) {
+        container.querySelectorAll(".social-sub-tab").forEach(c => { c.classList.remove("active"); c.style.display = "none"; });
+        const target = container.querySelector(`#vtab-${e.currentTarget.dataset.vtab}`);
+        if(target) { target.classList.add("active"); target.style.display = ""; }
+      }
     });
   });
 }
@@ -883,6 +954,26 @@ function gainProductionXP(skillId, amount) {
 }
 
 // ── Effective stats (base + upgrades + equipment) ──
+function getClanTerritoryBonuses() {
+  const bonuses = { extraGoldPercent: 0, extraXpPercent: 0, extraDropChance: 0 };
+  if (!playerState.clan) return bonuses;
+
+  if (typeof loadClan !== "function") return bonuses;
+  const clan = loadClan(playerState.clan.id);
+  if (!clan) return bonuses;
+
+  clan.fortresses.forEach(regionId => {
+    const region = REGIONS.find(r => r.id === regionId);
+    if (region && region.buffType) {
+      if (region.buffType === "gold") bonuses.extraGoldPercent += region.buffValue;
+      if (region.buffType === "xp") bonuses.extraXpPercent += region.buffValue;
+      if (region.buffType === "drop") bonuses.extraDropChance += region.buffValue;
+    }
+  });
+
+  return bonuses;
+}
+
 function getEffectiveStats() {
   let extraPower = 0, extraDefense = 0, extraCrit = 0, extraDodge = 0;
 
@@ -898,6 +989,9 @@ function getEffectiveStats() {
     if (r.stat === "critChance")  extraCrit    += r.value;
     if (r.stat === "dodgeChance") extraDodge   += r.value;
   }
+  
+  const clanBonuses = getClanTerritoryBonuses();
+
   return {
     maxHp:      playerState.stats.maxHp,
     power:      playerState.stats.power   + extraPower,
@@ -905,6 +999,7 @@ function getEffectiveStats() {
     critChance: (playerState.stats.critChance  || 0.05) + extraCrit,
     critDamage: playerState.stats.critDamage  || 1.5,
     dodgeChance:(playerState.stats.dodgeChance || 0.05) + extraDodge,
+    clanBonuses: clanBonuses
   };
 }
 
@@ -967,6 +1062,11 @@ function selectClass(className, heroName) {
 
 // ── MAP ──
 function renderMap() {
+  renderCampaignMap();
+  renderWorldMap();
+}
+
+function renderCampaignMap() {
   const wrapper = document.getElementById("map-wrapper");
   if (!wrapper) return;
   wrapper.innerHTML = "";
@@ -1035,6 +1135,54 @@ function renderMap() {
       openHouseModal();
     });
   }
+}
+
+function renderWorldMap() {
+  const grid = document.getElementById("world-map-grid");
+  if (!grid) return;
+  grid.innerHTML = "";
+
+  REGIONS.forEach(region => {
+    const isLocked = playerState.level < region.minLevel;
+    
+    // Check quem controla o fort
+    let ownerStr = "Nenhum";
+    let ownerClan = null;
+    if (typeof localStorage !== "undefined") {
+      const fortOwnerId = localStorage.getItem(`fortress_${region.id}`);
+      if (fortOwnerId && typeof loadClan === "function") {
+        ownerClan = loadClan(fortOwnerId);
+        if (ownerClan) ownerStr = `[${ownerClan.tag}] ${ownerClan.name}`;
+      }
+    }
+
+    const card = document.createElement("div");
+    card.className = `region-card ${isLocked ? "locked" : ""}`;
+    card.style.setProperty("--card-color", region.color);
+    
+    let actionsHtml = "";
+    if (isLocked) {
+      actionsHtml = `<button disabled>Bloqueado</button>`;
+    } else {
+      actionsHtml = `<button onclick="openVillageModal('${region.id}')">🏘️ Entrar na Vila</button>`;
+    }
+
+    card.innerHTML = `
+      <div class="region-header">
+        <div class="region-title">${region.icon} ${region.name}</div>
+        <div class="region-level-req">${isLocked ? "🔒" : "🔓"} Lv.${region.minLevel}+</div>
+      </div>
+      <div class="region-desc">${region.desc}</div>
+      <div class="region-fortress">
+        <span>${region.fortressIcon} ${region.fortressName}</span>
+        <span style="font-size:0.8rem; opacity:0.8;">👑 ${ownerStr}</span>
+      </div>
+      <div class="region-actions">
+        ${actionsHtml}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
 }
 
 function createLevelNode(level) {
@@ -2259,14 +2407,19 @@ function handleBattleVictory(level) {
   activeBattleInterval = null;
 
   const isSideZone = typeof level.id === "string" && !level.isBotDuel;
+  const effStats = getEffectiveStats();
+  const bonuses = effStats.clanBonuses || { extraGoldPercent: 0, extraXpPercent: 0 };
+  
+  const finalGold = Math.floor(level.gold * (1 + (bonuses.extraGoldPercent / 100)));
+  const finalXp = Math.floor(level.xp * (1 + (bonuses.extraXpPercent / 100)));
 
   appendBattleLog(`🏆 Victory! You defeated ${level.name}!`, "combat-victory");
-  showToast(`⭐ Victory! +${level.gold}g and +${level.xp} XP!`, "success");
+  showToast(`⭐ Victory! +${finalGold}g and +${finalXp} XP!`, "success");
   if (typeof playSound === "function") playSound("victory");
 
   playerState.currentHp = battlePlayerHp;
-  playerState.gold += level.gold;
-  playerState.xp   += level.xp;
+  playerState.gold += finalGold;
+  playerState.xp   += finalXp;
 
   if (level.isBotDuel) {
     if (typeof window.getFriendById === "function" && typeof window.updateFriendPower === "function") {
@@ -2356,7 +2509,11 @@ function handleBattleDefeat() {
 // LOOT SYSTEM
 // ================================================================
 function checkForLootDrop(level) {
-  if (Math.random() > 0.45) return; // 45% drop chance
+  const effStats = getEffectiveStats();
+  const bonuses = effStats.clanBonuses || { extraDropChance: 0 };
+  const dropChance = 0.45 + (bonuses.extraDropChance / 100);
+  
+  if (Math.random() > dropChance) return; // Drop chance com bônus
 
   const isRingDrop = Math.random() < 0.28; // 28% chance for ring
   if (isRingDrop) {
@@ -2642,6 +2799,82 @@ function removeStation(instanceId) {
 function openHouseModal() {
   renderHouse();
   document.getElementById("house-modal").classList.add("active");
+}
+
+function openVillageModal(regionId) {
+  const region = REGIONS.find(r => r.id === regionId);
+  if (!region) return;
+
+  document.getElementById("village-modal-title").innerText = `🏰 Vila de ${region.name}`;
+  document.getElementById("village-desc").innerText = region.desc;
+
+  // Fortress owner
+  let ownerStr = "Nenhum";
+  let ownerClan = null;
+  const fortOwnerId = localStorage.getItem(`fortress_${regionId}`);
+  if (fortOwnerId && typeof loadClan === "function") {
+    ownerClan = loadClan(fortOwnerId);
+    if (ownerClan) ownerStr = `[${ownerClan.tag}] ${ownerClan.name}`;
+  }
+  
+  document.getElementById("village-control-info").innerHTML = `
+    <p>👑 <strong>${ownerStr}</strong> controla esta região.</p>
+    <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">As taxas de comércio vão para o tesouro deste clã.</p>
+  `;
+
+  document.getElementById("fortress-name-display").innerText = `${region.fortressIcon} ${region.fortressName}`;
+  document.getElementById("fortress-owner-display").innerHTML = `
+    <h3 style="color:var(--gold); margin-bottom:4px;">${ownerStr}</h3>
+    <p style="font-size:0.85rem;">Membros deste clã ganham ${region.buff}.</p>
+  `;
+
+  // Siege Phase
+  if (typeof getCurrentSiegePhase === "function") {
+    const phase = getCurrentSiegePhase();
+    document.getElementById("siege-phase-display").innerText = `Fase atual: ${phase.label}`;
+    document.getElementById("siege-time-display").innerText = `Tempo restante: ${phase.daysLeft} dias`;
+
+    const siege = getSiegeData(regionId);
+    let competitorsHtml = "";
+    siege.attackers.forEach(cId => {
+      const c = loadClan(cId);
+      if (c) {
+        const pts = siege.scores[cId]?.points || 0;
+        competitorsHtml += `<li><span class="clan-icon">${c.icon}</span> <span>[${c.tag}] ${c.name}</span> <span style="margin-left:auto; color:var(--gold);">⚔️ ${pts} pts</span></li>`;
+      }
+    });
+    document.getElementById("siege-competitors-list").innerHTML = competitorsHtml || `<li>Nenhum clã inscrito ainda.</li>`;
+  }
+
+  // Bind Buttons
+  const registerBtn = document.getElementById("register-village-btn");
+  registerBtn.onclick = () => {
+    playerState.registeredRegion = regionId;
+    savePlayerState();
+    showToast(`Casa movida para ${region.name}!`, "success");
+    document.getElementById("village-modal").classList.remove("active");
+  };
+
+  const siegeBtn = document.getElementById("siege-register-btn");
+  if (siegeBtn) {
+    siegeBtn.onclick = () => {
+      if (typeof registerForSiege === "function") {
+        registerForSiege(regionId);
+        openVillageModal(regionId); // reload
+      }
+    };
+  }
+
+  // Reset to first tab
+  const modal = document.getElementById("village-modal");
+  modal.querySelectorAll(".social-tab-btn").forEach(b => b.classList.remove("active"));
+  modal.querySelectorAll(".social-sub-tab").forEach(c => { c.classList.remove("active"); c.style.display="none"; });
+  
+  modal.querySelector('[data-vtab="overview"]').classList.add("active");
+  const overview = document.getElementById("vtab-overview");
+  overview.classList.add("active"); overview.style.display = "";
+
+  modal.classList.add("active");
 }
 
 function renderHouse() {
