@@ -35,9 +35,9 @@ function saveClan(clan) {
 }
 
 function createClan(name, tag, icon) {
-  if (playerState.level < 5) { showToast("Nível 5 necessário!", "error"); return; }
-  if (playerState.gold < 500) { showToast("500g necessários!", "error"); return; }
-  if (playerState.clan) { showToast("Você já pertence a um clã!", "error"); return; }
+  if (playerState.level < 5) { showToast("Level 5 required!", "error"); return; }
+  if (playerState.gold < 500) { showToast("500g required!", "error"); return; }
+  if (playerState.clan) { showToast("You already belong to a clan!", "error"); return; }
   
   const clan = {
     ...JSON.parse(JSON.stringify(DEFAULT_CLAN)),
@@ -59,16 +59,16 @@ function createClan(name, tag, icon) {
   playerState.gold -= 500;
   playerState.clan = { id: clan.id, name: clan.name, role: "leader" };
   
-  // Preencher com bots
+  // Fill with bots
   fillClanWithBots(clan, 5 + Math.floor(Math.random() * 8));
   
   saveClan(clan);
   savePlayerState();
-  showToast(`Clã [${clan.tag}] criado!`, "success");
+  showToast(`Clan [${clan.tag}] created!`, "success");
   
   if (typeof checkAchievements === "function") checkAchievements("clan");
   
-  // Atualizar UI se estiver na tela
+  // Update UI if on screen
   if (typeof renderClanTab === "function") renderClanTab();
 }
 
@@ -114,7 +114,7 @@ function joinClan(clanId) {
   if (playerState.clan) return;
   const clan = loadClan(clanId);
   if (!clan || clan.members.length >= clan.maxMembers) {
-    showToast("Clã cheio ou não existe!", "error");
+    showToast("Clan is full or doesn't exist!", "error");
     return;
   }
   
@@ -129,7 +129,7 @@ function joinClan(clanId) {
   playerState.clan = { id: clan.id, name: clan.name, role: "member" };
   saveClan(clan);
   savePlayerState();
-  showToast(`Bem vindo a [${clan.tag}]!`, "success");
+  showToast(`Welcome to [${clan.tag}]!`, "success");
   if (typeof renderClanTab === "function") renderClanTab();
 }
 
@@ -149,15 +149,15 @@ function leaveClan() {
   }
   playerState.clan = null;
   savePlayerState();
-  showToast("Você saiu do clã.", "info");
+  showToast("You left the clan.", "info");
   if (typeof renderClanTab === "function") renderClanTab();
 }
 
-// Inicializa bots se não existirem
+// Initialize bots if they don't exist
 function initializeBotClans() {
   if (localStorage.getItem("bot_clans_initialized")) return;
   
-  // Criar 10 clãs bot
+  // Create 10 bot clans
   for(let i=0; i<10; i++) {
     const clanName = BOT_CLAN_NAMES[i % BOT_CLAN_NAMES.length] + (i >= BOT_CLAN_NAMES.length ? ` ${i}` : "");
     const clan = {
@@ -171,7 +171,7 @@ function initializeBotClans() {
       createdAt: Date.now() - Math.floor(Math.random() * 5000000000),
     };
     
-    // Nível médio dos bots baseado na região q vão tentar dominar, mas aleatório
+    // Average bot level based on the region they'll try to control
     const baseLvl = 5 + (i * 2);
     
     // Leader

@@ -1,5 +1,5 @@
 // ================================================================
-// SYSTEM: SIEGE (CERCO)
+// SYSTEM: SIEGE
 // ================================================================
 
 const SIEGE_CYCLE_DAYS = 7;
@@ -18,7 +18,7 @@ function getCurrentSiegePhase() {
   const cycleStart = getSiegeCycleStart();
   let elapsed = Date.now() - cycleStart;
   
-  // Se o ciclo já passou, reinicia
+  // If the cycle has already passed, restart
   if (elapsed >= SIEGE_CYCLE_MS) {
     const newStart = Date.now();
     localStorage.setItem("siege_cycle_start", newStart);
@@ -29,10 +29,10 @@ function getCurrentSiegePhase() {
 
   const dayInCycle = Math.floor(elapsed / (24 * 3600 * 1000));
   
-  if (dayInCycle <= 2) return { phase:"inscription", daysLeft: 3 - dayInCycle, label: "Inscrição" };
-  if (dayInCycle <= 4) return { phase:"preparation", daysLeft: 5 - dayInCycle, label: "Preparação" };
-  if (dayInCycle === 5) return { phase:"siege", daysLeft: 0, label: "Dia do Cerco" };
-  return { phase:"results", daysLeft: 7 - dayInCycle, label: "Resultados" };
+  if (dayInCycle <= 2) return { phase:"inscription", daysLeft: 3 - dayInCycle, label: "Enrollment" };
+  if (dayInCycle <= 4) return { phase:"preparation", daysLeft: 5 - dayInCycle, label: "Preparation" };
+  if (dayInCycle === 5) return { phase:"siege", daysLeft: 0, label: "Siege Day" };
+  return { phase:"results", daysLeft: 7 - dayInCycle, label: "Results" };
 }
 
 function initSiegeData(regionId, forceReset = false) {
@@ -40,26 +40,26 @@ function initSiegeData(regionId, forceReset = false) {
   if (!data || forceReset) {
     data = {
       regionId,
-      defender: null, // clanId atual controlador da fortaleza, será setado depois
+      defender: null, // current clanId controlling the fortress
       attackers: [],  // lista de clanIds
       scores: {},     // { clanId: { points: 0 } }
       resolved: false,
       winner: null
     };
     
-    // Pega o atual controlador
+    // Get the current controller
     const regionControl = localStorage.getItem(`fortress_${regionId}`);
     if (regionControl) {
       data.defender = regionControl;
       data.scores[regionControl] = { points: 0 };
     } else {
-      // Se ninguem controla, os bots atacam
+      // If no one controls it, bots attack
     }
     
-    // Bots se inscrevem automaticamente no reset
+    // Bots auto-enroll on reset
     const allClans = getAvailableClans();
     const bots = allClans.filter(c => c.id.startsWith("clan_bot_"));
-    // Pega 2 bots aleatorios
+    // Pick 2 random bots
     const r1 = bots[Math.floor(Math.random()*bots.length)];
     const r2 = bots[Math.floor(Math.random()*bots.length)];
     if (r1 && data.defender !== r1.id) { data.attackers.push(r1.id); data.scores[r1.id] = { points:0 }; }
@@ -85,7 +85,7 @@ function saveSiegeData(regionId, data) {
 function registerForSiege(regionId) {
   const phase = getCurrentSiegePhase();
   if (phase.phase !== "inscription") {
-    showToast("Fase de inscrição já passou!", "error");
+    showToast("Enrollment phase has ended!", "error");
     return;
   }
   
@@ -94,21 +94,21 @@ function registerForSiege(regionId) {
   
   const siege = getSiegeData(regionId);
   if (siege.defender === myClanId || siege.attackers.includes(myClanId)) {
-    showToast("Clã já inscrito!", "error");
+    showToast("Clan already enrolled!", "error");
     return;
   }
   
   siege.attackers.push(myClanId);
   siege.scores[myClanId] = { points: 0 };
   saveSiegeData(regionId, siege);
-  showToast("Inscrito no cerco!", "success");
+  showToast("Enrolled in the siege!", "success");
   if (typeof renderSiegeView === "function") renderSiegeView(regionId);
 }
 
 function addSiegePoints(regionId, points) {
   if (!playerState.clan) return;
   const phase = getCurrentSiegePhase();
-  if (phase.phase !== "preparation" && phase.phase !== "inscription") return; // Só pode pontuar antes do cerco
+  if (phase.phase !== "preparation" && phase.phase !== "inscription") return; // Can only score before the siege
 
   const siege = getSiegeData(regionId);
   const myClanId = playerState.clan.id;
@@ -123,7 +123,7 @@ function simulateWeeklySiege() {
   const lastSim = localStorage.getItem("last_siege_sim") || 0;
   const elapsed = now - parseInt(lastSim);
   
-  if (elapsed < 3600000) return; // Máximo 1x por hora
+  if (elapsed < 3600000) return; // Max 1x per hour
   
   const phase = getCurrentSiegePhase();
   
@@ -131,7 +131,7 @@ function simulateWeeklySiege() {
     const siege = getSiegeData(region.id);
     
     if (phase.phase === "preparation" || phase.phase === "inscription") {
-      // Bots ganham pontos
+      // Bots gain points
       Object.keys(siege.scores).forEach(clanId => {
         if (clanId.startsWith("clan_bot_")) {
           siege.scores[clanId].points += Math.floor(Math.random() * 50) + 10;
@@ -162,7 +162,7 @@ function resolveSiege(regionId) {
                 + (clan.members.length * 5);
                 
     if (clanId === siege.defender) {
-      score *= 1.15; // 15% bonus de defesa
+      score *= 1.15; // 15% defense bonus
     }
     
     if (score > highestScore) {
@@ -185,7 +185,7 @@ function resolveSiege(regionId) {
 }
 
 function transferFortressControl(regionId, clanId) {
-  // Remover dos outros clãs
+  // Remove from other clans
   const allClans = getAvailableClans();
   allClans.forEach(c => {
     if (c.fortresses.includes(regionId)) {
@@ -194,7 +194,7 @@ function transferFortressControl(regionId, clanId) {
     }
   });
   
-  // Adicionar ao novo clan
+  // Add to the new clan
   const newClan = loadClan(clanId);
   if (newClan && !newClan.fortresses.includes(regionId)) {
     newClan.fortresses.push(regionId);
@@ -204,7 +204,7 @@ function transferFortressControl(regionId, clanId) {
   localStorage.setItem(`fortress_${regionId}`, clanId);
 }
 
-// Inicializa as fortalezas com clãs bot
+// Initialize fortresses with bot clans
 function initializeFortresses() {
   if (localStorage.getItem("fortresses_initialized")) return;
   

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -308,7 +308,7 @@
 
             <!-- Pet Panel -->
             <div class="panel pet-panel" style="margin-bottom: 0;">
-              <h3 class="panel-title">🐾 Companheiros</h3>
+              <h3 class="panel-title">🐾 Companions</h3>
               <div class="pet-active-display" id="active-pet-display">
                 <p class="empty-message">Nenhum pet ativo.</p>
               </div>
@@ -582,7 +582,7 @@
   <div id="house-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="house-title">
     <div class="modal-content" style="max-width: 600px;">
       <div class="modal-header">
-        <h2 id="house-title">Minha Casa</h2>
+        <h2 id="house-title">My House</h2>
         <button class="close-modal-btn" id="close-house-modal-btn">×</button>
       </div>
       <div class="modal-body" style="padding:0;">
@@ -596,7 +596,7 @@
   <div id="station-install-modal" class="modal" role="dialog" aria-modal="true">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>📦 Instalar Instalação</h2>
+        <h2>📦 Install Station</h2>
         <button class="close-modal-btn" id="close-install-modal-btn">×</button>
       </div>
       <div class="modal-body">
@@ -610,13 +610,13 @@
   <div id="decoration-shop-modal" class="modal" role="dialog" aria-modal="true">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>🎨 Comprar Decorações</h2>
+        <h2>🎨 Buy Decorations</h2>
         <div class="gems-display">💎 <span id="gems-count-display">0</span></div>
         <button class="close-modal-btn" id="close-decoration-shop-btn">×</button>
       </div>
       <div class="modal-body">
         <div class="shop-tabs" style="margin-bottom: 10px;">
-          <button class="shop-tab-btn active" id="deco-tab-standard">Comuns (Gold)</button>
+          <button class="shop-tab-btn active" id="deco-tab-standard">Standard (Gold)</button>
           <button class="shop-tab-btn" id="deco-tab-premium" style="color:var(--ember)">Premium (Gemas)</button>
         </div>
         <div id="decoration-options-list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
@@ -637,46 +637,46 @@
   <div id="village-modal" class="modal" role="dialog" aria-modal="true">
     <div class="modal-content" style="max-width: 600px;">
       <div class="modal-header">
-        <h2 id="village-modal-title">🏰 Vila</h2>
+        <h2 id="village-modal-title">🏰 Village</h2>
         <button class="close-modal-btn" onclick="document.getElementById('village-modal').classList.remove('active')">×</button>
       </div>
       <div class="modal-body">
         
         <div class="social-nav" style="margin-bottom: 12px;">
-          <button class="social-tab-btn active" data-vtab="overview">📍 Visão Geral</button>
-          <button class="social-tab-btn" data-vtab="fortress">🏰 Fortaleza</button>
-          <button class="social-tab-btn" data-vtab="siege">⚔️ Cerco</button>
+          <button class="social-tab-btn active" data-vtab="overview">📍 Overview</button>
+          <button class="social-tab-btn" data-vtab="fortress">🏰 Fortress</button>
+          <button class="social-tab-btn" data-vtab="siege">⚔️ Siege</button>
         </div>
 
         <div id="vtab-overview" class="social-sub-tab active">
-          <p id="village-desc">Uma pacata vila...</p>
+          <p id="village-desc">A quiet village...</p>
           <div class="panel" style="margin-top:12px;">
-            <h4>Controle da Região</h4>
+            <h4>Region Control</h4>
             <div id="village-control-info">
-              <!-- Renderizado via JS -->
+              <!-- Rendered by JS -->
             </div>
           </div>
-          <button id="register-village-btn" class="btn-action" style="margin-top:12px; width:100%;">Mudar minha Casa para cá (Grátis)</button>
+          <button id="register-village-btn" class="btn-action" style="margin-top:12px; width:100%;">Move my House here (Free)</button>
         </div>
 
         <div id="vtab-fortress" class="social-sub-tab" style="display:none;">
-          <h4 id="fortress-name-display">Fortaleza</h4>
-          <p>O clã que controla esta fortaleza recebe bônus especiais em todo o jogo!</p>
+          <h4 id="fortress-name-display">Fortress</h4>
+          <p>The clan that controls this fortress receives special bonuses throughout the game!</p>
           <div id="fortress-owner-display" class="panel" style="margin-top:12px; text-align:center;">
-            <!-- Quem controla -->
+            <!-- Who controls it -->
           </div>
         </div>
 
         <div id="vtab-siege" class="social-sub-tab" style="display:none;">
           <div class="siege-status-panel panel">
-            <h4 id="siege-phase-display">Fase: Inscrição</h4>
-            <p id="siege-time-display">Tempo restante: 3 dias</p>
+            <h4 id="siege-phase-display">Phase: Enrollment</h4>
+            <p id="siege-time-display">Time remaining: 3 days</p>
           </div>
           <div id="siege-action-area" style="margin-top:12px;">
-            <button id="siege-register-btn" class="btn-action" style="width:100%;">Inscrever meu Clã</button>
+            <button id="siege-register-btn" class="btn-action" style="width:100%;">Enroll my Clan</button>
           </div>
           <div id="siege-competitors" style="margin-top:16px;">
-            <h4>Participantes</h4>
+            <h4>Participants</h4>
             <ul id="siege-competitors-list" class="suggested-list"></ul>
           </div>
         </div>
@@ -690,8 +690,8 @@
        ============================================= -->
   <div id="daily-reward-modal" class="modal">
     <div class="modal-content" style="max-width: 400px; text-align: center;">
-      <h3 style="color: var(--gold); margin-top:0;">📅 Recompensa Diária</h3>
-      <p style="margin-bottom:20px; font-size: 0.9rem; color:var(--text-muted);">Faça login todos os dias para receber Gemas grátis!</p>
+      <h3 style="color: var(--gold); margin-top:0;">📅 Daily Reward</h3>
+      <p style="margin-bottom:20px; font-size: 0.9rem; color:var(--text-muted);">Log in every day to receive free Gems!</p>
       
       <div style="font-size: 3rem; margin-bottom: 10px;">💎</div>
       

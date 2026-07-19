@@ -12,124 +12,124 @@ function getPetStatMultiplier(petLevel) {
 }
 
 const PET_EGGS = {
-  egg_common:   { id:"egg_common",   name:"Ovo Comum",       cost:200,   icon:"🥚", type:"material", desc:"Choca em um pet.",
+  egg_common:   { id:"egg_common",   name:"Common Egg",       cost:200,   icon:"🥚", type:"material", desc:"Hatches into a pet.",
                   chances: { common:0.80, rare:0.18, epic:0.02, legendary:0 }, hatchTimeMs: 60000 },
-  egg_rare:     { id:"egg_rare",     name:"Ovo Raro",        cost:800,   icon:"🥚", type:"material", desc:"Choca em um pet.",
+  egg_rare:     { id:"egg_rare",     name:"Rare Egg",         cost:800,   icon:"🥚", type:"material", desc:"Hatches into a pet.",
                   chances: { common:0.40, rare:0.45, epic:0.14, legendary:0.01 }, hatchTimeMs: 180000 },
-  egg_epic:     { id:"egg_epic",     name:"Ovo Épico",       cost:3000,  icon:"🥚", type:"material", desc:"Choca em um pet.",
+  egg_epic:     { id:"egg_epic",     name:"Epic Egg",         cost:3000,  icon:"🥚", type:"material", desc:"Hatches into a pet.",
                   chances: { common:0,    rare:0.30, epic:0.60, legendary:0.10 }, hatchTimeMs: 300000 },
-  egg_legendary:{ id:"egg_legendary",name:"Ovo Lendário",    cost:100,   icon:"🥚", type:"material", desc:"Choca em um pet lendário.",
+  egg_legendary:{ id:"egg_legendary",name:"Legendary Egg",    cost:100,   icon:"🥚", type:"material", desc:"Hatches into a legendary pet.",
                   chances: { common:0,    rare:0,    epic:0.50, legendary:0.50 }, premium:true, premiumCost:100, hatchTimeMs: 600000 },
 };
 
 const PET_SPECIES = {
-  // 🐺 Caninos — DPS Sustentado
-  wolf_grey:   { id:"wolf_grey",   family:"canine", name:"Lobo Cinzento",   rarity:"common", icon:"🐺",
+  // 🐺 Canines — Sustained DPS
+  wolf_grey:   { id:"wolf_grey",   family:"canine", name:"Grey Wolf",       rarity:"common", icon:"🐺",
                  archetype:"dps", passiveDesc:"+5% Power",
                  passive:{ stat:"power", valuePct:0.05 },
-                 active:{ name:"Mordida", dmgPct:0.30, cooldown:3, effect:null, desc:"30% power dano" } },
-  wolf_frost:  { id:"wolf_frost",  family:"canine", name:"Lobo Glacial",    rarity:"rare", icon:"🐺",
+                 active:{ name:"Bite", dmgPct:0.30, cooldown:3, effect:null, desc:"30% power damage" } },
+  wolf_frost:  { id:"wolf_frost",  family:"canine", name:"Frost Wolf",      rarity:"rare", icon:"🐺",
                  archetype:"dps", passiveDesc:"+8% Power, +3% Crit",
                  passive:{ stats:[{stat:"power",valuePct:0.08},{stat:"critChance",value:0.03}] },
-                 active:{ name:"Mordida Gélida", dmgPct:0.40, cooldown:3, effect:"slow", effectRounds:1, desc:"40% power + slow" } },
-  wolf_shadow: { id:"wolf_shadow", family:"canine", name:"Lobo das Sombras",rarity:"epic", icon:"🐺",
+                 active:{ name:"Frost Bite", dmgPct:0.40, cooldown:3, effect:"slow", effectRounds:1, desc:"40% power + slow" } },
+  wolf_shadow: { id:"wolf_shadow", family:"canine", name:"Shadow Wolf",     rarity:"epic", icon:"🐺",
                  archetype:"dps", passiveDesc:"+12% Power, +5% Crit",
                  passive:{ stats:[{stat:"power",valuePct:0.12},{stat:"critChance",value:0.05}] },
-                 active:{ name:"Fúria Sombria", dmgPct:0.60, cooldown:3, effect:"pierce", desc:"60% power + ignora defesa" } },
+                 active:{ name:"Shadow Fury", dmgPct:0.60, cooldown:3, effect:"pierce", desc:"60% power + ignores defense" } },
   fenrir:      { id:"fenrir",      family:"canine", name:"Fenrir",          rarity:"legendary", icon:"🐺",
                  archetype:"dps", passiveDesc:"+18% Power, +8% Crit, +3% Dodge",
                  passive:{ stats:[{stat:"power",valuePct:0.18},{stat:"critChance",value:0.08},{stat:"dodgeChance",value:0.03}] },
-                 active:{ name:"Rugido Cósmico", dmgPct:1.00, cooldown:3, effect:"stun", stunRounds:1, desc:"100% power + stun" } },
+                 active:{ name:"Cosmic Howl", dmgPct:1.00, cooldown:3, effect:"stun", stunRounds:1, desc:"100% power + stun" } },
 
-  // 🐱 Felinos — Assassino / Crit
-  cat_wild:    { id:"cat_wild",    family:"feline", name:"Gato Selvagem",   rarity:"common", icon:"🐱",
+  // 🐱 Felines — Assassin / Crit
+  cat_wild:    { id:"cat_wild",    family:"feline", name:"Wild Cat",        rarity:"common", icon:"🐱",
                  archetype:"crit", passiveDesc:"+5% Crit Chance",
                  passive:{ stat:"critChance", value:0.05 },
-                 active:{ name:"Arranhão", dmgPct:0.25, cooldown:4, effect:"double_crit_chance", desc:"25% power, alta chance de crit" } },
-  panther_night:{id:"panther_night",family:"feline",name:"Pantera Noturna", rarity:"rare", icon:"🐆",
+                 active:{ name:"Scratch", dmgPct:0.25, cooldown:4, effect:"double_crit_chance", desc:"25% power, high crit chance" } },
+  panther_night:{id:"panther_night",family:"feline",name:"Night Panther",   rarity:"rare", icon:"🐆",
                  archetype:"crit", passiveDesc:"+8% Crit, +10% Crit Dmg",
                  passive:{ stats:[{stat:"critChance",value:0.08},{stat:"critDamage",value:0.10}] },
-                 active:{ name:"Emboscada", dmgPct:0.50, cooldown:4, effect:"guaranteed_crit", desc:"50% power, crit garantido" } },
-  tiger_spect: { id:"tiger_spect", family:"feline", name:"Tigre Espectral", rarity:"epic", icon:"🐅",
+                 active:{ name:"Ambush", dmgPct:0.50, cooldown:4, effect:"guaranteed_crit", desc:"50% power, guaranteed crit" } },
+  tiger_spect: { id:"tiger_spect", family:"feline", name:"Spectral Tiger",  rarity:"epic", icon:"🐅",
                  archetype:"crit", passiveDesc:"+12% Crit, +20% Crit Dmg",
                  passive:{ stats:[{stat:"critChance",value:0.12},{stat:"critDamage",value:0.20}] },
-                 active:{ name:"Fúria Felina", dmgPct:0.75, cooldown:4, effect:"guaranteed_crit", desc:"75% power, crit garantido" } }, 
-  sphinx:      { id:"sphinx",      family:"feline", name:"Sphinx Ancestral",rarity:"legendary", icon:"🐈",
+                 active:{ name:"Feline Fury", dmgPct:0.75, cooldown:4, effect:"guaranteed_crit", desc:"75% power, guaranteed crit" } }, 
+  sphinx:      { id:"sphinx",      family:"feline", name:"Ancient Sphinx",  rarity:"legendary", icon:"🐈",
                  archetype:"crit", passiveDesc:"+15% Crit, +30% Crit Dmg, +5% Dodge",
                  passive:{ stats:[{stat:"critChance",value:0.15},{stat:"critDamage",value:0.30},{stat:"dodgeChance",value:0.05}] },
-                 active:{ name:"Maldição do Sphinx", dmgPct:0.80, cooldown:4, effect:"armor_break", effectRounds:3, desc:"80% power + quebra defesa" } },
+                 active:{ name:"Sphinx Curse", dmgPct:0.80, cooldown:4, effect:"armor_break", effectRounds:3, desc:"80% power + breaks defense" } },
 
-  // 🦅 Aves — Evasão / Debuff
-  hawk:        { id:"hawk",        family:"bird",   name:"Falcão",          rarity:"common", icon:"🦅",
+  // 🦅 Birds — Evasion / Debuff
+  hawk:        { id:"hawk",        family:"bird",   name:"Hawk",            rarity:"common", icon:"🦅",
                  archetype:"dodge", passiveDesc:"+5% Dodge",
                  passive:{ stat:"dodgeChance", value:0.05 },
-                 active:{ name:"Rasante", dmgPct:0.20, cooldown:3, effect:"weaken", effectRounds:2, weakenAmt:0.05, desc:"20% power + weaken 5%" } },
-  eagle_storm: { id:"eagle_storm", family:"bird",   name:"Águia Tempestal", rarity:"rare", icon:"🦅",
-                 archetype:"dodge", passiveDesc:"+8% Dodge, Inimigo -3% Crit",
+                 active:{ name:"Dive Strike", dmgPct:0.20, cooldown:3, effect:"weaken", effectRounds:2, weakenAmt:0.05, desc:"20% power + weaken 5%" } },
+  eagle_storm: { id:"eagle_storm", family:"bird",   name:"Storm Eagle",     rarity:"rare", icon:"🦅",
+                 archetype:"dodge", passiveDesc:"+8% Dodge, Enemy -3% Crit",
                  passive:{ stat:"dodgeChance", value:0.08 }, 
-                 active:{ name:"Tempestade de Penas", dmgPct:0.30, cooldown:3, effect:"weaken", effectRounds:2, weakenAmt:0.10, desc:"30% power + weaken 10%" } },
-  phoenix_min: { id:"phoenix_min", family:"bird",   name:"Fênix Menor",     rarity:"epic", icon:"🦚",
+                 active:{ name:"Feather Storm", dmgPct:0.30, cooldown:3, effect:"weaken", effectRounds:2, weakenAmt:0.10, desc:"30% power + weaken 10%" } },
+  phoenix_min: { id:"phoenix_min", family:"bird",   name:"Lesser Phoenix",   rarity:"epic", icon:"🦚",
                  archetype:"dodge", passiveDesc:"+12% Dodge, +2% HP Regen/round",
                  passive:{ stat:"dodgeChance", value:0.12 },
-                 active:{ name:"Chama Purificadora", dmgPct:0.50, cooldown:3, effect:"cleanse", desc:"50% power + cleanse" } },
-  roc:         { id:"roc",         family:"bird",   name:"Roc Celestial",   rarity:"legendary", icon:"🦅",
+                 active:{ name:"Purifying Flame", dmgPct:0.50, cooldown:3, effect:"cleanse", desc:"50% power + cleanse" } },
+  roc:         { id:"roc",         family:"bird",   name:"Celestial Roc",   rarity:"legendary", icon:"🦅",
                  archetype:"dodge", passiveDesc:"+15% Dodge, +3% HP Regen/round",
                  passive:{ stat:"dodgeChance", value:0.15 },
-                 active:{ name:"Vendaval Divino", dmgPct:0.70, cooldown:3, effect:"stun+weaken", stunRounds:1, effectRounds:3, weakenAmt:0.15, desc:"70% power + stun + weaken 15%" } },
+                 active:{ name:"Divine Gale", dmgPct:0.70, cooldown:3, effect:"stun+weaken", stunRounds:1, effectRounds:3, weakenAmt:0.15, desc:"70% power + stun + weaken 15%" } },
 
-  // 🐉 Répteis — Tank / Absorção
-  turtle:      { id:"turtle",      family:"reptile",name:"Tartaruga Rochosa", rarity:"common", icon:"🐢",
-                 archetype:"tank", passiveDesc:"Absorve 8% Dano",
+  // 🐉 Reptiles — Tank / Absorption
+  turtle:      { id:"turtle",      family:"reptile",name:"Rock Turtle",     rarity:"common", icon:"🐢",
+                 archetype:"tank", passiveDesc:"Absorbs 8% Damage",
                  passive:{ stat:"damageAbsorb", value:0.08 },
-                 active:{ name:"Carapaça", dmgPct:0, cooldown:4, effect:"block", blockHits:1, desc:"Bloqueia 1 ataque" } },
-  lizard_armor:{ id:"lizard_armor",family:"reptile",name:"Lagarto Blindado", rarity:"rare", icon:"🦎",
-                 archetype:"tank", passiveDesc:"Absorve 12% Dano, +5% Def",
+                 active:{ name:"Shell Guard", dmgPct:0, cooldown:4, effect:"block", blockHits:1, desc:"Blocks 1 attack" } },
+  lizard_armor:{ id:"lizard_armor",family:"reptile",name:"Armored Lizard",   rarity:"rare", icon:"🦎",
+                 archetype:"tank", passiveDesc:"Absorbs 12% Damage, +5% Def",
                  passive:{ stats:[{stat:"damageAbsorb",value:0.12},{stat:"defense",valuePct:0.05}] },
-                 active:{ name:"Muralha Viva", dmgPct:0, cooldown:4, effect:"block", blockHits:2, desc:"Bloqueia 2 ataques" } },
-  basilisk:    { id:"basilisk",    family:"reptile",name:"Basilisco",       rarity:"epic", icon:"🦎",
-                 archetype:"tank", passiveDesc:"Absorve 18% Dano, +8% Def",
+                 active:{ name:"Living Wall", dmgPct:0, cooldown:4, effect:"block", blockHits:2, desc:"Blocks 2 attacks" } },
+  basilisk:    { id:"basilisk",    family:"reptile",name:"Basilisk",         rarity:"epic", icon:"🦎",
+                 archetype:"tank", passiveDesc:"Absorbs 18% Damage, +8% Def",
                  passive:{ stats:[{stat:"damageAbsorb",value:0.18},{stat:"defense",valuePct:0.08}] },
-                 active:{ name:"Olhar Petrificante", dmgPct:0, cooldown:4, effect:"stun+block", stunRounds:1, blockHits:1, desc:"Stun 1 round + bloqueia 1 hit" } },
-  hydra:       { id:"hydra",       family:"reptile",name:"Hidra Anciã",     rarity:"legendary", icon:"🐉",
-                 archetype:"tank", passiveDesc:"Absorve 25% Dano, +12% Def, +1% Regen",
+                 active:{ name:"Petrifying Gaze", dmgPct:0, cooldown:4, effect:"stun+block", stunRounds:1, blockHits:1, desc:"Stun 1 round + block 1 hit" } },
+  hydra:       { id:"hydra",       family:"reptile",name:"Elder Hydra",      rarity:"legendary", icon:"🐉",
+                 archetype:"tank", passiveDesc:"Absorbs 25% Damage, +12% Def, +1% Regen",
                  passive:{ stats:[{stat:"damageAbsorb",value:0.25},{stat:"defense",valuePct:0.12}] },
-                 active:{ name:"Regeneração Ancestral", dmgPct:0, cooldown:4, effect:"block+heal", blockHits:2, healPct:0.15, desc:"Bloqueia 2 hits + cura 15%" } },
+                 active:{ name:"Ancestral Regeneration", dmgPct:0, cooldown:4, effect:"block+heal", blockHits:2, healPct:0.15, desc:"Blocks 2 hits + heals 15%" } },
 
-  // 👻 Espíritos — Suporte / Cura
+  // 👻 Spirits — Support / Healing
   wisp:        { id:"wisp",        family:"spirit", name:"Wisp",            rarity:"common", icon:"👻",
                  archetype:"support", passiveDesc:"+3% HP Regen/round",
                  passive:{ stat:"hpRegenBattle", value:0.03 },
-                 active:{ name:"Faísca Vital", dmgPct:0, cooldown:4, effect:"heal", healPct:0.10, desc:"Cura 10% HP" } },
-  fairy_lum:   { id:"fairy_lum",   family:"spirit", name:"Fada Luminosa",   rarity:"rare", icon:"🧚",
+                 active:{ name:"Vital Spark", dmgPct:0, cooldown:4, effect:"heal", healPct:0.10, desc:"Heals 10% HP" } },
+  fairy_lum:   { id:"fairy_lum",   family:"spirit", name:"Luminous Fairy",  rarity:"rare", icon:"🧚",
                  archetype:"support", passiveDesc:"+5% HP Regen/round, +3% Dodge",
                  passive:{ stats:[{stat:"hpRegenBattle",value:0.05},{stat:"dodgeChance",value:0.03}] },
-                 active:{ name:"Bênção Fae", dmgPct:0, cooldown:4, effect:"heal+buff", healPct:0.15, buffStat:"power", buffAmt:0.10, buffRounds:2, desc:"Cura 15% HP + buff 10% power" } },
-  guardian_sp: { id:"guardian_sp", family:"spirit", name:"Espírito Guardião",rarity:"epic", icon:"👼",
+                 active:{ name:"Fae Blessing", dmgPct:0, cooldown:4, effect:"heal+buff", healPct:0.15, buffStat:"power", buffAmt:0.10, buffRounds:2, desc:"Heals 15% HP + buff 10% power" } },
+  guardian_sp: { id:"guardian_sp", family:"spirit", name:"Guardian Spirit",  rarity:"epic", icon:"👼",
                  archetype:"support", passiveDesc:"+7% HP Regen/round, +5% Def",
                  passive:{ stats:[{stat:"hpRegenBattle",value:0.07},{stat:"defense",valuePct:0.05}] },
-                 active:{ name:"Escudo Espiritual", dmgPct:0, cooldown:4, effect:"heal+shield", healPct:0.20, shieldPct:0.30, desc:"Cura 20% + Escudo 30%" } },
-  angel_fallen:{ id:"angel_fallen",family:"spirit", name:"Anjo Caído",      rarity:"legendary", icon:"🪽",
+                 active:{ name:"Spirit Shield", dmgPct:0, cooldown:4, effect:"heal+shield", healPct:0.20, shieldPct:0.30, desc:"Heals 20% + Shield 30%" } },
+  angel_fallen:{ id:"angel_fallen",family:"spirit", name:"Fallen Angel",    rarity:"legendary", icon:"🪽",
                  archetype:"support", passiveDesc:"+10% HP Regen, +5% All Stats",
                  passive:{ stats:[{stat:"hpRegenBattle",value:0.10},{stat:"power",valuePct:0.05},{stat:"defense",valuePct:0.05}] },
-                 active:{ name:"Ressurreição", dmgPct:0, cooldown:99, effect:"revive", revivePct:0.30, desc:"Revive com 30% HP (1x/batalha)" } },
+                 active:{ name:"Resurrection", dmgPct:0, cooldown:99, effect:"revive", revivePct:0.30, desc:"Revive with 30% HP (1x/battle)" } },
 
-  // 🔥 Dragões — Híbrido / Power Puro
-  dragon_whelp:{ id:"dragon_whelp",family:"dragon", name:"Dragonete",       rarity:"common", icon:"🐲",
+  // 🔥 Dragons — Hybrid / Pure Power
+  dragon_whelp:{ id:"dragon_whelp",family:"dragon", name:"Dragon Whelp",    rarity:"common", icon:"🐲",
                  archetype:"hybrid", passiveDesc:"+3% Power, +3% Def",
                  passive:{ stats:[{stat:"power",valuePct:0.03},{stat:"defense",valuePct:0.03}] },
-                 active:{ name:"Cuspe de Fogo", dmgPct:0.40, cooldown:5, effect:null, desc:"40% power dano" } },
-  drake_ice:   { id:"drake_ice",   family:"dragon", name:"Drake de Gelo",   rarity:"rare", icon:"🐉",
+                 active:{ name:"Fire Spit", dmgPct:0.40, cooldown:5, effect:null, desc:"40% power damage" } },
+  drake_ice:   { id:"drake_ice",   family:"dragon", name:"Ice Drake",       rarity:"rare", icon:"🐉",
                  archetype:"hybrid", passiveDesc:"+6% Power, +6% Def, +3% Crit",
                  passive:{ stats:[{stat:"power",valuePct:0.06},{stat:"defense",valuePct:0.06},{stat:"critChance",value:0.03}] },
-                 active:{ name:"Sopro Gélido", dmgPct:0.60, cooldown:5, effect:"slow", effectRounds:1, desc:"60% power + slow" } },
-  dragon_lava: { id:"dragon_lava", family:"dragon", name:"Dragão de Lava",  rarity:"epic", icon:"🐉",
+                 active:{ name:"Frost Breath", dmgPct:0.60, cooldown:5, effect:"slow", effectRounds:1, desc:"60% power + slow" } },
+  dragon_lava: { id:"dragon_lava", family:"dragon", name:"Lava Dragon",     rarity:"epic", icon:"🐉",
                  archetype:"hybrid", passiveDesc:"+10% Power, +8% Def, +5% Crit",
                  passive:{ stats:[{stat:"power",valuePct:0.10},{stat:"defense",valuePct:0.08},{stat:"critChance",value:0.05}] },
-                 active:{ name:"Chuva de Fogo", dmgPct:0.80, cooldown:5, effect:"burn", burnPct:0.20, burnRounds:2, desc:"80% power + burn 20%" } },
-  dragon_elder:{ id:"dragon_elder",family:"dragon", name:"Dragão Ancião",   rarity:"legendary", icon:"🐉",
+                 active:{ name:"Fire Rain", dmgPct:0.80, cooldown:5, effect:"burn", burnPct:0.20, burnRounds:2, desc:"80% power + burn 20%" } },
+  dragon_elder:{ id:"dragon_elder",family:"dragon", name:"Elder Dragon",    rarity:"legendary", icon:"🐉",
                  archetype:"hybrid", passiveDesc:"+15% Power, +12% Def, +8% Crit, +5% Dodge",
                  passive:{ stats:[{stat:"power",valuePct:0.15},{stat:"defense",valuePct:0.12},{stat:"critChance",value:0.08},{stat:"dodgeChance",value:0.05}] },
-                 active:{ name:"Fúria Ancestral", dmgPct:1.20, cooldown:5, effect:"stun+burn", stunRounds:1, burnPct:0.30, burnRounds:3, desc:"120% power + stun + burn" } },
+                 active:{ name:"Ancestral Fury", dmgPct:1.20, cooldown:5, effect:"stun+burn", stunRounds:1, burnPct:0.30, burnRounds:3, desc:"120% power + stun + burn" } },
 };
 
 function rollPetRarity(chances) {
@@ -164,7 +164,7 @@ function executePetAction(pet, currentEffStats, enemyLevel) {
     // Apply defense if not piercing
     basicDmg = Math.max(1, basicDmg - (enemyLevel.defense || 0) * 0.1); 
     battleEnemyHp = Math.max(0, battleEnemyHp - basicDmg);
-    if (typeof appendBattleLog === 'function') appendBattleLog(`${species.icon} ${pet.name} ataca! ${basicDmg} dano.`, "combat-player-hit");
+    if (typeof appendBattleLog === 'function') appendBattleLog(`${species.icon} ${pet.name} attacks! ${basicDmg} damage.`, "combat-player-hit");
     petCooldown--;
     if (typeof updateEnemyHpUI === 'function') updateEnemyHpUI();
     return;
@@ -199,9 +199,9 @@ function executePetAction(pet, currentEffStats, enemyLevel) {
 
   if (dmg > 0) {
     battleEnemyHp = Math.max(0, battleEnemyHp - dmg);
-    if (typeof appendBattleLog === 'function') appendBattleLog(`${species.icon} ${pet.name} usa ${active.name}! ${dmg} dano${isCrit ? ' (CRÍTICO)!' : '!'}`, isCrit ? "combat-player-crit" : "combat-player-hit");
+    if (typeof appendBattleLog === 'function') appendBattleLog(`${species.icon} ${pet.name} uses ${active.name}! ${dmg} damage${isCrit ? ' (CRIT)!' : '!'}`, isCrit ? "combat-player-crit" : "combat-player-hit");
   } else {
-    if (typeof appendBattleLog === 'function') appendBattleLog(`${species.icon} ${pet.name} usa ${active.name}!`, "combat-player-hit");
+    if (typeof appendBattleLog === 'function') appendBattleLog(`${species.icon} ${pet.name} uses ${active.name}!`, "combat-player-hit");
   }
 
   // Apply effects
@@ -225,7 +225,7 @@ function executePetAction(pet, currentEffStats, enemyLevel) {
       } else if (eff === "heal") {
         const heal = Math.round(battlePlayerMaxHp * (active.healPct || 0.10) * happinessMult);
         battlePlayerHp = Math.min(battlePlayerMaxHp, battlePlayerHp + heal);
-        if (typeof appendBattleLog === 'function') appendBattleLog(`${species.icon} ${pet.name} curou você em ${heal} HP!`, "combat-player-hit");
+        if (typeof appendBattleLog === 'function') appendBattleLog(`${species.icon} ${pet.name} healed you for ${heal} HP!`, "combat-player-hit");
         if (typeof updatePlayerHpUI === 'function') updatePlayerHpUI();
       } else if (eff === "shield") {
         const shieldAmt = Math.round(battlePlayerMaxHp * (active.shieldPct || 0.30) * happinessMult);
@@ -256,16 +256,16 @@ function hatchEgg(eggId) {
   if (!egg) return;
   
   if (playerState.hatchingEgg) {
-    if (typeof showToast === 'function') showToast("Você já está chocando um ovo!", "error");
+    if (typeof showToast === 'function') showToast("You are already hatching an egg!", "error");
     return;
   }
   
   if (playerState.pets.length >= playerState.petStable) {
-    if (typeof showToast === 'function') showToast("Seu estábulo de pets está cheio!", "error");
+    if (typeof showToast === 'function') showToast("Your pet stable is full!", "error");
     return;
   }
 
-  // Remove ovo do inventário
+  // Remove egg from inventory
   const invIndex = playerState.inventory.findIndex(i => i.id === eggId);
   if (invIndex === -1) return;
   
@@ -274,7 +274,7 @@ function hatchEgg(eggId) {
     playerState.inventory.splice(invIndex, 1);
   }
 
-  // Iniciar timer
+  // Start timer
   const now = Date.now();
   playerState.hatchingEgg = {
     eggId,
@@ -284,7 +284,7 @@ function hatchEgg(eggId) {
   
   if (typeof savePlayerState === 'function') savePlayerState();
   if (typeof renderPetSection === 'function') renderPetSection();
-  if (typeof showToast === 'function') showToast(`Ovo colocado na incubadora! Tempo: ${Math.round(egg.hatchTimeMs/60000)}m`, "success");
+  if (typeof showToast === 'function') showToast(`Egg placed in incubator! Time: ${Math.round(egg.hatchTimeMs/60000)}m`, "success");
 }
 
 function completeHatching() {
@@ -309,7 +309,7 @@ function completeHatching() {
   
   if (typeof savePlayerState === 'function') savePlayerState();
   if (typeof renderPetSection === 'function') renderPetSection();
-  if (typeof showToast === 'function') showToast(`🐣 Um ${pet.name} (${pet.rarity}) nasceu!`, "success");
+  if (typeof showToast === 'function') showToast(`🐣 A ${pet.name} (${pet.rarity}) has hatched!`, "success");
 }
 
 function checkHatchingTimer() {
@@ -332,18 +332,11 @@ function updatePetHappiness() {
   let changed = false;
   
   playerState.pets.forEach(pet => {
-    // Diminui 1 de felicidade a cada hora real passada desde a última alimentação
+    // Decrease 1 happiness per real hour since last feeding
     const hoursPassed = Math.floor((now - (pet.lastFed || now)) / 3600000);
     
-    // Atualiza progressivamente (se passaram 2 horas, perde 2, mas só registramos a perda)
-    // Para simplificar, a cada tick, verificamos se passaram N horas.
-    // Vamos registrar o tempo exato para não perder horas fracionadas.
-    // Mas para isso precisamos armazenar lastHappinessUpdate, ou apenas usar lastFed como âncora.
-    const expectedHappinessLost = hoursPassed; 
-    
-    // Como a felicidade cai com o tempo, a fórmula exata seria:
-    // Felicidade Atual = FelicidadeBase - HorasPassadas + FelicidadeRecuperada
-    // É mais fácil deduzir 1 a cada hora usando um ticker menor:
+    // Update progressively (if 2 hours passed, lose 2)
+    const expectedHappinessLost = hoursPassed;
     
     if (!pet.lastHappinessTick) pet.lastHappinessTick = now;
     
@@ -368,11 +361,11 @@ function feedPet(petId, foodItemId) {
 
   const invIndex = playerState.inventory.findIndex(i => i.id === foodItemId);
   if (invIndex === -1) {
-    if (typeof showToast === 'function') showToast("Você não possui essa comida!", "error");
+    if (typeof showToast === 'function') showToast("You don't have that food!", "error");
     return;
   }
   
-  // Vamos assumir que CONSUMABLE_ITEMS contém a comida
+  // Assume CONSUMABLE_ITEMS contains the food item
   const food = typeof CONSUMABLE_ITEMS !== 'undefined' ? CONSUMABLE_ITEMS[foodItemId] : null;
   const feedAmount = food ? (food.feedAmount || 20) : 20;
 
@@ -387,7 +380,7 @@ function feedPet(petId, foodItemId) {
 
   if (typeof savePlayerState === 'function') savePlayerState();
   if (typeof renderPetSection === 'function') renderPetSection();
-  if (typeof showToast === 'function') showToast(`❤️ ${pet.name} ficou mais feliz! (+${feedAmount})`, "success");
+  if (typeof showToast === 'function') showToast(`❤️ ${pet.name} is happier! (+${feedAmount})`, "success");
 }
 
 // ================================================================
@@ -415,9 +408,9 @@ function renderPetSection() {
           <div class="pet-icon" style="font-size: 3rem;">${species.icon}</div>
           <div class="pet-details">
             <h4>${pet.name} (Lvl ${pet.level})</h4>
-            <p style="font-size: 0.8rem; color: #aaa;">Raridade: ${species.rarity} | Estágio: ${pet.stage || 1}</p>
-            <p style="font-size: 0.8rem;">Felicidade: ${pet.happiness}/100 
-               <button class="btn-secondary" style="padding: 2px 5px; font-size: 0.7rem;" onclick="feedPetUI('${pet.id}')">🍖 Alimentar</button>
+            <p style="font-size: 0.8rem; color: #aaa;">Rarity: ${species.rarity} | Stage: ${pet.stage || 1}</p>
+            <p style="font-size: 0.8rem;">Happiness: ${pet.happiness}/100 
+               <button class="btn-secondary" style="padding: 2px 5px; font-size: 0.7rem;" onclick="feedPetUI('${pet.id}')">🍖 Feed</button>
             </p>
             <div class="xp-bar-container" style="margin-top: 5px;">
               <div class="xp-bar-fill" style="width: ${xpPct}%;"></div>
@@ -425,16 +418,16 @@ function renderPetSection() {
             <p style="font-size: 0.7rem; text-align: center;">${xpText} XP</p>
           </div>
           <div style="margin-top: 10px; display: flex; gap: 5px; justify-content: center;">
-            <button class="btn-secondary" onclick="setPetActive(null)">Desequipar</button>
-            ${(pet.stage || 1) < 3 && pet.level >= ((pet.stage || 1) * 10) ? `<button class="btn-primary" onclick="evolvePet('${pet.id}')">✨ Evoluir</button>` : ''}
+            <button class="btn-secondary" onclick="setPetActive(null)">Unequip</button>
+            ${(pet.stage || 1) < 3 && pet.level >= ((pet.stage || 1) * 10) ? `<button class="btn-primary" onclick="evolvePet('${pet.id}')">✨ Evolve</button>` : ''}
           </div>
         </div>
       `;
     } else {
-      activeDisplay.innerHTML = `<p class="empty-message">Pet não encontrado.</p>`;
+      activeDisplay.innerHTML = `<p class="empty-message">Pet not found.</p>`;
     }
   } else {
-    activeDisplay.innerHTML = `<p class="empty-message">Nenhum pet ativo.</p>`;
+    activeDisplay.innerHTML = `<p class="empty-message">No active pet.</p>`;
   }
 
   // Render Hatching
@@ -442,8 +435,8 @@ function renderPetSection() {
     const egg = PET_EGGS[playerState.hatchingEgg.eggId];
     hatchingDisplay.innerHTML = `
       <div class="hatching-card" style="padding: 10px; background: rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 8px;">
-        <h5>🥚 Incubadora: ${egg.name}</h5>
-        <p id="hatching-timer-text">Calculando...</p>
+        <h5>🥚 Incubator: ${egg.name}</h5>
+        <p id="hatching-timer-text">Calculating...</p>
       </div>
     `;
     updateHatchTimerUI();
@@ -453,7 +446,7 @@ function renderPetSection() {
 
   // Render Collection
   if (playerState.pets.length > 0) {
-    collectionList.innerHTML = `<h4>Estábulo (${playerState.pets.length}/${playerState.petStable})</h4>`;
+    collectionList.innerHTML = `<h4>Stable (${playerState.pets.length}/${playerState.petStable})</h4>`;
     const grid = document.createElement("div");
     grid.style.display = "grid";
     grid.style.gridTemplateColumns = "1fr 1fr";
@@ -476,14 +469,14 @@ function renderPetSection() {
         <div style="font-weight: bold; margin: 5px 0;">${pet.name}</div>
         <div style="font-size: 0.8rem; color: #aaa;">Lvl ${pet.level} | ${species.rarity}</div>
         <div style="font-size: 0.8rem;">❤️ ${pet.happiness}/100</div>
-        ${!isEquipped ? `<button class="btn-primary" style="margin-top: 5px; width: 100%;" onclick="setPetActive('${pet.id}')">Equipar</button>` : ''}
+        ${!isEquipped ? `<button class="btn-primary" style="margin-top: 5px; width: 100%;" onclick="setPetActive('${pet.id}')">Equip</button>` : ''}
       `;
       grid.appendChild(card);
     });
     
     collectionList.appendChild(grid);
   } else {
-    collectionList.innerHTML = `<p class="empty-message">Você não possui pets.</p>`;
+    collectionList.innerHTML = `<p class="empty-message">You don't have any pets.</p>`;
   }
 }
 
@@ -495,11 +488,11 @@ function updateHatchTimerUI() {
   const left = playerState.hatchingEgg.endTime - now;
   
   if (left <= 0) {
-    el.textContent = "Pronto para nascer!";
+    el.textContent = "Ready to hatch!";
   } else {
     const mins = Math.floor(left / 60000);
     const secs = Math.floor((left % 60000) / 1000);
-    el.textContent = `Faltam ${mins}m ${secs}s`;
+    el.textContent = `${mins}m ${secs}s remaining`;
   }
 }
 
@@ -507,8 +500,8 @@ function setPetActive(petId) {
   playerState.activePet = petId;
   if (typeof savePlayerState === 'function') savePlayerState();
   if (typeof renderPetSection === 'function') renderPetSection();
-  if (typeof renderStats === 'function') renderStats(); // Atualiza atributos baseados no pet
-  if (petId && typeof showToast === 'function') showToast("Pet equipado!", "success");
+  if (typeof renderStats === 'function') renderStats(); // Update stats based on pet
+  if (petId && typeof showToast === 'function') showToast("Pet equipped!", "success");
 }
 
 function feedPetUI(petId) {
@@ -526,7 +519,7 @@ function feedPetUI(petId) {
   }
   
   if (!hasFood) {
-    if (typeof showToast === 'function') showToast("Você não possui carne, peixe ou outras comidas!", "error");
+    if (typeof showToast === 'function') showToast("You don't have any meat, fish or other food!", "error");
   }
 }
 
@@ -561,33 +554,33 @@ function evolvePet(petId) {
   
   if (pet.stage === 1) {
     if (pet.level < 10) {
-      if (typeof showToast === 'function') showToast("O pet precisa estar no nível 10 para evoluir!", "error");
+      if (typeof showToast === 'function') showToast("Pet must be level 10 to evolve!", "error");
       return;
     }
     if (playerState.gold < 1000) {
-      if (typeof showToast === 'function') showToast("Você precisa de 1000 de Ouro!", "error");
+      if (typeof showToast === 'function') showToast("You need 1000 Gold!", "error");
       return;
     }
-    // Simplificando o custo de materiais por enquanto
+    // Simplified material costs for now
     playerState.gold -= 1000;
     pet.stage = 2;
     pet.name = "Awakened " + pet.name;
-    if (typeof showToast === 'function') showToast(`✨ O pet evoluiu para o Estágio 2!`, "success");
+    if (typeof showToast === 'function') showToast(`✨ Your pet evolved to Stage 2!`, "success");
   } else if (pet.stage === 2) {
     if (pet.level < 20) {
-      if (typeof showToast === 'function') showToast("O pet precisa estar no nível 20 para evoluir!", "error");
+      if (typeof showToast === 'function') showToast("Pet must be level 20 to evolve!", "error");
       return;
     }
     if (playerState.gold < 5000) {
-      if (typeof showToast === 'function') showToast("Você precisa de 5000 de Ouro!", "error");
+      if (typeof showToast === 'function') showToast("You need 5000 Gold!", "error");
       return;
     }
     playerState.gold -= 5000;
     pet.stage = 3;
     pet.name = "Ascended " + pet.name.replace("Awakened ", "");
-    if (typeof showToast === 'function') showToast(`🌟 O pet evoluiu para o Estágio Final!`, "success");
+    if (typeof showToast === 'function') showToast(`🌟 Your pet evolved to Final Stage!`, "success");
   } else {
-    if (typeof showToast === 'function') showToast("Este pet já atingiu o nível máximo de evolução.", "info");
+    if (typeof showToast === 'function') showToast("This pet has already reached max evolution.", "info");
     return;
   }
   

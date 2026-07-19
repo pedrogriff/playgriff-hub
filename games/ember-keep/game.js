@@ -1,4 +1,4 @@
-// ================================================================
+﻿// ================================================================
 // EMBER KEEP — Core Game Logic (Phase 1)
 // ================================================================
 
@@ -56,21 +56,21 @@ const SIDE_ZONES = [
 ];
 
 const REGIONS = [
-  { id:"greenhollow", name:"Greenhollow",  icon:"🌲", theme:"forest",   color:"#4ade80",
-    minLevel:1,  maxLevel:5,  fortressName:"Forte do Vale",       fortressIcon:"🏰",
-    desc:"Uma floresta ancestral protegida por antigas muralhas." },
+  { id:"greenhollow", name:"Greenhollow",  icon:"🌿", theme:"forest",   color:"#22c55e",
+    minLevel:1,  maxLevel:5,  fortressName:"Valley Fort",          fortressIcon:"🏰",
+    desc:"An ancient forest protected by old walls." },
   { id:"frosthold",   name:"Frosthold",    icon:"❄️", theme:"ice",      color:"#60a5fa",
-    minLevel:6,  maxLevel:10, fortressName:"Cidadela do Gelo",    fortressIcon:"🏔️",
-    desc:"Picos congelados onde apenas os mais fortes sobrevivem." },
+    minLevel:6,  maxLevel:10, fortressName:"Ice Citadel",          fortressIcon:"🏔️",
+    desc:"Frozen peaks where only the strongest survive." },
   { id:"ashenvale",   name:"Ashenvale",    icon:"🌋", theme:"volcanic", color:"#f59e0b",
-    minLevel:11, maxLevel:17, fortressName:"Bastião de Cinzas",   fortressIcon:"🏯",
-    desc:"Terras queimadas por vulcões ativos." },
+    minLevel:11, maxLevel:17, fortressName:"Ash Bastion",          fortressIcon:"🏯",
+    desc:"Scorched lands by active volcanoes." },
   { id:"shadowmere",  name:"Shadowmere",   icon:"🌑", theme:"shadow",   color:"#8b5cf6",
-    minLevel:18, maxLevel:24, fortressName:"Torre das Sombras",   fortressIcon:"🗼",
-    desc:"Pântanos envenenados envoltos em neblina eterna." },
+    minLevel:18, maxLevel:24, fortressName:"Shadow Tower",         fortressIcon:"🗼",
+    desc:"Poisoned swamps shrouded in eternal fog." },
   { id:"emberpeak",   name:"Emberpeak",    icon:"🔥", theme:"ember",    color:"#ff6b35",
-    minLevel:25, maxLevel:30, fortressName:"Fortaleza Ember",     fortressIcon:"🔥",
-    desc:"O coração ardente do mundo. O prêmio final." },
+    minLevel:25, maxLevel:30, fortressName:"Ember Fortress",       fortressIcon:"🔥",
+    desc:"The fiery heart of the world. The ultimate prize." },
 ];
 
 // ================================================================
@@ -256,7 +256,7 @@ const MATERIAL_ITEMS = {
 
 const PRODUCTION_SKILLS = {
   farming:    { id:"farming",    name:"Agricultura",   icon:"🌾", desc:"Cultive grãos e ervas" },
-  ranching:   { id:"ranching",   name:"Agropecuária",  icon:"🐄", desc:"Crie animais para carne e couro" },
+  ranching:   { id:"ranching",   name:"Ranching",  icon:"🐄", desc:"Raise animals for meat and leather" },
   alchemy:    { id:"alchemy",    name:"Alquimia",      icon:"⚗️", desc:"Crie poções e elixires" },
   blacksmith: { id:"blacksmith", name:"Armeiro",       icon:"⚔️", desc:"Forje armas poderosas" },
   tanning:    { id:"tanning",    name:"Curtidor",      icon:"🐂", desc:"Processe couros e peles" },
@@ -325,63 +325,63 @@ const SP_OPTIONS = [
 // HOUSING SYSTEM CONSTANTS
 // ================================================================
 const HOUSE_TIERS = [
-  { tier: 0, name: "Sem Moradia",      slots: 0, maxDecorations: 0,  cost: 0,     icon: "🏕️",
-    desc: "Você dorme ao relento." },
-  { tier: 1, name: "Barraca Simples",   slots: 2, maxDecorations: 2,  cost: 100,   icon: "⛺",
-    desc: "Uma barraca modesta. Espaço para o básico.", materials: [] },
-  { tier: 2, name: "Cabana de Madeira", slots: 4, maxDecorations: 5,  cost: 500,   icon: "🛖",
-    desc: "Paredes de madeira e um teto sólido.",
+  { tier: 0, name: "No Housing",        slots: 0, maxDecorations: 0,  cost: 0,     icon: "🏕️",
+    desc: "You sleep outdoors." },
+  { tier: 1, name: "Simple Tent",       slots: 2, maxDecorations: 2,  cost: 100,   icon: "⛺",
+    desc: "A modest tent. Room for the basics.", materials: [] },
+  { tier: 2, name: "Wooden Cabin",      slots: 4, maxDecorations: 5,  cost: 500,   icon: "🛖",
+    desc: "Wooden walls and a solid roof.",
     materials: [{ id:"mat_wood", qty:10 }] },
-  { tier: 3, name: "Casa de Pedra",     slots: 6, maxDecorations: 8,  cost: 2000,  icon: "🏠",
-    desc: "Uma casa resistente com múltiplos cômodos.",
+  { tier: 3, name: "Stone House",       slots: 6, maxDecorations: 8,  cost: 2000,  icon: "🏠",
+    desc: "A sturdy house with multiple rooms.",
     materials: [{ id:"mat_stone", qty:15 }, { id:"mat_wood", qty:10 }] },
-  { tier: 4, name: "Mansão do Herói",   slots: 8, maxDecorations: 12, cost: 8000,  icon: "🏰",
-    desc: "Uma mansão digna de lendas.",
+  { tier: 4, name: "Hero's Mansion",    slots: 8, maxDecorations: 12, cost: 8000,  icon: "🏰",
+    desc: "A mansion worthy of legends.",
     materials: [{ id:"mat_stone", qty:25 }, { id:"mat_iron_ore", qty:10 }, { id:"mat_wood", qty:15 }] },
-  { tier: 5, name: "Fortaleza Ember",   slots: 10, maxDecorations: 20, cost: 25000, icon: "🏯",
-    desc: "Uma fortaleza imponente. O ápice do conforto e poder.",
+  { tier: 5, name: "Ember Fortress",    slots: 10, maxDecorations: 20, cost: 25000, icon: "🏯",
+    desc: "An imposing fortress. The pinnacle of comfort and power.",
     materials: [{ id:"mat_celestial_ingot", qty:3 }, { id:"mat_dragon_scale", qty:5 },
                { id:"mat_stone", qty:30 }, { id:"mat_wood", qty:20 }] },
 ];
 
 const HOUSE_STATIONS = {
-  farm_plot:    { id:"farm_plot",    name:"Campo de Cultivo",  icon:"🌾", skill:"farming",
+  farm_plot:    { id:"farm_plot",    name:"Farm Plot",         icon:"🌾", skill:"farming",
                   cost:50,   materials:[{id:"mat_wood",qty:5}],     minHouseTier:1 },
-  ranch:        { id:"ranch",        name:"Curral",            icon:"🐄", skill:"ranching",
+  ranch:        { id:"ranch",        name:"Ranch",             icon:"🐄", skill:"ranching",
                   cost:80,   materials:[{id:"mat_wood",qty:8}],     minHouseTier:1 },
-  alchemy_lab:  { id:"alchemy_lab",  name:"Mesa de Alquimia",  icon:"⚗️", skill:"alchemy",
+  alchemy_lab:  { id:"alchemy_lab",  name:"Alchemy Table",     icon:"⚗️", skill:"alchemy",
                   cost:60,   materials:[{id:"mat_vial",qty:3}],     minHouseTier:1 },
-  forge:        { id:"forge",        name:"Forja",             icon:"🔨", skill:"blacksmith",
+  forge:        { id:"forge",        name:"Forge",             icon:"🔨", skill:"blacksmith",
                   cost:100,  materials:[{id:"mat_iron_ore",qty:5},{id:"mat_coal",qty:3}], minHouseTier:2 },
-  tannery:      { id:"tannery",      name:"Curtume",           icon:"🐂", skill:"tanning",
+  tannery:      { id:"tannery",      name:"Tannery",           icon:"🐂", skill:"tanning",
                   cost:70,   materials:[{id:"mat_wood",qty:5},{id:"mat_tannin",qty:3}],   minHouseTier:1 },
-  loom:         { id:"loom",         name:"Tear",              icon:"🧵", skill:"tailoring",
+  loom:         { id:"loom",         name:"Loom",              icon:"🧵", skill:"tailoring",
                   cost:80,   materials:[{id:"mat_thread",qty:5}],   minHouseTier:2 },
-  training_dummy:{ id:"training_dummy",name:"Boneco de Treino", icon:"🎯", skill:null,
+  training_dummy:{ id:"training_dummy",name:"Training Dummy",  icon:"🎯", skill:null,
                   cost:150,  materials:[{id:"mat_wood",qty:10},{id:"mat_leather",qty:5}], minHouseTier:2 },
-  kitchen:      { id:"kitchen",      name:"Cozinha",           icon:"🍳", skill:"cooking",
+  kitchen:      { id:"kitchen",      name:"Kitchen",           icon:"🍳", skill:"cooking",
                   cost:60,   materials:[{id:"mat_wood",qty:5}],     minHouseTier:1 },
-  rest_bed:     { id:"rest_bed",     name:"Cama de Descanso",  icon:"🛏️", skill:null,
+  rest_bed:     { id:"rest_bed",     name:"Rest Bed",          icon:"🛏️", skill:null,
                   cost:40,   materials:[{id:"mat_leather",qty:3}],  minHouseTier:1 },
-  mystic_font:  { id:"mystic_font",  name:"Fonte Mística",     icon:"✨", skill:null,
+  mystic_font:  { id:"mystic_font",  name:"Mystic Font",       icon:"✨", skill:null,
                   cost:200,  materials:[{id:"mat_shard",qty:5}],    minHouseTier:3 },
 };
 
 const DECORATIONS = {
-  deco_flower_pot:  { id:"deco_flower_pot",  name:"Vaso de Flores",  icon:"🪴", category:"plants",
+  deco_flower_pot:  { id:"deco_flower_pot",  name:"Flower Pot",     icon:"🪴", category:"plants",
                       cost:30, premium:false, bonus:{ type:"hpRegen", value:0.01 } },
-  deco_candle:      { id:"deco_candle",      name:"Candelabro",      icon:"🕯️", category:"lighting",
+  deco_candle:      { id:"deco_candle",      name:"Candelabra",     icon:"🕯️", category:"lighting",
                       cost:50, premium:false, bonus:null },
-  deco_dragon_head: { id:"deco_dragon_head", name:"Cabeça de Dragão",icon:"🐉", category:"trophy",
+  deco_dragon_head: { id:"deco_dragon_head", name:"Dragon Head",    icon:"🐉", category:"trophy",
                       cost:0,  premium:false, bonus:null,
                       unlock:"defeat_level_10" },
-  deco_golden_throne:{ id:"deco_golden_throne",name:"Trono Dourado", icon:"👑", category:"furniture",
+  deco_golden_throne:{ id:"deco_golden_throne",name:"Golden Throne",icon:"👑", category:"furniture",
                       premiumCost:50, premium:true, bonus:null },
-  deco_fireplace:   { id:"deco_fireplace",   name:"Lareira Ember",   icon:"🔥", category:"furniture",
+  deco_fireplace:   { id:"deco_fireplace",   name:"Ember Fireplace",icon:"🔥", category:"furniture",
                       premiumCost:30, premium:true, bonus:null },
-  deco_portal:      { id:"deco_portal",      name:"Portal Dimensional",icon:"🌀", category:"magic",
+  deco_portal:      { id:"deco_portal",      name:"Dimensional Portal",icon:"🌀", category:"magic",
                       premiumCost:100, premium:true, bonus:null },
-  deco_hero_statue: { id:"deco_hero_statue", name:"Estátua do Herói", icon:"🗽", category:"trophy",
+  deco_hero_statue: { id:"deco_hero_statue", name:"Hero Statue",    icon:"🗽", category:"trophy",
                       premiumCost:75, premium:true, bonus:null },
 };
 
@@ -564,7 +564,7 @@ function checkAchievements(triggerType, data) {
     if (unlocked) {
       playerState.achievements.push(ach.id);
       addGems(ach.gems);
-      showToast(`🏆 Conquista: ${ach.name}! +${ach.gems} 💎`, "success");
+      showToast(`🏆 Achievement: ${ach.name}! +${ach.gems} 💎`, "success");
       changed = true;
     }
   });
@@ -678,7 +678,7 @@ function initSocialTabs() {
     btn.addEventListener("click", (e) => {
       const container = e.currentTarget.closest(".modal-body, #social-tab");
       
-      // Se é da Vila ou do Social
+      // Whether from the Village or Social modal
       const groupBtns = container.querySelectorAll(".social-tab-btn");
       groupBtns.forEach(b => b.classList.remove("active"));
       e.currentTarget.classList.add("active");
@@ -934,7 +934,7 @@ function claimDailyReward() {
   playerState.lastLoginDate = new Date().toDateString();
   savePlayerState();
   document.getElementById("daily-reward-modal").classList.remove("active");
-  showToast(`Você recebeu ${amount} Gemas pelo login diário!`, "success");
+  showToast(`You received ${amount} Gems for daily login!`, "success");
 }
 
 function triggerStateUpdateEvent() {
@@ -1009,7 +1009,7 @@ function startStaminaTicker() {
           playerState.stamina = getMaxStamina(playerState.level);
           playerState.currentHp = getEffectiveStats().maxHp;
           if (typeof playSound === "function") playSound("level_up");
-          if (typeof showToast === "function") showToast(`Level Up! Você atingiu o Nível ${playerState.level}!`, "success");
+          if (typeof showToast === "function") showToast(`Level Up! You reached Level ${playerState.level}!`, "success");
           changed = true;
         }
       }
@@ -1156,7 +1156,7 @@ function gainProductionXP(skillId, amount) {
   while (skill.level < maxLevel && skill.xp >= PROD_SKILL_XP_TABLE[skill.level + 1]) {
     skill.xp -= PROD_SKILL_XP_TABLE[skill.level + 1];
     skill.level++;
-    showNotification(`OBA! Você upou ${PRODUCTION_SKILLS[skillId].name} para Nível ${skill.level}!`, "success");
+    showNotification(`YAY! You leveled up ${PRODUCTION_SKILLS[skillId].name} to Level ${skill.level}!`, "success");
   }
 }
 
@@ -1319,7 +1319,7 @@ function renderCampaignMap() {
     <div class="act-levels-row" style="justify-content: center;">
       <div class="level-node house-node" id="map-house-node">
         <span class="level-icon">${HOUSE_TIERS[playerState.house.tier]?.icon || "🏕️"}</span>
-        <span class="level-num">Minha Casa</span>
+        <span class="level-num">My House</span>
       </div>
     </div>
   `;
@@ -1387,7 +1387,7 @@ function renderWorldMap() {
     const isLocked = playerState.level < region.minLevel;
     
     // Check quem controla o fort
-    let ownerStr = "Nenhum";
+    let ownerStr = "None";
     let ownerClan = null;
     if (typeof localStorage !== "undefined") {
       const fortOwnerId = localStorage.getItem(`fortress_${region.id}`);
@@ -1403,9 +1403,9 @@ function renderWorldMap() {
     
     let actionsHtml = "";
     if (isLocked) {
-      actionsHtml = `<button disabled>Bloqueado</button>`;
+      actionsHtml = `<button disabled>Locked</button>`;
     } else {
-      actionsHtml = `<button onclick="openVillageModal('${region.id}')">🏘️ Entrar na Vila</button>`;
+      actionsHtml = `<button onclick="openVillageModal('${region.id}')">🏘️ Enter Village</button>`;
     }
 
     card.innerHTML = `
@@ -1652,7 +1652,7 @@ function renderPremiumStore(tab) {
           <li>💰 +15% Gold e +10% XP em Batalhas</li>
           <li>✨ Badge Exclusivo no Chat/Ranking</li>
         </ul>
-        <button class="btn-action" style="font-size:1.2rem; padding:10px 30px; margin-top:15px;" onclick="buyEmberPass()">Comprar (900 💎)</button>
+        <button class="btn-action" style="font-size:1.2rem; padding:10px 30px; margin-top:15px;" onclick="buyEmberPass()">Buy (900 💎)</button>
       </div>
     `;
   } else if (tab === "gems") {
@@ -1696,7 +1696,7 @@ function renderPremiumStore(tab) {
         <div class="recipe-card">
           <div style="font-size:2rem; text-align:center;">💖</div>
           <h4 style="text-align:center; margin:5px 0;">Lágrima de Fênix</h4>
-          <p style="font-size:0.8rem; text-align:center;">Revive com 50% HP. (1/batalha)</p>
+          <p style="font-size:0.8rem; text-align:center;">Revive with 50% HP. (1/battle)</p>
           <button class="btn-action" style="width:100%; margin-top:10px;" onclick="buyPremiumConsumable('second_chance', 100)">100 💎</button>
         </div>
       </div>
@@ -1708,7 +1708,7 @@ function renderPremiumStore(tab) {
 
 function buyEmberPass() {
   if (playerState.gems < 900) {
-    showToast("Gemas insuficientes!", "error");
+    showToast("Not enough Gems!", "error");
     return;
   }
   
@@ -1725,16 +1725,16 @@ function buyEmberPass() {
   savePlayerState();
   if (typeof renderStats === "function") renderStats();
   document.getElementById("premium-store-modal").classList.remove("active");
-  showToast("Ember Pass ativado por 30 dias!", "success");
+  showToast("Ember Pass activated for 30 days!", "success");
 }
 
 function buyPremiumConsumable(type, cost) {
   if (playerState.gems < cost) {
-    showToast("Gemas insuficientes!", "error");
+    showToast("Not enough Gems!", "error");
     return;
   }
   if (!canUsePremiumConsumable(type)) {
-    showToast("Limite diário/batalha atingido para este item!", "error");
+    showToast("Daily/battle limit reached for this item!", "error");
     return;
   }
   
@@ -1743,23 +1743,23 @@ function buyPremiumConsumable(type, cost) {
   
   if (type === "stamina_refill") {
     playerState.stamina = getMaxStamina(playerState.level);
-    showToast("Stamina totalmente restaurada!", "success");
+    showToast("Stamina fully restored!", "success");
   } else if (type === "prod_skip") {
     if (!playerState.productionTimers) playerState.productionTimers = [];
     playerState.productionTimers.forEach(t => t.endTime -= 60 * 60 * 1000); // reduz 1h
     checkProductionTimers();
-    showToast("1 Hora pulada em todas as produções!", "success");
+    showToast("Skipped 1 hour on all productions!", "success");
   } else if (type === "second_chance") {
     if (activeBattleInterval && battlePlayerHp <= 0) {
       battlePlayerHp = Math.floor(playerState.stats.maxHp * 0.5);
       updatePlayerHpUI();
-      appendBattleLog("Lágrima de Fênix usada! Você reviveu com 50% HP!", "combat-buff");
-      showToast("Você reviveu!", "success");
+      appendBattleLog("Phoenix Tear used! You revived with 50% HP!", "combat-buff");
+      showToast("You revived!", "success");
     } else {
       // Add to inventory? Wait, the prompt says "consumable", but we can just add an item.
       // Or just apply the buff? Let's just give them the item.
       addToInventory("phoenix_tear", 1);
-      showToast("Lágrima de Fênix comprada!", "success");
+      showToast("Phoenix Tear bought!", "success");
     }
   }
   
@@ -2802,7 +2802,7 @@ function startBattleSimulation(level) {
         if (activePetData && activePetData.speciesId === "angel_fallen" && !battleEffects.petReviveUsed) {
           battleEffects.petReviveUsed = true;
           battlePlayerHp = Math.floor(battlePlayerMaxHp * 0.30);
-          appendBattleLog(`🪽 Anjo Caído reviveu você com 30% HP!`, "combat-player-crit");
+          appendBattleLog(`🪽 Fallen Angel revived you with 30% HP!`, "combat-player-crit");
           updatePlayerHpUI();
         } else {
           handleBattleDefeat(); return; 
@@ -2878,8 +2878,8 @@ function handleBattleVictory(level) {
       while (pet.level < 20 && pet.xp >= PET_XP_TABLE[pet.level]) {
         pet.xp -= PET_XP_TABLE[pet.level];
         pet.level++;
-        appendBattleLog(`⭐ ${pet.name} subiu para nível ${pet.level}!`, "combat-victory");
-        if (typeof showToast === 'function') showToast(`⭐ Pet ${pet.name} Nível ${pet.level}!`, "success");
+        appendBattleLog(`⭐ ${pet.name} subiu to Level ${pet.level}!`, "combat-victory");
+        if (typeof showToast === 'function') showToast(`⭐ Pet ${pet.name} Level ${pet.level}!`, "success");
       }
     }
   }
@@ -2962,7 +2962,7 @@ function handleBattleVictory(level) {
       playerState.inventory.push({ id: droppedEgg.id, qty: 1 });
     }
     appendBattleLog(`🥚 Found ${droppedEgg.name}!`, "combat-victory");
-    if (typeof showToast === 'function') showToast(`🥚 ${droppedEgg.name} dropado!`, "success");
+    if (typeof showToast === 'function') showToast(`🥚 ${droppedEgg.name} dropped!`, "success");
   }
 
   savePlayerState();
@@ -3004,7 +3004,7 @@ function checkForLootDrop(level) {
     dropChance = PREMIUM_BONUSES.lootDropChance + (bonuses.extraDropChance / 100);
   }
   
-  if (Math.random() > dropChance) return; // Drop chance com bônus
+  if (Math.random() > dropChance) return; // Drop chance with bonus
 
   const isRingDrop = Math.random() < 0.28; // 28% chance for ring
   if (isRingDrop) {
@@ -3185,17 +3185,17 @@ function getHouseInfo() {
 
 function upgradeHouse() {
   const nextTier = playerState.house.tier + 1;
-  if (nextTier > 5) { showToast("Casa já está no nível máximo!", "error"); return; }
+  if (nextTier > 5) { showToast("House is already at max level!", "error"); return; }
   
   const tierData = HOUSE_TIERS[nextTier];
-  if (playerState.gold < tierData.cost) { showToast("Gold insuficiente para melhorar a casa!", "error"); return; }
+  if (playerState.gold < tierData.cost) { showToast("Not enough Gold to upgrade house!", "error"); return; }
   
   // Verify materials
   if (tierData.materials) {
     for (const mat of tierData.materials) {
       const inv = playerState.inventory.find(i => i.id === mat.id);
       if (!inv || (inv.qty || 1) < mat.qty) {
-        showToast(`Material insuficiente: ${ALL_ITEMS[mat.id]?.name || mat.id}`, "error");
+        showToast(`Not enough material: ${ALL_ITEMS[mat.id]?.name || mat.id}`, "error");
         return;
       }
     }
@@ -3215,7 +3215,7 @@ function upgradeHouse() {
   savePlayerState();
   if (typeof renderHouse === "function") renderHouse();
   if (typeof renderStats === "function") renderStats();
-  showToast(`🏠 Casa melhorada para ${tierData.name}!`, "success");
+  showToast(`🏠 House upgraded to ${tierData.name}!`, "success");
 }
 
 function installStation(stationId) {
@@ -3223,19 +3223,19 @@ function installStation(stationId) {
   if (!station) return;
   
   const houseInfo = getHouseInfo();
-  if (houseInfo.freeSlots <= 0) { showToast("Sua casa não possui mais espaço! Faça um Upgrade.", "error"); return; }
+  if (houseInfo.freeSlots <= 0) { showToast("Your house has no space left! Upgrade it.", "error"); return; }
   if (playerState.house.tier < station.minHouseTier) {
-    showToast(`Esta instalação requer Casa nível ${station.minHouseTier}!`, "error"); return;
+    showToast(`This station requires House level ${station.minHouseTier}!`, "error"); return;
   }
   
-  if (playerState.gold < station.cost) { showToast("Gold insuficiente!", "error"); return; }
+  if (playerState.gold < station.cost) { showToast("Not enough Gold!", "error"); return; }
 
   // Verify materials
   if (station.materials) {
     for (const mat of station.materials) {
       const inv = playerState.inventory.find(i => i.id === mat.id);
       if (!inv || (inv.qty || 1) < mat.qty) {
-        showToast(`Material insuficiente: ${ALL_ITEMS[mat.id]?.name || mat.id}`, "error");
+        showToast(`Not enough material: ${ALL_ITEMS[mat.id]?.name || mat.id}`, "error");
         return;
       }
     }
@@ -3254,7 +3254,7 @@ function installStation(stationId) {
   savePlayerState();
   if (typeof renderHouse === "function") renderHouse();
   if (typeof renderStats === "function") renderStats();
-  showToast(`${station.icon} ${station.name} instalada com sucesso!`, "success");
+  showToast(`${station.icon} ${station.name} installed successfully!`, "success");
 }
 
 function upgradeStation(instanceId) {
@@ -3263,16 +3263,16 @@ function upgradeStation(instanceId) {
   
   const station = HOUSE_STATIONS[slot.id];
   const nextTier = slot.stationTier + 1;
-  if (nextTier > 3) { showToast("Estação já está no nível máximo!", "error"); return; }
+  if (nextTier > 3) { showToast("Station is already at max level!", "error"); return; }
 
   const upgradeCost = station.cost * (nextTier === 2 ? 3 : 8);
-  if (playerState.gold < upgradeCost) { showToast(`Custa ${upgradeCost}g para melhorar!`, "error"); return; }
+  if (playerState.gold < upgradeCost) { showToast(`Costs ${upgradeCost}g to upgrade!`, "error"); return; }
   
   playerState.gold -= upgradeCost;
   slot.stationTier = nextTier;
   savePlayerState();
   if (typeof renderHouse === "function") renderHouse();
-  showToast(`${station.icon} ${station.name} melhorada para Nível ${nextTier}!`, "success");
+  showToast(`${station.icon} ${station.name} upgraded to Level ${nextTier}!`, "success");
 }
 
 function removeStation(instanceId) {
@@ -3283,7 +3283,7 @@ function removeStation(instanceId) {
     playerState.house.slots.splice(idx, 1);
     savePlayerState();
     if (typeof renderHouse === "function") renderHouse();
-    showToast(`Instalação removida. Você recuperou ${Math.floor(station.cost * 0.5)}g.`, "info");
+    showToast(`Station removed. You recovered ${Math.floor(station.cost * 0.5)}g.`, "info");
   }
 }
 
@@ -3296,11 +3296,11 @@ function openVillageModal(regionId) {
   const region = REGIONS.find(r => r.id === regionId);
   if (!region) return;
 
-  document.getElementById("village-modal-title").innerText = `🏰 Vila de ${region.name}`;
+  document.getElementById("village-modal-title").innerText = `🏰 Village of ${region.name}`;
   document.getElementById("village-desc").innerText = region.desc;
 
   // Fortress owner
-  let ownerStr = "Nenhum";
+  let ownerStr = "None";
   let ownerClan = null;
   const fortOwnerId = localStorage.getItem(`fortress_${regionId}`);
   if (fortOwnerId && typeof loadClan === "function") {
@@ -3309,21 +3309,21 @@ function openVillageModal(regionId) {
   }
   
   document.getElementById("village-control-info").innerHTML = `
-    <p>👑 <strong>${ownerStr}</strong> controla esta região.</p>
-    <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">As taxas de comércio vão para o tesouro deste clã.</p>
+    <p>👑 <strong>${ownerStr}</strong> controls this region.</p>
+    <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">Trade taxes go to this clan's treasury.</p>
   `;
 
   document.getElementById("fortress-name-display").innerText = `${region.fortressIcon} ${region.fortressName}`;
   document.getElementById("fortress-owner-display").innerHTML = `
     <h3 style="color:var(--gold); margin-bottom:4px;">${ownerStr}</h3>
-    <p style="font-size:0.85rem;">Membros deste clã ganham ${region.buff}.</p>
+    <p style="font-size:0.85rem;">Members of this clan gain ${region.buff}.</p>
   `;
 
   // Siege Phase
   if (typeof getCurrentSiegePhase === "function") {
     const phase = getCurrentSiegePhase();
-    document.getElementById("siege-phase-display").innerText = `Fase atual: ${phase.label}`;
-    document.getElementById("siege-time-display").innerText = `Tempo restante: ${phase.daysLeft} dias`;
+    document.getElementById("siege-phase-display").innerText = `Current phase: ${phase.label}`;
+    document.getElementById("siege-time-display").innerText = `Time remaining: ${phase.daysLeft} days`;
 
     const siege = getSiegeData(regionId);
     let competitorsHtml = "";
@@ -3334,7 +3334,7 @@ function openVillageModal(regionId) {
         competitorsHtml += `<li><span class="clan-icon">${c.icon}</span> <span>[${c.tag}] ${c.name}</span> <span style="margin-left:auto; color:var(--gold);">⚔️ ${pts} pts</span></li>`;
       }
     });
-    document.getElementById("siege-competitors-list").innerHTML = competitorsHtml || `<li>Nenhum clã inscrito ainda.</li>`;
+    document.getElementById("siege-competitors-list").innerHTML = competitorsHtml || `<li>No clan enrolled yet.</li>`;
   }
 
   // Bind Buttons
@@ -3342,7 +3342,7 @@ function openVillageModal(regionId) {
   registerBtn.onclick = () => {
     playerState.registeredRegion = regionId;
     savePlayerState();
-    showToast(`Casa movida para ${region.name}!`, "success");
+    showToast(`House moved to ${region.name}!`, "success");
     document.getElementById("village-modal").classList.remove("active");
   };
 
@@ -3378,9 +3378,9 @@ function renderHouse() {
   let upgradeBtnHtml = "";
   if (houseInfo.tier < 5) {
     const nextTier = HOUSE_TIERS[houseInfo.tier + 1];
-    upgradeBtnHtml = `<button class="btn-action" onclick="upgradeHouse()">⬆️ Melhorar <span class="cost">${nextTier.cost}g</span></button>`;
+    upgradeBtnHtml = `<button class="btn-action" onclick="upgradeHouse()">⬆️ Upgrade <span class="cost">${nextTier.cost}g</span></button>`;
   } else {
-    upgradeBtnHtml = `<button class="btn-secondary" disabled>Nível Máximo</button>`;
+    upgradeBtnHtml = `<button class="btn-secondary" disabled>Max Level</button>`;
   }
 
   let html = `
@@ -3400,10 +3400,10 @@ function renderHouse() {
   if (houseInfo.hpRegenBonus > 1.0 || houseInfo.hasTrainingDummy || houseInfo.usedDecorations > 0) {
     html += `
     <div class="house-bonuses panel">
-      <h4 class="panel-title">✨ Bônus Ativos</h4>
+      <h4 class="panel-title">✨ Active Bonuses</h4>
       <div style="display:flex; gap:10px; font-size:0.85rem; color:var(--text-muted);">
-        ${houseInfo.hpRegenBonus > 1.0 ? `<span>❤️ Regen HP: +${Math.round((houseInfo.hpRegenBonus - 1) * 100)}%</span>` : ""}
-        ${houseInfo.hasTrainingDummy ? `<span>🎯 XP Passivo Ativo</span>` : ""}
+        ${houseInfo.hpRegenBonus > 1.0 ? `<span>❤️ HP Regen: +${Math.round((houseInfo.hpRegenBonus - 1) * 100)}%</span>` : ""}
+        ${houseInfo.hasTrainingDummy ? `<span>🎯 Passive XP Active</span>` : ""}
       </div>
     </div>`;
   }
@@ -3419,7 +3419,7 @@ function renderHouse() {
         <button class="remove-station-btn" onclick="event.stopPropagation(); removeStation('${slot.instanceId}')">×</button>
         <div class="slot-icon">${station.icon}</div>
         <div class="slot-name">${station.name}</div>
-        <div class="slot-tier">Nível ${slot.stationTier}</div>
+        <div class="slot-tier">Level ${slot.stationTier}</div>
       </div>
     `;
   });
@@ -3429,7 +3429,7 @@ function renderHouse() {
     html += `
       <div class="house-slot empty" onclick="openStationInstallModal()">
         <div class="slot-icon">➕</div>
-        <div class="slot-name">Slot Vazio</div>
+        <div class="slot-name">Empty Slot</div>
       </div>
     `;
   }
@@ -3440,8 +3440,8 @@ function renderHouse() {
   html += `
     <div class="house-decorations panel" style="margin-top: 15px;">
       <h4 class="panel-title" style="display:flex; justify-content:space-between; align-items:center;">
-        <span>🎨 Decorações <span style="font-size:0.8rem; color:var(--text-muted);">(${houseInfo.usedDecorations}/${houseInfo.maxDecorations})</span></span>
-        <button class="btn-action" style="font-size:0.75rem; padding:4px 8px;" onclick="openDecorationShopModal()">Loja</button>
+        <span>🎨 Decorations <span style="font-size:0.8rem; color:var(--text-muted);">(${houseInfo.usedDecorations}/${houseInfo.maxDecorations})</span></span>
+        <button class="btn-action" style="font-size:0.75rem; padding:4px 8px;" onclick="openDecorationShopModal()">Shop</button>
       </h4>
       <div class="decorations-grid">
   `;
@@ -3457,7 +3457,7 @@ function renderHouse() {
   });
 
   for (let i = 0; i < houseInfo.maxDecorations - houseInfo.usedDecorations; i++) {
-    html += `<div class="decoration-item empty" title="Espaço Vazio"></div>`;
+    html += `<div class="decoration-item empty" title="Empty Space"></div>`;
   }
 
   html += `</div></div>`; // end decorations-grid
@@ -3497,7 +3497,7 @@ function openStationInstallModal() {
         ${reqsHtml}
       </div>
       <button class="btn-craft-recipe" ${isLocked ? "disabled" : ""} onclick="installStation('${station.id}'); document.getElementById('station-install-modal').classList.remove('active');">
-        ${isLocked ? `Requer Casa T${station.minHouseTier}` : "Instalar"}
+        ${isLocked ? `Requires House T${station.minHouseTier}` : "Install"}
       </button>
     `;
     list.appendChild(el);
@@ -3542,7 +3542,7 @@ function renderDecorationShop(tab) {
       </div>
       ${hasBought ? 
         `<button class="btn-action" style="width:100%" onclick="placeDecoration('${deco.id}')">Colocar</button>` : 
-        `<button class="btn-craft-recipe" style="width:100%" onclick="buyDecoration('${deco.id}')">Comprar (${costHtml})</button>`
+        `<button class="btn-craft-recipe" style="width:100%" onclick="buyDecoration('${deco.id}')">Buy ()</button>`
       }
     `;
     list.appendChild(el);
@@ -3554,10 +3554,10 @@ function buyDecoration(decoId) {
   if (!deco) return;
 
   if (deco.premium) {
-    if (playerState.gems < deco.premiumCost) { showToast("Gemas insuficientes!", "error"); return; }
+    if (playerState.gems < deco.premiumCost) { showToast("Not enough Gems!", "error"); return; }
     playerState.gems -= deco.premiumCost;
   } else {
-    if (playerState.gold < deco.cost) { showToast("Gold insuficiente!", "error"); return; }
+    if (playerState.gold < deco.cost) { showToast("Not enough Gold!", "error"); return; }
     playerState.gold -= deco.cost;
   }
 
@@ -3566,18 +3566,18 @@ function buyDecoration(decoId) {
   renderDecorationShop(deco.premium ? "premium" : "standard");
   document.getElementById("gems-count-display").textContent = playerState.gems || 0;
   if (typeof renderStats === "function") renderStats();
-  showToast(`${deco.name} comprado!`, "success");
+  showToast(`${deco.name} bought!`, "success");
 }
 
 function placeDecoration(decoId) {
   const houseInfo = getHouseInfo();
   if (houseInfo.usedDecorations >= houseInfo.maxDecorations) {
-    showToast("Limite de decorações atingido! Faça upgrade na casa.", "error"); return;
+    showToast("Decoration limit reached! Upgrade your house.", "error"); return;
   }
   playerState.house.decorations.push({ id: decoId, instanceId: "deco_" + Date.now() });
   savePlayerState();
   renderHouse();
-  showToast("Decoração colocada!", "success");
+  showToast("Decoration placed!", "success");
 }
 
 function removeDecoration(instanceId) {
@@ -3598,7 +3598,7 @@ function checkDecoUnlocks() {
   if (playerState.unlockedLevel > 10 && !playerState.house.unlockedDecorations.includes("deco_dragon_head")) {
     playerState.house.unlockedDecorations.push("deco_dragon_head");
     changed = true;
-    showToast("🏆 Conquista: Cabeça de Dragão desbloqueada!", "success");
+    showToast("🏆 Achievement: Dragon Head unlocked!", "success");
   }
 
   if (changed) savePlayerState();
