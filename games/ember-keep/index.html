@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -201,13 +201,13 @@
       <!-- ======= MAP TAB ======= -->
       <section id="map-tab" class="tab-content active" role="tabpanel" aria-labelledby="tab-map">
         <div class="map-view-switcher">
-          <button class="map-view-btn active" id="btn-world-map">🌍 Mundo</button>
-          <button class="map-view-btn" id="btn-campaign-map">⚔️ Campanha</button>
+          <button class="map-view-btn active" id="btn-world-map">🌍 World</button>
+          <button class="map-view-btn" id="btn-campaign-map">⚔️ Campaign</button>
         </div>
 
         <div class="map-container map-view active" id="world-map-view">
           <div class="world-map-grid" id="world-map-grid">
-            <!-- Renderizado: cards de cada região -->
+            <!-- Rendered: cards for each region -->
           </div>
         </div>
 
@@ -310,7 +310,7 @@
             <div class="panel pet-panel" style="margin-bottom: 0;">
               <h3 class="panel-title">🐾 Companions</h3>
               <div class="pet-active-display" id="active-pet-display">
-                <p class="empty-message">Nenhum pet ativo.</p>
+                <p class="empty-message">No active pet.</p>
               </div>
               <hr class="panel-divider">
               <div class="pet-hatching-display" id="pet-hatching-display">
@@ -433,42 +433,42 @@
           <div class="panel clan-panel">
             <h3 class="panel-title">⚔️ Clan Hub</h3>
             
-            <!-- Se não tem clã -->
+            <!-- If no clan -->
             <div id="no-clan-view">
               <div class="create-clan-form">
-                <input type="text" id="clan-name-input" placeholder="Nome do Clã (ex: Iron Wolves)" maxlength="16">
-                <input type="text" id="clan-tag-input" placeholder="TAG (4 letras)" maxlength="4" style="width:100px;">
+                <input type="text" id="clan-name-input" placeholder="Clan Name (ex: Iron Wolves)" maxlength="16">
+                <input type="text" id="clan-tag-input" placeholder="TAG (4 letters)" maxlength="4" style="width:100px;">
                 <select id="clan-icon-select">
-                  <option value="⚔️">⚔️ Espadas</option>
-                  <option value="🛡️">🛡️ Escudo</option>
-                  <option value="🐺">🐺 Lobo</option>
-                  <option value="🦅">🦅 Águia</option>
-                  <option value="🐉">🐉 Dragão</option>
-                  <option value="🌑">🌑 Sombra</option>
+                  <option value="⚔️">⚔️ Swords</option>
+                  <option value="🛡️">🛡️ Shield</option>
+                  <option value="🐺">🐺 Wolf</option>
+                  <option value="🦅">🦅 Eagle</option>
+                  <option value="🐉">🐉 Dragon</option>
+                  <option value="🌑">🌑 Shadow</option>
                 </select>
-                <button id="create-clan-btn" class="btn-action">Criar (500g)</button>
+                <button id="create-clan-btn" class="btn-action">Create (500g)</button>
               </div>
               <hr class="panel-divider">
-              <h4>Clãs Recrutando</h4>
+              <h4>Clans Recruiting</h4>
               <ul id="available-clans-list" class="suggested-list"></ul>
             </div>
 
-            <!-- Se tem clã -->
+            <!-- If has clan -->
             <div id="has-clan-view" style="display:none;">
               <div class="clan-header">
                 <span class="clan-icon" id="my-clan-icon">⚔️</span>
                 <div>
                   <h3 id="my-clan-name">[TAG] Clan Name</h3>
-                  <span id="my-clan-stats" class="text-muted">Membros: 1/20 · Power: 100</span>
+                  <span id="my-clan-stats" class="text-muted">Members: 1/20 · Power: 100</span>
                 </div>
-                <button id="leave-clan-btn" class="btn-danger" style="margin-left:auto; padding:4px 8px;">Sair</button>
+                <button id="leave-clan-btn" class="btn-danger" style="margin-left:auto; padding:4px 8px;">Leave</button>
               </div>
               
               <div class="clan-territories" id="my-clan-territories">
-                <!-- Regioes controladas aqui -->
+                <!-- Controlled regions here -->
               </div>
               
-              <h4 style="margin-top:16px;">Membros</h4>
+              <h4 style="margin-top:16px;">Members</h4>
               <ul id="my-clan-members-list" class="suggested-list"></ul>
             </div>
 
@@ -617,7 +617,7 @@
       <div class="modal-body">
         <div class="shop-tabs" style="margin-bottom: 10px;">
           <button class="shop-tab-btn active" id="deco-tab-standard">Standard (Gold)</button>
-          <button class="shop-tab-btn" id="deco-tab-premium" style="color:var(--ember)">Premium (Gemas)</button>
+          <button class="shop-tab-btn" id="deco-tab-premium" style="color:var(--ember)">Premium (Gems)</button>
         </div>
         <div id="decoration-options-list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
           <!-- Rendered by JS -->
@@ -696,14 +696,14 @@
       <div style="font-size: 3rem; margin-bottom: 10px;">💎</div>
       
       <div id="daily-reward-streak" style="font-size: 1.1rem; margin-bottom: 20px;">
-        Sequência Atual: <strong style="color:var(--ember);">0 Dias</strong>
+        Current Streak: <strong style="color:var(--ember);">0 Days</strong>
       </div>
       
       <p id="daily-reward-amount" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 25px;">
-        +1 Gema Hoje!
+        +1 Gem Today!
       </p>
 
-      <button class="btn-action" style="width: 100%; font-size: 1.1rem; padding: 12px;" onclick="claimDailyReward()">Resgatar</button>
+      <button class="btn-action" style="width: 100%; font-size: 1.1rem; padding: 12px;" onclick="claimDailyReward()">Claim</button>
     </div>
   </div>
 
@@ -719,12 +719,12 @@
       
       <div class="shop-tabs">
         <button class="shop-tab active" onclick="renderPremiumStore('pass')">Ember Pass</button>
-        <button class="shop-tab" onclick="renderPremiumStore('gems')">Gemas</button>
-        <button class="shop-tab" onclick="renderPremiumStore('consumables')">Consumíveis</button>
+        <button class="shop-tab" onclick="renderPremiumStore('gems')">Gems</button>
+        <button class="shop-tab" onclick="renderPremiumStore('consumables')">Consumables</button>
       </div>
 
       <div id="premium-store-content" style="margin-top: 15px; max-height:60vh; overflow-y:auto; padding-right:10px;">
-        <!-- Renderizado dinamicamente -->
+        <!-- Rendered dynamically -->
       </div>
     </div>
   </div>

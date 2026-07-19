@@ -1,4 +1,4 @@
-﻿// ================================================================
+// ================================================================
 // EMBER KEEP — Core Game Logic (Phase 1)
 // ================================================================
 
@@ -255,31 +255,31 @@ const MATERIAL_ITEMS = {
 };
 
 const PRODUCTION_SKILLS = {
-  farming:    { id:"farming",    name:"Agricultura",   icon:"🌾", desc:"Cultive grãos e ervas" },
-  ranching:   { id:"ranching",   name:"Ranching",  icon:"🐄", desc:"Raise animals for meat and leather" },
-  alchemy:    { id:"alchemy",    name:"Alquimia",      icon:"⚗️", desc:"Crie poções e elixires" },
-  blacksmith: { id:"blacksmith", name:"Armeiro",       icon:"⚔️", desc:"Forje armas poderosas" },
-  tanning:    { id:"tanning",    name:"Curtidor",      icon:"🐂", desc:"Processe couros e peles" },
-  tailoring:  { id:"tailoring",  name:"Costureiro",    icon:"🧵", desc:"Confeccione armaduras e mantos" },
+  farming:    { id:"farming",    name:"Farming",       icon:"🌾", desc:"Grow grains and herbs" },
+  ranching:   { id:"ranching",   name:"Ranching",      icon:"🐄", desc:"Raise animals for meat and leather" },
+  alchemy:    { id:"alchemy",    name:"Alchemy",       icon:"⚗️", desc:"Brew potions and elixirs" },
+  blacksmith: { id:"blacksmith", name:"Blacksmith",    icon:"⚔️", desc:"Forge powerful weapons" },
+  tanning:    { id:"tanning",    name:"Tanner",        icon:"🐂", desc:"Process leathers and hides" },
+  tailoring:  { id:"tailoring",  name:"Tailor",        icon:"🧵", desc:"Craft armor and cloaks" },
 };
 
 const PROD_SKILL_XP_TABLE = [0, 50, 120, 250, 450, 750, 1200, 1900, 3000, 5000];
 
 const PRODUCTION_RECIPES = [
   // Farming
-  { id:"prod_wheat", skill:"farming", tier:1, name:"Plantar Trigo", resultId:"mat_wheat", resultQty:3, ingredients:[{ id:"mat_wheat_seed", qty:1 }], timeMs:30000, xpGain:5 },
-  { id:"prod_herb", skill:"farming", tier:1, name:"Colher Ervas", resultId:"mat_herb", resultQty:2, ingredients:[{ id:"mat_herb_seed", qty:1 }], timeMs:30000, xpGain:5 },
-  { id:"prod_spice", skill:"farming", tier:2, name:"Cultivar Temperos", resultId:"mat_spice", resultQty:2, ingredients:[{ id:"mat_spice_seed", qty:1 }], timeMs:60000, xpGain:12 },
-  { id:"prod_magicherb", skill:"farming", tier:3, name:"Horta Mágica", resultId:"mat_magic_herb", resultQty:2, ingredients:[{ id:"mat_magic_seed", qty:1 }, { id:"mat_shard", qty:1 }], timeMs:90000, xpGain:25 },
-  { id:"prod_goldwheat", skill:"farming", tier:4, name:"Colheita Dourada", resultId:"mat_gold_wheat", resultQty:3, ingredients:[{ id:"mat_golden_seed", qty:1 }, { id:"mat_ench_water", qty:1 }], timeMs:120000, xpGain:45 },
-  { id:"prod_celestherb", skill:"farming", tier:5, name:"Jardim Celestial", resultId:"mat_celest_herb", resultQty:2, ingredients:[{ id:"mat_celest_seed", qty:1 }, { id:"mat_starlight", qty:1 }], timeMs:180000, xpGain:80 },
+  { id:"prod_wheat", skill:"farming", tier:1, name:"Plant Wheat", resultId:"mat_wheat", resultQty:3, ingredients:[{ id:"mat_wheat_seed", qty:1 }], timeMs:30000, xpGain:5 },
+  { id:"prod_herb", skill:"farming", tier:1, name:"Harvest Herbs", resultId:"mat_herb", resultQty:2, ingredients:[{ id:"mat_herb_seed", qty:1 }], timeMs:30000, xpGain:5 },
+  { id:"prod_spice", skill:"farming", tier:2, name:"Grow Spices", resultId:"mat_spice", resultQty:2, ingredients:[{ id:"mat_spice_seed", qty:1 }], timeMs:60000, xpGain:12 },
+  { id:"prod_magicherb", skill:"farming", tier:3, name:"Magic Garden", resultId:"mat_magic_herb", resultQty:2, ingredients:[{ id:"mat_magic_seed", qty:1 }, { id:"mat_shard", qty:1 }], timeMs:90000, xpGain:25 },
+  { id:"prod_goldwheat", skill:"farming", tier:4, name:"Golden Harvest", resultId:"mat_gold_wheat", resultQty:3, ingredients:[{ id:"mat_golden_seed", qty:1 }, { id:"mat_ench_water", qty:1 }], timeMs:120000, xpGain:45 },
+  { id:"prod_celestherb", skill:"farming", tier:5, name:"Celestial Garden", resultId:"mat_celest_herb", resultQty:2, ingredients:[{ id:"mat_celest_seed", qty:1 }, { id:"mat_starlight", qty:1 }], timeMs:180000, xpGain:80 },
   // Ranching
-  { id:"prod_chicken", skill:"ranching", tier:1, name:"Criar Galinhas", resultId:"mat_egg", resultQty:3, extraId:"mat_feather", extraQty:1, ingredients:[{ id:"mat_feed", qty:2 }], timeMs:30000, xpGain:5 },
-  { id:"prod_pasture", skill:"ranching", tier:1, name:"Pastoreio", resultId:"mat_meat", resultQty:2, extraId:"mat_hide", extraQty:1, ingredients:[{ id:"mat_feed", qty:3 }], timeMs:45000, xpGain:5 },
-  { id:"prod_milk", skill:"ranching", tier:2, name:"Ordenha", resultId:"mat_milk", resultQty:3, ingredients:[{ id:"mat_feed", qty:2 }, { id:"mat_bucket", qty:1 }], timeMs:40000, xpGain:12 },
-  { id:"prod_hunt", skill:"ranching", tier:3, name:"Caça Exótica", resultId:"mat_exo_meat", resultQty:2, extraId:"mat_exo_hide", extraQty:1, ingredients:[{ id:"mat_bait", qty:1 }, { id:"mat_trap", qty:1 }], timeMs:90000, xpGain:25 },
-  { id:"prod_dragon", skill:"ranching", tier:4, name:"Criação de Dragões", resultId:"mat_drag_scale", resultQty:1, extraId:"mat_drag_meat", extraQty:1, ingredients:[{ id:"mat_drag_feed", qty:3 }, { id:"mat_fire_shard", qty:1 }], timeMs:150000, xpGain:45 },
-  { id:"prod_phoenix", skill:"ranching", tier:5, name:"Fênix Ranch", resultId:"mat_phoenix_f", resultQty:1, ingredients:[{ id:"mat_cel_feed", qty:2 }, { id:"mat_ember_ess", qty:1 }], timeMs:180000, xpGain:80 },
+  { id:"prod_chicken", skill:"ranching", tier:1, name:"Raise Chickens", resultId:"mat_egg", resultQty:3, extraId:"mat_feather", extraQty:1, ingredients:[{ id:"mat_feed", qty:2 }], timeMs:30000, xpGain:5 },
+  { id:"prod_pasture", skill:"ranching", tier:1, name:"Grazing", resultId:"mat_meat", resultQty:2, extraId:"mat_hide", extraQty:1, ingredients:[{ id:"mat_feed", qty:3 }], timeMs:45000, xpGain:5 },
+  { id:"prod_milk", skill:"ranching", tier:2, name:"Milking", resultId:"mat_milk", resultQty:3, ingredients:[{ id:"mat_feed", qty:2 }, { id:"mat_bucket", qty:1 }], timeMs:40000, xpGain:12 },
+  { id:"prod_hunt", skill:"ranching", tier:3, name:"Exotic Hunting", resultId:"mat_exo_meat", resultQty:2, extraId:"mat_exo_hide", extraQty:1, ingredients:[{ id:"mat_bait", qty:1 }, { id:"mat_trap", qty:1 }], timeMs:90000, xpGain:25 },
+  { id:"prod_dragon", skill:"ranching", tier:4, name:"Raise Dragons", resultId:"mat_drag_scale", resultQty:1, extraId:"mat_drag_meat", extraQty:1, ingredients:[{ id:"mat_drag_feed", qty:3 }, { id:"mat_fire_shard", qty:1 }], timeMs:150000, xpGain:45 },
+  { id:"prod_phoenix", skill:"ranching", tier:5, name:"Phoenix Ranch", resultId:"mat_phoenix_f", resultQty:1, ingredients:[{ id:"mat_cel_feed", qty:2 }, { id:"mat_ember_ess", qty:1 }], timeMs:180000, xpGain:80 },
   // Alchemy & Cooking (Cooking was moved to Alchemy as well for simplicity, or we keep it as Alchemy)
   { id:"prod_minor_hp", skill:"alchemy", tier:1, name:"Minor Health Potion", resultId:"potion_minor_hp", resultQty:1, ingredients:[{ id:"mat_herb", qty:1 }, { id:"mat_vial", qty:1 }], timeMs:150000, xpGain:5 },
   { id:"prod_major_hp", skill:"alchemy", tier:2, name:"Major Health Potion", resultId:"potion_major_hp", resultQty:1, ingredients:[{ id:"mat_herb", qty:3 }, { id:"mat_shard", qty:1 }, { id:"mat_vial", qty:1 }], timeMs:30000, xpGain:12 },
@@ -289,24 +289,24 @@ const PRODUCTION_RECIPES = [
   { id:"prod_royal_feast", skill:"alchemy", tier:3, name:"Prepare Feast", resultId:"food_feast", resultQty:1, ingredients:[{ id:"mat_meat", qty:2 }, { id:"mat_herb", qty:3 }, { id:"mat_spice", qty:1 }], timeMs:90000, xpGain:25 },
   { id:"prod_elixir_stew", skill:"alchemy", tier:4, name:"Elixir Stew", resultId:"food_elixir", resultQty:1, ingredients:[{ id:"mat_celest_herb", qty:1 }, { id:"mat_gold_wheat", qty:1 }, { id:"mat_vial", qty:1 }], timeMs:120000, xpGain:45 },
   // Blacksmithing
-  { id:"prod_iron_dagger", skill:"blacksmith", tier:1, name:"Forjar Adaga", resultId:"weap_dagger_craft", resultQty:1, ingredients:[{ id:"mat_iron_ore", qty:3 }, { id:"mat_coal", qty:2 }], timeMs:30000, xpGain:5 },
-  { id:"prod_steel_sword", skill:"blacksmith", tier:2, name:"Forjar Espada", resultId:"weap_sword_craft", resultQty:1, ingredients:[{ id:"mat_steel_ingot", qty:2 }, { id:"mat_l_strip", qty:1 }], timeMs:60000, xpGain:12 },
-  { id:"prod_mithril_blade", skill:"blacksmith", tier:3, name:"Forjar Lâmina", resultId:"weap_blade_craft", resultQty:1, ingredients:[{ id:"mat_mithril_ore", qty:2 }, { id:"mat_shard", qty:2 }], timeMs:90000, xpGain:25 },
-  { id:"prod_epic_w", skill:"blacksmith", tier:4, name:"Arma Épica", resultId:"weap_epic_craft", resultQty:1, ingredients:[{ id:"mat_drag_scale", qty:2 }, { id:"mat_ench_ingot", qty:1 }], timeMs:150000, xpGain:45 },
-  { id:"prod_legend_w", skill:"blacksmith", tier:5, name:"Arma Lendária", resultId:"weap_legend_craft", resultQty:1, ingredients:[{ id:"mat_phoenix_f", qty:1 }, { id:"mat_cel_ingot", qty:1 }, { id:"mat_starlight", qty:1 }], timeMs:240000, xpGain:80 },
+  { id:"prod_iron_dagger", skill:"blacksmith", tier:1, name:"Forge Dagger", resultId:"weap_dagger_craft", resultQty:1, ingredients:[{ id:"mat_iron_ore", qty:3 }, { id:"mat_coal", qty:2 }], timeMs:30000, xpGain:5 },
+  { id:"prod_steel_sword", skill:"blacksmith", tier:2, name:"Forge Sword", resultId:"weap_sword_craft", resultQty:1, ingredients:[{ id:"mat_steel_ingot", qty:2 }, { id:"mat_l_strip", qty:1 }], timeMs:60000, xpGain:12 },
+  { id:"prod_mithril_blade", skill:"blacksmith", tier:3, name:"Forge Blade", resultId:"weap_blade_craft", resultQty:1, ingredients:[{ id:"mat_mithril_ore", qty:2 }, { id:"mat_shard", qty:2 }], timeMs:90000, xpGain:25 },
+  { id:"prod_epic_w", skill:"blacksmith", tier:4, name:"Epic Weapon", resultId:"weap_epic_craft", resultQty:1, ingredients:[{ id:"mat_drag_scale", qty:2 }, { id:"mat_ench_ingot", qty:1 }], timeMs:150000, xpGain:45 },
+  { id:"prod_legend_w", skill:"blacksmith", tier:5, name:"Legendary Weapon", resultId:"weap_legend_craft", resultQty:1, ingredients:[{ id:"mat_phoenix_f", qty:1 }, { id:"mat_cel_ingot", qty:1 }, { id:"mat_starlight", qty:1 }], timeMs:240000, xpGain:80 },
   // Tanning
-  { id:"prod_tanning_leather", skill:"tanning", tier:1, name:"Curtir Couro", resultId:"mat_leather", resultQty:3, ingredients:[{ id:"mat_hide", qty:2 }, { id:"mat_tannin", qty:1 }], timeMs:25000, xpGain:5 },
-  { id:"prod_tanning_strip", skill:"tanning", tier:1, name:"Cortar Tiras", resultId:"mat_l_strip", resultQty:4, ingredients:[{ id:"mat_leather", qty:2 }], timeMs:15000, xpGain:5 },
-  { id:"prod_tanning_reinf", skill:"tanning", tier:2, name:"Couro Reforçado", resultId:"mat_reinf_l", resultQty:2, ingredients:[{ id:"mat_leather", qty:3 }, { id:"mat_iron_ore", qty:1 }], timeMs:45000, xpGain:12 },
-  { id:"prod_tanning_exo", skill:"tanning", tier:3, name:"Couro Exótico", resultId:"mat_exo_l", resultQty:2, ingredients:[{ id:"mat_exo_hide", qty:2 }, { id:"mat_spice", qty:1 }], timeMs:60000, xpGain:25 },
-  { id:"prod_tanning_drag", skill:"tanning", tier:4, name:"Couro de Dragão", resultId:"mat_drag_l", resultQty:1, ingredients:[{ id:"mat_drag_scale", qty:1 }, { id:"mat_exo_l", qty:1 }], timeMs:120000, xpGain:45 },
-  { id:"prod_tanning_cel", skill:"tanning", tier:5, name:"Couro Celestial", resultId:"mat_cel_l", resultQty:1, ingredients:[{ id:"mat_phoenix_f", qty:1 }, { id:"mat_drag_l", qty:1 }, { id:"mat_starlight", qty:1 }], timeMs:180000, xpGain:80 },
+  { id:"prod_tanning_leather", skill:"tanning", tier:1, name:"Tan Leather", resultId:"mat_leather", resultQty:3, ingredients:[{ id:"mat_hide", qty:2 }, { id:"mat_tannin", qty:1 }], timeMs:25000, xpGain:5 },
+  { id:"prod_tanning_strip", skill:"tanning", tier:1, name:"Cut Leather Strips", resultId:"mat_l_strip", resultQty:4, ingredients:[{ id:"mat_leather", qty:2 }], timeMs:15000, xpGain:5 },
+  { id:"prod_tanning_reinf", skill:"tanning", tier:2, name:"Reinforced Leather", resultId:"mat_reinf_l", resultQty:2, ingredients:[{ id:"mat_leather", qty:3 }, { id:"mat_iron_ore", qty:1 }], timeMs:45000, xpGain:12 },
+  { id:"prod_tanning_exo", skill:"tanning", tier:3, name:"Exotic Leather", resultId:"mat_exo_l", resultQty:2, ingredients:[{ id:"mat_exo_hide", qty:2 }, { id:"mat_spice", qty:1 }], timeMs:60000, xpGain:25 },
+  { id:"prod_tanning_drag", skill:"tanning", tier:4, name:"Dragon Leather", resultId:"mat_drag_l", resultQty:1, ingredients:[{ id:"mat_drag_scale", qty:1 }, { id:"mat_exo_l", qty:1 }], timeMs:120000, xpGain:45 },
+  { id:"prod_tanning_cel", skill:"tanning", tier:5, name:"Celestial Leather", resultId:"mat_cel_l", resultQty:1, ingredients:[{ id:"mat_phoenix_f", qty:1 }, { id:"mat_drag_l", qty:1 }, { id:"mat_starlight", qty:1 }], timeMs:180000, xpGain:80 },
   // Tailoring
-  { id:"prod_tailor_vest", skill:"tailoring", tier:1, name:"Costurar Veste", resultId:"arm_vest_craft", resultQty:1, ingredients:[{ id:"mat_leather", qty:2 }, { id:"mat_thread", qty:2 }], timeMs:30000, xpGain:5 },
-  { id:"prod_tailor_armor", skill:"tailoring", tier:2, name:"Costurar Armadura", resultId:"arm_armor_craft", resultQty:1, ingredients:[{ id:"mat_reinf_l", qty:2 }, { id:"mat_thread", qty:3 }], timeMs:60000, xpGain:12 },
-  { id:"prod_tailor_mantle", skill:"tailoring", tier:3, name:"Costurar Manto", resultId:"arm_mantle_craft", resultQty:1, ingredients:[{ id:"mat_exo_l", qty:2 }, { id:"mat_silk", qty:2 }], timeMs:90000, xpGain:25 },
-  { id:"prod_tailor_epic", skill:"tailoring", tier:4, name:"Armadura Épica", resultId:"arm_epic_craft", resultQty:1, ingredients:[{ id:"mat_drag_l", qty:1 }, { id:"mat_ench_thread", qty:2 }], timeMs:150000, xpGain:45 },
-  { id:"prod_tailor_legend", skill:"tailoring", tier:5, name:"Armadura Lendária", resultId:"arm_legend_craft", resultQty:1, ingredients:[{ id:"mat_cel_l", qty:1 }, { id:"mat_phoenix_f", qty:1 }, { id:"mat_star_thread", qty:1 }], timeMs:240000, xpGain:80 },
+  { id:"prod_tailor_vest", skill:"tailoring", tier:1, name:"Sew Vest", resultId:"arm_vest_craft", resultQty:1, ingredients:[{ id:"mat_leather", qty:2 }, { id:"mat_thread", qty:2 }], timeMs:30000, xpGain:5 },
+  { id:"prod_tailor_armor", skill:"tailoring", tier:2, name:"Sew Armor", resultId:"arm_armor_craft", resultQty:1, ingredients:[{ id:"mat_reinf_l", qty:2 }, { id:"mat_thread", qty:3 }], timeMs:60000, xpGain:12 },
+  { id:"prod_tailor_mantle", skill:"tailoring", tier:3, name:"Sew Cloak", resultId:"arm_mantle_craft", resultQty:1, ingredients:[{ id:"mat_exo_l", qty:2 }, { id:"mat_silk", qty:2 }], timeMs:90000, xpGain:25 },
+  { id:"prod_tailor_epic", skill:"tailoring", tier:4, name:"Epic Armor", resultId:"arm_epic_craft", resultQty:1, ingredients:[{ id:"mat_drag_l", qty:1 }, { id:"mat_ench_thread", qty:2 }], timeMs:150000, xpGain:45 },
+  { id:"prod_tailor_legend", skill:"tailoring", tier:5, name:"Legendary Armor", resultId:"arm_legend_craft", resultQty:1, ingredients:[{ id:"mat_cel_l", qty:1 }, { id:"mat_phoenix_f", qty:1 }, { id:"mat_star_thread", qty:1 }], timeMs:240000, xpGain:80 },
 ];
 
 const ALL_ITEMS = { ...CLASS_ITEMS, ...CRAFTED_GEAR, ...RING_ITEMS, ...CONSUMABLE_ITEMS, ...FOOD_ITEMS, ...MATERIAL_ITEMS };
@@ -386,7 +386,7 @@ const DECORATIONS = {
 };
 
 const DECO_UNLOCKS = {
-  "defeat_level_10":  { decoId:"deco_dragon_head", desc:"Derrotar o Chaos Knight (Nível 10)" },
+  "defeat_level_10":  { decoId:"deco_dragon_head", desc:"Defeat the Chaos Knight (Level 10)" },
 };
 
 // ================================================================
@@ -394,9 +394,9 @@ const DECO_UNLOCKS = {
 // ================================================================
 const PREMIUM_BONUSES = {
   hpRegenMult:       2.0,   // 2x regen (0.5% → 1.0%)
-  staminaRegenMs:    7000,  // 7s em vez de 10s
+  staminaRegenMs:    7000,  // 7s instead of 10s
   extraProdSlots:    2,
-  prodTimeMult:      0.80,  // 20% mais rápido
+  prodTimeMult:      0.80,  // 20% faster
   inventorySlots:    50,    // vs 30
   autoCollect:       true,
   goldMult:          1.15,  // +15%
@@ -469,17 +469,17 @@ const DEFAULT_PLAYER_STATE = {
   productionTimers: [],
   house: {
     tier: 0,
-    name: "Sem Moradia",
+    name: "No Housing",
     slots: [],              // [{ id:"farm_plot", stationTier:1, instanceId: "id1" }, ...]
     decorations: [],        // [{ id:"deco_flower_pot", instanceId: "id1" }, ...]
     unlockedDecorations: [],
     registeredRegion: null, // "greenhollow", "frosthold", etc.
   },
-  clan: null, // { id, name, role } ou null
-  pets: [],           // Coleção: [{ id, speciesId, name, level, xp, stage, happiness, lastFed }]
-  activePet: null,    // ID do pet ativo em batalha
-  hatchingEgg: null,  // { eggId, startTime, endTime } ou null
-  petStable: 6,       // Máximo de pets na coleção
+  clan: null, // { id, name, role } or null
+  pets: [],           // Collection: [{ id, speciesId, name, level, xp, stage, happiness, lastFed }]
+  activePet: null,    // Active pet ID in battle
+  hatchingEgg: null,  // { eggId, startTime, endTime } or null
+  petStable: 6,       // Maximum pets in the collection
 };
 
 // ================================================================
@@ -539,7 +539,7 @@ function checkAchievements(triggerType, data) {
   let changed = false;
 
   ACHIEVEMENTS.forEach(ach => {
-    if (playerState.achievements.includes(ach.id)) return; // Já possui
+    if (playerState.achievements.includes(ach.id)) return; // Already unlocked
 
     let unlocked = false;
     if (triggerType === "level_up") {
@@ -912,13 +912,13 @@ function checkDailyLogin() {
     
     // Show modal
     setTimeout(() => {
-      document.getElementById("daily-reward-streak").innerHTML = `Sequência Atual: <strong style="color:var(--ember);">${playerState.loginStreak} Dias</strong>`;
+      document.getElementById("daily-reward-streak").innerHTML = `Current Streak: <strong style="color:var(--ember);">${playerState.loginStreak} Days</strong>`;
       
       let amount = 1;
       if (playerState.loginStreak % 7 === 0) amount = 5;
       if (playerState.isPremium) amount += PREMIUM_BONUSES.dailyGems;
       
-      document.getElementById("daily-reward-amount").innerHTML = `+${amount} Gema${amount > 1 ? 's' : ''} Hoje!`;
+      document.getElementById("daily-reward-amount").innerHTML = `+${amount} Gem${amount > 1 ? 's' : ''} Today!`;
       
       // Store amount in a temporary global variable to be claimed
       window._pendingDailyGems = amount;
@@ -1216,7 +1216,7 @@ function getEffectiveStats() {
     clanBonuses: clanBonuses
   };
 
-  // Bônus do pet ativo
+  // Active pet bonus
   if (playerState.activePet && typeof PET_SPECIES !== 'undefined') {
     const pet = playerState.pets.find(p => p.id === playerState.activePet);
     if (pet) {
@@ -1636,21 +1636,21 @@ function renderPremiumStore(tab) {
   event && event.currentTarget && event.currentTarget.classList.add("active");
 
   let html = `<div style="text-align:right; margin-bottom:10px; font-weight:bold; color:var(--ember);">
-    Suas Gemas: <span id="store-gems-count">${playerState.gems || 0}</span> 💎
+    Your Gems: <span id="store-gems-count">${playerState.gems || 0}</span> 💎
   </div>`;
   
   if (tab === "pass") {
     html += `
       <div class="panel" style="border-color: var(--ember); text-align:center;">
         <h4 style="color:var(--ember); font-size:1.5rem; margin-top:0;">Ember Pass</h4>
-        <p>Acesso a benefícios exclusivos por 30 dias!</p>
+        <p>Access to exclusive benefits for 30 days!</p>
         <ul style="text-align:left; font-size:0.9rem; line-height:1.6;">
-          <li>🛡️ +20% HP e +50% Regeneração de HP</li>
-          <li>⚡ Stamina Regenera 30% mais rápido</li>
-          <li>⚒️ +2 Slots de Produção</li>
-          <li>🎒 +20 Slots de Inventário</li>
-          <li>💰 +15% Gold e +10% XP em Batalhas</li>
-          <li>✨ Badge Exclusivo no Chat/Ranking</li>
+          <li>🛡️ +20% HP and +50% HP Regeneration</li>
+          <li>⚡ Stamina regenerates 30% faster</li>
+          <li>⚒️ +2 Production Slots</li>
+          <li>🎒 +20 Inventory Slots</li>
+          <li>💰 +15% Gold and +10% XP in Battles</li>
+          <li>✨ Exclusive Badge in Chat/Leaderboards</li>
         </ul>
         <button class="btn-action" style="font-size:1.2rem; padding:10px 30px; margin-top:15px;" onclick="buyEmberPass()">Buy (900 💎)</button>
       </div>
@@ -1660,20 +1660,20 @@ function renderPremiumStore(tab) {
       <div class="shop-grid">
         <div class="recipe-card" style="text-align:center;">
           <div style="font-size:2.5rem;">💎</div>
-          <h4>Pilha de Gemas</h4>
-          <p>100 Gemas</p>
+          <h4>Pile of Gems</h4>
+          <p>100 Gems</p>
           <button class="btn-action" style="width:100%;">R$ 4,90</button>
         </div>
         <div class="recipe-card" style="text-align:center;">
           <div style="font-size:2.5rem;">💰</div>
-          <h4>Saco de Gemas</h4>
-          <p>500 Gemas + 50 Bônus</p>
+          <h4>Bag of Gems</h4>
+          <p>500 Gems + 50 Bonus</p>
           <button class="btn-action" style="width:100%;">R$ 24,90</button>
         </div>
         <div class="recipe-card" style="text-align:center; border: 1px solid var(--ember);">
           <div style="font-size:2.5rem;">👑</div>
-          <h4>Baú Real</h4>
-          <p>1000 Gemas + 200 Bônus</p>
+          <h4>Royal Chest</h4>
+          <p>1000 Gems + 200 Bonus</p>
           <button class="btn-action" style="width:100%;">R$ 49,90</button>
         </div>
       </div>
@@ -1683,19 +1683,19 @@ function renderPremiumStore(tab) {
       <div class="shop-grid">
         <div class="recipe-card">
           <div style="font-size:2rem; text-align:center;">🧪</div>
-          <h4 style="text-align:center; margin:5px 0;">Poção de Stamina</h4>
-          <p style="font-size:0.8rem; text-align:center;">Restaura 100% da Stamina. (Max 3/dia)</p>
+          <h4 style="text-align:center; margin:5px 0;">Stamina Potion</h4>
+          <p style="font-size:0.8rem; text-align:center;">Restores 100% Stamina. (Max 3/day)</p>
           <button class="btn-action" style="width:100%; margin-top:10px;" onclick="buyPremiumConsumable('stamina_refill', 50)">50 💎</button>
         </div>
         <div class="recipe-card">
           <div style="font-size:2rem; text-align:center;">⏳</div>
-          <h4 style="text-align:center; margin:5px 0;">Ampulheta Mágica</h4>
-          <p style="font-size:0.8rem; text-align:center;">Pula 1 hora de produção. (Max 10/dia)</p>
+          <h4 style="text-align:center; margin:5px 0;">Magic Hourglass</h4>
+          <p style="font-size:0.8rem; text-align:center;">Skip 1 hour of production. (Max 10/day)</p>
           <button class="btn-action" style="width:100%; margin-top:10px;" onclick="buyPremiumConsumable('prod_skip', 30)">30 💎</button>
         </div>
         <div class="recipe-card">
           <div style="font-size:2rem; text-align:center;">💖</div>
-          <h4 style="text-align:center; margin:5px 0;">Lágrima de Fênix</h4>
+          <h4 style="text-align:center; margin:5px 0;">Phoenix Tear</h4>
           <p style="font-size:0.8rem; text-align:center;">Revive with 50% HP. (1/battle)</p>
           <button class="btn-action" style="width:100%; margin-top:10px;" onclick="buyPremiumConsumable('second_chance', 100)">100 💎</button>
         </div>
@@ -1714,7 +1714,7 @@ function buyEmberPass() {
   
   spendGems(900);
   playerState.isPremium = true;
-  // +30 dias
+  // +30 days
   const now = Date.now();
   if (playerState.premiumExpiry && playerState.premiumExpiry > now) {
     playerState.premiumExpiry += 30 * 24 * 60 * 60 * 1000;
@@ -1885,7 +1885,7 @@ function renderProfessions() {
       <div class="profession-info">
         <h4>${skill.name}</h4>
         <p>${skill.desc}</p>
-        <span class="profession-level">Nv. ${pSkill.level} (${xpStr} XP)</span>
+        <span class="profession-level">Lv. ${pSkill.level} (${xpStr} XP)</span>
       </div>
     `;
     list.appendChild(btn);
@@ -1898,14 +1898,14 @@ function renderSkillRecipes(skillId) {
   if (!list || !title) return;
 
   const skillInfo = PRODUCTION_SKILLS[skillId];
-  title.innerHTML = `${skillInfo.icon} Receitas de ${skillInfo.name}`;
+  title.innerHTML = `${skillInfo.icon} ${skillInfo.name} Recipes`;
   list.innerHTML = "";
 
   const recipes = PRODUCTION_RECIPES.filter(r => r.skill === skillId);
   const pSkill = playerState.productionSkills[skillId];
 
   if (recipes.length === 0) {
-    list.innerHTML = `<p class="empty-message">Nenhuma receita encontrada.</p>`;
+    list.innerHTML = `<p class="empty-message">No recipes found.</p>`;
     return;
   }
 
@@ -1941,15 +1941,15 @@ function renderSkillRecipes(skillId) {
           <div class="recipe-icon">${resultItem.icon}</div>
           <div class="recipe-title">
             <h5>${recipe.name}</h5>
-            <span>Gera ${recipe.resultQty}x (Nv. ${recipe.tier})</span>
+            <span>Yields ${recipe.resultQty}x (Lv. ${recipe.tier})</span>
           </div>
         </div>
         <div class="recipe-reqs">
-          <strong>Ingredientes:</strong>
+          <strong>Ingredients:</strong>
           <ul>${reqsHtml}</ul>
         </div>
         <button class="btn-craft-recipe" data-recipe="${recipe.id}" ${canCraft ? "" : "disabled"}>
-          ${isLocked ? `Requer Nv. ${recipe.tier}` : `Produzir (${(finalTimeMs/1000).toFixed(1)}s)`}
+          ${isLocked ? `Requires Lv. ${recipe.tier}` : `Produce (${(finalTimeMs/1000).toFixed(1)}s)`}
         </button>
     `;
     list.appendChild(card);
@@ -1962,7 +1962,7 @@ function renderProductionQueue() {
   container.innerHTML = "";
 
   if (playerState.productionTimers.length === 0) {
-    container.innerHTML = `<p class="empty-message">Fila vazia. Capacidade (0/3)</p>`;
+    container.innerHTML = `<p class="empty-message">Queue empty. Capacity (0/3)</p>`;
     return;
   }
 
@@ -2474,7 +2474,7 @@ function renderBattlePotions() {
   });
 
   if (hpPotions.length === 0) {
-    container.innerHTML = `<span style="font-size:0.75rem; color:var(--text-muted)">Sem poções...</span>`;
+    container.innerHTML = `<span style="font-size:0.75rem; color:var(--text-muted)">No potions...</span>`;
     return;
   }
 
@@ -3538,7 +3538,7 @@ function renderDecorationShop(tab) {
       <div style="font-size:2rem; margin-bottom:5px;">${deco.icon}</div>
       <h5 style="margin:0 0 5px 0; text-align:center;">${deco.name}</h5>
       <div style="font-size:0.7rem; color:var(--text-muted); text-align:center; margin-bottom:8px;">
-        ${deco.bonus ? `Bônus: ${deco.bonus.type}` : "Cosmético"}
+        ${deco.bonus ? `Bonus: ${deco.bonus.type}` : "Cosmetic"}
       </div>
       ${hasBought ? 
         `<button class="btn-action" style="width:100%" onclick="placeDecoration('${deco.id}')">Colocar</button>` : 
