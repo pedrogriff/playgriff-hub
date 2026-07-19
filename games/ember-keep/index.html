@@ -169,6 +169,7 @@
       <div class="quick-stats" id="quick-stats">
         <span class="stat-pill" id="pill-level">Lv.<strong id="header-level">1</strong></span>
         <span class="stat-pill" id="pill-gold"><strong id="header-gold">50</strong>💰</span>
+        <span class="stat-pill" id="pill-gems" style="cursor:pointer; border-color:var(--ember);" onclick="document.getElementById('premium-store-modal').classList.add('active'); renderPremiumStore('pass');" title="Ember Store"><strong id="header-gems">0</strong>💎</span>
         <span class="stat-pill" id="pill-stamina"><strong id="header-stamina">100/100</strong>⚡</span>
       </div>
       <button id="settings-btn" class="icon-btn" title="Settings" aria-label="Open Settings">⚙️</button>
@@ -659,6 +660,50 @@
           </div>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================
+       DAILY REWARD MODAL
+       ============================================= -->
+  <div id="daily-reward-modal" class="modal">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+      <h3 style="color: var(--gold); margin-top:0;">📅 Recompensa Diária</h3>
+      <p style="margin-bottom:20px; font-size: 0.9rem; color:var(--text-muted);">Faça login todos os dias para receber Gemas grátis!</p>
+      
+      <div style="font-size: 3rem; margin-bottom: 10px;">💎</div>
+      
+      <div id="daily-reward-streak" style="font-size: 1.1rem; margin-bottom: 20px;">
+        Sequência Atual: <strong style="color:var(--ember);">0 Dias</strong>
+      </div>
+      
+      <p id="daily-reward-amount" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 25px;">
+        +1 Gema Hoje!
+      </p>
+
+      <button class="btn-action" style="width: 100%; font-size: 1.1rem; padding: 12px;" onclick="claimDailyReward()">Resgatar</button>
+    </div>
+  </div>
+
+  <!-- =============================================
+       PREMIUM STORE MODAL
+       ============================================= -->
+  <div id="premium-store-modal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3>💎 Ember Store</h3>
+        <button class="close-btn" onclick="document.getElementById('premium-store-modal').classList.remove('active')">×</button>
+      </div>
+      
+      <div class="shop-tabs">
+        <button class="shop-tab active" onclick="renderPremiumStore('pass')">Ember Pass</button>
+        <button class="shop-tab" onclick="renderPremiumStore('gems')">Gemas</button>
+        <button class="shop-tab" onclick="renderPremiumStore('consumables')">Consumíveis</button>
+      </div>
+
+      <div id="premium-store-content" style="margin-top: 15px; max-height:60vh; overflow-y:auto; padding-right:10px;">
+        <!-- Renderizado dinamicamente -->
       </div>
     </div>
   </div>

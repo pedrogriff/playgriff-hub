@@ -390,6 +390,46 @@ const DECO_UNLOCKS = {
 };
 
 // ================================================================
+// PREMIUM CONFIGURATION
+// ================================================================
+const PREMIUM_BONUSES = {
+  hpRegenMult:       2.0,   // 2x regen (0.5% → 1.0%)
+  staminaRegenMs:    7000,  // 7s em vez de 10s
+  extraProdSlots:    2,
+  prodTimeMult:      0.80,  // 20% mais rápido
+  inventorySlots:    50,    // vs 30
+  autoCollect:       true,
+  goldMult:          1.15,  // +15%
+  xpMult:            1.10,  // +10%
+  lootDropChance:    0.52,  // vs 0.45
+  materialDropChance:0.70,  // vs 0.60
+  extraDecoSlots:    5,
+  premiumBadge:      true,
+  dailyGems:         1,
+};
+
+const PREMIUM_LIMITS = {
+  stamina_refill: { maxPerDay: 3 },
+  hp_restore:     { maxPerDay: 5 },
+  prod_skip:      { maxPerDay: 10 },
+  second_chance:  { maxPerBattle: 1 },
+};
+
+const ACHIEVEMENTS = [
+  { id:"ach_boss_1",     name:"Chaos Knight Slayer", gems:10, condition:"defeat_level_10" },
+  { id:"ach_boss_2",     name:"Storm Conqueror",     gems:15, condition:"defeat_level_20" },
+  { id:"ach_boss_3",     name:"Ember King Vanquished",gems:20, condition:"defeat_level_30" },
+  { id:"ach_level_5",    name:"Rising Hero",         gems:10, condition:"reach_level_5" },
+  { id:"ach_level_10",   name:"Veteran",             gems:10, condition:"reach_level_10" },
+  { id:"ach_level_20",   name:"Champion",            gems:10, condition:"reach_level_20" },
+  { id:"ach_level_30",   name:"Legend",              gems:10, condition:"reach_level_30" },
+  { id:"ach_craft_10",   name:"Apprentice Crafter",  gems:5,  condition:"craft_10_items" },
+  { id:"ach_craft_100",  name:"Master Crafter",      gems:15, condition:"craft_100_items" },
+  { id:"ach_siege_win",  name:"Fortress Breaker",    gems:5,  condition:"win_siege" },
+  { id:"ach_clan_create",name:"Clan Founder",        gems:5,  condition:"create_clan" },
+];
+
+// ================================================================
 // DEFAULT PLAYER STATE
 // ================================================================
 const DEFAULT_PLAYER_STATE = {
@@ -400,6 +440,13 @@ const DEFAULT_PLAYER_STATE = {
   xpNeeded: 100,
   gold: 50,
   gems: 0,
+  isPremium: false,
+  premiumExpiry: null,
+  totalGemsSpent: 0,
+  loginStreak: 0,
+  lastLoginDate: null,
+  achievements: [],
+  premiumUsage: {}, // Tracks daily usages for limits
   unlockedLevel: 1,
   stamina: 100,
   lastStaminaUpdate: Date.now(),
@@ -438,6 +485,88 @@ let playerState = {};
 let activeBattleInterval = null;
 let pendingLoot = null;
 let staminaInterval = null;
+
+// ================================================================
+// PREMIUM HELPER FUNCTIONS
+// ================================================================
+function isPremiumActive() {
+  return playerState.isPremium && playerState.premiumExpiry > Date.now();
+}
+
+function getPremiumBonus(key) {
+  if (!isPremiumActive()) return null;
+  return PREMIUM_BONUSES[key];
+}
+
+function addGems(amount) {
+  playerState.gems = (playerState.gems || 0) + amount;
+  if (typeof renderStats === "function") renderStats();
+}
+
+function spendGems(amount) {
+  if ((playerState.gems || 0) < amount) return false;
+  playerState.gems -= amount;
+  playerState.totalGemsSpent = (playerState.totalGemsSpent || 0) + amount;
+  if (typeof renderStats === "function") renderStats();
+  return true;
+}
+
+function canUsePremiumConsumable(itemId) {
+  const limit = PREMIUM_LIMITS[itemId];
+  if (!limit) return true;
+  
+  const today = new Date().toDateString();
+  if (!playerState.premiumUsage) playerState.premiumUsage = {};
+  if (!playerState.premiumUsage[today]) playerState.premiumUsage[today] = {};
+  
+  const usage = playerState.premiumUsage[today][itemId] || 0;
+  return usage < (limit.maxPerDay || Infinity);
+}
+
+function recordPremiumConsumableUsage(itemId) {
+  const today = new Date().toDateString();
+  if (!playerState.premiumUsage) playerState.premiumUsage = {};
+  if (!playerState.premiumUsage[today]) playerState.premiumUsage[today] = {};
+  playerState.premiumUsage[today][itemId] = (playerState.premiumUsage[today][itemId] || 0) + 1;
+}
+
+function checkAchievements(triggerType, data) {
+  if (!playerState.achievements) playerState.achievements = [];
+  let changed = false;
+
+  ACHIEVEMENTS.forEach(ach => {
+    if (playerState.achievements.includes(ach.id)) return; // Já possui
+
+    let unlocked = false;
+    if (triggerType === "level_up") {
+      if (ach.condition === "reach_level_5" && playerState.level >= 5) unlocked = true;
+      if (ach.condition === "reach_level_10" && playerState.level >= 10) unlocked = true;
+      if (ach.condition === "reach_level_20" && playerState.level >= 20) unlocked = true;
+      if (ach.condition === "reach_level_30" && playerState.level >= 30) unlocked = true;
+    }
+    if (triggerType === "battle_win") {
+      if (ach.condition === "defeat_level_10" && data.levelId === 10) unlocked = true;
+      if (ach.condition === "defeat_level_20" && data.levelId === 20) unlocked = true;
+      if (ach.condition === "defeat_level_30" && data.levelId === 30) unlocked = true;
+    }
+    if (triggerType === "craft") {
+      if (!playerState.stats.itemsCrafted) playerState.stats.itemsCrafted = 0;
+      if (ach.condition === "craft_10_items" && playerState.stats.itemsCrafted >= 10) unlocked = true;
+      if (ach.condition === "craft_100_items" && playerState.stats.itemsCrafted >= 100) unlocked = true;
+    }
+    if (triggerType === "siege" && ach.condition === "win_siege") unlocked = true;
+    if (triggerType === "clan" && ach.condition === "create_clan") unlocked = true;
+
+    if (unlocked) {
+      playerState.achievements.push(ach.id);
+      addGems(ach.gems);
+      showToast(`🏆 Conquista: ${ach.name}! +${ach.gems} 💎`, "success");
+      changed = true;
+    }
+  });
+
+  if (changed) savePlayerState();
+}
 
 // Battle state (reset per fight)
 let battleEffects = {};
@@ -746,12 +875,58 @@ function loadPlayerState() {
     recoverOfflineProduction();
     startStaminaTicker();
     startProductionTicker();
+    checkDailyLogin();
   }
   checkClassSelection();
 }
 
 function savePlayerState() {
   localStorage.setItem("rpg_player_state", JSON.stringify(playerState));
+}
+
+function checkDailyLogin() {
+  const today = new Date().toDateString();
+  if (playerState.lastLoginDate !== today) {
+    if (!playerState.loginStreak) playerState.loginStreak = 0;
+    
+    // Check if it's the next day, otherwise reset streak
+    const lastDate = playerState.lastLoginDate ? new Date(playerState.lastLoginDate) : null;
+    const isNextDay = lastDate && (new Date() - lastDate) < 2 * 24 * 60 * 60 * 1000;
+    
+    if (isNextDay || !lastDate) {
+      playerState.loginStreak++;
+    } else {
+      playerState.loginStreak = 1; // Missed a day, back to 1
+    }
+    
+    // Show modal
+    setTimeout(() => {
+      document.getElementById("daily-reward-streak").innerHTML = `Sequência Atual: <strong style="color:var(--ember);">${playerState.loginStreak} Dias</strong>`;
+      
+      let amount = 1;
+      if (playerState.loginStreak % 7 === 0) amount = 5;
+      if (playerState.isPremium) amount += PREMIUM_BONUSES.dailyGems;
+      
+      document.getElementById("daily-reward-amount").innerHTML = `+${amount} Gema${amount > 1 ? 's' : ''} Hoje!`;
+      
+      // Store amount in a temporary global variable to be claimed
+      window._pendingDailyGems = amount;
+      
+      document.getElementById("daily-reward-modal").classList.add("active");
+    }, 1000);
+  }
+}
+
+function claimDailyReward() {
+  const amount = window._pendingDailyGems || 1;
+  addGems(amount);
+  playerState.lastLoginDate = new Date().toDateString();
+  savePlayerState();
+  document.getElementById("daily-reward-modal").classList.remove("active");
+  showToast(`Você recebeu ${amount} Gemas pelo login diário!`, "success");
+}
+
+function triggerStateUpdateEvent() {
   window.dispatchEvent(new CustomEvent("playerStateUpdated", { detail: playerState }));
 }
 
@@ -760,17 +935,21 @@ function recoverOfflineStamina() {
   const elapsed = now - (playerState.lastStaminaUpdate || now);
   const maxStam = getMaxStamina(playerState.level);
   const effStats = getEffectiveStats();
+  
+  const regenMs = isPremiumActive() ? PREMIUM_BONUSES.staminaRegenMs : STAMINA_REGEN_MS;
+  const hpRegMult = isPremiumActive() ? PREMIUM_BONUSES.hpRegenMult : 1.0;
+  
   if (elapsed > 0) {
-    const recovered = Math.floor(elapsed / STAMINA_REGEN_MS);
+    const recovered = Math.floor(elapsed / regenMs);
     if (recovered > 0) {
       playerState.stamina = Math.min(maxStam, playerState.stamina + recovered);
       
-      const hpRegenRate = Math.max(1, Math.floor(effStats.maxHp * 0.005));
+      const hpRegenRate = Math.max(1, Math.floor(effStats.maxHp * 0.005 * hpRegMult));
       if (playerState.currentHp < effStats.maxHp) {
         playerState.currentHp = Math.min(effStats.maxHp, (playerState.currentHp || effStats.maxHp) + (hpRegenRate * recovered));
       }
       
-      playerState.lastStaminaUpdate += recovered * STAMINA_REGEN_MS;
+      playerState.lastStaminaUpdate += recovered * regenMs;
       savePlayerState();
     }
   }
@@ -778,6 +957,9 @@ function recoverOfflineStamina() {
 
 function startStaminaTicker() {
   if (staminaInterval) clearInterval(staminaInterval);
+  const regenMs = isPremiumActive() ? PREMIUM_BONUSES.staminaRegenMs : STAMINA_REGEN_MS;
+  const hpRegMult = isPremiumActive() ? PREMIUM_BONUSES.hpRegenMult : 1.0;
+  
   staminaInterval = setInterval(() => {
     if (!playerState.class) return;
     const maxStam = getMaxStamina(playerState.level);
@@ -790,8 +972,8 @@ function startStaminaTicker() {
     }
     if (playerState.currentHp < effStats.maxHp) {
       const houseInfo = getHouseInfo();
-      const hpRegenMult = houseInfo.hpRegenBonus;
-      const hpRegenRate = Math.max(1, Math.floor(effStats.maxHp * 0.005 * hpRegenMult));
+      const totalHpRegenMult = houseInfo.hpRegenBonus * hpRegMult;
+      const hpRegenRate = Math.max(1, Math.floor(effStats.maxHp * 0.005 * totalHpRegenMult));
       playerState.currentHp = Math.min(effStats.maxHp, (playerState.currentHp || effStats.maxHp) + hpRegenRate);
       changed = true;
     }
@@ -815,18 +997,19 @@ function startStaminaTicker() {
           playerState.currentHp = getEffectiveStats().maxHp;
           if (typeof playSound === "function") playSound("level_up");
           if (typeof showToast === "function") showToast(`Level Up! Você atingiu o Nível ${playerState.level}!`, "success");
+          changed = true;
         }
-        changed = true;
       }
     }
-
+    
     if (changed) {
       playerState.lastStaminaUpdate = Date.now();
       savePlayerState();
       renderStats();
     }
-  }, STAMINA_REGEN_MS);
+  }, regenMs);
 }
+
 
 // ── PRODUCTION ENGINE ──
 let productionInterval = null;
@@ -843,9 +1026,10 @@ function startProduction(recipeId) {
   const recipe = PRODUCTION_RECIPES.find(r => r.id === recipeId);
   if (!recipe) return;
 
-  // Check capacity (e.g. max 3 slots)
-  if (playerState.productionTimers.length >= 3) {
-    alert("Production queue is full (Max 3).");
+  // Check capacity (e.g. max 3 slots + Premium)
+  const maxSlots = 3 + (isPremiumActive() ? PREMIUM_BONUSES.extraProdSlots : 0);
+  if (playerState.productionTimers.length >= maxSlots) {
+    alert(`Production queue is full (Max ${maxSlots}).`);
     return;
   }
 
@@ -873,7 +1057,12 @@ function startProduction(recipeId) {
     reduction = Math.min(0.9, reduction + houseBonus); // Max 90% reduction total
   }
 
-  const finalTimeMs = Math.floor(recipe.timeMs * (1 - reduction));
+  let finalTimeMs = Math.floor(recipe.timeMs * (1 - reduction));
+  
+  // Apply Premium time reduction
+  if (isPremiumActive()) {
+    finalTimeMs = Math.floor(finalTimeMs * PREMIUM_BONUSES.prodTimeMult);
+  }
 
   playerState.productionTimers.push({
     recipeId: recipe.id,
@@ -936,6 +1125,10 @@ function finishProduction(timer) {
 
   // Add XP
   gainProductionXP(recipe.skill, recipe.xpGain);
+  
+  if (!playerState.stats.itemsCrafted) playerState.stats.itemsCrafted = 0;
+  playerState.stats.itemsCrafted += 1;
+  checkAchievements("craft");
 }
 
 function gainProductionXP(skillId, amount) {
@@ -991,9 +1184,14 @@ function getEffectiveStats() {
   }
   
   const clanBonuses = getClanTerritoryBonuses();
+  
+  let finalMaxHp = playerState.stats.maxHp;
+  if (isPremiumActive()) {
+    finalMaxHp = Math.floor(finalMaxHp * 1.20);
+  }
 
   return {
-    maxHp:      playerState.stats.maxHp,
+    maxHp:      finalMaxHp,
     power:      playerState.stats.power   + extraPower,
     defense:    playerState.stats.defense + extraDefense,
     critChance: (playerState.stats.critChance  || 0.05) + extraCrit,
@@ -1275,10 +1473,15 @@ function renderStats() {
   // Header
   _setText("header-level", playerState.level);
   _setText("header-gold",  playerState.gold);
+  _setText("header-gems",  playerState.gems || 0);
   _setText("header-stamina", `${playerState.stamina}/${maxStam}`);
+  _setText("store-gems-count", playerState.gems || 0);
 
   // Character panel
-  _setText("char-name",           playerState.name || "Hero");
+  const charName = playerState.name || "Hero";
+  const nameBadge = isPremiumActive() ? `<span title="Premium" style="color:var(--ember);">👑</span> ` : "";
+  document.getElementById("char-name").innerHTML = nameBadge + charName;
+  
   _setText("char-class-display",  playerState.class);
   _setText("char-level",          playerState.level);
   _setText("char-xp-text",        `${playerState.xp}/${playerState.xpNeeded}`);
@@ -1376,6 +1579,147 @@ function renderShop() {
       if (matsCont) matsCont.appendChild(createShopItemEl(item));
     }
   });
+}
+
+function renderPremiumStore(tab) {
+  const content = document.getElementById("premium-store-content");
+  if (!content) return;
+  
+  // Update tabs UI
+  const tabs = document.querySelectorAll("#premium-store-modal .shop-tab");
+  tabs.forEach(t => t.classList.remove("active"));
+  event && event.currentTarget && event.currentTarget.classList.add("active");
+
+  let html = `<div style="text-align:right; margin-bottom:10px; font-weight:bold; color:var(--ember);">
+    Suas Gemas: <span id="store-gems-count">${playerState.gems || 0}</span> 💎
+  </div>`;
+  
+  if (tab === "pass") {
+    html += `
+      <div class="panel" style="border-color: var(--ember); text-align:center;">
+        <h4 style="color:var(--ember); font-size:1.5rem; margin-top:0;">Ember Pass</h4>
+        <p>Acesso a benefícios exclusivos por 30 dias!</p>
+        <ul style="text-align:left; font-size:0.9rem; line-height:1.6;">
+          <li>🛡️ +20% HP e +50% Regeneração de HP</li>
+          <li>⚡ Stamina Regenera 30% mais rápido</li>
+          <li>⚒️ +2 Slots de Produção</li>
+          <li>🎒 +20 Slots de Inventário</li>
+          <li>💰 +15% Gold e +10% XP em Batalhas</li>
+          <li>✨ Badge Exclusivo no Chat/Ranking</li>
+        </ul>
+        <button class="btn-action" style="font-size:1.2rem; padding:10px 30px; margin-top:15px;" onclick="buyEmberPass()">Comprar (900 💎)</button>
+      </div>
+    `;
+  } else if (tab === "gems") {
+    html += `
+      <div class="shop-grid">
+        <div class="recipe-card" style="text-align:center;">
+          <div style="font-size:2.5rem;">💎</div>
+          <h4>Pilha de Gemas</h4>
+          <p>100 Gemas</p>
+          <button class="btn-action" style="width:100%;">R$ 4,90</button>
+        </div>
+        <div class="recipe-card" style="text-align:center;">
+          <div style="font-size:2.5rem;">💰</div>
+          <h4>Saco de Gemas</h4>
+          <p>500 Gemas + 50 Bônus</p>
+          <button class="btn-action" style="width:100%;">R$ 24,90</button>
+        </div>
+        <div class="recipe-card" style="text-align:center; border: 1px solid var(--ember);">
+          <div style="font-size:2.5rem;">👑</div>
+          <h4>Baú Real</h4>
+          <p>1000 Gemas + 200 Bônus</p>
+          <button class="btn-action" style="width:100%;">R$ 49,90</button>
+        </div>
+      </div>
+    `;
+  } else if (tab === "consumables") {
+    html += `
+      <div class="shop-grid">
+        <div class="recipe-card">
+          <div style="font-size:2rem; text-align:center;">🧪</div>
+          <h4 style="text-align:center; margin:5px 0;">Poção de Stamina</h4>
+          <p style="font-size:0.8rem; text-align:center;">Restaura 100% da Stamina. (Max 3/dia)</p>
+          <button class="btn-action" style="width:100%; margin-top:10px;" onclick="buyPremiumConsumable('stamina_refill', 50)">50 💎</button>
+        </div>
+        <div class="recipe-card">
+          <div style="font-size:2rem; text-align:center;">⏳</div>
+          <h4 style="text-align:center; margin:5px 0;">Ampulheta Mágica</h4>
+          <p style="font-size:0.8rem; text-align:center;">Pula 1 hora de produção. (Max 10/dia)</p>
+          <button class="btn-action" style="width:100%; margin-top:10px;" onclick="buyPremiumConsumable('prod_skip', 30)">30 💎</button>
+        </div>
+        <div class="recipe-card">
+          <div style="font-size:2rem; text-align:center;">💖</div>
+          <h4 style="text-align:center; margin:5px 0;">Lágrima de Fênix</h4>
+          <p style="font-size:0.8rem; text-align:center;">Revive com 50% HP. (1/batalha)</p>
+          <button class="btn-action" style="width:100%; margin-top:10px;" onclick="buyPremiumConsumable('second_chance', 100)">100 💎</button>
+        </div>
+      </div>
+    `;
+  }
+  
+  content.innerHTML = html;
+}
+
+function buyEmberPass() {
+  if (playerState.gems < 900) {
+    showToast("Gemas insuficientes!", "error");
+    return;
+  }
+  
+  spendGems(900);
+  playerState.isPremium = true;
+  // +30 dias
+  const now = Date.now();
+  if (playerState.premiumExpiry && playerState.premiumExpiry > now) {
+    playerState.premiumExpiry += 30 * 24 * 60 * 60 * 1000;
+  } else {
+    playerState.premiumExpiry = now + 30 * 24 * 60 * 60 * 1000;
+  }
+  
+  savePlayerState();
+  if (typeof renderStats === "function") renderStats();
+  document.getElementById("premium-store-modal").classList.remove("active");
+  showToast("Ember Pass ativado por 30 dias!", "success");
+}
+
+function buyPremiumConsumable(type, cost) {
+  if (playerState.gems < cost) {
+    showToast("Gemas insuficientes!", "error");
+    return;
+  }
+  if (!canUsePremiumConsumable(type)) {
+    showToast("Limite diário/batalha atingido para este item!", "error");
+    return;
+  }
+  
+  spendGems(cost);
+  recordPremiumConsumableUsage(type);
+  
+  if (type === "stamina_refill") {
+    playerState.stamina = getMaxStamina(playerState.level);
+    showToast("Stamina totalmente restaurada!", "success");
+  } else if (type === "prod_skip") {
+    if (!playerState.productionTimers) playerState.productionTimers = [];
+    playerState.productionTimers.forEach(t => t.endTime -= 60 * 60 * 1000); // reduz 1h
+    checkProductionTimers();
+    showToast("1 Hora pulada em todas as produções!", "success");
+  } else if (type === "second_chance") {
+    if (activeBattleInterval && battlePlayerHp <= 0) {
+      battlePlayerHp = Math.floor(playerState.stats.maxHp * 0.5);
+      updatePlayerHpUI();
+      appendBattleLog("Lágrima de Fênix usada! Você reviveu com 50% HP!", "combat-buff");
+      showToast("Você reviveu!", "success");
+    } else {
+      // Add to inventory? Wait, the prompt says "consumable", but we can just add an item.
+      // Or just apply the buff? Let's just give them the item.
+      addToInventory("phoenix_tear", 1);
+      showToast("Lágrima de Fênix comprada!", "success");
+    }
+  }
+  
+  savePlayerState();
+  renderPremiumStore('consumables');
 }
 
 function createShopItemEl(item) {
@@ -2410,8 +2754,16 @@ function handleBattleVictory(level) {
   const effStats = getEffectiveStats();
   const bonuses = effStats.clanBonuses || { extraGoldPercent: 0, extraXpPercent: 0 };
   
-  const finalGold = Math.floor(level.gold * (1 + (bonuses.extraGoldPercent / 100)));
-  const finalXp = Math.floor(level.xp * (1 + (bonuses.extraXpPercent / 100)));
+  let goldMult = 1 + (bonuses.extraGoldPercent / 100);
+  let xpMult = 1 + (bonuses.extraXpPercent / 100);
+  
+  if (isPremiumActive()) {
+    goldMult *= PREMIUM_BONUSES.goldMult;
+    xpMult *= PREMIUM_BONUSES.xpMult;
+  }
+  
+  const finalGold = Math.floor(level.gold * goldMult);
+  const finalXp = Math.floor(level.xp * xpMult);
 
   appendBattleLog(`🏆 Victory! You defeated ${level.name}!`, "combat-victory");
   showToast(`⭐ Victory! +${finalGold}g and +${finalXp} XP!`, "success");
@@ -2435,6 +2787,7 @@ function handleBattleVictory(level) {
   }
 
   // Level up check
+  let leveledUp = false;
   while (playerState.xp >= playerState.xpNeeded) {
     playerState.xp -= playerState.xpNeeded;
     playerState.level++;
@@ -2448,6 +2801,15 @@ function handleBattleVictory(level) {
     appendBattleLog(`⭐ LEVEL UP! Now Level ${playerState.level}! Stats increased. +3 Skill Points!`, "combat-victory");
     showToast(`⭐ Level ${playerState.level}! +3 Skill Points available!`, "info");
     if (typeof playSound === "function") playSound("level_up");
+    leveledUp = true;
+  }
+  
+  if (leveledUp) {
+    checkAchievements("level_up");
+  }
+  
+  if (!level.isBotDuel) {
+    checkAchievements("battle_win", { levelId: level.id });
   }
 
   // Unlock next main level
@@ -2464,7 +2826,7 @@ function handleBattleVictory(level) {
   checkForLootDrop(level);
   
   // Material drop (independent of gear loot)
-  const materialDropChance = 0.60; // 60% chance
+  const materialDropChance = isPremiumActive() ? PREMIUM_BONUSES.materialDropChance : 0.60; // 60% chance ou 70% premium
   if (Math.random() < materialDropChance) {
     const possibleMats = Object.values(MATERIAL_ITEMS);
     const droppedMat = possibleMats[Math.floor(Math.random() * possibleMats.length)];
@@ -2511,7 +2873,10 @@ function handleBattleDefeat() {
 function checkForLootDrop(level) {
   const effStats = getEffectiveStats();
   const bonuses = effStats.clanBonuses || { extraDropChance: 0 };
-  const dropChance = 0.45 + (bonuses.extraDropChance / 100);
+  let dropChance = 0.45 + (bonuses.extraDropChance / 100);
+  if (isPremiumActive()) {
+    dropChance = PREMIUM_BONUSES.lootDropChance + (bonuses.extraDropChance / 100);
+  }
   
   if (Math.random() > dropChance) return; // Drop chance com bônus
 

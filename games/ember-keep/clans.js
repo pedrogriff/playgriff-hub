@@ -66,6 +66,8 @@ function createClan(name, tag, icon) {
   savePlayerState();
   showToast(`Clã [${clan.tag}] criado!`, "success");
   
+  if (typeof checkAchievements === "function") checkAchievements("clan");
+  
   // Atualizar UI se estiver na tela
   if (typeof renderClanTab === "function") renderClanTab();
 }

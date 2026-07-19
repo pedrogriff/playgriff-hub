@@ -176,6 +176,9 @@ function resolveSiege(regionId) {
   
   if (winner) {
     transferFortressControl(regionId, winner);
+    if (typeof playerState !== "undefined" && playerState.clan && winner === playerState.clan.id) {
+      if (typeof checkAchievements === "function") checkAchievements("siege");
+    }
   }
   
   saveSiegeData(regionId, siege);
