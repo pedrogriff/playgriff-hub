@@ -489,6 +489,56 @@
   </div>
 
   <!-- =============================================
+       HOUSE & INSTALL MODALS
+       ============================================= -->
+  <div id="house-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="house-title">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h2 id="house-title">Minha Casa</h2>
+        <button class="close-modal-btn" id="close-house-modal-btn">×</button>
+      </div>
+      <div class="modal-body" style="padding:0;">
+        <div class="house-view" id="house-view">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="station-install-modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📦 Instalar Instalação</h2>
+        <button class="close-modal-btn" id="close-install-modal-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="station-options-list" style="display:flex; flex-direction:column; gap:10px;">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="decoration-shop-modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🎨 Comprar Decorações</h2>
+        <div class="gems-display">💎 <span id="gems-count-display">0</span></div>
+        <button class="close-modal-btn" id="close-decoration-shop-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="shop-tabs" style="margin-bottom: 10px;">
+          <button class="shop-tab-btn active" id="deco-tab-standard">Comuns (Gold)</button>
+          <button class="shop-tab-btn" id="deco-tab-premium" style="color:var(--ember)">Premium (Gemas)</button>
+        </div>
+        <div id="decoration-options-list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================
        TOAST NOTIFICATIONS
        ============================================= -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="false"></div>

@@ -1679,3 +1679,142 @@ body {
   width: 0%;
   transition: width 0.2s linear;
 }
+
+/* =========================================
+   HOUSING SYSTEM
+   ========================================= */
+.house-node {
+  background: var(--bg-elevated);
+  border-color: var(--gold);
+}
+.house-node:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px var(--gold);
+}
+
+.house-view { display: flex; flex-direction: column; gap: var(--gap-md); padding: 16px; }
+
+.house-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+.house-identity { display: flex; align-items: center; gap: 12px; }
+.house-icon { font-size: 2rem; }
+.house-name {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--gold);
+}
+.house-tier-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Grid de Slots */
+.house-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: var(--gap-sm);
+}
+
+.house-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 8px;
+  min-height: 110px;
+  background: var(--bg-elevated);
+  border: 2px dashed var(--border);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.house-slot:hover { border-color: var(--gold); background: var(--bg-hover); }
+
+.house-slot.occupied {
+  border-style: solid;
+  border-color: var(--border-bright);
+}
+.house-slot.occupied:hover { border-color: var(--ember); }
+
+.house-slot .slot-icon { font-size: 1.8rem; margin-bottom: 4px; }
+.house-slot .slot-name { font-size: 0.75rem; font-weight: 600; text-align: center; }
+.house-slot .slot-tier {
+  font-size: 0.65rem;
+  color: var(--gold);
+  margin-top: 2px;
+}
+
+.house-slot.empty .slot-icon { color: var(--text-muted); opacity: 0.5; }
+
+.remove-station-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--ember);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  display: none;
+}
+.house-slot.occupied:hover .remove-station-btn { display: block; }
+
+/* Decorações Grid */
+.decorations-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.decoration-item {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.decoration-item:hover { border-color: var(--gold); transform: scale(1.1); }
+.decoration-item.empty { border-style: dashed; opacity: 0.5; }
+.decoration-item.empty:hover { opacity: 1; }
+
+.remove-deco-btn {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--ember);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
+  cursor: pointer;
+  display: none;
+}
+.decoration-item:not(.empty):hover .remove-deco-btn { display: block; }
+
+.gems-display {
+  background: var(--bg-elevated);
+  padding: 4px 8px;
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--gold);
+}
