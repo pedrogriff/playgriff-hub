@@ -476,6 +476,10 @@ const DEFAULT_PLAYER_STATE = {
     registeredRegion: null, // "greenhollow", "frosthold", etc.
   },
   clan: null, // { id, name, role } ou null
+  pets: [],           // Coleção: [{ id, speciesId, name, level, xp, stage, happiness, lastFed }]
+  activePet: null,    // ID do pet ativo em batalha
+  hatchingEgg: null,  // { eggId, startTime, endTime } ou null
+  petStable: 6,       // Máximo de pets na coleção
 };
 
 // ================================================================
@@ -579,6 +583,8 @@ let battlePlayerMaxHp = 0;
 let battleEnemyHp = 0;
 let battleEnemyMaxHp = 0;
 let currentBattleLevel = null;
+let petCooldown = 0;
+let activePetData = null;
 
 // Settings
 let gameSettings = { sound: true, autoEquip: false };
@@ -859,6 +865,10 @@ function loadPlayerState() {
         equipment: { ...DEFAULT_PLAYER_STATE.equipment, ...(parsed.equipment || {}) },
         productionSkills: JSON.parse(JSON.stringify({ ...DEFAULT_PLAYER_STATE.productionSkills, ...(parsed.productionSkills || {}) })),
         house: JSON.parse(JSON.stringify({ ...DEFAULT_PLAYER_STATE.house, ...(parsed.house || {}) })),
+        pets: parsed.pets || [],
+        activePet: parsed.activePet || null,
+        hatchingEgg: parsed.hatchingEgg || null,
+        petStable: parsed.petStable || DEFAULT_PLAYER_STATE.petStable
       };
       if (playerState.gems === undefined) playerState.gems = 0;
     } catch(e) {
@@ -873,6 +883,7 @@ function loadPlayerState() {
   if (playerState.class) {
     recoverOfflineStamina();
     recoverOfflineProduction();
+    if (typeof updatePetHappiness === 'function') updatePetHappiness();
     startStaminaTicker();
     startProductionTicker();
     checkDailyLogin();
@@ -978,6 +989,8 @@ function startStaminaTicker() {
       changed = true;
     }
     
+    if (typeof updatePetHappiness === 'function') updatePetHappiness();
+    
     // Training Dummy XP
     if (playerState.house && playerState.house.slots) {
       const dummies = playerState.house.slots.filter(s => s.id === "training_dummy");
@@ -1076,6 +1089,7 @@ function startProduction(recipeId) {
 }
 
 function checkProductionTimers() {
+  if (typeof checkHatchingTimer === 'function') checkHatchingTimer();
   if (!playerState.productionTimers || playerState.productionTimers.length === 0) return;
   const now = Date.now();
   let completedAny = false;
@@ -1190,15 +1204,44 @@ function getEffectiveStats() {
     finalMaxHp = Math.floor(finalMaxHp * 1.20);
   }
 
-  return {
+  let result = {
     maxHp:      finalMaxHp,
     power:      playerState.stats.power   + extraPower,
     defense:    playerState.stats.defense + extraDefense,
     critChance: (playerState.stats.critChance  || 0.05) + extraCrit,
     critDamage: playerState.stats.critDamage  || 1.5,
     dodgeChance:(playerState.stats.dodgeChance || 0.05) + extraDodge,
+    damageAbsorb: 0,
+    hpRegenBattle: 0,
     clanBonuses: clanBonuses
   };
+
+  // Bônus do pet ativo
+  if (playerState.activePet && typeof PET_SPECIES !== 'undefined') {
+    const pet = playerState.pets.find(p => p.id === playerState.activePet);
+    if (pet) {
+      const species = PET_SPECIES[pet.speciesId];
+      const scale = getPetStatMultiplier(pet.level);
+      const happMult = pet.happiness >= 50 ? 1.0 : 0.5;
+      
+      if (species.passive.stat) {
+        const bonus = species.passive.valuePct
+          ? result[species.passive.stat] * species.passive.valuePct * scale * happMult
+          : species.passive.value * scale * happMult;
+        result[species.passive.stat] += bonus;
+      }
+      if (species.passive.stats) {
+        species.passive.stats.forEach(p => {
+          const bonus = p.valuePct
+            ? result[p.stat] * p.valuePct * scale * happMult
+            : p.value * scale * happMult;
+          result[p.stat] += bonus;
+        });
+      }
+    }
+  }
+
+  return result;
 }
 
 function getPlayerPowerRating(state) {
@@ -1529,6 +1572,8 @@ function renderStats() {
   const spBtn   = document.getElementById("open-sp-btn");
   if (spBadge) spBadge.textContent = playerState.skillPoints || 0;
   if (spBtn)   spBtn.style.display = playerState.skillPoints > 0 ? "inline-flex" : "none";
+  
+  if (typeof renderPetSection === "function") renderPetSection();
 }
 
 // ── SHOP ──
@@ -2048,6 +2093,7 @@ function initUpgradeButtons() {
       savePlayerState(); renderStats(); renderShop();
       showToast("❤️ HP upgraded!", "success");
       if (typeof playSound === "function") playSound("purchase");
+      if (typeof renderPetSection === "function") renderPetSection();
     }
   });
   document.getElementById("upgrade-power-btn").addEventListener("click", () => {
@@ -2327,6 +2373,9 @@ function openBattleModal(level) {
   // Render skill bar
   renderSkillBar();
 
+  // Render Pet
+  if (typeof renderBattlePet === 'function') renderBattlePet();
+
   // Reset log
   document.getElementById("battle-log").innerHTML = `<p class="system-message">Press "Start Battle" to challenge ${level.name}!</p>`;
 
@@ -2577,6 +2626,8 @@ function startBattleSimulation(level) {
   };
   skillCooldowns = {};
   battleRound = 0;
+  petCooldown = 0;
+  activePetData = playerState.activePet ? playerState.pets.find(p => p.id === playerState.activePet) : null;
 
   const effStats = getEffectiveStats();
   const preset   = CLASS_PRESETS[playerState.class];
@@ -2638,6 +2689,15 @@ function startBattleSimulation(level) {
       if (battleEnemyHp <= 0) { handleBattleVictory(level); return; }
     }
 
+    // ── Burn tick ──
+    if (battleEffects.enemyBurnRounds > 0) {
+      battleEnemyHp = Math.max(0, battleEnemyHp - battleEffects.enemyBurnDamage);
+      appendBattleLog(`🔥 Burn: ${battleEffects.enemyBurnDamage} damage! (${battleEffects.enemyBurnRounds - 1} rounds left)`, "combat-player-hit");
+      battleEffects.enemyBurnRounds--;
+      updateEnemyHpUI();
+      if (battleEnemyHp <= 0) { handleBattleVictory(level); return; }
+    }
+
     // ── PLAYER ATTACKS ──
     let playerDamage = 0, attackLog = "", isPlayerCrit = false;
     let hitCount = 1, hitMult = 1;
@@ -2646,7 +2706,12 @@ function startBattleSimulation(level) {
     if (Math.random() < enemyDodgeChance) {
       attackLog = `🛡️ ${level.name} dodged your attack!`;
     } else {
-      let baseDmg = Math.max(1, currentEffStats.power - level.defense) * hitMult;
+      let effDef = level.defense;
+      if (battleEffects.enemyArmorBreak > 0) {
+        effDef = Math.floor(effDef * 0.5); // 50% defense break
+        battleEffects.enemyArmorBreak--;
+      }
+      let baseDmg = Math.max(1, currentEffStats.power - effDef) * hitMult;
       if (battleEffects.powerBoostRounds > 0) { baseDmg *= battleEffects.powerBoostMult; battleEffects.powerBoostRounds--; }
       const isCrit = battleEffects.eagleEyeHits > 0 || Math.random() < currentEffStats.critChance;
       if (battleEffects.eagleEyeHits > 0) battleEffects.eagleEyeHits--;
@@ -2671,6 +2736,12 @@ function startBattleSimulation(level) {
     if (typeof playSound === "function" && playerDamage > 0) playSound(isPlayerCrit ? "critical" : "hit");
     if (battleEnemyHp <= 0) { handleBattleVictory(level); return; }
 
+    // ── PET ATTACK ──
+    if (battleRound % 3 === 0 && activePetData && typeof executePetAction === "function") {
+      executePetAction(activePetData, currentEffStats, level);
+      if (battleEnemyHp <= 0) { handleBattleVictory(level); return; }
+    }
+
     // ── ENEMY ATTACKS ──
     if (battleEffects.stunRounds > 0) {
       appendBattleLog(`❄️ ${level.name} is frozen and cannot act!`, "system-message");
@@ -2681,12 +2752,26 @@ function startBattleSimulation(level) {
     } else if (battleEffects.blockNextHit) {
       appendBattleLog(`🛡️ Shield Wall blocks ${level.name}'s attack!`, "system-message");
       battleEffects.blockNextHit = false;
+    } else if (battleEffects.petAbsorbNextHits > 0) {
+      appendBattleLog(`🛡️ Your pet absorbs ${level.name}'s attack!`, "system-message");
+      battleEffects.petAbsorbNextHits--;
     } else {
       let enemyDamage = 0, enemyLog = "", isEnemyCrit = false;
       if (Math.random() < currentEffStats.dodgeChance) {
         enemyLog = `💨 You dodged ${level.name}'s attack!`;
       } else {
-        let rawDmg = Math.max(1, level.power - currentEffStats.defense);
+        let effEnemyPwr = level.power;
+        if (battleEffects.enemyWeakenRounds > 0) {
+          effEnemyPwr = Math.floor(effEnemyPwr * (1 - battleEffects.enemyWeakenAmt));
+          battleEffects.enemyWeakenRounds--;
+        }
+        if (battleEffects.enemySlowRounds > 0) {
+           // Skip turn instead of reducing power as slow usually means missing turns.
+           appendBattleLog(`❄️ ${level.name} is slowed and missed their attack!`, "system-message");
+           battleEffects.enemySlowRounds--;
+           return; // skip the rest of the enemy attack
+        }
+        let rawDmg = Math.max(1, effEnemyPwr - currentEffStats.defense);
         if (Math.random() < enemyCritChance) {
           isEnemyCrit = true;
           rawDmg = Math.round(rawDmg * enemyCritDamage);
@@ -2713,7 +2798,16 @@ function startBattleSimulation(level) {
       appendBattleLog(enemyLog, enemyDamage > 0 ? (isEnemyCrit ? "combat-enemy-crit" : "combat-enemy-hit") : "system-message");
       if (enemyDamage > 0 && playerEl) { playerEl.classList.add("shake"); setTimeout(() => playerEl.classList.remove("shake"), 250); }
       if (typeof playSound === "function" && enemyDamage > 0) playSound("enemy_hit");
-      if (battlePlayerHp <= 0) { handleBattleDefeat(); return; }
+      if (battlePlayerHp <= 0) { 
+        if (activePetData && activePetData.speciesId === "angel_fallen" && !battleEffects.petReviveUsed) {
+          battleEffects.petReviveUsed = true;
+          battlePlayerHp = Math.floor(battlePlayerMaxHp * 0.30);
+          appendBattleLog(`🪽 Anjo Caído reviveu você com 30% HP!`, "combat-player-crit");
+          updatePlayerHpUI();
+        } else {
+          handleBattleDefeat(); return; 
+        }
+      }
     }
 
     updateBattleManaUI();
@@ -2772,6 +2866,23 @@ function handleBattleVictory(level) {
   playerState.currentHp = battlePlayerHp;
   playerState.gold += finalGold;
   playerState.xp   += finalXp;
+
+  // Pet XP
+  if (playerState.activePet) {
+    const pet = playerState.pets.find(p => p.id === playerState.activePet);
+    if (pet && typeof PET_XP_TABLE !== 'undefined') {
+      const petXpGain = Math.round(level.xp * 0.3); // 30% do XP da batalha
+      pet.xp += petXpGain;
+      
+      // Level up check
+      while (pet.level < 20 && pet.xp >= PET_XP_TABLE[pet.level]) {
+        pet.xp -= PET_XP_TABLE[pet.level];
+        pet.level++;
+        appendBattleLog(`⭐ ${pet.name} subiu para nível ${pet.level}!`, "combat-victory");
+        if (typeof showToast === 'function') showToast(`⭐ Pet ${pet.name} Nível ${pet.level}!`, "success");
+      }
+    }
+  }
 
   if (level.isBotDuel) {
     if (typeof window.getFriendById === "function" && typeof window.updateFriendPower === "function") {
@@ -2837,6 +2948,21 @@ function handleBattleVictory(level) {
       playerState.inventory.push({ id: droppedMat.id, qty: 1 });
     }
     appendBattleLog(`🌿 Found ${droppedMat.name}!`, "combat-victory");
+  }
+
+  // Pet Egg Drop (8% base, +2% premium)
+  const eggDropChance = isPremiumActive() ? 0.10 : 0.08;
+  if (Math.random() < eggDropChance && typeof PET_EGGS !== 'undefined') {
+    const possibleEggs = Object.values(PET_EGGS);
+    const droppedEgg = possibleEggs[Math.floor(Math.random() * possibleEggs.length)];
+    const existingEgg = playerState.inventory.find(i => i.id === droppedEgg.id);
+    if (existingEgg) {
+      existingEgg.qty = (existingEgg.qty || 1) + 1;
+    } else {
+      playerState.inventory.push({ id: droppedEgg.id, qty: 1 });
+    }
+    appendBattleLog(`🥚 Found ${droppedEgg.name}!`, "combat-victory");
+    if (typeof showToast === 'function') showToast(`🥚 ${droppedEgg.name} dropado!`, "success");
   }
 
   savePlayerState();

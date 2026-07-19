@@ -304,6 +304,21 @@
             </div>
           </div>
 
+          <!-- Pet Panel -->
+          <div class="panel pet-panel">
+            <h3 class="panel-title">🐾 Companheiros</h3>
+            <div class="pet-active-display" id="active-pet-display">
+              <p class="empty-message">Nenhum pet ativo.</p>
+            </div>
+            <hr class="panel-divider">
+            <div class="pet-hatching-display" id="pet-hatching-display">
+              <!-- Hatching progress goes here -->
+            </div>
+            <div class="pet-collection-list" id="pet-collection-list">
+              <!-- Pet cards go here -->
+            </div>
+          </div>
+
           <!-- Shop Panel -->
           <div class="panel shop-panel">
             <h3 class="panel-title">🏪 Equipment Shop</h3>
@@ -482,9 +497,12 @@
         </div>
 
         <div class="battle-arena">
-          <div class="fighter player-fighter" id="player-fighter-el">
+          <div class="fighter player-fighter" id="player-fighter-el" style="position: relative;">
             <div class="fighter-avatar" id="battle-player-avatar">🧙‍♂️</div>
             <div class="fighter-name" id="battle-player-name">Hero</div>
+            <div id="battle-pet-container" style="position: absolute; bottom: 40px; left: -20px; font-size: 2rem; display: none; transition: transform 0.2s;">
+              <span id="battle-pet-avatar">🐾</span>
+            </div>
             <div class="hp-bar-container">
               <div class="hp-bar-fill" id="player-hp-bar" style="width:100%;"></div>
               <span class="hp-text" id="player-hp-text">100/100</span>
@@ -710,6 +728,7 @@
 
   <!-- Scripts -->
   <script src="audio.js"></script>
+  <script src="pets.js"></script>
   <script src="game.js"></script>
   <script src="clans.js"></script>
   <script src="siege.js"></script>
