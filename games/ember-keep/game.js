@@ -137,6 +137,21 @@ const CLASS_ITEMS = {
   paladin_a5:{ id:"paladin_a5",  class:"Paladin", type:"armor",  name:"Inquisitor's Plate",stat:"defense", value:110, cost:4000, icon:"🏅", tier:5 },
 };
 
+const CRAFTED_GEAR = {
+  // Blacksmith Weapons
+  weap_dagger_craft: { id:"weap_dagger_craft", class:null, type:"weapon", name:"Forged Dagger",  stat:"power", value:7,   cost:100, icon:"🗡️", tier:1, desc:"Crafted by Blacksmith" },
+  weap_sword_craft:  { id:"weap_sword_craft",  class:null, type:"weapon", name:"Forged Sword",   stat:"power", value:20,  cost:300, icon:"⚔️", tier:2, desc:"Crafted by Blacksmith" },
+  weap_blade_craft:  { id:"weap_blade_craft",  class:null, type:"weapon", name:"Forged Blade",   stat:"power", value:45,  cost:800, icon:"🔪", tier:3, desc:"Crafted by Blacksmith" },
+  weap_epic_craft:   { id:"weap_epic_craft",   class:null, type:"weapon", name:"Epic Forged W.", stat:"power", value:85,  cost:2500,icon:"⚜️", tier:4, desc:"Crafted by Blacksmith" },
+  weap_legend_craft: { id:"weap_legend_craft", class:null, type:"weapon", name:"Legend Forged W.",stat:"power", value:160, cost:8000,icon:"✨", tier:5, desc:"Crafted by Blacksmith" },
+  // Tailor Armors
+  arm_vest_craft:    { id:"arm_vest_craft",    class:null, type:"armor",  name:"Tailored Vest",  stat:"defense", value:6,   cost:100, icon:"🦺", tier:1, desc:"Crafted by Tailor" },
+  arm_armor_craft:   { id:"arm_armor_craft",   class:null, type:"armor",  name:"Tailored Armor", stat:"defense", value:16,  cost:300, icon:"🥋", tier:2, desc:"Crafted by Tailor" },
+  arm_mantle_craft:  { id:"arm_mantle_craft",  class:null, type:"armor",  name:"Tailored Mantle",stat:"defense", value:35,  cost:800, icon:"🥻", tier:3, desc:"Crafted by Tailor" },
+  arm_epic_craft:    { id:"arm_epic_craft",    class:null, type:"armor",  name:"Epic Tailored A.",stat:"defense", value:65, cost:2500,icon:"🧥", tier:4, desc:"Crafted by Tailor" },
+  arm_legend_craft:  { id:"arm_legend_craft",  class:null, type:"armor",  name:"Legend Tailored",stat:"defense", value:120,cost:8000,icon:"✨", tier:5, desc:"Crafted by Tailor" },
+};
+
 const RING_ITEMS = {
   ring_1: { id:"ring_1", class:null, type:"ring", name:"Iron Ring",          stat:"power",       value:5,    cost:80,   icon:"💍", tier:1 },
   ring_2: { id:"ring_2", class:null, type:"ring", name:"Guard Amulet",       stat:"defense",     value:4,    cost:80,   icon:"🔴", tier:1 },
@@ -171,24 +186,112 @@ const MATERIAL_ITEMS = {
   mat_meat:  { id:"mat_meat", type:"material", name:"Raw Meat", cost:12, icon:"🍗", tier:2, desc:"Used for cooking." },
   mat_coal:  { id:"mat_coal", type:"material", name:"Coal", cost:8, icon:"🌑", tier:1, desc:"Used for fuel." },
   mat_spice: { id:"mat_spice", type:"material", name:"Spice", cost:20, icon:"🧂", tier:2, desc:"Used for cooking." },
+  // Seeds & Farming
+  mat_wheat_seed: { id:"mat_wheat_seed", type:"material", name:"Wheat Seed", cost:2, icon:"🌱", tier:1, desc:"Plant to grow wheat." },
+  mat_herb_seed:  { id:"mat_herb_seed",  type:"material", name:"Herb Seed", cost:3, icon:"🌱", tier:1, desc:"Plant to grow herbs." },
+  mat_spice_seed: { id:"mat_spice_seed", type:"material", name:"Spice Seed", cost:10, icon:"🌱", tier:2, desc:"Plant to grow spice." },
+  mat_magic_seed: { id:"mat_magic_seed", type:"material", name:"Magic Seed", cost:20, icon:"✨", tier:3, desc:"Plant to grow magic herbs." },
+  mat_magic_herb: { id:"mat_magic_herb", type:"material", name:"Magic Herb", cost:40, icon:"🌿", tier:3, desc:"Used for alchemy." },
+  mat_golden_seed:{ id:"mat_golden_seed",type:"material", name:"Golden Seed", cost:50, icon:"🌟", tier:4, desc:"Plant to grow golden wheat." },
+  mat_gold_wheat: { id:"mat_gold_wheat", type:"material", name:"Golden Wheat",cost:80, icon:"🌾", tier:4, desc:"Used for alchemy." },
+  mat_celest_seed:{ id:"mat_celest_seed",type:"material", name:"Celestial Seed", cost:100, icon:"🌌", tier:5, desc:"Plant to grow celestial herbs." },
+  mat_celest_herb:{ id:"mat_celest_herb",type:"material", name:"Celestial Herb", cost:200, icon:"🌿", tier:5, desc:"Used for alchemy." },
+  mat_ench_water: { id:"mat_ench_water", type:"material", name:"Enchanted Water",cost:25, icon:"💧", tier:4, desc:"Used for farming." },
+  mat_starlight:  { id:"mat_starlight",  type:"material", name:"Starlight", cost:150, icon:"✨", tier:5, desc:"Rare celestial material." },
+  // Ranching & Tanning
+  mat_feed:       { id:"mat_feed", type:"material", name:"Animal Feed", cost:5, icon:"🌾", tier:1, desc:"Food for animals." },
+  mat_egg:        { id:"mat_egg", type:"material", name:"Raw Egg", cost:6, icon:"🥚", tier:1, desc:"Food ingredient." },
+  mat_feather:    { id:"mat_feather", type:"material", name:"Feather", cost:4, icon:"🪶", tier:1, desc:"Used for crafting." },
+  mat_hide:       { id:"mat_hide", type:"material", name:"Animal Hide", cost:8, icon:"🐻", tier:1, desc:"Used for tanning." },
+  mat_milk:       { id:"mat_milk", type:"material", name:"Fresh Milk", cost:10, icon:"🥛", tier:2, desc:"Food ingredient." },
+  mat_bucket:     { id:"mat_bucket", type:"material", name:"Bucket", cost:15, icon:"🪣", tier:1, desc:"Tool for ranching." },
+  mat_bait:       { id:"mat_bait", type:"material", name:"Bait", cost:15, icon:"🪱", tier:3, desc:"Used for hunting." },
+  mat_trap:       { id:"mat_trap", type:"material", name:"Trap", cost:25, icon:"🪤", tier:3, desc:"Used for hunting." },
+  mat_exo_meat:   { id:"mat_exo_meat", type:"material", name:"Exotic Meat", cost:40, icon:"🥩", tier:3, desc:"Food ingredient." },
+  mat_exo_hide:   { id:"mat_exo_hide", type:"material", name:"Exotic Hide", cost:30, icon:"🐆", tier:3, desc:"Used for tanning." },
+  mat_drag_feed:  { id:"mat_drag_feed",type:"material", name:"Dragon Feed", cost:60, icon:"🍖", tier:4, desc:"Food for dragons." },
+  mat_drag_scale: { id:"mat_drag_scale",type:"material",name:"Dragon Scale", cost:100, icon:"🦎", tier:4, desc:"Rare crafting material." },
+  mat_drag_meat:  { id:"mat_drag_meat",type:"material", name:"Dragon Meat", cost:80, icon:"🥩", tier:4, desc:"Rare food ingredient." },
+  mat_fire_shard: { id:"mat_fire_shard",type:"material",name:"Fire Shard", cost:50, icon:"🔥", tier:4, desc:"Used for crafting." },
+  mat_cel_feed:   { id:"mat_cel_feed", type:"material", name:"Celestial Feed", cost:120, icon:"✨", tier:5, desc:"Food for mythical creatures." },
+  mat_ember_ess:  { id:"mat_ember_ess",type:"material", name:"Ember Essence", cost:200, icon:"🔥", tier:5, desc:"Pure magic essence." },
+  mat_phoenix_f:  { id:"mat_phoenix_f",type:"material", name:"Phoenix Feather", cost:300, icon:"🪶", tier:5, desc:"Legendary material." },
+  // Blacksmithing
+  mat_iron_ore:   { id:"mat_iron_ore", type:"material", name:"Iron Ore", cost:10, icon:"🪨", tier:1, desc:"Used for smithing." },
+  mat_steel_ingot:{ id:"mat_steel_ingot",type:"material",name:"Steel Ingot", cost:25, icon:"🧱", tier:2, desc:"Used for smithing." },
+  mat_mithril_ore:{ id:"mat_mithril_ore",type:"material",name:"Mithril Ore", cost:50, icon:"💎", tier:3, desc:"Used for smithing." },
+  mat_ench_ingot: { id:"mat_ench_ingot", type:"material",name:"Enchanted Ingot", cost:120, icon:"🧱", tier:4, desc:"Used for smithing." },
+  mat_cel_ingot:  { id:"mat_cel_ingot",  type:"material",name:"Celestial Ingot", cost:250, icon:"✨", tier:5, desc:"Used for smithing." },
+  // Tanning & Tailoring
+  mat_tannin:     { id:"mat_tannin", type:"material", name:"Tannin", cost:5, icon:"🧪", tier:1, desc:"Used for tanning." },
+  mat_leather:    { id:"mat_leather",type:"material", name:"Leather", cost:15, icon:"📜", tier:1, desc:"Used for crafting." },
+  mat_l_strip:    { id:"mat_l_strip",type:"material", name:"Leather Strip", cost:5, icon:"🎗️", tier:1, desc:"Used for crafting." },
+  mat_reinf_l:    { id:"mat_reinf_l",type:"material", name:"Reinforced Leather", cost:35, icon:"🛡️", tier:2, desc:"Used for crafting." },
+  mat_exo_l:      { id:"mat_exo_l",  type:"material", name:"Exotic Leather", cost:70, icon:"🐆", tier:3, desc:"Used for crafting." },
+  mat_drag_l:     { id:"mat_drag_l", type:"material", name:"Dragon Leather", cost:150, icon:"🐉", tier:4, desc:"Used for crafting." },
+  mat_cel_l:      { id:"mat_cel_l",  type:"material", name:"Celestial Leather", cost:300, icon:"✨", tier:5, desc:"Used for crafting." },
+  mat_thread:     { id:"mat_thread", type:"material", name:"Thread", cost:5, icon:"🧵", tier:1, desc:"Used for tailoring." },
+  mat_silk:       { id:"mat_silk",   type:"material", name:"Silk", cost:20, icon:"🕸️", tier:3, desc:"Used for tailoring." },
+  mat_ench_thread:{ id:"mat_ench_thread",type:"material",name:"Enchanted Thread", cost:60, icon:"✨", tier:4, desc:"Used for tailoring." },
+  mat_star_thread:{ id:"mat_star_thread",type:"material",name:"Starlight Thread", cost:150, icon:"🌟", tier:5, desc:"Used for tailoring." },
 };
 
-const CRAFTING_RECIPES = [
-  { id: "recipe_minor_hp", name: "Minor Health Potion", cost: 10, yields: { id: "potion_minor_hp", qty: 1 },
-    ingredients: [{ id: "mat_herb", qty: 2 }, { id: "mat_vial", qty: 1 }] },
-  { id: "recipe_major_hp", name: "Major Health Potion", cost: 25, yields: { id: "potion_major_hp", qty: 1 },
-    ingredients: [{ id: "mat_herb", qty: 3 }, { id: "mat_shard", qty: 1 }, { id: "mat_vial", qty: 1 }] },
-  { id: "recipe_stale_bread", name: "Bake Bread", cost: 5, yields: { id: "food_bread", qty: 1 },
-    ingredients: [{ id: "mat_wheat", qty: 2 }] },
-  { id: "recipe_herb_soup", name: "Cook Soup", cost: 12, yields: { id: "food_soup", qty: 1 },
-    ingredients: [{ id: "mat_herb", qty: 2 }, { id: "mat_vial", qty: 1 }] },
-  { id: "recipe_grilled_meat", name: "Grill Meat", cost: 30, yields: { id: "food_meat", qty: 1 },
-    ingredients: [{ id: "mat_meat", qty: 1 }, { id: "mat_coal", qty: 1 }] },
-  { id: "recipe_royal_feast", name: "Prepare Feast", cost: 80, yields: { id: "food_feast", qty: 1 },
-    ingredients: [{ id: "mat_meat", qty: 2 }, { id: "mat_herb", qty: 3 }, { id: "mat_spice", qty: 1 }] }
+const PRODUCTION_SKILLS = {
+  farming:    { id:"farming",    name:"Agricultura",   icon:"🌾", desc:"Cultive grãos e ervas" },
+  ranching:   { id:"ranching",   name:"Agropecuária",  icon:"🐄", desc:"Crie animais para carne e couro" },
+  alchemy:    { id:"alchemy",    name:"Alquimia",      icon:"⚗️", desc:"Crie poções e elixires" },
+  blacksmith: { id:"blacksmith", name:"Armeiro",       icon:"⚔️", desc:"Forje armas poderosas" },
+  tanning:    { id:"tanning",    name:"Curtidor",      icon:"🐂", desc:"Processe couros e peles" },
+  tailoring:  { id:"tailoring",  name:"Costureiro",    icon:"🧵", desc:"Confeccione armaduras e mantos" },
+};
+
+const PROD_SKILL_XP_TABLE = [0, 50, 120, 250, 450, 750, 1200, 1900, 3000, 5000];
+
+const PRODUCTION_RECIPES = [
+  // Farming
+  { id:"prod_wheat", skill:"farming", tier:1, name:"Plantar Trigo", resultId:"mat_wheat", resultQty:3, ingredients:[{ id:"mat_wheat_seed", qty:1 }], timeMs:30000, xpGain:5 },
+  { id:"prod_herb", skill:"farming", tier:1, name:"Colher Ervas", resultId:"mat_herb", resultQty:2, ingredients:[{ id:"mat_herb_seed", qty:1 }], timeMs:30000, xpGain:5 },
+  { id:"prod_spice", skill:"farming", tier:2, name:"Cultivar Temperos", resultId:"mat_spice", resultQty:2, ingredients:[{ id:"mat_spice_seed", qty:1 }], timeMs:60000, xpGain:12 },
+  { id:"prod_magicherb", skill:"farming", tier:3, name:"Horta Mágica", resultId:"mat_magic_herb", resultQty:2, ingredients:[{ id:"mat_magic_seed", qty:1 }, { id:"mat_shard", qty:1 }], timeMs:90000, xpGain:25 },
+  { id:"prod_goldwheat", skill:"farming", tier:4, name:"Colheita Dourada", resultId:"mat_gold_wheat", resultQty:3, ingredients:[{ id:"mat_golden_seed", qty:1 }, { id:"mat_ench_water", qty:1 }], timeMs:120000, xpGain:45 },
+  { id:"prod_celestherb", skill:"farming", tier:5, name:"Jardim Celestial", resultId:"mat_celest_herb", resultQty:2, ingredients:[{ id:"mat_celest_seed", qty:1 }, { id:"mat_starlight", qty:1 }], timeMs:180000, xpGain:80 },
+  // Ranching
+  { id:"prod_chicken", skill:"ranching", tier:1, name:"Criar Galinhas", resultId:"mat_egg", resultQty:3, extraId:"mat_feather", extraQty:1, ingredients:[{ id:"mat_feed", qty:2 }], timeMs:30000, xpGain:5 },
+  { id:"prod_pasture", skill:"ranching", tier:1, name:"Pastoreio", resultId:"mat_meat", resultQty:2, extraId:"mat_hide", extraQty:1, ingredients:[{ id:"mat_feed", qty:3 }], timeMs:45000, xpGain:5 },
+  { id:"prod_milk", skill:"ranching", tier:2, name:"Ordenha", resultId:"mat_milk", resultQty:3, ingredients:[{ id:"mat_feed", qty:2 }, { id:"mat_bucket", qty:1 }], timeMs:40000, xpGain:12 },
+  { id:"prod_hunt", skill:"ranching", tier:3, name:"Caça Exótica", resultId:"mat_exo_meat", resultQty:2, extraId:"mat_exo_hide", extraQty:1, ingredients:[{ id:"mat_bait", qty:1 }, { id:"mat_trap", qty:1 }], timeMs:90000, xpGain:25 },
+  { id:"prod_dragon", skill:"ranching", tier:4, name:"Criação de Dragões", resultId:"mat_drag_scale", resultQty:1, extraId:"mat_drag_meat", extraQty:1, ingredients:[{ id:"mat_drag_feed", qty:3 }, { id:"mat_fire_shard", qty:1 }], timeMs:150000, xpGain:45 },
+  { id:"prod_phoenix", skill:"ranching", tier:5, name:"Fênix Ranch", resultId:"mat_phoenix_f", resultQty:1, ingredients:[{ id:"mat_cel_feed", qty:2 }, { id:"mat_ember_ess", qty:1 }], timeMs:180000, xpGain:80 },
+  // Alchemy & Cooking (Cooking was moved to Alchemy as well for simplicity, or we keep it as Alchemy)
+  { id:"prod_minor_hp", skill:"alchemy", tier:1, name:"Minor Health Potion", resultId:"potion_minor_hp", resultQty:1, ingredients:[{ id:"mat_herb", qty:1 }, { id:"mat_vial", qty:1 }], timeMs:150000, xpGain:5 },
+  { id:"prod_major_hp", skill:"alchemy", tier:2, name:"Major Health Potion", resultId:"potion_major_hp", resultQty:1, ingredients:[{ id:"mat_herb", qty:3 }, { id:"mat_shard", qty:1 }, { id:"mat_vial", qty:1 }], timeMs:30000, xpGain:12 },
+  { id:"prod_stale_bread", skill:"alchemy", tier:1, name:"Bake Bread", resultId:"food_bread", resultQty:1, ingredients:[{ id:"mat_wheat", qty:2 }], timeMs:30000, xpGain:5 },
+  { id:"prod_herb_soup", skill:"alchemy", tier:1, name:"Cook Soup", resultId:"food_soup", resultQty:1, ingredients:[{ id:"mat_herb", qty:2 }, { id:"mat_vial", qty:1 }], timeMs:45000, xpGain:5 },
+  { id:"prod_grilled_meat", skill:"alchemy", tier:2, name:"Grill Meat", resultId:"food_meat", resultQty:1, ingredients:[{ id:"mat_meat", qty:1 }, { id:"mat_coal", qty:1 }], timeMs:60000, xpGain:12 },
+  { id:"prod_royal_feast", skill:"alchemy", tier:3, name:"Prepare Feast", resultId:"food_feast", resultQty:1, ingredients:[{ id:"mat_meat", qty:2 }, { id:"mat_herb", qty:3 }, { id:"mat_spice", qty:1 }], timeMs:90000, xpGain:25 },
+  { id:"prod_elixir_stew", skill:"alchemy", tier:4, name:"Elixir Stew", resultId:"food_elixir", resultQty:1, ingredients:[{ id:"mat_celest_herb", qty:1 }, { id:"mat_gold_wheat", qty:1 }, { id:"mat_vial", qty:1 }], timeMs:120000, xpGain:45 },
+  // Blacksmithing
+  { id:"prod_iron_dagger", skill:"blacksmith", tier:1, name:"Forjar Adaga", resultId:"weap_dagger_craft", resultQty:1, ingredients:[{ id:"mat_iron_ore", qty:3 }, { id:"mat_coal", qty:2 }], timeMs:30000, xpGain:5 },
+  { id:"prod_steel_sword", skill:"blacksmith", tier:2, name:"Forjar Espada", resultId:"weap_sword_craft", resultQty:1, ingredients:[{ id:"mat_steel_ingot", qty:2 }, { id:"mat_l_strip", qty:1 }], timeMs:60000, xpGain:12 },
+  { id:"prod_mithril_blade", skill:"blacksmith", tier:3, name:"Forjar Lâmina", resultId:"weap_blade_craft", resultQty:1, ingredients:[{ id:"mat_mithril_ore", qty:2 }, { id:"mat_shard", qty:2 }], timeMs:90000, xpGain:25 },
+  { id:"prod_epic_w", skill:"blacksmith", tier:4, name:"Arma Épica", resultId:"weap_epic_craft", resultQty:1, ingredients:[{ id:"mat_drag_scale", qty:2 }, { id:"mat_ench_ingot", qty:1 }], timeMs:150000, xpGain:45 },
+  { id:"prod_legend_w", skill:"blacksmith", tier:5, name:"Arma Lendária", resultId:"weap_legend_craft", resultQty:1, ingredients:[{ id:"mat_phoenix_f", qty:1 }, { id:"mat_cel_ingot", qty:1 }, { id:"mat_starlight", qty:1 }], timeMs:240000, xpGain:80 },
+  // Tanning
+  { id:"prod_tanning_leather", skill:"tanning", tier:1, name:"Curtir Couro", resultId:"mat_leather", resultQty:3, ingredients:[{ id:"mat_hide", qty:2 }, { id:"mat_tannin", qty:1 }], timeMs:25000, xpGain:5 },
+  { id:"prod_tanning_strip", skill:"tanning", tier:1, name:"Cortar Tiras", resultId:"mat_l_strip", resultQty:4, ingredients:[{ id:"mat_leather", qty:2 }], timeMs:15000, xpGain:5 },
+  { id:"prod_tanning_reinf", skill:"tanning", tier:2, name:"Couro Reforçado", resultId:"mat_reinf_l", resultQty:2, ingredients:[{ id:"mat_leather", qty:3 }, { id:"mat_iron_ore", qty:1 }], timeMs:45000, xpGain:12 },
+  { id:"prod_tanning_exo", skill:"tanning", tier:3, name:"Couro Exótico", resultId:"mat_exo_l", resultQty:2, ingredients:[{ id:"mat_exo_hide", qty:2 }, { id:"mat_spice", qty:1 }], timeMs:60000, xpGain:25 },
+  { id:"prod_tanning_drag", skill:"tanning", tier:4, name:"Couro de Dragão", resultId:"mat_drag_l", resultQty:1, ingredients:[{ id:"mat_drag_scale", qty:1 }, { id:"mat_exo_l", qty:1 }], timeMs:120000, xpGain:45 },
+  { id:"prod_tanning_cel", skill:"tanning", tier:5, name:"Couro Celestial", resultId:"mat_cel_l", resultQty:1, ingredients:[{ id:"mat_phoenix_f", qty:1 }, { id:"mat_drag_l", qty:1 }, { id:"mat_starlight", qty:1 }], timeMs:180000, xpGain:80 },
+  // Tailoring
+  { id:"prod_tailor_vest", skill:"tailoring", tier:1, name:"Costurar Veste", resultId:"arm_vest_craft", resultQty:1, ingredients:[{ id:"mat_leather", qty:2 }, { id:"mat_thread", qty:2 }], timeMs:30000, xpGain:5 },
+  { id:"prod_tailor_armor", skill:"tailoring", tier:2, name:"Costurar Armadura", resultId:"arm_armor_craft", resultQty:1, ingredients:[{ id:"mat_reinf_l", qty:2 }, { id:"mat_thread", qty:3 }], timeMs:60000, xpGain:12 },
+  { id:"prod_tailor_mantle", skill:"tailoring", tier:3, name:"Costurar Manto", resultId:"arm_mantle_craft", resultQty:1, ingredients:[{ id:"mat_exo_l", qty:2 }, { id:"mat_silk", qty:2 }], timeMs:90000, xpGain:25 },
+  { id:"prod_tailor_epic", skill:"tailoring", tier:4, name:"Armadura Épica", resultId:"arm_epic_craft", resultQty:1, ingredients:[{ id:"mat_drag_l", qty:1 }, { id:"mat_ench_thread", qty:2 }], timeMs:150000, xpGain:45 },
+  { id:"prod_tailor_legend", skill:"tailoring", tier:5, name:"Armadura Lendária", resultId:"arm_legend_craft", resultQty:1, ingredients:[{ id:"mat_cel_l", qty:1 }, { id:"mat_phoenix_f", qty:1 }, { id:"mat_star_thread", qty:1 }], timeMs:240000, xpGain:80 },
 ];
 
-const ALL_ITEMS = { ...CLASS_ITEMS, ...RING_ITEMS, ...CONSUMABLE_ITEMS, ...FOOD_ITEMS, ...MATERIAL_ITEMS };
+const ALL_ITEMS = { ...CLASS_ITEMS, ...CRAFTED_GEAR, ...RING_ITEMS, ...CONSUMABLE_ITEMS, ...FOOD_ITEMS, ...MATERIAL_ITEMS };
 
 // Skill point upgrade options
 const SP_OPTIONS = [
@@ -221,6 +324,15 @@ const DEFAULT_PLAYER_STATE = {
   equipment: { weapon:null, armor:null, ring:null },
   inventory: [],
   completedSideZones: [],
+  productionSkills: {
+    farming:    { level: 0, xp: 0 },
+    ranching:   { level: 0, xp: 0 },
+    alchemy:    { level: 0, xp: 0 },
+    blacksmith: { level: 0, xp: 0 },
+    tanning:    { level: 0, xp: 0 },
+    tailoring:  { level: 0, xp: 0 },
+  },
+  productionTimers: [],
 };
 
 // ================================================================
@@ -260,13 +372,15 @@ document.addEventListener("DOMContentLoaded", () => {
   renderInventory();
   renderSkills();
   renderMaterials();
-  renderForge();
+  renderProfessions();
+  renderSkillRecipes(selectedProfession);
+  renderProductionQueue();
   initUpgradeButtons();
   initShopButtons();
   initBattleModalControls();
   initClassSelectionControls();
   initInventoryControls();
-  initForgeControls();
+  initSkillsTabControls();
   initCompareModalControls();
   initSettingsModal();
   initSkillPointModal();
@@ -462,7 +576,9 @@ function loadPlayerState() {
 
   if (playerState.class) {
     recoverOfflineStamina();
+    recoverOfflineProduction();
     startStaminaTicker();
+    startProductionTicker();
   }
   checkClassSelection();
 }
@@ -517,6 +633,124 @@ function startStaminaTicker() {
       renderStats();
     }
   }, STAMINA_REGEN_MS);
+}
+
+// ── PRODUCTION ENGINE ──
+let productionInterval = null;
+
+function startProductionTicker() {
+  if (productionInterval) clearInterval(productionInterval);
+  productionInterval = setInterval(() => {
+    if (!playerState.class) return;
+    checkProductionTimers();
+  }, 1000); // Check every second
+}
+
+function startProduction(recipeId) {
+  const recipe = PRODUCTION_RECIPES.find(r => r.id === recipeId);
+  if (!recipe) return;
+
+  // Check capacity (e.g. max 3 slots)
+  if (playerState.productionTimers.length >= 3) {
+    alert("Production queue is full (Max 3).");
+    return;
+  }
+
+  // Check ingredients
+  for (const ing of recipe.ingredients) {
+    const pItem = playerState.inventory.find(i => i.id === ing.id);
+    if (!pItem || pItem.qty < ing.qty) {
+      alert("Not enough materials.");
+      return;
+    }
+  }
+
+  // Consume ingredients
+  for (const ing of recipe.ingredients) {
+    removeFromInventory(ing.id, ing.qty);
+  }
+
+  // Calculate time reduction based on skill level (e.g., 2% reduction per level, max 50%)
+  const skillLvl = playerState.productionSkills[recipe.skill].level;
+  const reduction = Math.min(0.5, skillLvl * 0.02);
+  const finalTimeMs = Math.floor(recipe.timeMs * (1 - reduction));
+
+  playerState.productionTimers.push({
+    recipeId: recipe.id,
+    startTime: Date.now(),
+    endTime: Date.now() + finalTimeMs,
+    duration: finalTimeMs
+  });
+
+  savePlayerState();
+  if (typeof renderProductionQueue === "function") renderProductionQueue();
+}
+
+function checkProductionTimers() {
+  if (!playerState.productionTimers || playerState.productionTimers.length === 0) return;
+  const now = Date.now();
+  let completedAny = false;
+
+  // Iterate backwards to allow removal
+  for (let i = playerState.productionTimers.length - 1; i >= 0; i--) {
+    const timer = playerState.productionTimers[i];
+    if (now >= timer.endTime) {
+      finishProduction(timer);
+      playerState.productionTimers.splice(i, 1);
+      completedAny = true;
+    }
+  }
+
+  if (completedAny) {
+    savePlayerState();
+    if (typeof renderProductionQueue === "function") renderProductionQueue();
+  }
+}
+
+function recoverOfflineProduction() {
+  if (!playerState.productionTimers) playerState.productionTimers = [];
+  const now = Date.now();
+  let completedAny = false;
+
+  for (let i = playerState.productionTimers.length - 1; i >= 0; i--) {
+    const timer = playerState.productionTimers[i];
+    if (now >= timer.endTime) {
+      finishProduction(timer);
+      playerState.productionTimers.splice(i, 1);
+      completedAny = true;
+    }
+  }
+  // We don't save immediately here, loadPlayerState handles it later or user interactions will.
+}
+
+function finishProduction(timer) {
+  const recipe = PRODUCTION_RECIPES.find(r => r.id === timer.recipeId);
+  if (!recipe) return;
+
+  // Add items
+  addToInventory(recipe.resultId, recipe.resultQty);
+  if (recipe.extraId && recipe.extraQty) {
+    // 50% chance for extra drops
+    if (Math.random() < 0.5) addToInventory(recipe.extraId, recipe.extraQty);
+  }
+
+  // Add XP
+  gainProductionXP(recipe.skill, recipe.xpGain);
+}
+
+function gainProductionXP(skillId, amount) {
+  if (!playerState.productionSkills[skillId]) return;
+  const skill = playerState.productionSkills[skillId];
+  const maxLevel = PROD_SKILL_XP_TABLE.length - 1;
+  
+  if (skill.level >= maxLevel) return;
+
+  skill.xp += amount;
+  while (skill.level < maxLevel && skill.xp >= PROD_SKILL_XP_TABLE[skill.level + 1]) {
+    skill.xp -= PROD_SKILL_XP_TABLE[skill.level + 1];
+    skill.level++;
+    showNotification(`OBA! Você upou ${PRODUCTION_SKILLS[skillId].name} para Nível ${skill.level}!`, "success");
+  }
 }
 
 // ── Effective stats (base + upgrades + equipment) ──
@@ -806,6 +1040,7 @@ function renderShop() {
   const ringsCont   = document.getElementById("shop-rings-container");
   const consCont    = document.getElementById("shop-consumables-container");
   const foodCont    = document.getElementById("shop-food-container");
+  const matsCont    = document.getElementById("shop-materials-container");
   if (!weaponsCont || !armorCont || !ringsCont) return;
 
   weaponsCont.innerHTML = "";
@@ -813,6 +1048,7 @@ function renderShop() {
   ringsCont.innerHTML   = "";
   if (consCont) consCont.innerHTML = "";
   if (foodCont) foodCont.innerHTML = "";
+  if (matsCont) matsCont.innerHTML = "";
 
   // Class-specific weapons and armor
   Object.values(CLASS_ITEMS).forEach(item => {
@@ -836,6 +1072,13 @@ function renderShop() {
   Object.values(FOOD_ITEMS).forEach(item => {
     if (foodCont) foodCont.appendChild(createShopItemEl(item));
   });
+
+  // Materials
+  Object.values(MATERIAL_ITEMS).forEach(item => {
+    if (item.id.includes("seed") || item.tier === 1) { // Only show base mats and seeds
+      if (matsCont) matsCont.appendChild(createShopItemEl(item));
+    }
+  });
 }
 
 function createShopItemEl(item) {
@@ -844,13 +1087,18 @@ function createShopItemEl(item) {
   const isRingEquipped   = playerState.equipment.ring   === item.id;
   const isEquipped = isWeaponEquipped || isArmorEquipped || isRingEquipped;
   
-  const isConsumable = item.type === "consumable" || item.type === "food";
-  const isOwned = !isConsumable && (isEquipped || playerState.inventory.some(i => i.id === item.id));
+  const canBuyMultiple = item.type === "consumable" || item.type === "food" || item.type === "material";
+  const isOwned = !canBuyMultiple && (isEquipped || playerState.inventory.some(i => i.id === item.id));
 
   const tierLabels = ["","★","★★","★★★","★★★★","★★★★★"];
-  const statLabel = isConsumable ? "" : item.stat === "power" ? "Power" : item.stat === "defense" ? "Defense" :
-                    item.stat === "critChance" ? "Crit" : "Dodge";
-  const statValue = isConsumable ? item.desc : item.stat.includes("Chance") ? `+${Math.round(item.value * 100)}%` : `+${item.value}`;
+  let statLabel = "", statValue = "";
+  if (!canBuyMultiple && item.stat) {
+    statLabel = item.stat === "power" ? "Power" : item.stat === "defense" ? "Defense" :
+                item.stat === "critChance" ? "Crit" : "Dodge";
+    statValue = item.stat.includes("Chance") ? `+${Math.round(item.value * 100)}%` : `+${item.value}`;
+  } else {
+    statValue = item.desc || "";
+  }
 
   const el = document.createElement("div");
   el.className = "shop-item";
@@ -930,92 +1178,149 @@ function renderMaterials() {
   });
 }
 
-function renderForge() {
-  const list = document.getElementById("crafting-list");
+let selectedProfession = "farming";
+
+function renderProfessions() {
+  const list = document.getElementById("professions-list");
   if (!list) return;
   list.innerHTML = "";
-  
-  CRAFTING_RECIPES.forEach(recipe => {
+
+  Object.values(PRODUCTION_SKILLS).forEach(skill => {
+    const pSkill = playerState.productionSkills[skill.id];
+    const maxLevel = PROD_SKILL_XP_TABLE.length - 1;
+    const isMax = pSkill.level >= maxLevel;
+    const xpStr = isMax ? "MAX" : `${pSkill.xp}/${PROD_SKILL_XP_TABLE[pSkill.level + 1]}`;
+
+    const btn = document.createElement("button");
+    btn.className = `profession-btn ${selectedProfession === skill.id ? "active" : ""}`;
+    btn.dataset.skill = skill.id;
+    btn.innerHTML = `
+      <div class="profession-icon">${skill.icon}</div>
+      <div class="profession-info">
+        <h4>${skill.name}</h4>
+        <p>${skill.desc}</p>
+        <span class="profession-level">Nv. ${pSkill.level} (${xpStr} XP)</span>
+      </div>
+    `;
+    list.appendChild(btn);
+  });
+}
+
+function renderSkillRecipes(skillId) {
+  const list = document.getElementById("recipes-list");
+  const title = document.getElementById("recipes-title");
+  if (!list || !title) return;
+
+  const skillInfo = PRODUCTION_SKILLS[skillId];
+  title.innerHTML = `${skillInfo.icon} Receitas de ${skillInfo.name}`;
+  list.innerHTML = "";
+
+  const recipes = PRODUCTION_RECIPES.filter(r => r.skill === skillId);
+  const pSkill = playerState.productionSkills[skillId];
+
+  if (recipes.length === 0) {
+    list.innerHTML = `<p class="empty-message">Nenhuma receita encontrada.</p>`;
+    return;
+  }
+
+  recipes.forEach(recipe => {
     const resultItem = ALL_ITEMS[recipe.resultId];
     if (!resultItem) return;
+
+    const isLocked = pSkill.level < recipe.tier;
     
-    // Check ingredients
-    let canCraft = true;
-    let reqHtml = recipe.ingredients.map(ing => {
+    let canCraft = !isLocked;
+    const reqsHtml = recipe.ingredients.map(ing => {
       const mat = ALL_ITEMS[ing.id];
       const invItem = playerState.inventory.find(i => i.id === ing.id);
       const hasQty = invItem ? (invItem.qty || 1) : 0;
       const hasEnough = hasQty >= ing.qty;
       if (!hasEnough) canCraft = false;
-      return `<span style="color: ${hasEnough ? 'var(--gold)' : 'red'};">${mat.name} x${ing.qty} (${hasQty})</span>`;
-    }).join("<br>");
+      return `<li class="${hasEnough ? '' : 'missing'}"><span>${mat.name}</span> <span>${hasQty}/${ing.qty}</span></li>`;
+    }).join("");
+
+    const card = document.createElement("div");
+    card.className = "recipe-card";
+    if (isLocked) card.style.opacity = "0.5";
     
-    if (playerState.gold < recipe.cost) canCraft = false;
-    
-    const el = document.createElement("div");
-    el.className = "inventory-item";
-    el.style.alignItems = "center";
-    el.innerHTML = `
-      <div class="item-icon">${resultItem.icon}</div>
-      <div class="item-details">
-        <h5>${recipe.name}</h5>
-        <p style="font-size: 0.8rem;">Requires:<br>${reqHtml}</p>
+    card.innerHTML = `
+      <div class="recipe-header">
+        <div class="recipe-icon">${resultItem.icon}</div>
+        <div class="recipe-title">
+          <h5>${recipe.name}</h5>
+          <span>Gera ${recipe.resultQty}x (Nv. ${recipe.tier})</span>
+        </div>
       </div>
-      <div class="inventory-item-actions">
-        <button class="btn-upgrade btn-craft" data-recipe="${recipe.id}" ${canCraft ? "" : "disabled"}>Craft ${recipe.cost}g</button>
+      <div class="recipe-reqs">
+        <strong>Ingredientes:</strong>
+        <ul>${reqsHtml}</ul>
       </div>
+      <button class="btn-craft-recipe" data-recipe="${recipe.id}" ${canCraft ? "" : "disabled"}>
+        ${isLocked ? `Requer Nv. ${recipe.tier}` : `Produzir (${recipe.timeMs/1000}s)`}
+      </button>
     `;
-    list.appendChild(el);
+    list.appendChild(card);
   });
 }
 
-function initForgeControls() {
-  const list = document.getElementById("crafting-list");
-  if (!list) return;
-  list.addEventListener("click", (e) => {
-    if (e.target.classList.contains("btn-craft")) {
-      craftItem(e.target.dataset.recipe);
-    }
-  });
-}
+function renderProductionQueue() {
+  const container = document.getElementById("production-queue");
+  if (!container) return;
+  container.innerHTML = "";
 
-function craftItem(recipeId) {
-  const recipe = CRAFTING_RECIPES.find(r => r.id === recipeId);
-  if (!recipe) return;
-  
-  let canCraft = playerState.gold >= recipe.cost;
-  recipe.ingredients.forEach(ing => {
-    const invItem = playerState.inventory.find(i => i.id === ing.id);
-    const hasQty = invItem ? (invItem.qty || 1) : 0;
-    if (hasQty < ing.qty) canCraft = false;
-  });
-  
-  if (!canCraft) {
-    showToast("Not enough materials or gold!", "error");
+  if (playerState.productionTimers.length === 0) {
+    container.innerHTML = `<p class="empty-message">Fila vazia. Capacidade (0/3)</p>`;
     return;
   }
-  
-  playerState.gold -= recipe.cost;
-  recipe.ingredients.forEach(ing => {
-    const invIdx = playerState.inventory.findIndex(i => i.id === ing.id);
-    const invItem = playerState.inventory[invIdx];
-    if (invItem.qty > ing.qty) {
-      invItem.qty -= ing.qty;
-    } else {
-      playerState.inventory.splice(invIdx, 1);
-    }
+
+  const now = Date.now();
+  playerState.productionTimers.forEach(timer => {
+    const recipe = PRODUCTION_RECIPES.find(r => r.id === timer.recipeId);
+    if (!recipe) return;
+    const item = ALL_ITEMS[recipe.resultId];
+
+    const remaining = Math.max(0, timer.endTime - now);
+    const progress = 100 - (remaining / timer.duration) * 100;
+    
+    const el = document.createElement("div");
+    el.className = "queue-item";
+    el.innerHTML = `
+      <div class="queue-header">
+        <span>${item.icon} ${recipe.name}</span>
+        <strong>${Math.ceil(remaining / 1000)}s</strong>
+      </div>
+      <div class="queue-bar">
+        <div class="queue-fill" style="width: ${progress}%"></div>
+      </div>
+    `;
+    container.appendChild(el);
   });
-  
-  const existing = playerState.inventory.find(i => i.id === recipe.resultId);
-  if (existing) {
-    existing.qty = (existing.qty || 1) + 1;
-  } else {
-    playerState.inventory.push({ id: recipe.resultId, qty: 1 });
+}
+
+function initSkillsTabControls() {
+  const profList = document.getElementById("professions-list");
+  if (profList) {
+    profList.addEventListener("click", (e) => {
+      const btn = e.target.closest(".profession-btn");
+      if (btn) {
+        selectedProfession = btn.dataset.skill;
+        renderProfessions();
+        renderSkillRecipes(selectedProfession);
+      }
+    });
   }
-  
-  savePlayerState(); renderStats(); renderMaterials(); renderForge(); renderInventory();
-  showToast(`🔨 Crafted ${ALL_ITEMS[recipe.resultId].name}!`, "success");
-  if (typeof playSound === "function") playSound("purchase");
+
+  const recList = document.getElementById("recipes-list");
+  if (recList) {
+    recList.addEventListener("click", (e) => {
+      const btn = e.target.closest(".btn-craft-recipe");
+      if (btn && !btn.disabled) {
+        startProduction(btn.dataset.recipe);
+        renderProfessions();
+        renderSkillRecipes(selectedProfession);
+      }
+    });
+  }
 }
 
 function renderInventory() {
@@ -1973,13 +2278,13 @@ function _hide(id) { const el = document.getElementById(id); if (el) el.style.di
 window.resetGame = () => {
   localStorage.removeItem("rpg_player_state");
   localStorage.removeItem("rpg_social_friends");
-  window.location.reload();
+  window.location.href = window.location.href.split('?')[0].split('#')[0] + window.location.search;
 };
 
 // New character -- resets character state only, keeps settings & social
 window.newCharacter = () => {
   localStorage.removeItem("rpg_player_state");
-  window.location.reload();
+  window.location.href = window.location.href.split('?')[0].split('#')[0] + window.location.search;
 };
 
 window.startPvPDuel = (botId) => {

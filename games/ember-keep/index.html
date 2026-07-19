@@ -185,8 +185,8 @@
         <span class="tab-label">Hero</span>
       </button>
       <button class="tab-btn" data-tab="forge-tab" id="tab-forge" role="tab" aria-selected="false" aria-controls="forge-tab">
-        <span class="tab-icon">🔨</span>
-        <span class="tab-label">Forge</span>
+        <span class="tab-icon">🛠️</span>
+        <span class="tab-label">Craft</span>
       </button>
       <button class="tab-btn" data-tab="social-tab" id="tab-social" role="tab" aria-selected="false" aria-controls="social-tab">
         <span class="tab-icon">👥</span>
@@ -300,6 +300,7 @@
               <button class="shop-tab-btn" data-shop-tab="armor" id="shop-tab-armor" role="tab">🛡️ Armor</button>
               <button class="shop-tab-btn" data-shop-tab="rings" id="shop-tab-rings" role="tab">💍 Rings</button>
               <button class="shop-tab-btn" data-shop-tab="consumables" id="shop-tab-consumables" role="tab">🧪 Items</button>
+              <button class="shop-tab-btn" data-shop-tab="materials" id="shop-tab-materials" role="tab">🌿 Mats</button>
             </div>
             <div class="shop-tab-content active" id="shop-weapons-panel" role="tabpanel">
               <div id="shop-weapons-container"></div>
@@ -312,6 +313,9 @@
             </div>
             <div class="shop-tab-content" id="shop-consumables-panel" role="tabpanel">
               <div id="shop-consumables-container"></div>
+            </div>
+            <div class="shop-tab-content" id="shop-materials-panel" role="tabpanel">
+              <div id="shop-materials-container"></div>
             </div>
             <div class="shop-tab-content" id="shop-food-panel" role="tabpanel">
               <div id="shop-food-container"></div>
@@ -329,20 +333,30 @@
         </div>
       </section>
 
-      <!-- ======= FORGE TAB ======= -->
+      <!-- ======= PROFESSIONS TAB ======= -->
       <section id="forge-tab" class="tab-content" role="tabpanel" aria-labelledby="tab-forge">
-        <div class="forge-layout">
-          <div class="panel forge-panel">
-            <h3 class="panel-title">🔨 The Forge</h3>
-            <p style="text-align:center;color:var(--text-muted);font-size:0.9rem;margin-bottom:1rem;">Combine materials to craft powerful items and potions.</p>
-            <div class="crafting-list" id="crafting-list">
+        <div class="professions-layout">
+          <!-- Left Column: Skills List -->
+          <div class="panel professions-panel">
+            <h3 class="panel-title">🛠️ Professions</h3>
+            <div class="professions-list" id="professions-list">
               <!-- Rendered by JS -->
             </div>
           </div>
-          <div class="panel materials-panel">
-            <h3 class="panel-title">🌿 Materials Inventory</h3>
-            <div class="materials-list" id="materials-list">
-              <p class="empty-message">You have no materials.</p>
+          
+          <!-- Middle Column: Recipes -->
+          <div class="panel recipes-panel">
+            <h3 class="panel-title" id="recipes-title">Recipes</h3>
+            <div class="recipes-list" id="recipes-list">
+              <p class="empty-message">Select a profession to view recipes.</p>
+            </div>
+          </div>
+
+          <!-- Right Column: Production Queue -->
+          <div class="panel queue-panel">
+            <h3 class="panel-title">⏳ Production Queue</h3>
+            <div class="production-queue" id="production-queue">
+              <p class="empty-message">Queue is empty.</p>
             </div>
           </div>
         </div>
