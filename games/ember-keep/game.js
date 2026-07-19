@@ -59,13 +59,13 @@ const SIDE_ZONES = [
 // DATA: CLASSES
 // ================================================================
 const CLASS_PRESETS = {
-  Warrior: { avatar:"🛡️", image:"./images/warrior.png", mana:50, manaRegen:8,
+  Warrior: { avatar:"🛡️", image:null, mana:50, manaRegen:8,
     stats:{ maxHp:120, power:10, defense:8, critChance:0.05, critDamage:1.5, dodgeChance:0.05 } },
-  Ranger:  { avatar:"🏹", image:"./images/ranger.png",  mana:60, manaRegen:10,
+  Ranger:  { avatar:"🏹", image:null,  mana:60, manaRegen:10,
     stats:{ maxHp:100, power:12, defense:5, critChance:0.20, critDamage:1.75,dodgeChance:0.15 } },
-  Mage:    { avatar:"🔮", image:"./images/mage.png",    mana:100,manaRegen:15,
+  Mage:    { avatar:"🔮", image:null,    mana:100,manaRegen:15,
     stats:{ maxHp:80,  power:15, defense:3, critChance:0.15, critDamage:2.0, dodgeChance:0.08 } },
-  Paladin: { avatar:"⚜️", image:"./images/paladin.png", mana:70, manaRegen:10,
+  Paladin: { avatar:"⚜️", image:null, mana:70, manaRegen:10,
     stats:{ maxHp:140, power:8,  defense:10,critChance:0.05, critDamage:1.5, dodgeChance:0.05 } },
 };
 
@@ -1920,6 +1920,59 @@ function updateSkillBar() {
       else             cdEl.textContent = `${skill.manaCost}🔮`;
     }
   });
+}
+
+function renderBattlePotions() {
+  const container = document.getElementById("battle-potions-bar");
+  if (!container) return;
+  container.innerHTML = "";
+
+  const hpPotions = playerState.inventory.filter(i => {
+    const it = ALL_ITEMS[i.id];
+    return it && it.type === "consumable" && it.effect === "heal";
+  });
+
+  if (hpPotions.length === 0) {
+    container.innerHTML = `<span style="font-size:0.75rem; color:var(--text-muted)">Sem poções...</span>`;
+    return;
+  }
+
+  hpPotions.forEach(pot => {
+    const it = ALL_ITEMS[pot.id];
+    const btn = document.createElement("button");
+    btn.className = "battle-potion-btn";
+    btn.innerHTML = `${it.icon} <span class="qty">${pot.qty}</span>`;
+    btn.onclick = () => useBattlePotion(pot.id);
+    container.appendChild(btn);
+  });
+}
+
+function useBattlePotion(itemId) {
+  if (battlePlayerHp <= 0 || battleEnemyHp <= 0) return;
+  
+  const invIdx = playerState.inventory.findIndex(i => i.id === itemId);
+  if (invIdx === -1) return;
+  
+  const it = ALL_ITEMS[itemId];
+  if (!it || it.effect !== "heal") return;
+
+  // Consume
+  playerState.inventory[invIdx].qty--;
+  if (playerState.inventory[invIdx].qty <= 0) {
+    playerState.inventory.splice(invIdx, 1);
+  }
+  savePlayerState();
+
+  // Apply effect
+  const effStats = getEffectiveStats();
+  const healAmount = it.value;
+  battlePlayerHp = Math.min(effStats.maxHp, battlePlayerHp + healAmount);
+  updatePlayerHpUI();
+  appendBattleLog(`Usou ${it.name} e curou ${healAmount} HP!`, "player-action");
+  
+  if (typeof playSound === "function") playSound("skill");
+  renderBattlePotions(); // Update qty
+  if (typeof renderMaterials === "function") renderMaterials(); // Update global inv UI if possible
 }
 
 function handleSkillActivation(skillId, btnIndex) {
