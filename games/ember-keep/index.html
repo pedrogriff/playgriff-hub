@@ -222,100 +222,103 @@
       <section id="character-tab" class="tab-content" role="tabpanel" aria-labelledby="tab-char">
         <div class="character-layout">
 
-          <!-- Character Profile Panel -->
-          <div class="panel character-panel">
-            <h3 class="panel-title">⚔️ Hero Profile</h3>
-            <div class="player-avatar" id="char-avatar-container">🧙‍♂️</div>
-            <div class="char-identity">
-              <p class="char-name-display" id="char-name">Hero</p>
-              <p class="char-class-display" id="char-class-display">— Select a Class —</p>
+          <!-- Left Column: Hero & Pets -->
+          <div class="left-column" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Character Profile Panel -->
+            <div class="panel character-panel" style="margin-bottom: 0;">
+              <h3 class="panel-title">⚔️ Hero Profile</h3>
+              <div class="player-avatar" id="char-avatar-container">🧙‍♂️</div>
+              <div class="char-identity">
+                <p class="char-name-display" id="char-name">Hero</p>
+                <p class="char-class-display" id="char-class-display">— Select a Class —</p>
+              </div>
+
+              <div class="stat-group">
+                <div class="mini-stat-row">
+                  <span class="mini-label">Level</span>
+                  <strong id="char-level">1</strong>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-label-row">
+                    <span>XP</span><span id="char-xp-text">0/100</span>
+                  </div>
+                  <div class="xp-bar-container">
+                    <div class="xp-bar-fill" id="char-xp-fill" style="width:0%;"></div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-label-row">
+                    <span>⚡ Stamina</span><span id="char-stamina-text">100/100</span>
+                  </div>
+                  <div class="stamina-bar-container">
+                    <div class="stamina-bar-fill" id="char-stamina-fill" style="width:100%;"></div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-label-row">
+                    <span>🔮 Mana</span><span id="char-mana-text">50/50</span>
+                  </div>
+                  <div class="mana-bar-container">
+                    <div class="mana-bar-fill" id="char-mana-fill" style="width:100%;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="panel-divider">
+              <div class="section-title-row">
+                <h4>Attributes</h4>
+                <button class="btn-sp" id="open-sp-btn" style="display:none;">✨ Spend Points (<span id="sp-count-badge">0</span>)</button>
+              </div>
+              <div class="stats-list">
+                <div class="stat-row">
+                  <span>❤️ HP: <strong id="stat-hp">100/100</strong></span>
+                  <button class="btn-upgrade" id="upgrade-hp-btn">+10 HP <span class="cost" id="cost-hp">10g</span></button>
+                </div>
+                <div class="stat-row">
+                  <span>⚔️ Power: <strong id="stat-power">10</strong></span>
+                  <button class="btn-upgrade" id="upgrade-power-btn">+2 Pwr <span class="cost" id="cost-power">10g</span></button>
+                </div>
+                <div class="stat-row">
+                  <span>🛡️ Defense: <strong id="stat-defense">5</strong></span>
+                  <button class="btn-upgrade" id="upgrade-defense-btn">+1 Def <span class="cost" id="cost-defense">10g</span></button>
+                </div>
+                <div class="stat-row stat-row--secondary">
+                  <span>💥 Crit: <strong id="stat-crit">5%</strong></span>
+                  <span>💨 Dodge: <strong id="stat-dodge">5%</strong></span>
+                </div>
+                <div class="stat-row stat-row--secondary">
+                  <span>⚡ Power Rating: <strong id="char-power-rating">0</strong></span>
+                </div>
+              </div>
+
+              <hr class="panel-divider">
+              <h4>🎒 Equipped Gear</h4>
+              <div class="equipped-gear-display">
+                <div class="gear-slot-row"><span>⚔️ Weapon:</span> <span id="equipped-weapon-name" class="gear-slot-value">None</span></div>
+                <div class="gear-slot-row"><span>🛡️ Armor:</span> <span id="equipped-armor-name" class="gear-slot-value">None</span></div>
+                <div class="gear-slot-row"><span>💍 Ring:</span> <span id="equipped-ring-name" class="gear-slot-value">None</span></div>
+              </div>
+
+              <hr class="panel-divider">
+              <h4>✨ Active Skills</h4>
+              <div class="skills-list" id="char-skills-list">
+                <p class="empty-message">Skills unlock as you level up.</p>
+              </div>
             </div>
 
-            <div class="stat-group">
-              <div class="mini-stat-row">
-                <span class="mini-label">Level</span>
-                <strong id="char-level">1</strong>
+            <!-- Pet Panel -->
+            <div class="panel pet-panel" style="margin-bottom: 0;">
+              <h3 class="panel-title">🐾 Companheiros</h3>
+              <div class="pet-active-display" id="active-pet-display">
+                <p class="empty-message">Nenhum pet ativo.</p>
               </div>
-              <div class="bar-group">
-                <div class="bar-label-row">
-                  <span>XP</span><span id="char-xp-text">0/100</span>
-                </div>
-                <div class="xp-bar-container">
-                  <div class="xp-bar-fill" id="char-xp-fill" style="width:0%;"></div>
-                </div>
+              <hr class="panel-divider">
+              <div class="pet-hatching-display" id="pet-hatching-display">
+                <!-- Hatching progress goes here -->
               </div>
-              <div class="bar-group">
-                <div class="bar-label-row">
-                  <span>⚡ Stamina</span><span id="char-stamina-text">100/100</span>
-                </div>
-                <div class="stamina-bar-container">
-                  <div class="stamina-bar-fill" id="char-stamina-fill" style="width:100%;"></div>
-                </div>
+              <div class="pet-collection-list" id="pet-collection-list">
+                <!-- Pet cards go here -->
               </div>
-              <div class="bar-group">
-                <div class="bar-label-row">
-                  <span>🔮 Mana</span><span id="char-mana-text">50/50</span>
-                </div>
-                <div class="mana-bar-container">
-                  <div class="mana-bar-fill" id="char-mana-fill" style="width:100%;"></div>
-                </div>
-              </div>
-            </div>
-
-            <hr class="panel-divider">
-            <div class="section-title-row">
-              <h4>Attributes</h4>
-              <button class="btn-sp" id="open-sp-btn" style="display:none;">✨ Spend Points (<span id="sp-count-badge">0</span>)</button>
-            </div>
-            <div class="stats-list">
-              <div class="stat-row">
-                <span>❤️ HP: <strong id="stat-hp">100/100</strong></span>
-                <button class="btn-upgrade" id="upgrade-hp-btn">+10 HP <span class="cost" id="cost-hp">10g</span></button>
-              </div>
-              <div class="stat-row">
-                <span>⚔️ Power: <strong id="stat-power">10</strong></span>
-                <button class="btn-upgrade" id="upgrade-power-btn">+2 Pwr <span class="cost" id="cost-power">10g</span></button>
-              </div>
-              <div class="stat-row">
-                <span>🛡️ Defense: <strong id="stat-defense">5</strong></span>
-                <button class="btn-upgrade" id="upgrade-defense-btn">+1 Def <span class="cost" id="cost-defense">10g</span></button>
-              </div>
-              <div class="stat-row stat-row--secondary">
-                <span>💥 Crit: <strong id="stat-crit">5%</strong></span>
-                <span>💨 Dodge: <strong id="stat-dodge">5%</strong></span>
-              </div>
-              <div class="stat-row stat-row--secondary">
-                <span>⚡ Power Rating: <strong id="char-power-rating">0</strong></span>
-              </div>
-            </div>
-
-            <hr class="panel-divider">
-            <h4>🎒 Equipped Gear</h4>
-            <div class="equipped-gear-display">
-              <div class="gear-slot-row"><span>⚔️ Weapon:</span> <span id="equipped-weapon-name" class="gear-slot-value">None</span></div>
-              <div class="gear-slot-row"><span>🛡️ Armor:</span> <span id="equipped-armor-name" class="gear-slot-value">None</span></div>
-              <div class="gear-slot-row"><span>💍 Ring:</span> <span id="equipped-ring-name" class="gear-slot-value">None</span></div>
-            </div>
-
-            <hr class="panel-divider">
-            <h4>✨ Active Skills</h4>
-            <div class="skills-list" id="char-skills-list">
-              <p class="empty-message">Skills unlock as you level up.</p>
-            </div>
-          </div>
-
-          <!-- Pet Panel -->
-          <div class="panel pet-panel">
-            <h3 class="panel-title">🐾 Companheiros</h3>
-            <div class="pet-active-display" id="active-pet-display">
-              <p class="empty-message">Nenhum pet ativo.</p>
-            </div>
-            <hr class="panel-divider">
-            <div class="pet-hatching-display" id="pet-hatching-display">
-              <!-- Hatching progress goes here -->
-            </div>
-            <div class="pet-collection-list" id="pet-collection-list">
-              <!-- Pet cards go here -->
             </div>
           </div>
 
