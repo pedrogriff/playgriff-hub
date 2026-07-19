@@ -151,24 +151,44 @@ const RING_ITEMS = {
 };
 
 const CONSUMABLE_ITEMS = {
-  potion_minor_hp: { id:"potion_minor_hp", type:"consumable", name:"Minor Health Potion", stat:"restoreHp", value:50, cost:20, icon:"🧪", tier:1, desc:"Restores 50 HP." },
-  potion_major_hp: { id:"potion_major_hp", type:"consumable", name:"Major Health Potion", stat:"restoreHp", value:150, cost:60, icon:"🍷", tier:2, desc:"Restores 150 HP." },
+  potion_minor_hp: { id:"potion_minor_hp", type:"consumable", name:"Minor Health Potion", stat:"restoreHp", value:50, cost:15, icon:"🧪", tier:1, desc:"Restores 50 HP", useContext: "any" },
+  potion_major_hp: { id:"potion_major_hp", type:"consumable", name:"Major Health Potion", stat:"restoreHp", value:150, cost:40, icon:"🏺", tier:2, desc:"Restores 150 HP", useContext: "any" },
+};
+
+const FOOD_ITEMS = {
+  food_bread: { id:"food_bread", type:"consumable", name:"Stale Bread", stat:"restoreHp", value:30, cost:8, icon:"🍞", tier:1, desc:"Restores 30 HP. Out of battle only.", useContext:"outOfBattle" },
+  food_soup:  { id:"food_soup",  type:"consumable", name:"Herb Soup", stat:"restoreHp", value:80, cost:22, icon:"🍲", tier:1, desc:"Restores 80 HP. Out of battle only.", useContext:"outOfBattle" },
+  food_meat:  { id:"food_meat",  type:"consumable", name:"Grilled Meat", stat:"restoreHp", value:200, cost:55, icon:"🥩", tier:2, desc:"Restores 200 HP. Out of battle only.", useContext:"outOfBattle" },
+  food_feast: { id:"food_feast", type:"consumable", name:"Royal Feast", stat:"restoreHp", value:500, cost:140, icon:"🍖", tier:3, desc:"Restores 500 HP. Out of battle only.", useContext:"outOfBattle" },
+  food_elixir:{ id:"food_elixir",type:"consumable", name:"Elixir Stew", stat:"restoreHp", value:9999, cost:400, icon:"🫕", tier:4, desc:"Restores 100% HP. Out of battle only.", useContext:"outOfBattle" },
 };
 
 const MATERIAL_ITEMS = {
   mat_herb:  { id:"mat_herb", type:"material", name:"Healing Herb", cost:5, icon:"🌿", tier:1, desc:"Used for crafting." },
   mat_vial:  { id:"mat_vial", type:"material", name:"Empty Vial", cost:5, icon:"🫙", tier:1, desc:"Used for crafting." },
   mat_shard: { id:"mat_shard", type:"material", name:"Magic Shard", cost:15, icon:"🔮", tier:2, desc:"Used for crafting." },
+  mat_wheat: { id:"mat_wheat", type:"material", name:"Wheat", cost:3, icon:"🌾", tier:1, desc:"Used for baking." },
+  mat_meat:  { id:"mat_meat", type:"material", name:"Raw Meat", cost:12, icon:"🍗", tier:2, desc:"Used for cooking." },
+  mat_coal:  { id:"mat_coal", type:"material", name:"Coal", cost:8, icon:"🌑", tier:1, desc:"Used for fuel." },
+  mat_spice: { id:"mat_spice", type:"material", name:"Spice", cost:20, icon:"🧂", tier:2, desc:"Used for cooking." },
 };
 
 const CRAFTING_RECIPES = [
-  { id: "recipe_minor_hp", resultId: "potion_minor_hp", name: "Craft Minor Health Potion", cost: 10,
-    ingredients: [{ id: "mat_herb", qty: 1 }, { id: "mat_vial", qty: 1 }] },
-  { id: "recipe_major_hp", resultId: "potion_major_hp", name: "Craft Major Health Potion", cost: 25,
-    ingredients: [{ id: "mat_herb", qty: 3 }, { id: "mat_shard", qty: 1 }, { id: "mat_vial", qty: 1 }] }
+  { id: "recipe_minor_hp", name: "Minor Health Potion", cost: 10, yields: { id: "potion_minor_hp", qty: 1 },
+    ingredients: [{ id: "mat_herb", qty: 2 }, { id: "mat_vial", qty: 1 }] },
+  { id: "recipe_major_hp", name: "Major Health Potion", cost: 25, yields: { id: "potion_major_hp", qty: 1 },
+    ingredients: [{ id: "mat_herb", qty: 3 }, { id: "mat_shard", qty: 1 }, { id: "mat_vial", qty: 1 }] },
+  { id: "recipe_stale_bread", name: "Bake Bread", cost: 5, yields: { id: "food_bread", qty: 1 },
+    ingredients: [{ id: "mat_wheat", qty: 2 }] },
+  { id: "recipe_herb_soup", name: "Cook Soup", cost: 12, yields: { id: "food_soup", qty: 1 },
+    ingredients: [{ id: "mat_herb", qty: 2 }, { id: "mat_vial", qty: 1 }] },
+  { id: "recipe_grilled_meat", name: "Grill Meat", cost: 30, yields: { id: "food_meat", qty: 1 },
+    ingredients: [{ id: "mat_meat", qty: 1 }, { id: "mat_coal", qty: 1 }] },
+  { id: "recipe_royal_feast", name: "Prepare Feast", cost: 80, yields: { id: "food_feast", qty: 1 },
+    ingredients: [{ id: "mat_meat", qty: 2 }, { id: "mat_herb", qty: 3 }, { id: "mat_spice", qty: 1 }] }
 ];
 
-const ALL_ITEMS = { ...CLASS_ITEMS, ...RING_ITEMS, ...CONSUMABLE_ITEMS, ...MATERIAL_ITEMS };
+const ALL_ITEMS = { ...CLASS_ITEMS, ...RING_ITEMS, ...CONSUMABLE_ITEMS, ...FOOD_ITEMS, ...MATERIAL_ITEMS };
 
 // Skill point upgrade options
 const SP_OPTIONS = [
@@ -462,9 +482,9 @@ function recoverOfflineStamina() {
     if (recovered > 0) {
       playerState.stamina = Math.min(maxStam, playerState.stamina + recovered);
       
-      const hpRegenRate = Math.max(1, Math.floor(effStats.maxHp * 0.01));
+      const hpRegenRate = Math.max(1, Math.floor(effStats.maxHp * 0.005));
       if (playerState.currentHp < effStats.maxHp) {
-        playerState.currentHp = Math.min(effStats.maxHp, playerState.currentHp + (hpRegenRate * recovered));
+        playerState.currentHp = Math.min(effStats.maxHp, (playerState.currentHp || effStats.maxHp) + (hpRegenRate * recovered));
       }
       
       playerState.lastStaminaUpdate += recovered * STAMINA_REGEN_MS;
@@ -486,8 +506,8 @@ function startStaminaTicker() {
       changed = true;
     }
     if (playerState.currentHp < effStats.maxHp) {
-      const hpRegenRate = Math.max(1, Math.floor(effStats.maxHp * 0.01));
-      playerState.currentHp = Math.min(effStats.maxHp, playerState.currentHp + hpRegenRate);
+      const hpRegenRate = Math.max(1, Math.floor(effStats.maxHp * 0.005));
+      playerState.currentHp = Math.min(effStats.maxHp, (playerState.currentHp || effStats.maxHp) + hpRegenRate);
       changed = true;
     }
 
@@ -785,12 +805,14 @@ function renderShop() {
   const armorCont   = document.getElementById("shop-armor-container");
   const ringsCont   = document.getElementById("shop-rings-container");
   const consCont    = document.getElementById("shop-consumables-container");
+  const foodCont    = document.getElementById("shop-food-container");
   if (!weaponsCont || !armorCont || !ringsCont) return;
 
   weaponsCont.innerHTML = "";
   armorCont.innerHTML   = "";
   ringsCont.innerHTML   = "";
   if (consCont) consCont.innerHTML = "";
+  if (foodCont) foodCont.innerHTML = "";
 
   // Class-specific weapons and armor
   Object.values(CLASS_ITEMS).forEach(item => {
@@ -809,6 +831,11 @@ function renderShop() {
   Object.values(CONSUMABLE_ITEMS).forEach(item => {
     if (consCont) consCont.appendChild(createShopItemEl(item));
   });
+
+  // Food
+  Object.values(FOOD_ITEMS).forEach(item => {
+    if (foodCont) foodCont.appendChild(createShopItemEl(item));
+  });
 }
 
 function createShopItemEl(item) {
@@ -817,7 +844,7 @@ function createShopItemEl(item) {
   const isRingEquipped   = playerState.equipment.ring   === item.id;
   const isEquipped = isWeaponEquipped || isArmorEquipped || isRingEquipped;
   
-  const isConsumable = item.type === "consumable";
+  const isConsumable = item.type === "consumable" || item.type === "food";
   const isOwned = !isConsumable && (isEquipped || playerState.inventory.some(i => i.id === item.id));
 
   const tierLabels = ["","★","★★","★★★","★★★★","★★★★★"];
@@ -1010,7 +1037,7 @@ function renderInventory() {
     const realIdx = playerState.inventory.indexOf(inv);
     const item = ALL_ITEMS[inv.id];
     if (!item) return;
-    const isConsumable = item.type === "consumable";
+    const isConsumable = item.type === "consumable" || item.type === "food";
     const qtyStr = (inv.qty && inv.qty > 1) ? ` (x${inv.qty})` : "";
     
     let statsHtml = "";
@@ -1102,7 +1129,7 @@ function initShopButtons() {
     const btn = e.target.closest(".btn-buy");
     if (btn && !btn.disabled) buyItem(btn.dataset.item);
   };
-    ["shop-weapons-container","shop-armor-container","shop-rings-container","shop-consumables-container"].forEach(id => {
+    ["shop-weapons-container","shop-armor-container","shop-rings-container","shop-consumables-container","shop-food-container"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("click", handleBuy);
   });
@@ -1112,7 +1139,7 @@ function buyItem(itemId) {
   const item = ALL_ITEMS[itemId];
   if (!item) return;
 
-  if (item.type === "consumable" || item.type === "material") {
+  if (item.type === "consumable" || item.type === "material" || item.type === "food") {
     if (playerState.gold < item.cost) { showToast("Not enough gold!", "error"); return; }
     playerState.gold -= item.cost;
     const existing = playerState.inventory.find(i => i.id === itemId);
@@ -1183,6 +1210,11 @@ function useConsumableFromInventory(itemId, index) {
   const inv = playerState.inventory[index];
   const item = ALL_ITEMS[itemId];
   if (!item || !inv) return;
+  
+  if (item.type === "food" && activeBattleInterval) {
+    if (typeof showToast === "function") showToast("Food can only be used outside of battle!", "error");
+    return;
+  }
   
   if (item.stat === "restoreHp") {
     const effStats = getEffectiveStats();
@@ -1569,6 +1601,7 @@ function startBattleSimulation(level) {
 
   document.getElementById("battle-log").innerHTML = `<p class="system-message">⚔️ Battle began!</p>`;
   updateSkillBar();
+  renderBattlePotions();
 
   activeBattleInterval = setInterval(() => {
     battleRound++;
@@ -1762,6 +1795,21 @@ function handleBattleVictory(level) {
   }
 
   checkForLootDrop(level);
+  
+  // Material drop (independent of gear loot)
+  const materialDropChance = 0.60; // 60% chance
+  if (Math.random() < materialDropChance) {
+    const possibleMats = Object.values(MATERIAL_ITEMS);
+    const droppedMat = possibleMats[Math.floor(Math.random() * possibleMats.length)];
+    const existing = playerState.inventory.find(i => i.id === droppedMat.id);
+    if (existing) {
+      existing.qty = (existing.qty || 1) + 1;
+    } else {
+      playerState.inventory.push({ id: droppedMat.id, qty: 1 });
+    }
+    appendBattleLog(`🌿 Found ${droppedMat.name}!`, "combat-victory");
+  }
+
   savePlayerState();
   renderMap();
   renderStats();
