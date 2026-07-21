@@ -2190,6 +2190,16 @@ body {
   font-size: 0.85rem;
 }
 
+.auth-info-msg {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid var(--info);
+  color: #93c5fd;
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
 .user-header-pill {
   display: flex;
   align-items: center;

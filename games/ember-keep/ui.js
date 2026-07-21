@@ -161,19 +161,43 @@ export const UIManager = {
 
       try {
         if (isSignUpMode) {
-          await signUp(email, password);
-          alert("Account created successfully! Logging in...");
-          await signIn(email, password);
+          const data = await signUp(email, password);
+          if (data && data.session) {
+            // Auto logged-in (email confirmation off)
+            await AccountStore.init();
+            this.hideAuthModal();
+            this.renderHeaderUserStatus(email);
+            this.renderCommandCenter();
+          } else {
+            // Email confirmation required
+            isSignUpMode = false;
+            tabSignIn.classList.add("active");
+            tabSignUp.classList.remove("active");
+            submitBtn.textContent = "Sign In";
+
+            errorMsg.className = "auth-info-msg";
+            errorMsg.innerHTML = `✨ <strong>Account created!</strong><br>A confirmation email has been sent to <strong>${email}</strong>.<br>Please check your inbox and click the verification link before signing in.`;
+            errorMsg.style.display = "block";
+          }
         } else {
           await signIn(email, password);
+          await AccountStore.init();
+          this.hideAuthModal();
+          this.renderHeaderUserStatus(email);
+          this.renderCommandCenter();
+        }
+      } catch (err) {
+        let message = err.message || "Authentication failed.";
+        if (message.toLowerCase().includes("email not confirmed")) {
+          message = "📧 Email not confirmed. Please check your inbox and click the verification link to activate your account.";
+        } else if (message.toLowerCase().includes("invalid login credentials")) {
+          message = "🔑 Invalid email or password. Please try again.";
+        } else if (message.toLowerCase().includes("user already registered")) {
+          message = "⚠️ An account with this email already exists. Please sign in instead.";
         }
 
-        await AccountStore.init();
-        this.hideAuthModal();
-        this.renderHeaderUserStatus(email);
-        this.renderCommandCenter();
-      } catch (err) {
-        errorMsg.textContent = err.message || "Authentication failed.";
+        errorMsg.className = "auth-error-msg";
+        errorMsg.textContent = message;
         errorMsg.style.display = "block";
       } finally {
         submitBtn.disabled = false;
