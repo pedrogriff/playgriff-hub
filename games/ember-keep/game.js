@@ -2201,7 +2201,13 @@ function renderPaperdollGrid() {
   const equipped = playerState.equipment || {};
 
   PAPERDOLL_SLOTS.forEach(slot => {
-    const raw = equipped[slot.key];
+    let raw = equipped[slot.key];
+    if (!raw) {
+      if (slot.key === "main_hand") raw = equipped.weapon;
+      else if (slot.key === "chest") raw = equipped.armor;
+      else if (slot.key === "accessory") raw = equipped.ring;
+    }
+
     let meta = null;
     let itemId = null;
     let itemName = null;
@@ -2212,14 +2218,14 @@ function renderPaperdollGrid() {
       meta = raw.metadata || raw;
     } else if (raw && typeof raw === "string") {
       itemId = raw;
-      const def = ALL_ITEMS[raw];
+      const def = ALL_ITEMS[raw] || Object.values(ALL_ITEMS).find(i => i.name === raw || i.id === raw);
       itemName = def ? def.name : raw;
-      meta = def || {};
+      meta = def || { name: raw };
     }
 
     const slotEl = document.createElement("div");
     const rarity = (meta?.rarity || "common").toLowerCase();
-    slotEl.className = `paperdoll-slot-card rarity-${rarity} ${meta ? 'occupied' : 'empty'}`;
+    slotEl.className = `paperdoll-slot-card rarity-${rarity} ${meta && itemId ? 'occupied' : 'empty'}`;
 
     if (meta && itemId) {
       const statsList = [];
@@ -2344,7 +2350,11 @@ function openDungeonBattleModal(combatLog) {
   if (closeBtn) closeBtn.onclick = () => { modal.style.display = "none"; modal.classList.remove("active"); };
 
   const closeOutcomeBtn = document.getElementById("btn-close-dungeon-outcome");
-  if (closeOutcomeBtn) closeOutcomeBtn.onclick = () => { modal.style.display = "none"; modal.classList.remove("active"); };
+  if (closeOutcomeBtn) closeOutcomeBtn.onclick = () => {
+    modal.style.display = "none";
+    modal.classList.remove("active");
+    if (window.renderActiveCharacterUI) window.renderActiveCharacterUI();
+  };
 
   let playbackSpeed = 1;
   let isSkip = false;
@@ -2357,17 +2367,21 @@ function openDungeonBattleModal(combatLog) {
   if (speed2xBtn) speed2xBtn.onclick = () => { playbackSpeed = 2; speed2xBtn.classList.add("active"); if (speed1xBtn) speed1xBtn.classList.remove("active"); };
   if (skipBtn) skipBtn.onclick = () => { isSkip = true; };
 
+  const firstTurn = (combatLog.turns && combatLog.turns[0]) || {};
+  const maxPlayerHp = Math.max(1, firstTurn.player_hp || 100);
+  const maxEnemyHp = Math.max(1, (firstTurn.enemy_hp !== undefined ? (firstTurn.enemy_hp + (firstTurn.damage || 0)) : 100));
+
   CombatEngine.playServerCombatLog(combatLog, (turn) => {
     if (playerHpBar) {
-      const pPct = Math.max(0, Math.min(100, (turn.player_hp / 100) * 100));
+      const pPct = Math.max(0, Math.min(100, (turn.player_hp / maxPlayerHp) * 100));
       playerHpBar.style.width = `${pPct}%`;
     }
     if (enemyHpBar) {
-      const ePct = Math.max(0, Math.min(100, (turn.enemy_hp / 100) * 100));
+      const ePct = Math.max(0, Math.min(100, (turn.enemy_hp / maxEnemyHp) * 100));
       enemyHpBar.style.width = `${ePct}%`;
     }
-    if (playerHpText) playerHpText.textContent = `${turn.player_hp} HP`;
-    if (enemyHpText) enemyHpText.textContent = `${turn.enemy_hp} HP`;
+    if (playerHpText) playerHpText.textContent = `${turn.player_hp} / ${maxPlayerHp}`;
+    if (enemyHpText) enemyHpText.textContent = `${turn.enemy_hp} / ${maxEnemyHp}`;
 
     if (logContainer) {
       const p = document.createElement("p");
@@ -2398,8 +2412,9 @@ function openDungeonBattleModal(combatLog) {
 }
 
 document.addEventListener("click", async (e) => {
-  if (e.target.classList.contains("btn-challenge-dungeon")) {
-    const dungeonId = e.target.dataset.dungeon;
+  const btn = e.target.closest(".btn-challenge-dungeon");
+  if (btn) {
+    const dungeonId = btn.dataset.dungeon;
     const floorSelect = document.getElementById(`floor-select-${dungeonId}`);
     const floor = floorSelect ? parseInt(floorSelect.value, 10) : 1;
 
