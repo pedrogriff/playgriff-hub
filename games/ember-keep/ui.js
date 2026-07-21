@@ -185,6 +185,11 @@ export const UIManager = {
           this.hideAuthModal();
           this.renderHeaderUserStatus(email);
           this.renderCommandCenter();
+
+          const offlineReport = await GameAPI.simulateOfflineProgressAll();
+          if (offlineReport) {
+            this.showOfflineSummaryModal(offlineReport);
+          }
         }
       } catch (err) {
         let message = err.message || "Authentication failed.";
@@ -272,6 +277,9 @@ export const UIManager = {
   /**
    * Render Multi-Character Command Center Dashboard Mini-Bar
    */
+  /**
+   * Render Multi-Character Command Center Dashboard Mini-Bar
+   */
   renderCommandCenter() {
     const container = document.getElementById("command-center-dashboard");
     if (!container) return;
@@ -297,6 +305,8 @@ export const UIManager = {
       if (char) {
         const taskStatusText = activeTask ? `${activeTask.icon} ${activeTask.targetName}` : "Idle";
         const statusClass = activeTask ? "status-active" : "status-idle";
+        const taskBtnText = activeTask ? "🛑 Stop Task" : "⚡ Start Task";
+        const taskBtnClass = activeTask ? "btn-stop-task" : "btn-start-task";
 
         html += `
           <div class="slot-card ${isActiveSlot ? 'slot-current' : ''}" data-slot="${slotId}">
@@ -307,9 +317,14 @@ export const UIManager = {
             <div class="slot-task ${statusClass}">
               ${taskStatusText}
             </div>
-            <button class="btn-slot-switch" data-slot="${slotId}" ${isActiveSlot ? 'disabled' : ''}>
-              ${isActiveSlot ? 'Active' : 'Switch'}
-            </button>
+            <div class="slot-actions-group">
+              <button class="btn-slot-action ${taskBtnClass}" data-slot="${slotId}">
+                ${taskBtnText}
+              </button>
+              <button class="btn-slot-switch" data-slot="${slotId}" ${isActiveSlot ? 'disabled' : ''}>
+                ${isActiveSlot ? 'Active' : 'Switch'}
+              </button>
+            </div>
           </div>
         `;
       } else if (isUnlockedSlot) {
@@ -348,10 +363,109 @@ export const UIManager = {
       });
     });
 
+    container.querySelectorAll(".btn-slot-action").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const slot = parseInt(e.target.getAttribute("data-slot"), 10);
+        const task = account.activeTasks ? account.activeTasks[slot] : null;
+        if (task) {
+          await GameAPI.stopTask(slot);
+          this.renderCommandCenter();
+          if (window.renderActiveCharacterUI) window.renderActiveCharacterUI();
+        } else {
+          this.showIdleTaskPickerModal(slot);
+        }
+      });
+    });
+
     container.querySelectorAll(".btn-create-char").forEach(btn => {
       btn.addEventListener("click", (e) => {
         const slot = parseInt(e.target.getAttribute("data-slot"), 10);
         this.showCharacterCreationModal(slot);
+      });
+    });
+  },
+
+  /**
+   * Idle Task Selection Modal
+   */
+  showIdleTaskPickerModal(slotId) {
+    const char = AccountStore.getCharacter(slotId);
+    if (!char) return;
+
+    let modal = document.getElementById("idle-task-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "idle-task-modal";
+      modal.className = "modal active";
+      document.body.appendChild(modal);
+    } else {
+      modal.classList.add("active");
+    }
+
+    const availableTasks = [
+      { type: "mining", targetId: "coal_vein", name: "Coal Vein", icon: "⛏️", reqLvl: 1, cycleMs: 4000, category: "Mining" },
+      { type: "mining", targetId: "iron_deposit", name: "Iron Deposit", icon: "⛏️", reqLvl: 5, cycleMs: 4000, category: "Mining" },
+      { type: "woodcutting", targetId: "oak_forest", name: "Oak Forest", icon: "🪓", reqLvl: 1, cycleMs: 4000, category: "Woodcutting" },
+      { type: "woodcutting", targetId: "willow_grove", name: "Willow Grove", icon: "🪓", reqLvl: 5, cycleMs: 4000, category: "Woodcutting" },
+      { type: "fishing", targetId: "greenhollow_river", name: "River Fishing", icon: "🎣", reqLvl: 1, cycleMs: 4000, category: "Fishing" },
+      { type: "combat", targetId: "mossy_grotto", name: "Mossy Grotto Mobs", icon: "⚔️", reqLvl: 1, cycleMs: 4000, category: "Combat" },
+      { type: "combat", targetId: "goblin_warren", name: "Goblin Warren Mobs", icon: "⚔️", reqLvl: 3, cycleMs: 4000, category: "Combat" },
+    ];
+
+    let taskGridHTML = "";
+    availableTasks.forEach(t => {
+      const isLocked = char.level < t.reqLvl;
+      taskGridHTML += `
+        <div class="task-choice-card ${isLocked ? 'locked' : ''}">
+          <div class="task-choice-header">
+            <span class="task-icon">${t.icon}</span>
+            <div class="task-details">
+              <strong>${t.name}</strong>
+              <span class="task-category">${t.category} · Lv.${t.reqLvl}+</span>
+            </div>
+          </div>
+          <button class="btn-action btn-select-task" data-type="${t.type}" data-target="${t.targetId}" data-name="${t.name}" data-icon="${t.icon}" ${isLocked ? 'disabled' : ''}>
+            ${isLocked ? '🔒 Locked' : '▶️ Start Action'}
+          </button>
+        </div>
+      `;
+    });
+
+    modal.innerHTML = `
+      <div class="modal-content" style="max-width:520px;">
+        <div class="modal-header">
+          <h2>⚡ Idle Tasks for Slot ${slotId}: ${char.name}</h2>
+          <button class="close-modal-btn" onclick="document.getElementById('idle-task-modal').classList.remove('active')">×</button>
+        </div>
+        <div class="modal-body">
+          <p class="offline-subtitle">Select an automated idle action. Progress will calculate authoritative offline time on DB server.</p>
+          <div class="task-choice-grid" style="display:flex; flex-direction:column; gap:10px;">
+            ${taskGridHTML}
+          </div>
+        </div>
+      </div>
+    `;
+
+    modal.querySelectorAll(".btn-select-task").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const type = btn.getAttribute("data-type");
+        const targetId = btn.getAttribute("data-target");
+        const targetName = btn.getAttribute("data-name");
+        const icon = btn.getAttribute("data-icon");
+
+        const taskSpec = {
+          type,
+          targetId,
+          targetName,
+          icon,
+          cycleMs: 4000,
+          totalStack: Infinity
+        };
+
+        await GameAPI.startTask(slotId, taskSpec);
+        modal.classList.remove("active");
+        this.renderCommandCenter();
+        if (window.renderActiveCharacterUI) window.renderActiveCharacterUI();
       });
     });
   },
@@ -372,9 +486,19 @@ export const UIManager = {
       modal.classList.add("active");
     }
 
+    const formatDuration = (ms) => {
+      const totalSecs = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSecs / 3600);
+      const mins = Math.floor((totalSecs % 3600) / 60);
+      const secs = totalSecs % 60;
+      if (hours > 0) return `${hours}h ${mins}m ${secs}s`;
+      if (mins > 0) return `${mins}m ${secs}s`;
+      return `${secs}s`;
+    };
+
     let reportsHTML = "";
     aggregatedReport.reports.forEach(r => {
-      const minutes = Math.floor(r.elapsedMs / 60000);
+      const durationStr = formatDuration(r.elapsedMs || 0);
       let statusWarning = "";
       if (r.inventoryFullPaused) {
         statusWarning = `<p class="status-alert warning">⚠️ Task paused: Inventory reached maximum capacity (${r.cyclesProcessed} cycles completed)!</p>`;
@@ -388,12 +512,19 @@ export const UIManager = {
         lootListHTML = `<div class="loot-grid">` + r.lootItems.map(l => `<span class="loot-chip">${l.icon} ${l.name} x${l.qty}</span>`).join('') + `</div>`;
       }
 
+      const levelBadge = r.newLevel ? `<span class="level-up-badge">🎉 Reached Level ${r.newLevel}!</span>` : '';
+
       reportsHTML += `
         <div class="offline-char-card">
-          <h4>🛡️ Character Slot ${r.slotId}: ${r.charName}</h4>
-          <p>⏳ Duration: <strong>${minutes} mins</strong> (${r.cyclesProcessed} cycles completed)</p>
-          <p>⭐ EXP Gained: <strong>+${r.expGained} XP</strong> ${r.newLevel ? `(Reached Level ${r.newLevel}!)` : ''}</p>
-          <p>💰 Gold Earned: <strong>+${r.goldGained}g</strong></p>
+          <div class="offline-char-header">
+            <h4>🛡️ Character Slot ${r.slotId}: ${r.charName}</h4>
+            ${levelBadge}
+          </div>
+          <div class="offline-stats-grid">
+            <div class="offline-stat"><span class="stat-icon">⏳</span> <span>Duration:</span> <strong>${durationStr}</strong> (${r.cyclesProcessed} cycles)</div>
+            <div class="offline-stat"><span class="stat-icon">⭐</span> <span>EXP Gained:</span> <strong>+${r.expGained} XP</strong></div>
+            <div class="offline-stat"><span class="stat-icon">💰</span> <span>Gold Earned:</span> <strong>+${r.goldGained}g</strong></div>
+          </div>
           ${lootListHTML}
           ${statusWarning}
         </div>
@@ -406,13 +537,13 @@ export const UIManager = {
           <h2>📜 Aggregated Offline Progression Summary</h2>
         </div>
         <div class="modal-body">
-          <p class="offline-subtitle">Welcome back! While you were away, your active characters achieved the following progress:</p>
+          <p class="offline-subtitle">Welcome back! Server time verified your idle progress across active slots:</p>
           <div class="offline-reports-list">
             ${reportsHTML}
           </div>
         </div>
         <div class="modal-footer">
-          <button id="close-offline-modal-btn" class="btn-action">Claim All Rewards</button>
+          <button id="close-offline-modal-btn" class="btn-action btn-claim-all">✨ Claim All Rewards</button>
         </div>
       </div>
     `;
@@ -422,3 +553,4 @@ export const UIManager = {
     });
   }
 };
+

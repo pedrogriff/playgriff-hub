@@ -32,12 +32,16 @@ window.installStation = function(...args) { if (typeof installStation === "funct
 window.placeDecoration = function(...args) { if (typeof placeDecoration === "function") return placeDecoration(...args); };
 window.buyDecoration = function(...args) { if (typeof buyDecoration === "function") return buyDecoration(...args); };
 
-document.addEventListener("DOMContentLoaded", () => {
-  AccountStore.init();
-  UIManager.init();
+document.addEventListener("DOMContentLoaded", async () => {
+  await AccountStore.init();
+  await UIManager.init();
+
+  if (window.renderActiveCharacterUI) {
+    window.renderActiveCharacterUI();
+  }
 
   // Run Aggregated Offline Progress Check
-  const aggregatedReport = GameAPI.simulateOfflineProgressAll();
+  const aggregatedReport = await GameAPI.simulateOfflineProgressAll();
   if (aggregatedReport) {
     UIManager.showOfflineSummaryModal(aggregatedReport);
   }
@@ -932,8 +936,77 @@ function loadPlayerState() {
   checkClassSelection();
 }
 
+window.renderActiveCharacterUI = function() {
+  if (typeof AccountStore === "undefined") return;
+  const activeChar = AccountStore.getActiveCharacter();
+  if (!activeChar) return;
+
+  // Synchronize playerState from active character slot
+  playerState.name = activeChar.name || "Hero";
+  playerState.class = activeChar.class || null;
+  playerState.level = activeChar.level || 1;
+  playerState.xp = activeChar.xp || activeChar.exp || 0;
+  playerState.xpNeeded = activeChar.maxXp || activeChar.max_exp || 100;
+  playerState.stamina = activeChar.stamina !== undefined ? activeChar.stamina : 100;
+  playerState.gold = activeChar.gold !== undefined ? activeChar.gold : 50;
+  playerState.gems = activeChar.gems !== undefined ? activeChar.gems : 0;
+  playerState.maxMana = activeChar.maxMana || activeChar.mana || 50;
+  playerState.inventory = activeChar.inventory || [];
+  playerState.equipment = activeChar.equipped || { weapon: null, armor: null, ring: null };
+
+  if (activeChar.power || activeChar.defense) {
+    playerState.stats = {
+      maxHp: activeChar.maxHp || activeChar.hp || 100,
+      power: activeChar.power || 10,
+      defense: activeChar.defense || 5,
+      critChance: Number(activeChar.critChance || 0.05),
+      critDamage: Number(activeChar.critDamage || 1.5),
+      dodgeChance: Number(activeChar.dodgeChance || 0.05)
+    };
+    playerState.currentHp = activeChar.hp || activeChar.maxHp || 100;
+  }
+
+  // Update overlay display for class selection
+  const classOverlay = document.getElementById("class-modal-overlay");
+  if (classOverlay) {
+    if (playerState.class) {
+      classOverlay.style.display = "none";
+      classOverlay.classList.remove("active");
+    } else {
+      classOverlay.style.display = "flex";
+      classOverlay.classList.add("active");
+    }
+  }
+
+  if (typeof renderStats === "function") renderStats();
+  if (typeof renderInventory === "function") renderInventory();
+  if (typeof renderWorldMap === "function") renderWorldMap();
+  if (typeof renderCampaignMap === "function") renderCampaignMap();
+};
+
 function savePlayerState() {
   localStorage.setItem("rpg_player_state", JSON.stringify(playerState));
+  if (typeof AccountStore !== "undefined") {
+    const activeChar = AccountStore.getActiveCharacter();
+    if (activeChar) {
+      activeChar.name = playerState.name;
+      activeChar.class = playerState.class;
+      activeChar.level = playerState.level;
+      activeChar.xp = playerState.xp;
+      activeChar.maxXp = playerState.xpNeeded;
+      activeChar.gold = playerState.gold;
+      activeChar.gems = playerState.gems;
+      activeChar.stamina = playerState.stamina;
+      activeChar.inventory = playerState.inventory;
+      activeChar.equipped = playerState.equipment || activeChar.equipped;
+      if (playerState.stats) {
+        activeChar.power = playerState.stats.power;
+        activeChar.defense = playerState.stats.defense;
+        activeChar.maxHp = playerState.stats.maxHp;
+      }
+      AccountStore.save();
+    }
+  }
 }
 
 function checkDailyLogin() {
@@ -2427,6 +2500,31 @@ function openBattleModal(level) {
   _show("close-battle-modal-btn");
 
   document.getElementById("start-battle-btn").onclick = () => startBattleSimulation(level);
+
+  const idleCombatBtn = document.getElementById("start-idle-combat-btn");
+  if (idleCombatBtn) {
+    idleCombatBtn.onclick = async () => {
+      const activeSlotId = AccountStore.getAccount()?.activeSlotId || 1;
+      await CombatEngine.startBatchCombat(activeSlotId, {
+        id: level.id ? `level_${level.id}` : `mob_${level.name.toLowerCase().replace(/\s+/g, "_")}`,
+        name: level.name,
+        avatar: level.avatar || "⚔️",
+        level: level.id || 1,
+        regionId: "greenhollow",
+        hp: level.hp,
+        power: level.power,
+        defense: level.defense,
+        xp: level.xp,
+        gold: level.gold
+      });
+
+      modal.classList.remove("active");
+      if (typeof UIManager !== "undefined" && UIManager.renderCommandCenter) {
+        UIManager.renderCommandCenter();
+      }
+      showToast(`⚡ Started automated idle combat for ${level.name}!`, "success");
+    };
+  }
 
   const rematchBtn = document.getElementById("rematch-battle-btn");
   if (rematchBtn) rematchBtn.onclick = () => {

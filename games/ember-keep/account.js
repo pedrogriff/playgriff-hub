@@ -99,6 +99,10 @@ export const AccountStore = {
       const user = await getUser();
       if (user) {
         await this.loadFromSupabase();
+        const hasAnyChar = Object.values(accountData.characterSlots).some(c => c !== null);
+        if (!hasAnyChar) {
+          await this.createCharacter(1, "Ember Hero", "Warrior");
+        }
       } else {
         this.loadFromLocalStorage();
       }

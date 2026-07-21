@@ -2244,4 +2244,208 @@ body {
   color: var(--gold);
 }
 
+/* Slot Actions & Task Choice Cards */
+.slot-actions-group {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.btn-slot-action {
+  flex: 1;
+  padding: 4px 8px;
+  border-radius: var(--r-sm, 6px);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+
+.btn-start-task {
+  background: var(--bg-hover);
+  color: var(--gold);
+  border-color: var(--ember);
+}
+
+.btn-start-task:hover {
+  background: var(--ember);
+  color: #fff;
+}
+
+.btn-stop-task {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.btn-stop-task:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+.task-choice-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px;
+}
+
+.task-choice-card.locked {
+  opacity: 0.6;
+}
+
+.task-choice-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.task-icon {
+  font-size: 1.4rem;
+}
+
+.task-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.task-category {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* ================================================================
+   OFFLINE PROGRESSION SUMMARY MODAL (PHASE 2)
+   ================================================================ */
+.offline-modal-content {
+  max-width: 580px;
+  background: var(--bg-card, #1e222d);
+  border: 1px solid var(--border-bright, #333d52);
+  border-radius: var(--r-lg, 12px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+}
+
+.offline-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-secondary, #94a3b8);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.offline-reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.offline-char-card {
+  background: var(--bg-elevated, #171b26);
+  border: 1px solid var(--border, #2a3142);
+  border-radius: var(--r-md, 8px);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.offline-char-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border, #2a3142);
+  padding-bottom: 8px;
+}
+
+.offline-char-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--gold, #fbbf24);
+}
+
+.level-up-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+  padding: 3px 8px;
+  border-radius: var(--r-pill, 9999px);
+}
+
+.offline-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.offline-stat {
+  font-size: 0.82rem;
+  color: var(--text-secondary, #94a3b8);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.offline-stat strong {
+  color: var(--text-primary, #f8fafc);
+}
+
+.stat-icon {
+  font-size: 0.9rem;
+}
+
+.loot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.loot-chip {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border, #2a3142);
+  padding: 4px 8px;
+  border-radius: var(--r-pill, 9999px);
+  font-size: 0.78rem;
+  color: var(--text-primary, #f8fafc);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-alert {
+  padding: 8px 12px;
+  border-radius: var(--r-sm, 6px);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.status-alert.warning {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+
+.status-alert.danger {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+.btn-claim-all {
+  width: 100%;
+  padding: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+
 

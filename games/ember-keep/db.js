@@ -167,3 +167,92 @@ export async function deleteCharacter(characterId) {
   if (error) throw error;
   return true;
 }
+
+/**
+ * SERVER TIME & IDLE TASK HELPERS (PHASE 2)
+ */
+
+export async function getServerTime() {
+  try {
+    const { data, error } = await supabase.rpc("get_server_time");
+    if (!error && data) {
+      return new Date(data).getTime();
+    }
+  } catch (err) {
+    console.warn("Supabase RPC get_server_time failed, falling back to local time:", err);
+  }
+  return Date.now();
+}
+
+export async function startTask(characterId, taskType, targetId, durationSeconds, foodAmount = 0) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  // 1. Cancel any existing running tasks for this character to enforce single active task
+  try {
+    await supabase
+      .from("active_tasks")
+      .update({ status: "cancelled", updated_at: new Date().toISOString() })
+      .eq("character_id", characterId)
+      .eq("status", "running");
+  } catch (e) {
+    console.warn("Could not clear existing active tasks:", e);
+  }
+
+  // 2. Insert new running task
+  const newTask = {
+    character_id: characterId,
+    task_type: taskType,
+    target_id: targetId,
+    started_at: new Date().toISOString(),
+    duration_seconds: durationSeconds || 0,
+    allocated_food: foodAmount || 0,
+    status: "running"
+  };
+
+  const { data, error } = await supabase
+    .from("active_tasks")
+    .insert([newTask])
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error starting active task in Supabase:", error);
+    throw error;
+  }
+  return data;
+}
+
+export async function getActiveTasks(characterIdList = []) {
+  const validIds = (characterIdList || []).filter(id => typeof id === "string" && id.includes("-"));
+  if (validIds.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from("active_tasks")
+    .select("*")
+    .in("character_id", validIds)
+    .eq("status", "running");
+
+  if (error) {
+    console.error("Error fetching active tasks from Supabase:", error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function claimTaskRewards(taskId) {
+  if (!taskId) return null;
+
+  const { data, error } = await supabase
+    .from("active_tasks")
+    .update({ status: "completed", updated_at: new Date().toISOString() })
+    .eq("id", taskId)
+    .select()
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error claiming task rewards in Supabase:", error);
+    return null;
+  }
+  return data;
+}
+
