@@ -172,8 +172,10 @@
         <span class="stat-pill" id="pill-gems" style="cursor:pointer; border-color:var(--ember);" onclick="document.getElementById('premium-store-modal').classList.add('active'); renderPremiumStore('pass');" title="Ember Store"><strong id="header-gems">0</strong>💎</span>
         <span class="stat-pill" id="pill-stamina"><strong id="header-stamina">100/100</strong>⚡</span>
       </div>
-      <button id="settings-btn" class="icon-btn" title="Settings" aria-label="Open Settings">⚙️</button>
     </header>
+
+    <!-- Multi-Character Command Center Dashboard -->
+    <div id="command-center-dashboard"></div>
 
     <!-- Tab Navigation -->
     <nav class="tab-navigation" role="tablist" aria-label="Main navigation">
@@ -729,12 +731,7 @@
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="audio.js"></script>
-  <script src="pets.js"></script>
-  <script src="game.js"></script>
-  <script src="clans.js"></script>
-  <script src="siege.js"></script>
-  <script src="social.js"></script>
+  <!-- Native ES Module Entry Point -->
+  <script type="module" src="game.js"></script>
 </body>
 </html>

@@ -1,6 +1,31 @@
 // ================================================================
-// EMBER KEEP — Core Game Logic (Phase 1)
+// EMBER KEEP — Core Game Logic & ES Module Entry Point
 // ================================================================
+
+import { AccountStore } from "./account.js";
+import { GameAPI } from "./engine.js";
+import { CombatEngine } from "./combat.js";
+import { VillageEngine } from "./village.js";
+import { MarketEngine } from "./market.js";
+import { UIManager } from "./ui.js";
+
+// Initialize ES Engine Systems
+window.AccountStore = AccountStore;
+window.GameAPI = GameAPI;
+window.CombatEngine = CombatEngine;
+window.VillageEngine = VillageEngine;
+window.MarketEngine = MarketEngine;
+
+document.addEventListener("DOMContentLoaded", () => {
+  AccountStore.init();
+  UIManager.init();
+
+  // Run Aggregated Offline Progress Check
+  const aggregatedReport = GameAPI.simulateOfflineProgressAll();
+  if (aggregatedReport) {
+    UIManager.showOfflineSummaryModal(aggregatedReport);
+  }
+});
 
 // ================================================================
 // DATA: LEVELS (30 levels, 3 acts)

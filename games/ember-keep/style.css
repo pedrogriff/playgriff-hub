@@ -1935,3 +1935,186 @@ body {
   font-size: 0.9rem;
   color: var(--gold);
 }
+
+/* ================================================================
+   COMMAND CENTER DASHBOARD & MULTI-CHARACTER STYLING
+   ================================================================ */
+#command-center-dashboard {
+  margin-bottom: 16px;
+}
+
+.command-center-bar {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.command-center-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.ap-badge {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  padding: 2px 10px;
+  border-radius: var(--r-pill);
+  font-size: 0.8rem;
+}
+
+.command-center-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.slot-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.slot-card.slot-current {
+  border-color: var(--ember);
+  box-shadow: var(--glow-ember);
+}
+
+.slot-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.slot-number {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.slot-name {
+  color: var(--text-primary);
+}
+
+.slot-task {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: var(--r-sm);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+}
+
+.slot-task.status-active {
+  color: var(--success);
+  border-left: 3px solid var(--success);
+}
+
+.slot-task.status-idle {
+  color: var(--text-muted);
+}
+
+.btn-slot-switch, .btn-create-char {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-bright);
+  color: var(--text-primary);
+  padding: 4px 8px;
+  border-radius: var(--r-sm);
+  font-size: 0.8rem;
+  cursor: pointer;
+  align-self: flex-end;
+  transition: background 0.2s;
+}
+
+.btn-slot-switch:hover:not(:disabled), .btn-create-char:hover {
+  background: var(--ember);
+  color: #fff;
+  border-color: var(--ember);
+}
+
+.btn-slot-switch:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ================================================================
+   AGGREGATED OFFLINE PROGRESSION MODAL
+   ================================================================ */
+.offline-modal-content {
+  max-width: 650px;
+  width: 90%;
+}
+
+.offline-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.offline-reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.offline-char-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px 16px;
+}
+
+.offline-char-card h4 {
+  color: var(--gold);
+  font-family: var(--font-heading);
+  margin-bottom: 6px;
+}
+
+.loot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.loot-chip {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--r-pill);
+  padding: 2px 8px;
+  font-size: 0.8rem;
+}
+
+.status-alert {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: var(--r-sm);
+  font-size: 0.85rem;
+}
+
+.status-alert.warning {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid var(--warning);
+  color: var(--warning);
+}
+
+.status-alert.danger {
+  background: rgba(231, 76, 60, 0.15);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+}
+
