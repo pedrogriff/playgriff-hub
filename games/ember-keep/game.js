@@ -923,6 +923,8 @@ function loadPlayerState() {
       playerState.gold = activeChar.gold !== undefined ? activeChar.gold : 50;
       playerState.gems = activeChar.gems !== undefined ? activeChar.gems : 0;
       playerState.stamina = activeChar.stamina !== undefined ? activeChar.stamina : 100;
+      playerState.unlockedLevel = activeChar.unlockedLevel || activeChar.unlocked_level || 1;
+      playerState.completedSideZones = Array.isArray(activeChar.completedSideZones) ? activeChar.completedSideZones : [];
       playerState.inventory = Array.isArray(activeChar.inventory) ? JSON.parse(JSON.stringify(activeChar.inventory)) : [];
       playerState.equipment = activeChar.equipped ? JSON.parse(JSON.stringify(activeChar.equipped)) : { weapon: null, armor: null, ring: null };
     }
@@ -956,6 +958,8 @@ window.renderActiveCharacterUI = function() {
   playerState.stamina = activeChar.stamina !== undefined ? activeChar.stamina : 100;
   playerState.gold = activeChar.gold !== undefined ? activeChar.gold : 50;
   playerState.gems = activeChar.gems !== undefined ? activeChar.gems : 0;
+  playerState.unlockedLevel = activeChar.unlockedLevel || activeChar.unlocked_level || playerState.unlockedLevel || 1;
+  playerState.completedSideZones = Array.isArray(activeChar.completedSideZones) ? activeChar.completedSideZones : (playerState.completedSideZones || []);
   playerState.maxMana = activeChar.maxMana || activeChar.mana || 50;
   playerState.inventory = Array.isArray(activeChar.inventory) ? JSON.parse(JSON.stringify(activeChar.inventory)) : [];
   playerState.equipment = activeChar.equipped ? JSON.parse(JSON.stringify(activeChar.equipped)) : { weapon: null, armor: null, ring: null };
@@ -1004,6 +1008,8 @@ function savePlayerState() {
       activeChar.gold = playerState.gold;
       activeChar.gems = playerState.gems;
       activeChar.stamina = playerState.stamina;
+      activeChar.unlockedLevel = playerState.unlockedLevel || 1;
+      activeChar.completedSideZones = playerState.completedSideZones || [];
       activeChar.inventory = playerState.inventory;
       activeChar.equipped = playerState.equipment || activeChar.equipped;
       if (playerState.stats) {
@@ -3495,6 +3501,9 @@ function handleBattleVictory(level) {
   if (isSideZone && !playerState.completedSideZones.includes(level.id)) {
     playerState.completedSideZones.push(level.id);
   }
+
+  savePlayerState();
+  renderMap();
 
   checkForLootDrop(level);
   
