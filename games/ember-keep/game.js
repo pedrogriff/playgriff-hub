@@ -16,6 +16,22 @@ window.CombatEngine = CombatEngine;
 window.VillageEngine = VillageEngine;
 window.MarketEngine = MarketEngine;
 
+// Expose Inline HTML Event Handlers to Global Window Scope
+window.claimDailyReward = function(...args) { if (typeof claimDailyReward === "function") return claimDailyReward(...args); };
+window.renderPremiumStore = function(...args) { if (typeof renderPremiumStore === "function") return renderPremiumStore(...args); };
+window.buyEmberPass = function(...args) { if (typeof buyEmberPass === "function") return buyEmberPass(...args); };
+window.buyPremiumConsumable = function(...args) { if (typeof buyPremiumConsumable === "function") return buyPremiumConsumable(...args); };
+window.openVillageModal = function(...args) { if (typeof openVillageModal === "function") return openVillageModal(...args); };
+window.upgradeHouse = function(...args) { if (typeof upgradeHouse === "function") return upgradeHouse(...args); };
+window.upgradeStation = function(...args) { if (typeof upgradeStation === "function") return upgradeStation(...args); };
+window.removeStation = function(...args) { if (typeof removeStation === "function") return removeStation(...args); };
+window.openStationInstallModal = function(...args) { if (typeof openStationInstallModal === "function") return openStationInstallModal(...args); };
+window.openDecorationShopModal = function(...args) { if (typeof openDecorationShopModal === "function") return openDecorationShopModal(...args); };
+window.removeDecoration = function(...args) { if (typeof removeDecoration === "function") return removeDecoration(...args); };
+window.installStation = function(...args) { if (typeof installStation === "function") return installStation(...args); };
+window.placeDecoration = function(...args) { if (typeof placeDecoration === "function") return placeDecoration(...args); };
+window.buyDecoration = function(...args) { if (typeof buyDecoration === "function") return buyDecoration(...args); };
+
 document.addEventListener("DOMContentLoaded", () => {
   AccountStore.init();
   UIManager.init();

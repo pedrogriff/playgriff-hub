@@ -588,3 +588,10 @@ function evolvePet(petId) {
   if (typeof renderPetSection === 'function') renderPetSection();
   if (typeof renderStats === 'function') renderStats();
 }
+
+// Expose Pet UI Click Handlers to Global Window Scope
+if (typeof window !== "undefined") {
+  window.feedPetUI = function(...args) { if (typeof feedPetUI === "function") return feedPetUI(...args); };
+  window.setPetActive = function(...args) { if (typeof setPetActive === "function") return setPetActive(...args); };
+  window.evolvePet = function(...args) { if (typeof evolvePet === "function") return evolvePet(...args); };
+}
