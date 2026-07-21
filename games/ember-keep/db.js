@@ -379,4 +379,29 @@ export async function runDungeonEncounterRPC(characterId, dungeonId, floor) {
   }
 }
 
+/**
+ * PROFESSIONS & CRAFTING ATOMIC RPC HELPERS (PHASE 6)
+ */
+
+export async function craftItemRPC(characterId, recipeId, amount = 1) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("craft_item", {
+      p_character_id: characterId,
+      p_recipe_id: recipeId,
+      p_amount: amount
+    });
+
+    if (error) {
+      console.error("Error executing craft_item RPC:", error);
+      throw error;
+    }
+    return data;
+  } catch (err) {
+    console.error("craft_item RPC execution failed:", err);
+    throw err;
+  }
+}
+
 
