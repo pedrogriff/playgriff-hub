@@ -404,4 +404,47 @@ export async function craftItemRPC(characterId, recipeId, amount = 1) {
   }
 }
 
+/**
+ * SHOP & LOOT EXPANSION ATOMIC RPC HELPERS
+ */
+
+export async function getShopInventoryRPC(characterId) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return [];
+
+  try {
+    const { data, error } = await supabase.rpc("get_shop_inventory", {
+      p_character_id: characterId
+    });
+
+    if (error) {
+      console.error("Error executing get_shop_inventory RPC:", error);
+      return [];
+    }
+    return data || [];
+  } catch (err) {
+    console.error("get_shop_inventory RPC execution failed:", err);
+    return [];
+  }
+}
+
+export async function buyShopItemRPC(characterId, itemId) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("buy_shop_item", {
+      p_character_id: characterId,
+      p_item_id: itemId
+    });
+
+    if (error) {
+      console.error("Error executing buy_shop_item RPC:", error);
+      throw error;
+    }
+    return data;
+  } catch (err) {
+    console.error("buy_shop_item RPC execution failed:", err);
+    throw err;
+  }
+}
+
 

@@ -2766,6 +2766,42 @@ body {
   color: var(--gold);
 }
 
+/* Equipment Rarity Glowing Aura Styles */
+.rarity-epic {
+  border-color: #a855f7 !important;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.45);
+}
+
+.rarity-badge.epic {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.5);
+}
+
+.rarity-legendary {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.6);
+  animation: legendaryPulse 2s infinite alternate ease-in-out;
+}
+
+.rarity-badge.legendary {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.6);
+}
+
+@keyframes legendaryPulse {
+  0% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+  100% { box-shadow: 0 0 22px rgba(245, 158, 11, 0.85); }
+}
+
+.log-entry.legendary-drop {
+  color: #fbbf24;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.8);
+}
+
+
 
 
 

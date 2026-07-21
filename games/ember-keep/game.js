@@ -8,7 +8,7 @@ import { CombatEngine } from "./combat.js";
 import { VillageEngine } from "./village.js";
 import { MarketEngine } from "./market.js";
 import { UIManager } from "./ui.js";
-import { equipItemRPC, unequipItemRPC, getCharacterInventory, runDungeonEncounterRPC, getDungeonProgress, craftItemRPC } from "./db.js";
+import { equipItemRPC, unequipItemRPC, getCharacterInventory, runDungeonEncounterRPC, getDungeonProgress, craftItemRPC, getShopInventoryRPC, buyShopItemRPC } from "./db.js";
 
 // Initialize ES Engine Systems
 window.AccountStore = AccountStore;
@@ -1715,7 +1715,7 @@ function renderStats() {
 }
 
 // ── SHOP ──
-function renderShop() {
+async function renderShop() {
   if (!playerState.class) return;
 
   const weaponsCont = document.getElementById("shop-weapons-container");
@@ -1732,6 +1732,52 @@ function renderShop() {
   if (consCont) consCont.innerHTML = "";
   if (foodCont) foodCont.innerHTML = "";
   if (matsCont) matsCont.innerHTML = "";
+
+  const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+  if (activeChar && typeof activeChar.id === "string" && activeChar.id.includes("-")) {
+    try {
+      const shopItems = await getShopInventoryRPC(activeChar.id);
+      if (Array.isArray(shopItems) && shopItems.length > 0) {
+        shopItems.forEach(item => {
+          const rarity = (item.rarity || "common").toLowerCase();
+          const canAfford = playerState.gold >= item.price;
+          const meetsLevel = playerState.level >= item.min_level;
+
+          const el = document.createElement("div");
+          el.className = `shop-item rarity-${rarity}`;
+          el.id = `item-${item.item_id}`;
+
+          const statsStr = item.stats ? Object.entries(item.stats)
+            .map(([k, v]) => `${k === "attack_power" ? "Atk" : k === "defense" ? "Def" : k}: +${v}`)
+            .join(" | ") : "";
+
+          el.innerHTML = `
+            <div class="item-icon">${item.icon || "📦"}</div>
+            <div class="item-details">
+              <h5>${item.name} <span class="rarity-badge ${rarity}">${rarity.toUpperCase()}</span></h5>
+              <p>${statsStr || item.slot_type}</p>
+              <span class="item-tier" style="color:var(--gold);font-size:0.65rem;">Min Lv. ${item.min_level} | ${item.slot_type}</span>
+            </div>
+            <button class="btn-buy btn-buy-expansion"
+                    data-item="${item.item_id}"
+                    ${(!canAfford || !meetsLevel) ? "disabled" : ""}>
+              ${!meetsLevel ? `Lv ${item.min_level} Req` : `Buy <span class="cost">${formatNumber(item.price)}g</span>`}
+            </button>
+          `;
+
+          if (item.slot_type === "main_hand" || item.slot_type === "off_hand") {
+            weaponsCont.appendChild(el);
+          } else if (item.slot_type === "accessory") {
+            ringsCont.appendChild(el);
+          } else {
+            armorCont.appendChild(el);
+          }
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load dynamic shop inventory:", err);
+    }
+  }
 
   // Class-specific weapons and armor
   Object.values(CLASS_ITEMS).forEach(item => {
@@ -2453,6 +2499,36 @@ document.addEventListener("click", async (e) => {
 
     if (combatLog) {
       openDungeonBattleModal(combatLog);
+    }
+  }
+
+  const expansionBuyBtn = e.target.closest(".btn-buy-expansion");
+  if (expansionBuyBtn && !expansionBuyBtn.disabled) {
+    const itemId = expansionBuyBtn.dataset.item;
+    const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+
+    if (activeChar && typeof activeChar.id === "string" && activeChar.id.includes("-")) {
+      try {
+        const res = await buyShopItemRPC(activeChar.id, itemId);
+        if (res && res.success) {
+          showToast(`🛍️ Purchased ${res.item_name} for ${res.gold_spent}g!`, "success");
+          const dbInv = await getCharacterInventory(activeChar.id);
+          if (dbInv) {
+            activeChar.inventory = dbInv.map(i => ({
+              id: i.item_id,
+              name: i.item_name,
+              type: i.item_type,
+              qty: i.quantity,
+              icon: i.icon,
+              metadata: i.metadata
+            }));
+          }
+          if (window.renderActiveCharacterUI) window.renderActiveCharacterUI();
+          renderShop();
+        }
+      } catch (err) {
+        alert(err.message || "Failed to buy item.");
+      }
     }
   }
 });
