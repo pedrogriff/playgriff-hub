@@ -98,6 +98,8 @@ export const AccountStore = {
     try {
       const user = await getUser();
       if (user) {
+        // Clear legacy unauthenticated state to prevent item bleeding
+        localStorage.removeItem(LEGACY_STORAGE_KEY);
         await this.loadFromSupabase();
         const hasAnyChar = Object.values(accountData.characterSlots).some(c => c !== null);
         if (!hasAnyChar) {

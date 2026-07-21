@@ -1803,10 +1803,26 @@ body {
 .house-node {
   background: var(--bg-elevated);
   border-color: var(--gold);
+  position: relative;
 }
 .house-node:hover {
   transform: scale(1.1);
   box-shadow: 0 0 10px var(--gold);
+}
+.house-node .level-node-label {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--gold);
+  background: var(--bg-card, #1e222d);
+  border: 1px solid var(--gold);
+  padding: 2px 8px;
+  border-radius: var(--r-pill, 9999px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .house-view { display: flex; flex-direction: column; gap: var(--gap-md); padding: 16px; }
@@ -2446,6 +2462,131 @@ body {
   font-size: 0.95rem;
   font-weight: 700;
 }
+
+/* Inventory Capacity Counter Pill */
+.inventory-capacity-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: var(--r-md);
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.inventory-capacity-pill strong {
+  color: var(--gold);
+}
+
+.inventory-capacity-pill strong.capacity-full {
+  color: #ef4444;
+}
+
+/* Paperdoll Equipment Grid & Rarity Styles (Phase 4) */
+.paperdoll-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.paperdoll-slot-card {
+  background: var(--bg-elevated, #1a1e29);
+  border: 2px solid var(--border, #2a3142);
+  border-radius: var(--r-md, 8px);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.paperdoll-slot-card.rarity-common { border-color: #9e9e9e; }
+.paperdoll-slot-card.rarity-rare { border-color: #3b82f6; box-shadow: 0 0 8px rgba(59, 130, 246, 0.2); }
+.paperdoll-slot-card.rarity-epic { border-color: #a855f7; box-shadow: 0 0 8px rgba(168, 85, 247, 0.25); }
+.paperdoll-slot-card.rarity-legendary { border-color: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
+
+.paperdoll-slot-card .slot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+}
+
+.paperdoll-slot-card .slot-type-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.rarity-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.rarity-badge.common { background: rgba(158, 158, 158, 0.2); color: #9e9e9e; }
+.rarity-badge.rare { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.rarity-badge.epic { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+.rarity-badge.legendary { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+.slot-item-body {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slot-item-body .item-icon {
+  font-size: 1.6rem;
+}
+
+.slot-item-body .item-info h5 {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.slot-item-body .item-stat-snippet {
+  margin: 2px 0 0 0;
+  font-size: 0.72rem;
+  color: var(--gold, #fbbf24);
+}
+
+.slot-item-body.empty-body {
+  opacity: 0.5;
+}
+
+.empty-slot-text {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.btn-unequip-slot {
+  margin-top: 8px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-unequip-slot:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+
 
 
 

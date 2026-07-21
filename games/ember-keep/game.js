@@ -8,6 +8,7 @@ import { CombatEngine } from "./combat.js";
 import { VillageEngine } from "./village.js";
 import { MarketEngine } from "./market.js";
 import { UIManager } from "./ui.js";
+import { equipItemRPC, unequipItemRPC, getCharacterInventory } from "./db.js";
 
 // Initialize ES Engine Systems
 window.AccountStore = AccountStore;
@@ -897,31 +898,23 @@ function getMaxStamina(level) { return 100 + (level - 1) * 10; }
 const STAMINA_REGEN_MS = 10000; // 1 stamina per 10s
 
 function loadPlayerState() {
-  const saved = localStorage.getItem("rpg_player_state");
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      // Deep merge — preserve nested objects
-      playerState = {
-        ...DEFAULT_PLAYER_STATE,
-        ...parsed,
-        stats:     { ...DEFAULT_PLAYER_STATE.stats,     ...(parsed.stats || {}) },
-        upgrades:  { ...DEFAULT_PLAYER_STATE.upgrades,  ...(parsed.upgrades || {}) },
-        equipment: { ...DEFAULT_PLAYER_STATE.equipment, ...(parsed.equipment || {}) },
-        productionSkills: JSON.parse(JSON.stringify({ ...DEFAULT_PLAYER_STATE.productionSkills, ...(parsed.productionSkills || {}) })),
-        house: JSON.parse(JSON.stringify({ ...DEFAULT_PLAYER_STATE.house, ...(parsed.house || {}) })),
-        pets: parsed.pets || [],
-        activePet: parsed.activePet || null,
-        hatchingEgg: parsed.hatchingEgg || null,
-        petStable: parsed.petStable || DEFAULT_PLAYER_STATE.petStable
-      };
-      if (playerState.gems === undefined) playerState.gems = 0;
-    } catch(e) {
-      playerState = JSON.parse(JSON.stringify(DEFAULT_PLAYER_STATE));
+  playerState = JSON.parse(JSON.stringify(DEFAULT_PLAYER_STATE));
+  if (typeof AccountStore !== "undefined") {
+    const activeChar = AccountStore.getActiveCharacter();
+    if (activeChar) {
+      playerState.name = activeChar.name || "Hero";
+      playerState.class = activeChar.class || null;
+      playerState.level = activeChar.level || 1;
+      playerState.xp = activeChar.xp || activeChar.exp || 0;
+      playerState.xpNeeded = activeChar.maxXp || activeChar.max_exp || 100;
+      playerState.gold = activeChar.gold !== undefined ? activeChar.gold : 50;
+      playerState.gems = activeChar.gems !== undefined ? activeChar.gems : 0;
+      playerState.stamina = activeChar.stamina !== undefined ? activeChar.stamina : 100;
+      playerState.inventory = Array.isArray(activeChar.inventory) ? JSON.parse(JSON.stringify(activeChar.inventory)) : [];
+      playerState.equipment = activeChar.equipped ? JSON.parse(JSON.stringify(activeChar.equipped)) : { weapon: null, armor: null, ring: null };
     }
-  } else {
-    playerState = JSON.parse(JSON.stringify(DEFAULT_PLAYER_STATE));
   }
+
   if (!playerState.completedSideZones) playerState.completedSideZones = [];
   if (!playerState.maxMana) playerState.maxMana = CLASS_PRESETS[playerState.class]?.mana || 50;
 
@@ -941,7 +934,7 @@ window.renderActiveCharacterUI = function() {
   const activeChar = AccountStore.getActiveCharacter();
   if (!activeChar) return;
 
-  // Synchronize playerState from active character slot
+  // Synchronize playerState strictly from active character slot
   playerState.name = activeChar.name || "Hero";
   playerState.class = activeChar.class || null;
   playerState.level = activeChar.level || 1;
@@ -951,8 +944,8 @@ window.renderActiveCharacterUI = function() {
   playerState.gold = activeChar.gold !== undefined ? activeChar.gold : 50;
   playerState.gems = activeChar.gems !== undefined ? activeChar.gems : 0;
   playerState.maxMana = activeChar.maxMana || activeChar.mana || 50;
-  playerState.inventory = activeChar.inventory || [];
-  playerState.equipment = activeChar.equipped || { weapon: null, armor: null, ring: null };
+  playerState.inventory = Array.isArray(activeChar.inventory) ? JSON.parse(JSON.stringify(activeChar.inventory)) : [];
+  playerState.equipment = activeChar.equipped ? JSON.parse(JSON.stringify(activeChar.equipped)) : { weapon: null, armor: null, ring: null };
 
   if (activeChar.power || activeChar.defense) {
     playerState.stats = {
@@ -980,6 +973,7 @@ window.renderActiveCharacterUI = function() {
 
   if (typeof renderStats === "function") renderStats();
   if (typeof renderInventory === "function") renderInventory();
+  if (typeof renderPaperdollGrid === "function") renderPaperdollGrid();
   if (typeof renderWorldMap === "function") renderWorldMap();
   if (typeof renderCampaignMap === "function") renderCampaignMap();
 };
@@ -1298,18 +1292,33 @@ function getClanTerritoryBonuses() {
 function getEffectiveStats() {
   let extraPower = 0, extraDefense = 0, extraCrit = 0, extraDodge = 0;
 
-  const w = ALL_ITEMS[playerState.equipment.weapon];
-  const a = ALL_ITEMS[playerState.equipment.armor];
-  const r = ALL_ITEMS[playerState.equipment.ring];
+  const slots = ['head', 'chest', 'legs', 'main_hand', 'off_hand', 'accessory', 'weapon', 'armor', 'ring'];
+  slots.forEach(slotKey => {
+    const raw = playerState.equipment ? playerState.equipment[slotKey] : null;
+    if (!raw) return;
 
-  if (w) extraPower   += w.value;
-  if (a) extraDefense += a.value;
-  if (r) {
-    if (r.stat === "power")       extraPower   += r.value;
-    if (r.stat === "defense")     extraDefense += r.value;
-    if (r.stat === "critChance")  extraCrit    += r.value;
-    if (r.stat === "dodgeChance") extraDodge   += r.value;
-  }
+    let meta = null;
+    if (typeof raw === "object") {
+      meta = raw.metadata || raw;
+    } else if (typeof raw === "string") {
+      const itemDef = ALL_ITEMS[raw];
+      if (itemDef) {
+        meta = {
+          attack_power: itemDef.stat === "power" ? itemDef.value : 0,
+          defense: itemDef.stat === "defense" ? itemDef.value : 0,
+          crit_chance: itemDef.stat === "critChance" ? itemDef.value : 0,
+          dodge_chance: itemDef.stat === "dodgeChance" ? itemDef.value : 0
+        };
+      }
+    }
+
+    if (meta) {
+      extraPower += (meta.attack_power || meta.power || meta.value || 0);
+      extraDefense += (meta.defense || 0);
+      extraCrit += (meta.crit_chance || meta.critChance || 0);
+      extraDodge += (meta.dodge_chance || meta.dodgeChance || 0);
+    }
+  });
   
   const clanBonuses = getClanTerritoryBonuses();
   
@@ -1432,8 +1441,8 @@ function renderCampaignMap() {
   houseSection.innerHTML = `
     <div class="act-levels-row" style="justify-content: center;">
       <div class="level-node house-node" id="map-house-node">
-        <span class="level-icon">${HOUSE_TIERS[playerState.house.tier]?.icon || "🏕️"}</span>
-        <span class="level-num">My House</span>
+        <span class="level-icon" style="font-size:1.6rem;">${HOUSE_TIERS[playerState.house?.tier || 0]?.icon || "🏕️"}</span>
+        <span class="level-node-label">My House</span>
       </div>
     </div>
   `;
@@ -2130,49 +2139,144 @@ function initSkillsTabControls() {
   }
 }
 
+const PAPERDOLL_SLOTS = [
+  { key: "head", label: "Head", defaultIcon: "🪖" },
+  { key: "chest", label: "Chest", defaultIcon: "🥋" },
+  { key: "legs", label: "Legs", defaultIcon: "👖" },
+  { key: "main_hand", label: "Main Hand", defaultIcon: "⚔️" },
+  { key: "off_hand", label: "Off Hand", defaultIcon: "🛡️" },
+  { key: "accessory", label: "Accessory", defaultIcon: "💍" }
+];
+
+function renderPaperdollGrid() {
+  const container = document.getElementById("paperdoll-grid");
+  if (!container) return;
+  container.innerHTML = "";
+
+  const equipped = playerState.equipment || {};
+
+  PAPERDOLL_SLOTS.forEach(slot => {
+    const raw = equipped[slot.key];
+    let meta = null;
+    let itemId = null;
+    let itemName = null;
+
+    if (raw && typeof raw === "object") {
+      itemId = raw.item_id || raw.id;
+      itemName = raw.name || raw.metadata?.name || itemId;
+      meta = raw.metadata || raw;
+    } else if (raw && typeof raw === "string") {
+      itemId = raw;
+      const def = ALL_ITEMS[raw];
+      itemName = def ? def.name : raw;
+      meta = def || {};
+    }
+
+    const slotEl = document.createElement("div");
+    const rarity = (meta?.rarity || "common").toLowerCase();
+    slotEl.className = `paperdoll-slot-card rarity-${rarity} ${meta ? 'occupied' : 'empty'}`;
+
+    if (meta && itemId) {
+      const statsList = [];
+      if (meta.attack_power || meta.power) statsList.push(`+${meta.attack_power || meta.power} Atk`);
+      if (meta.defense) statsList.push(`+${meta.defense} Def`);
+      if (meta.crit_chance) statsList.push(`+${Math.round(meta.crit_chance * 100)}% Crit`);
+
+      slotEl.innerHTML = `
+        <div class="slot-header">
+          <span class="slot-type-label">${slot.label}</span>
+          <span class="rarity-badge ${rarity}">${rarity.toUpperCase()}</span>
+        </div>
+        <div class="slot-item-body">
+          <div class="item-icon">${meta.icon || slot.defaultIcon}</div>
+          <div class="item-info">
+            <h5>${itemName}</h5>
+            <p class="item-stat-snippet">${statsList.length ? statsList.join(" | ") : "Equipped Gear"}</p>
+          </div>
+        </div>
+        <button class="btn-unequip-slot" data-slot="${slot.key}">Unequip</button>
+      `;
+    } else {
+      slotEl.innerHTML = `
+        <div class="slot-header">
+          <span class="slot-type-label">${slot.label}</span>
+        </div>
+        <div class="slot-item-body empty-body">
+          <div class="item-icon empty-icon">${slot.defaultIcon}</div>
+          <div class="item-info">
+            <p class="empty-slot-text">Empty ${slot.label}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    container.appendChild(slotEl);
+  });
+}
+
 function renderInventory() {
   const list = document.getElementById("inventory-list");
   if (!list) return;
   list.innerHTML = "";
 
-  const inventoryItems = (playerState.inventory || []).filter(inv => {
-    const item = ALL_ITEMS[inv.id];
-    return item && item.type !== "material";
-  });
+  const maxSlots = playerState.maxInventorySlots || 20;
+  const items = playerState.inventory || [];
+  const usedSlots = items.length;
 
-  if (!inventoryItems.length) {
+  let counterEl = document.getElementById("inventory-capacity-counter");
+  if (!counterEl) {
+    counterEl = document.createElement("div");
+    counterEl.id = "inventory-capacity-counter";
+    counterEl.className = "inventory-capacity-pill";
+    list.parentNode.insertBefore(counterEl, list);
+  }
+
+  counterEl.innerHTML = `
+    <span>📦 Capacity:</span>
+    <strong class="${usedSlots >= maxSlots ? 'capacity-full' : ''}">${usedSlots} / ${maxSlots} Slots Used</strong>
+  `;
+
+  if (!items.length) {
     list.innerHTML = `<p class="empty-message">Your inventory is empty.</p>`;
     return;
   }
 
-  inventoryItems.forEach((inv) => {
-    const realIdx = playerState.inventory.indexOf(inv);
-    const item = ALL_ITEMS[inv.id];
-    if (!item) return;
+  items.forEach((inv, realIdx) => {
+    const item = ALL_ITEMS[inv.id] || {
+      id: inv.id,
+      name: inv.name || inv.id,
+      icon: inv.icon || "📦",
+      type: inv.type || "material",
+      desc: "Material Resource",
+      cost: inv.value || 10
+    };
+
     const isConsumable = item.type === "consumable" || item.type === "food";
+    const isEquippable = item.type === "weapon" || item.type === "armor" || item.type === "ring" || (inv.metadata && inv.metadata.slot_type) || Boolean(item.slot_type);
     const qtyStr = (inv.qty && inv.qty > 1) ? ` (x${inv.qty})` : "";
     
-    let statsHtml = "";
-    if (isConsumable) {
-      statsHtml = `<p>${item.desc}</p>`;
-    } else {
+    let statsHtml = `<p>${item.desc || "Item"}</p>`;
+    if (isEquippable && (item.stat || (inv.metadata && (inv.metadata.attack_power || inv.metadata.defense)))) {
+      const meta = inv.metadata || {};
       const statLabel = item.stat === "power" ? "Power" : item.stat === "defense" ? "Defense" :
-                        item.stat === "critChance" ? "Crit Chance" : "Dodge Chance";
-      const statValue = item.stat.includes("Chance") ? `+${Math.round(item.value * 100)}%` : `+${item.value}`;
+                        item.stat === "critChance" ? "Crit Chance" : "Gear Stat";
+      const statValue = item.stat?.includes("Chance") ? `+${Math.round(item.value * 100)}%` : `+${item.value || meta.attack_power || meta.defense || 0}`;
       statsHtml = `<p>${statLabel} ${statValue}</p>`;
+    }
+
+    let actionsHtml = `<button class="btn-sell" data-item="${item.id}" data-index="${realIdx}">Sell ${Math.round((item.cost || 10) * 0.5)}g</button>`;
+    if (isConsumable) {
+      actionsHtml = `<button class="btn-upgrade btn-use" data-item="${item.id}" data-index="${realIdx}">Use</button>` + actionsHtml;
+    } else if (isEquippable) {
+      actionsHtml = `<button class="btn-upgrade btn-equip" data-item="${item.id}" data-inv-db-id="${inv.dbId || inv.id || ''}" data-index="${realIdx}">Equip</button>` + actionsHtml;
     }
 
     const el = document.createElement("div");
     el.className = "inventory-item";
     el.innerHTML = `
-      <div class="item-icon">${item.icon}</div>
-      <div class="item-details"><h5>${item.name}${qtyStr}</h5>${statsHtml}</div>
-      <div class="inventory-item-actions">
-        ${isConsumable 
-          ? `<button class="btn-upgrade btn-use" data-item="${item.id}" data-index="${realIdx}">Use</button>`
-          : `<button class="btn-upgrade btn-equip" data-item="${item.id}" data-index="${realIdx}">Equip</button>`}
-        <button class="btn-sell" data-item="${item.id}" data-index="${realIdx}">Sell ${Math.round(item.cost * 0.5)}g</button>
-      </div>
+      <div class="item-icon">${inv.icon || item.icon}</div>
+      <div class="item-details"><h5>${inv.name || item.name}${qtyStr}</h5>${statsHtml}</div>
+      <div class="inventory-item-actions">${actionsHtml}</div>
     `;
     list.appendChild(el);
   });

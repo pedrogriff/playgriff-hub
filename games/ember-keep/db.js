@@ -256,3 +256,87 @@ export async function claimTaskRewards(taskId) {
   return data;
 }
 
+/**
+ * INVENTORY & ATOMIC REWARD CLAIM HELPERS (PHASE 3)
+ */
+
+export async function getCharacterInventory(characterId) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return [];
+
+  const { data, error } = await supabase
+    .from("character_inventories")
+    .select("*")
+    .eq("character_id", characterId)
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching character inventory from Supabase:", error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function claimTaskRewardsRPC(characterId) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("claim_task_rewards", {
+      p_character_id: characterId
+    });
+
+    if (error) {
+      console.error("Error calling claim_task_rewards RPC:", error);
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.error("Failed to execute claim_task_rewards RPC:", err);
+    return null;
+  }
+}
+
+/**
+ * EQUIPMENT ATOMIC RPC HELPERS (PHASE 4)
+ */
+
+export async function equipItemRPC(characterId, inventoryItemId) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("equip_item", {
+      p_character_id: characterId,
+      p_inventory_item_id: inventoryItemId
+    });
+
+    if (error) {
+      console.error("Error executing equip_item RPC:", error);
+      throw error;
+    }
+    return data;
+  } catch (err) {
+    console.error("equip_item RPC execution failed:", err);
+    throw err;
+  }
+}
+
+export async function unequipItemRPC(characterId, slotName) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("unequip_item", {
+      p_character_id: characterId,
+      p_slot_name: slotName
+    });
+
+    if (error) {
+      console.error("Error executing unequip_item RPC:", error);
+      throw error;
+    }
+    return data;
+  } catch (err) {
+    console.error("unequip_item RPC execution failed:", err);
+    throw err;
+  }
+}
+
+
