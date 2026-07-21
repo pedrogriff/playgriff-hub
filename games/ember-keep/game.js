@@ -2253,6 +2253,10 @@ function renderPaperdollGrid() {
       `;
     }
 
+    container.appendChild(slotEl);
+  });
+}
+
 const DUNGEONS = [
   {
     id: "ironfang_catacombs",
