@@ -1,0 +1,14 @@
+# Environment variables / Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Node / Build artifacts
+node_modules/
+dist/
+build/
+
+# OS junk
+.DS_Store
+Thumbs.db

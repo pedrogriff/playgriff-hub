@@ -2118,3 +2118,120 @@ body {
   color: var(--danger);
 }
 
+/* ================================================================
+   AUTH MODAL & USER HEADER STYLING
+   ================================================================ */
+.auth-modal-content {
+  max-width: 420px;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.auth-tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.auth-tab-btn.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--ember);
+}
+
+.auth-error-msg {
+  background: rgba(231, 76, 60, 0.15);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  font-size: 0.85rem;
+}
+
+.user-header-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.btn-sign-out {
+  background: var(--danger-dim);
+  color: #fff;
+  border: none;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-sign-out:hover {
+  background: var(--danger);
+}
+
+.class-choice-btn {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 10px;
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.class-choice-btn.active, .class-choice-btn:hover {
+  border-color: var(--ember);
+  background: var(--bg-hover);
+  color: var(--gold);
+}
+
+

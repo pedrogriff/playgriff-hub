@@ -1,7 +1,9 @@
 // ================================================================
 // EMBER KEEP — Account & Multi-Character Engine (account.js)
-// Native ES Module
+// Native ES Module with Supabase Integration
 // ================================================================
+
+import { getCharacters, createCharacter as createSupabaseChar, saveCharacter as saveSupabaseChar, deleteCharacter as deleteSupabaseChar, getAccountProfile, getUser } from "./db.js";
 
 const STORAGE_KEY = "ember_account_v2";
 const LEGACY_STORAGE_KEY = "rpg_player_state";
@@ -31,14 +33,14 @@ export function createDefaultCharacter(id = 1, name = "Hero", className = "Warri
     maxXp: 100,
     stamina: 100,
     maxStamina: 100,
-    mana: 50,
-    maxMana: 50,
-    hp: 100,
-    maxHp: 100,
+    mana: className === "Mage" ? 100 : className === "Paladin" ? 70 : 50,
+    maxMana: className === "Mage" ? 100 : className === "Paladin" ? 70 : 50,
+    hp: className === "Warrior" ? 120 : className === "Paladin" ? 140 : 100,
+    maxHp: className === "Warrior" ? 120 : className === "Paladin" ? 140 : 100,
     gold: 50,
     gems: 0,
-    power: 10,
-    defense: 5,
+    power: className === "Mage" ? 15 : className === "Ranger" ? 12 : 10,
+    defense: className === "Warrior" ? 8 : className === "Paladin" ? 10 : 5,
     critChance: 0.05,
     critDamage: 1.5,
     dodgeChance: 0.05,
@@ -60,14 +62,12 @@ export function createDefaultCharacter(id = 1, name = "Hero", className = "Warri
     },
     activePet: null,
     equippedPets: [],
-    activePerks: [], // [{ id, name, expiresAt }]
+    activePerks: [],
     createdAt: Date.now()
   };
 }
 
-// Initial Default Account Schema
 function createDefaultAccount() {
-  const defaultChar = createDefaultCharacter(1, "Ember Hero", "Warrior");
   return {
     version: 2,
     lastLoginTime: Date.now(),
@@ -76,7 +76,7 @@ function createDefaultAccount() {
     maxAp: 10,
     activeSlotId: 1,
     characterSlots: {
-      1: defaultChar,
+      1: null,
       2: null,
       3: null,
       4: null,
@@ -90,74 +90,112 @@ function createDefaultAccount() {
   };
 }
 
-/**
- * Migration helper: Converts legacy rpg_player_state into ember_account_v2 Slot 1
- */
-function migrateLegacySave(legacyObj) {
-  const account = createDefaultAccount();
-  const char = account.characterSlots[1];
-  
-  if (legacyObj) {
-    char.name = legacyObj.name || "Hero";
-    char.class = legacyObj.class || "Warrior";
-    char.level = legacyObj.level || 1;
-    char.xp = legacyObj.xp || 0;
-    char.gold = legacyObj.gold || 50;
-    char.gems = legacyObj.gems || 0;
-    char.stamina = legacyObj.stamina !== undefined ? legacyObj.stamina : 100;
-    char.maxStamina = legacyObj.maxStamina || 100;
-    char.hp = legacyObj.hp || 100;
-    char.maxHp = legacyObj.maxHp || 100;
-    char.power = legacyObj.power || 10;
-    char.defense = legacyObj.defense || 5;
-    char.skillPoints = legacyObj.skillPoints || 0;
-    
-    if (legacyObj.inventory && Array.isArray(legacyObj.inventory)) {
-      char.inventory = legacyObj.inventory;
-    }
-    if (legacyObj.equipped) {
-      char.equipped = legacyObj.equipped;
-    }
-    if (legacyObj.professions) {
-      char.professions = { ...char.professions, ...legacyObj.professions };
-    }
-  }
-  
-  return account;
-}
-
-/**
- * AccountStore Engine API
- */
 export const AccountStore = {
-  init() {
+  async init() {
+    accountData = createDefaultAccount();
+    
+    // Check if user is authenticated via Supabase
+    try {
+      const user = await getUser();
+      if (user) {
+        await this.loadFromSupabase();
+      } else {
+        this.loadFromLocalStorage();
+      }
+    } catch (e) {
+      console.warn("Could not fetch Supabase user, falling back to local storage.", e);
+      this.loadFromLocalStorage();
+    }
+
+    this.updateAscensionPoints();
+    this.setupTabSynchronization();
+  },
+
+  async loadFromSupabase() {
+    try {
+      const profile = await getAccountProfile();
+      if (profile) {
+        accountData.ascensionPoints = profile.ascension_points || 0;
+        accountData.maxAp = profile.max_ap || 10;
+      }
+
+      const dbChars = await getCharacters();
+      accountData.characterSlots = { 1: null, 2: null, 3: null, 4: null, 5: null };
+
+      dbChars.forEach(row => {
+        const slot = row.slot_index;
+        if (slot >= 1 && slot <= 5) {
+          accountData.characterSlots[slot] = {
+            id: row.id,
+            slotIndex: slot,
+            name: row.name,
+            class: row.class_id,
+            level: row.level,
+            xp: row.exp,
+            maxXp: row.max_exp || 100,
+            stamina: row.stamina,
+            maxStamina: row.max_stamina || 100,
+            mana: row.mana,
+            maxMana: row.max_mana || 50,
+            hp: row.hp,
+            maxHp: row.max_hp || 100,
+            power: row.power,
+            defense: row.defense,
+            critChance: Number(row.crit_chance || 0.05),
+            critDamage: Number(row.crit_damage || 1.5),
+            dodgeChance: Number(row.dodge_chance || 0.05),
+            gold: row.gold,
+            gems: row.gems,
+            inventory: row.inventory || [],
+            equipped: row.equipped || { weapon: null, armor: null, ring: null },
+            professions: row.professions || {},
+            locationNode: row.location_node || "greenhollow"
+          };
+        }
+      });
+
+      // Set activeSlotId to first available character
+      const firstActive = Object.keys(accountData.characterSlots).find(k => accountData.characterSlots[k] !== null);
+      if (firstActive) {
+        accountData.activeSlotId = parseInt(firstActive, 10);
+      }
+
+      this.saveLocalCache();
+    } catch (err) {
+      console.error("Error loading characters from Supabase:", err);
+      this.loadFromLocalStorage();
+    }
+  },
+
+  loadFromLocalStorage() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         accountData = JSON.parse(saved);
       } catch (e) {
-        console.error("Failed to parse saved account state, initializing new account.", e);
         accountData = createDefaultAccount();
       }
     } else {
-      // Check for legacy single-character save
       const legacySaved = localStorage.getItem(LEGACY_STORAGE_KEY);
       if (legacySaved) {
         try {
           const legacyObj = JSON.parse(legacySaved);
-          accountData = migrateLegacySave(legacyObj);
-          console.log("Migrated legacy save file to ember_account_v2 format.");
+          accountData = createDefaultAccount();
+          const defaultChar = createDefaultCharacter(1, legacyObj.name || "Hero", legacyObj.class || "Warrior");
+          defaultChar.level = legacyObj.level || 1;
+          defaultChar.xp = legacyObj.xp || 0;
+          defaultChar.gold = legacyObj.gold || 50;
+          defaultChar.gems = legacyObj.gems || 0;
+          accountData.characterSlots[1] = defaultChar;
         } catch (e) {
           accountData = createDefaultAccount();
         }
       } else {
         accountData = createDefaultAccount();
+        accountData.characterSlots[1] = createDefaultCharacter(1, "Ember Hero", "Warrior");
       }
-      this.save();
+      this.saveLocalCache();
     }
-
-    this.updateAscensionPoints();
-    this.setupTabSynchronization();
   },
 
   setupTabSynchronization() {
@@ -184,13 +222,11 @@ export const AccountStore = {
         if (window.dispatchEvent) {
           window.dispatchEvent(new CustomEvent("ember_account_synced", { detail: accountData }));
         }
-      } catch (e) {
-        console.error("Error reloading storage in sync listener", e);
-      }
+      } catch (e) {}
     }
   },
 
-  save() {
+  saveLocalCache() {
     if (!accountData) return;
     accountData.lastLoginTime = Date.now();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(accountData));
@@ -199,6 +235,20 @@ export const AccountStore = {
       try {
         syncChannel.postMessage({ type: "STATE_UPDATED", timestamp: Date.now() });
       } catch (e) {}
+    }
+  },
+
+  async save() {
+    this.saveLocalCache();
+
+    // If active character is remote (has UUID), save to Supabase asynchronously
+    const activeChar = this.getActiveCharacter();
+    if (activeChar && typeof activeChar.id === "string" && activeChar.id.includes("-")) {
+      try {
+        await saveSupabaseChar(activeChar);
+      } catch (err) {
+        console.warn("Failed async sync to Supabase:", err);
+      }
     }
   },
 
@@ -220,31 +270,81 @@ export const AccountStore = {
     if (!accountData || slotId < 1 || slotId > 5) return false;
     if (!accountData.characterSlots[slotId]) return false;
     accountData.activeSlotId = slotId;
-    this.save();
+    this.saveLocalCache();
     return true;
   },
 
-  createCharacter(slotId, name, className) {
+  async createCharacter(slotId, name, className) {
     if (!accountData || slotId < 1 || slotId > 5) return null;
-    const newChar = createDefaultCharacter(slotId, name, className);
-    accountData.characterSlots[slotId] = newChar;
-    this.save();
-    return newChar;
+
+    try {
+      const user = await getUser();
+      if (user) {
+        const row = await createSupabaseChar(slotId, name, className);
+        const newChar = {
+          id: row.id,
+          slotIndex: slotId,
+          name: row.name,
+          class: row.class_id,
+          level: row.level,
+          xp: row.exp,
+          maxXp: row.max_exp || 100,
+          stamina: row.stamina,
+          maxStamina: row.max_stamina || 100,
+          mana: row.mana,
+          maxMana: row.max_mana || 50,
+          hp: row.hp,
+          maxHp: row.max_hp || 100,
+          power: row.power,
+          defense: row.defense,
+          gold: row.gold,
+          gems: row.gems,
+          inventory: row.inventory || [],
+          equipped: row.equipped || { weapon: null, armor: null, ring: null },
+          professions: row.professions || {},
+          locationNode: row.location_node || "greenhollow"
+        };
+        accountData.characterSlots[slotId] = newChar;
+        accountData.activeSlotId = slotId;
+        this.saveLocalCache();
+        return newChar;
+      }
+    } catch (err) {
+      console.warn("Creating character locally due to Supabase error/offline:", err);
+    }
+
+    const newLocalChar = createDefaultCharacter(slotId, name, className);
+    accountData.characterSlots[slotId] = newLocalChar;
+    accountData.activeSlotId = slotId;
+    this.saveLocalCache();
+    return newLocalChar;
   },
 
-  deleteCharacter(slotId) {
+  async deleteCharacter(slotId) {
     if (!accountData || slotId < 1 || slotId > 5) return false;
+    const char = accountData.characterSlots[slotId];
+    if (!char) return false;
+
+    if (typeof char.id === "string" && char.id.includes("-")) {
+      try {
+        await deleteSupabaseChar(char.id);
+      } catch (e) {
+        console.error("Failed to delete character from Supabase:", e);
+      }
+    }
+
     if (slotId === accountData.activeSlotId) {
       const remainingSlot = Object.keys(accountData.characterSlots).find(k => k != slotId && accountData.characterSlots[k] !== null);
       if (remainingSlot) {
         accountData.activeSlotId = parseInt(remainingSlot, 10);
       }
     }
+
     accountData.characterSlots[slotId] = null;
     if (accountData.activeTasks[slotId]) {
       accountData.activeTasks[slotId] = null;
     }
-    this.save();
+    this.saveLocalCache();
     return true;
   },
 
@@ -258,28 +358,7 @@ export const AccountStore = {
       const apEarned = Math.floor(elapsed / SIX_HOURS_MS);
       accountData.ascensionPoints = Math.min(accountData.maxAp || 10, (accountData.ascensionPoints || 0) + apEarned);
       accountData.lastApAccrualTime = now - (elapsed % SIX_HOURS_MS);
-      this.save();
+      this.saveLocalCache();
     }
-  },
-
-  spendAscensionPoint(perkId, charSlotId) {
-    if (!accountData || (accountData.ascensionPoints || 0) < 1) return false;
-    const char = this.getCharacter(charSlotId);
-    if (!char) return false;
-
-    const DURATION_2_HOURS = 2 * 3600 * 1000;
-    const perk = {
-      id: perkId,
-      appliedAt: Date.now(),
-      expiresAt: Date.now() + DURATION_2_HOURS
-    };
-
-    char.activePerks = (char.activePerks || []).filter(p => p.expiresAt > Date.now());
-    if (char.activePerks.length >= 5) return false;
-
-    char.activePerks.push(perk);
-    accountData.ascensionPoints -= 1;
-    this.save();
-    return true;
   }
 };
