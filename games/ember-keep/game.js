@@ -973,14 +973,14 @@ window.renderActiveCharacterUI = function() {
   }
 
   // Update overlay display for class selection
-  const classOverlay = document.getElementById("class-modal-overlay");
-  if (classOverlay) {
+  const classModal = document.getElementById("class-selection-modal");
+  if (classModal) {
     if (playerState.class) {
-      classOverlay.style.display = "none";
-      classOverlay.classList.remove("active");
+      classModal.style.display = "none";
+      classModal.classList.remove("active");
     } else {
-      classOverlay.style.display = "flex";
-      classOverlay.classList.add("active");
+      classModal.style.display = "flex";
+      classModal.classList.add("active");
     }
   }
 
@@ -1402,8 +1402,10 @@ function checkClassSelection() {
   const modal = document.getElementById("class-selection-modal");
   if (!modal) return;
   if (!playerState.class) {
+    modal.style.display = "flex";
     modal.classList.add("active");
   } else {
+    modal.style.display = "none";
     modal.classList.remove("active");
   }
 }
