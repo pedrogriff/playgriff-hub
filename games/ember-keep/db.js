@@ -339,4 +339,44 @@ export async function unequipItemRPC(characterId, slotName) {
   }
 }
 
+/**
+ * DUNGEON & COMBAT ATOMIC RPC HELPERS (PHASE 5)
+ */
+
+export async function getDungeonProgress(characterId) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return [];
+
+  const { data, error } = await supabase
+    .from("dungeon_progress")
+    .select("*")
+    .eq("character_id", characterId);
+
+  if (error) {
+    console.error("Error fetching dungeon progress from Supabase:", error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function runDungeonEncounterRPC(characterId, dungeonId, floor) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("run_dungeon_encounter", {
+      p_character_id: characterId,
+      p_dungeon_id: dungeonId,
+      p_floor: floor
+    });
+
+    if (error) {
+      console.error("Error executing run_dungeon_encounter RPC:", error);
+      throw error;
+    }
+    return data;
+  } catch (err) {
+    console.error("run_dungeon_encounter RPC execution failed:", err);
+    throw err;
+  }
+}
+
 

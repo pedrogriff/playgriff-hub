@@ -205,6 +205,7 @@
         <div class="map-view-switcher">
           <button class="map-view-btn active" id="btn-world-map">🌍 World</button>
           <button class="map-view-btn" id="btn-campaign-map">⚔️ Campaign</button>
+          <button class="map-view-btn" id="btn-dungeon-map">🏰 Dungeons</button>
         </div>
 
         <div class="map-container map-view active" id="world-map-view">
@@ -216,6 +217,12 @@
         <div class="map-container map-view" id="campaign-map-view" style="display:none;">
           <div id="map-wrapper">
             <!-- Acts, level nodes, and side zones rendered dynamically by game.js -->
+          </div>
+        </div>
+
+        <div class="map-container map-view" id="dungeon-map-view" style="display:none;">
+          <div class="dungeon-selector-wrapper" id="dungeon-selector-wrapper">
+            <!-- Rendered dynamically by JS -->
           </div>
         </div>
       </section>
@@ -725,10 +732,7 @@
     <div class="modal-content" style="max-width: 600px;">
       <div class="modal-header">
         <h3>💎 Ember Store</h3>
-        <button class="close-btn" onclick="document.getElementById('premium-store-modal').classList.remove('active')">×</button>
-      </div>
-      
-      <div class="shop-tabs">
+<div class="shop-tabs">
         <button class="shop-tab active" onclick="renderPremiumStore('pass')">Ember Pass</button>
         <button class="shop-tab" onclick="renderPremiumStore('gems')">Gems</button>
         <button class="shop-tab" onclick="renderPremiumStore('consumables')">Consumables</button>
@@ -736,6 +740,63 @@
 
       <div id="premium-store-content" style="margin-top: 15px; max-height:60vh; overflow-y:auto; padding-right:10px;">
         <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================
+       DUNGEON BATTLE REPLAY MODAL
+       ============================================= -->
+  <div id="dungeon-battle-modal" class="modal">
+    <div class="modal-content dungeon-battle-content" style="max-width: 550px;">
+      <div class="modal-header">
+        <h3 id="dungeon-battle-title">⚔️ Dungeon Encounter</h3>
+        <button class="close-btn" id="close-dungeon-battle-btn">×</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Battle Stage Header -->
+        <div class="battle-stage-header">
+          <div class="combatant-box player-box">
+            <h4 id="dungeon-player-name">Hero</h4>
+            <div class="hp-bar-outer">
+              <div class="hp-bar-fill player-hp-fill" id="dungeon-player-hp-bar" style="width: 100%;"></div>
+            </div>
+            <span class="hp-text" id="dungeon-player-hp-text">100 / 100</span>
+          </div>
+
+          <div class="vs-badge">VS</div>
+
+          <div class="combatant-box enemy-box">
+            <h4 id="dungeon-enemy-name">Guardian</h4>
+            <div class="hp-bar-outer">
+              <div class="hp-bar-fill enemy-hp-fill" id="dungeon-enemy-hp-bar" style="width: 100%;"></div>
+            </div>
+            <span class="hp-text" id="dungeon-enemy-hp-text">100 / 100</span>
+          </div>
+        </div>
+
+        <!-- Floating Damage Overlay Container -->
+        <div class="floating-text-container" id="floating-text-container"></div>
+
+        <!-- Playback Controls -->
+        <div class="battle-controls-bar">
+          <button class="btn-speed active" id="btn-speed-1x" data-speed="1">1x Speed</button>
+          <button class="btn-speed" id="btn-speed-2x" data-speed="2">2x Speed</button>
+          <button class="btn-skip" id="btn-skip-battle">⏩ Skip to End</button>
+        </div>
+
+        <!-- Combat Feed Log -->
+        <div class="dungeon-combat-log" id="dungeon-combat-log">
+          <p class="log-entry system-entry">Preparing encounter...</p>
+        </div>
+
+        <!-- Outcome Summary Area -->
+        <div class="dungeon-outcome-card" id="dungeon-outcome-card" style="display: none;">
+          <h3 id="dungeon-outcome-title" class="victory">VICTORY!</h3>
+          <div class="outcome-rewards-row" id="dungeon-outcome-rewards"></div>
+          <button class="btn-action btn-claim-dungeon" id="btn-close-dungeon-outcome" style="margin-top: 12px; width: 100%;">Continue</button>
+        </div>
       </div>
     </div>
   </div>

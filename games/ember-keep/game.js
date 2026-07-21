@@ -8,7 +8,7 @@ import { CombatEngine } from "./combat.js";
 import { VillageEngine } from "./village.js";
 import { MarketEngine } from "./market.js";
 import { UIManager } from "./ui.js";
-import { equipItemRPC, unequipItemRPC, getCharacterInventory } from "./db.js";
+import { equipItemRPC, unequipItemRPC, getCharacterInventory, runDungeonEncounterRPC, getDungeonProgress } from "./db.js";
 
 // Initialize ES Engine Systems
 window.AccountStore = AccountStore;
@@ -702,20 +702,33 @@ function initShopTabs() {
 function initMapTabs() {
   const wBtn = document.getElementById("btn-world-map");
   const cBtn = document.getElementById("btn-campaign-map");
+  const dBtn = document.getElementById("btn-dungeon-map");
   const wView = document.getElementById("world-map-view");
   const cView = document.getElementById("campaign-map-view");
+  const dView = document.getElementById("dungeon-map-view");
   
-  if(wBtn && cBtn) {
+  if (wBtn && cBtn) {
     wBtn.addEventListener("click", () => {
-      wBtn.classList.add("active"); cBtn.classList.remove("active");
+      wBtn.classList.add("active"); cBtn.classList.remove("active"); if (dBtn) dBtn.classList.remove("active");
       wView.classList.add("active"); wView.style.display = "";
       cView.classList.remove("active"); cView.style.display = "none";
+      if (dView) { dView.classList.remove("active"); dView.style.display = "none"; }
     });
     cBtn.addEventListener("click", () => {
-      cBtn.classList.add("active"); wBtn.classList.remove("active");
+      cBtn.classList.add("active"); wBtn.classList.remove("active"); if (dBtn) dBtn.classList.remove("active");
       cView.classList.add("active"); cView.style.display = "";
       wView.classList.remove("active"); wView.style.display = "none";
+      if (dView) { dView.classList.remove("active"); dView.style.display = "none"; }
     });
+    if (dBtn) {
+      dBtn.addEventListener("click", () => {
+        dBtn.classList.add("active"); wBtn.classList.remove("active"); cBtn.classList.remove("active");
+        if (dView) { dView.classList.add("active"); dView.style.display = ""; }
+        wView.classList.remove("active"); wView.style.display = "none";
+        cView.classList.remove("active"); cView.style.display = "none";
+        if (typeof renderDungeonSelector === "function") renderDungeonSelector();
+      });
+    }
   }
 }
 
@@ -2210,9 +2223,188 @@ function renderPaperdollGrid() {
       `;
     }
 
-    container.appendChild(slotEl);
+const DUNGEONS = [
+  {
+    id: "ironfang_catacombs",
+    name: "Ironfang Catacombs",
+    theme: "☠️ Undead Crypt",
+    maxFloors: 10,
+    recPower: 20,
+    recDef: 10,
+    icon: "💀"
+  },
+  {
+    id: "frostpeak_spire",
+    name: "Frostpeak Spire",
+    theme: "❄️ Ice Citadel",
+    maxFloors: 15,
+    recPower: 45,
+    recDef: 25,
+    icon: "🏰"
+  },
+  {
+    id: "ember_forge_depths",
+    name: "Ember Forge Depths",
+    theme: "🔥 Volcano Core",
+    maxFloors: 20,
+    recPower: 80,
+    recDef: 50,
+    icon: "🌋"
+  }
+];
+
+function renderDungeonSelector() {
+  const container = document.getElementById("dungeon-selector-wrapper");
+  if (!container) return;
+  container.innerHTML = "";
+
+  DUNGEONS.forEach(dungeon => {
+    const el = document.createElement("div");
+    el.className = "dungeon-card panel";
+    el.innerHTML = `
+      <div class="dungeon-header">
+        <div class="dungeon-icon">${dungeon.icon}</div>
+        <div class="dungeon-title-group">
+          <h4>${dungeon.name}</h4>
+          <span class="dungeon-theme">${dungeon.theme}</span>
+        </div>
+      </div>
+      <div class="dungeon-info-row">
+        <span>⚔️ Rec Atk: ${dungeon.recPower}</span>
+        <span>🛡️ Rec Def: ${dungeon.recDef}</span>
+        <span>🚩 Max Floors: ${dungeon.maxFloors}</span>
+      </div>
+      <div class="dungeon-action-row">
+        <select class="dungeon-floor-select" id="floor-select-${dungeon.id}">
+          ${Array.from({ length: dungeon.maxFloors }, (_, i) => `<option value="${i + 1}">Floor ${i + 1}</option>`).join("")}
+        </select>
+        <button class="btn-action btn-challenge-dungeon" data-dungeon="${dungeon.id}">⚔️ Enter Encounter</button>
+      </div>
+    `;
+    container.appendChild(el);
   });
 }
+
+function openDungeonBattleModal(combatLog) {
+  const modal = document.getElementById("dungeon-battle-modal");
+  if (!modal) return;
+
+  const enemyNameEl = document.getElementById("dungeon-enemy-name");
+  const playerHpBar = document.getElementById("dungeon-player-hp-bar");
+  const enemyHpBar = document.getElementById("dungeon-enemy-hp-bar");
+  const playerHpText = document.getElementById("dungeon-player-hp-text");
+  const enemyHpText = document.getElementById("dungeon-enemy-hp-text");
+  const logContainer = document.getElementById("dungeon-combat-log");
+  const outcomeCard = document.getElementById("dungeon-outcome-card");
+
+  if (enemyNameEl) enemyNameEl.textContent = combatLog.enemy_name || "Guardian";
+  if (logContainer) logContainer.innerHTML = '<p class="log-entry system-entry">⚔️ Battle Started!</p>';
+  if (outcomeCard) outcomeCard.style.display = "none";
+
+  modal.style.display = "flex";
+  modal.classList.add("active");
+
+  const closeBtn = document.getElementById("close-dungeon-battle-btn");
+  if (closeBtn) closeBtn.onclick = () => { modal.style.display = "none"; modal.classList.remove("active"); };
+
+  const closeOutcomeBtn = document.getElementById("btn-close-dungeon-outcome");
+  if (closeOutcomeBtn) closeOutcomeBtn.onclick = () => { modal.style.display = "none"; modal.classList.remove("active"); };
+
+  let playbackSpeed = 1;
+  let isSkip = false;
+
+  const speed1xBtn = document.getElementById("btn-speed-1x");
+  const speed2xBtn = document.getElementById("btn-speed-2x");
+  const skipBtn = document.getElementById("btn-skip-battle");
+
+  if (speed1xBtn) speed1xBtn.onclick = () => { playbackSpeed = 1; speed1xBtn.classList.add("active"); if (speed2xBtn) speed2xBtn.classList.remove("active"); };
+  if (speed2xBtn) speed2xBtn.onclick = () => { playbackSpeed = 2; speed2xBtn.classList.add("active"); if (speed1xBtn) speed1xBtn.classList.remove("active"); };
+  if (skipBtn) skipBtn.onclick = () => { isSkip = true; };
+
+  CombatEngine.playServerCombatLog(combatLog, (turn) => {
+    if (playerHpBar) {
+      const pPct = Math.max(0, Math.min(100, (turn.player_hp / 100) * 100));
+      playerHpBar.style.width = `${pPct}%`;
+    }
+    if (enemyHpBar) {
+      const ePct = Math.max(0, Math.min(100, (turn.enemy_hp / 100) * 100));
+      enemyHpBar.style.width = `${ePct}%`;
+    }
+    if (playerHpText) playerHpText.textContent = `${turn.player_hp} HP`;
+    if (enemyHpText) enemyHpText.textContent = `${turn.enemy_hp} HP`;
+
+    if (logContainer) {
+      const p = document.createElement("p");
+      p.className = `log-entry ${turn.attacker === "player" ? "player-hit" : "enemy-hit"} ${turn.is_crit ? "crit-hit" : ""}`;
+      p.textContent = `[Turn ${turn.turn}] ${turn.attacker === "player" ? "Hero" : combatLog.enemy_name} deals ${turn.damage} damage! ${turn.is_crit ? "💥 CRITICAL!" : ""}`;
+      logContainer.appendChild(p);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+  }, { speed: playbackSpeed, skip: isSkip }).then(() => {
+    if (outcomeCard) {
+      outcomeCard.style.display = "block";
+      const titleEl = document.getElementById("dungeon-outcome-title");
+      const rewardsEl = document.getElementById("dungeon-outcome-rewards");
+
+      if (titleEl) {
+        titleEl.textContent = combatLog.result === "victory" ? "🏆 VICTORY!" : "💀 DEFEAT!";
+        titleEl.className = combatLog.result === "victory" ? "victory" : "defeat";
+      }
+
+      if (rewardsEl) {
+        rewardsEl.innerHTML = `
+          <span>✨ EXP: +${combatLog.exp_gained || 0}</span>
+          <span>🪙 Gold: +${combatLog.gold_gained || 0}</span>
+        `;
+      }
+    }
+  });
+}
+
+document.addEventListener("click", async (e) => {
+  if (e.target.classList.contains("btn-challenge-dungeon")) {
+    const dungeonId = e.target.dataset.dungeon;
+    const floorSelect = document.getElementById(`floor-select-${dungeonId}`);
+    const floor = floorSelect ? parseInt(floorSelect.value, 10) : 1;
+
+    const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+    if (!activeChar) return;
+
+    let combatLog = null;
+    if (typeof activeChar.id === "string" && activeChar.id.includes("-")) {
+      try {
+        combatLog = await runDungeonEncounterRPC(activeChar.id, dungeonId, floor);
+      } catch (err) {
+        alert(err.message || "Could not start dungeon encounter.");
+        return;
+      }
+    } else {
+      combatLog = {
+        result: "victory",
+        dungeon_id: dungeonId,
+        floor: floor,
+        enemy_name: `Floor ${floor} Guardian`,
+        total_turns: 5,
+        damage_dealt: 120,
+        damage_taken: 35,
+        food_consumed: 0,
+        exp_gained: 50 + floor * 20,
+        gold_gained: 25 + floor * 10,
+        turns: [
+          { turn: 1, attacker: "player", action: "attack", damage: 25, is_crit: false, player_hp: 100, enemy_hp: 75 },
+          { turn: 2, attacker: "enemy", action: "attack", damage: 12, is_crit: false, player_hp: 88, enemy_hp: 75 },
+          { turn: 3, attacker: "player", action: "attack", damage: 40, is_crit: true, player_hp: 88, enemy_hp: 35 },
+          { turn: 4, attacker: "enemy", action: "attack", damage: 15, is_crit: false, player_hp: 73, enemy_hp: 35 },
+          { turn: 5, attacker: "player", action: "attack", damage: 35, is_crit: false, player_hp: 73, enemy_hp: 0 }
+        ]
+      };
+    }
+
+    if (combatLog) {
+      openDungeonBattleModal(combatLog);
+    }
+  }
+});
 
 function renderInventory() {
   const list = document.getElementById("inventory-list");

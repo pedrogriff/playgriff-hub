@@ -2586,6 +2586,187 @@ body {
   background: rgba(239, 68, 68, 0.3);
 }
 
+/* Dungeon Selector & Battle Stage Styles (Phase 5) */
+.dungeon-selector-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.dungeon-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dungeon-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dungeon-icon {
+  font-size: 2.2rem;
+}
+
+.dungeon-title-group h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--gold, #fbbf24);
+}
+
+.dungeon-theme {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.dungeon-info-row {
+  display: flex;
+  gap: 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  padding: 8px 12px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+}
+
+.dungeon-action-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dungeon-floor-select {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: var(--r-md);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Dungeon Battle Replay Modal */
+.battle-stage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--bg-elevated);
+  padding: 14px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.combatant-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.combatant-box h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.player-box h4 { color: #60a5fa; }
+.enemy-box h4 { color: #f87171; text-align: right; }
+
+.hp-bar-outer {
+  height: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.hp-bar-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.player-hp-fill { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.enemy-hp-fill { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+.vs-badge {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: var(--gold);
+  padding: 4px 8px;
+  background: rgba(251, 191, 36, 0.15);
+  border-radius: var(--r-pill);
+}
+
+.battle-controls-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.btn-speed, .btn-skip {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+
+.btn-speed.active {
+  background: var(--primary, #3b82f6);
+  border-color: #60a5fa;
+  color: #fff;
+}
+
+.dungeon-combat-log {
+  max-height: 180px;
+  overflow-y: auto;
+  background: #11141d;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.82rem;
+  font-family: monospace;
+}
+
+.log-entry.player-hit { color: #60a5fa; }
+.log-entry.enemy-hit { color: #f87171; }
+.log-entry.crit-hit { font-weight: bold; color: #fbbf24; }
+.log-entry.system-entry { color: #94a3b8; font-style: italic; }
+
+.dungeon-outcome-card {
+  background: var(--bg-elevated);
+  border: 2px solid var(--gold);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.dungeon-outcome-card h3.victory { color: #10b981; margin-top: 0; }
+.dungeon-outcome-card h3.defeat { color: #ef4444; margin-top: 0; }
+
+.outcome-rewards-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+
 
 
 
