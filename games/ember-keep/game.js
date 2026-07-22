@@ -967,8 +967,11 @@ window.renderActiveCharacterUI = function() {
   playerState.stamina = activeChar.stamina !== undefined ? activeChar.stamina : 100;
   playerState.gold = activeChar.gold !== undefined ? activeChar.gold : 50;
   playerState.gems = activeChar.gems !== undefined ? activeChar.gems : 0;
-  playerState.unlockedLevel = activeChar.unlockedLevel || activeChar.unlocked_level || playerState.unlockedLevel || 1;
-  playerState.completedSideZones = Array.isArray(activeChar.completedSideZones) ? activeChar.completedSideZones : (playerState.completedSideZones || []);
+  const savedUnlocked = activeChar.unlockedLevel || activeChar.unlocked_level || playerState.unlockedLevel || 1;
+  playerState.unlockedLevel = Math.max(playerState.unlockedLevel || 1, savedUnlocked);
+  const savedSide = Array.isArray(activeChar.completedSideZones) ? activeChar.completedSideZones : [];
+  const currentSide = Array.isArray(playerState.completedSideZones) ? playerState.completedSideZones : [];
+  playerState.completedSideZones = Array.from(new Set([...currentSide, ...savedSide]));
   playerState.maxMana = activeChar.maxMana || activeChar.mana || 50;
   playerState.inventory = Array.isArray(activeChar.inventory) ? JSON.parse(JSON.stringify(activeChar.inventory)) : [];
   playerState.equipment = activeChar.equipped ? JSON.parse(JSON.stringify(activeChar.equipped)) : { weapon: null, armor: null, ring: null };
@@ -1178,7 +1181,7 @@ function startProduction(recipeId) {
   // Check capacity (e.g. max 3 slots + Premium)
   const maxSlots = 3 + (isPremiumActive() ? PREMIUM_BONUSES.extraProdSlots : 0);
   if (playerState.productionTimers.length >= maxSlots) {
-    alert(`Production queue is full (Max ${maxSlots}).`);
+    showToast(`Production queue is full (Max ${maxSlots}).`, "error");
     return;
   }
 
@@ -1186,7 +1189,7 @@ function startProduction(recipeId) {
   for (const ing of recipe.ingredients) {
     const pItem = playerState.inventory.find(i => i.id === ing.id);
     if (!pItem || pItem.qty < ing.qty) {
-      alert("Not enough materials.");
+      showToast("Not enough materials.", "error");
       return;
     }
   }
@@ -2415,32 +2418,57 @@ function openDungeonBattleModal(combatLog) {
   modal.style.display = "flex";
   modal.classList.add("active");
 
+  const playbackOptions = { speed: 1, skip: false, cancelled: false };
+
   const closeBtn = document.getElementById("close-dungeon-battle-btn");
-  if (closeBtn) closeBtn.onclick = () => { modal.style.display = "none"; modal.classList.remove("active"); };
+  if (closeBtn) closeBtn.onclick = () => {
+    playbackOptions.cancelled = true;
+    modal.style.display = "none";
+    modal.classList.remove("active");
+  };
 
   const closeOutcomeBtn = document.getElementById("btn-close-dungeon-outcome");
   if (closeOutcomeBtn) closeOutcomeBtn.onclick = () => {
+    playbackOptions.cancelled = true;
     modal.style.display = "none";
     modal.classList.remove("active");
     if (window.renderActiveCharacterUI) window.renderActiveCharacterUI();
   };
 
-  let playbackSpeed = 1;
-  let isSkip = false;
-
   const speed1xBtn = document.getElementById("btn-speed-1x");
   const speed2xBtn = document.getElementById("btn-speed-2x");
   const skipBtn = document.getElementById("btn-skip-battle");
 
-  if (speed1xBtn) speed1xBtn.onclick = () => { playbackSpeed = 1; speed1xBtn.classList.add("active"); if (speed2xBtn) speed2xBtn.classList.remove("active"); };
-  if (speed2xBtn) speed2xBtn.onclick = () => { playbackSpeed = 2; speed2xBtn.classList.add("active"); if (speed1xBtn) speed1xBtn.classList.remove("active"); };
-  if (skipBtn) skipBtn.onclick = () => { isSkip = true; };
+  if (speed1xBtn) {
+    speed1xBtn.classList.add("active");
+    speed1xBtn.onclick = () => {
+      playbackOptions.speed = 1;
+      speed1xBtn.classList.add("active");
+      if (speed2xBtn) speed2xBtn.classList.remove("active");
+    };
+  }
+
+  if (speed2xBtn) {
+    speed2xBtn.classList.remove("active");
+    speed2xBtn.onclick = () => {
+      playbackOptions.speed = 2;
+      speed2xBtn.classList.add("active");
+      if (speed1xBtn) speed1xBtn.classList.remove("active");
+    };
+  }
+
+  if (skipBtn) {
+    skipBtn.onclick = () => {
+      playbackOptions.skip = true;
+    };
+  }
 
   const firstTurn = (combatLog.turns && combatLog.turns[0]) || {};
   const maxPlayerHp = Math.max(1, firstTurn.player_hp || 100);
   const maxEnemyHp = Math.max(1, (firstTurn.enemy_hp !== undefined ? (firstTurn.enemy_hp + (firstTurn.damage || 0)) : 100));
 
   CombatEngine.playServerCombatLog(combatLog, (turn) => {
+    if (playbackOptions.cancelled) return;
     if (playerHpBar) {
       const pPct = Math.max(0, Math.min(100, (turn.player_hp / maxPlayerHp) * 100));
       playerHpBar.style.width = `${pPct}%`;
@@ -2459,7 +2487,8 @@ function openDungeonBattleModal(combatLog) {
       logContainer.appendChild(p);
       logContainer.scrollTop = logContainer.scrollHeight;
     }
-  }, { speed: playbackSpeed, skip: isSkip }).then(() => {
+  }, playbackOptions).then(() => {
+    if (playbackOptions.cancelled) return;
     if (outcomeCard) {
       outcomeCard.style.display = "block";
       const titleEl = document.getElementById("dungeon-outcome-title");
@@ -2495,7 +2524,7 @@ document.addEventListener("click", async (e) => {
       try {
         combatLog = await runDungeonEncounterRPC(activeChar.id, dungeonId, floor);
       } catch (err) {
-        alert(err.message || "Could not start dungeon encounter.");
+        showToast(err.message || "Could not start dungeon encounter.", "error");
         return;
       }
     } else {

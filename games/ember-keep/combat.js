@@ -102,22 +102,19 @@ export const CombatEngine = {
     };
   },
 
-  /**
-   * Playback a server-authoritative combat log payload step-by-step
-   */
   async playServerCombatLog(combatLog, onTurnCallback, options = {}) {
     if (!combatLog || !Array.isArray(combatLog.turns)) return combatLog;
 
-    const speedMultiplier = options.speed || 1;
-    const isSkip = options.skip || false;
-    const delayMs = isSkip ? 0 : Math.max(50, Math.floor(500 / speedMultiplier));
-
     for (let i = 0; i < combatLog.turns.length; i++) {
+      if (options.cancelled) break;
       const turnEvent = combatLog.turns[i];
       if (typeof onTurnCallback === "function") {
         onTurnCallback(turnEvent, i + 1, combatLog.turns.length);
       }
-      if (delayMs > 0) {
+      
+      if (!options.skip && i < combatLog.turns.length - 1) {
+        const speed = Number(options.speed) || 1;
+        const delayMs = Math.max(20, Math.floor(500 / speed));
         await new Promise(res => setTimeout(res, delayMs));
       }
     }

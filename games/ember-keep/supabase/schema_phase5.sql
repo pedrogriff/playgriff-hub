@@ -108,14 +108,16 @@ BEGIN
     v_player_attack := 10 + (v_char.level - 1) * 2;
     v_player_defense := 5 + (v_char.level - 1) * 1;
 
-    FOR v_slot_item IN SELECT jsonb_each_text.value::jsonb FROM jsonb_each_text(COALESCE(v_char.equipped, '{}'::jsonb)) LOOP
-        IF v_slot_item IS NOT NULL AND v_slot_item != 'null'::jsonb THEN
-            v_meta := v_slot_item->'metadata';
-            IF v_meta IS NOT NULL THEN
-                v_player_max_hp := v_player_max_hp + COALESCE((v_meta->>'max_hp')::INT, 0);
-                v_player_attack := v_player_attack + COALESCE((v_meta->>'attack_power')::INT, (v_meta->>'power')::INT, 0);
-                v_player_defense := v_player_defense + COALESCE((v_meta->>'defense')::INT, 0);
-                v_player_crit := v_player_crit + COALESCE((v_meta->>'crit_chance')::FLOAT, 0.0);
+    FOR v_slot_item IN SELECT value FROM jsonb_each(COALESCE(v_char.equipped, '{}'::jsonb)) LOOP
+        IF v_slot_item IS NOT NULL AND jsonb_typeof(v_slot_item) != 'null' THEN
+            IF jsonb_typeof(v_slot_item) = 'object' THEN
+                v_meta := v_slot_item->'metadata';
+                IF v_meta IS NOT NULL THEN
+                    v_player_max_hp := v_player_max_hp + COALESCE((v_meta->>'max_hp')::INT, (v_meta->>'hp')::INT, 0);
+                    v_player_attack := v_player_attack + COALESCE((v_meta->>'attack_power')::INT, (v_meta->>'power')::INT, 0);
+                    v_player_defense := v_player_defense + COALESCE((v_meta->>'defense')::INT, 0);
+                    v_player_crit := v_player_crit + COALESCE((v_meta->>'crit_chance')::FLOAT, (v_meta->>'critChance')::FLOAT, 0.0);
+                END IF;
             END IF;
         END IF;
     END LOOP;

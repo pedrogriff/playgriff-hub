@@ -98,8 +98,8 @@ export const AccountStore = {
     try {
       const user = await getUser();
       if (user) {
-        // Clear legacy unauthenticated state to prevent item bleeding
-        localStorage.removeItem(LEGACY_STORAGE_KEY);
+        // Load local storage cache first to retain campaign progress & local state
+        this.loadFromLocalStorage();
         await this.loadFromSupabase();
         const hasAnyChar = Object.values(accountData.characterSlots).some(c => c !== null);
         if (!hasAnyChar) {
@@ -126,11 +126,21 @@ export const AccountStore = {
       }
 
       const dbChars = await getCharacters();
+      const previousSlots = { ...accountData.characterSlots };
       accountData.characterSlots = { 1: null, 2: null, 3: null, 4: null, 5: null };
 
       dbChars.forEach(row => {
         const slot = row.slot_index;
         if (slot >= 1 && slot <= 5) {
+          const localChar = previousSlots[slot];
+          const remoteUnlocked = row.unlocked_level || row.unlockedLevel;
+          const localUnlocked = localChar ? (localChar.unlockedLevel || localChar.unlocked_level) : 1;
+          const finalUnlocked = Math.max(remoteUnlocked || 1, localUnlocked || 1);
+
+          const remoteSide = Array.isArray(row.completed_side_zones) ? row.completed_side_zones : (Array.isArray(row.completedSideZones) ? row.completedSideZones : []);
+          const localSide = localChar && Array.isArray(localChar.completedSideZones) ? localChar.completedSideZones : [];
+          const finalSideZones = Array.from(new Set([...localSide, ...remoteSide]));
+
           accountData.characterSlots[slot] = {
             id: row.id,
             slotIndex: slot,
@@ -152,6 +162,8 @@ export const AccountStore = {
             dodgeChance: Number(row.dodge_chance || 0.05),
             gold: row.gold,
             gems: row.gems,
+            unlockedLevel: finalUnlocked,
+            completedSideZones: finalSideZones,
             inventory: row.inventory || [],
             equipped: row.equipped || { weapon: null, armor: null, ring: null },
             professions: row.professions || {},

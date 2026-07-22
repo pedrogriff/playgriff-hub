@@ -140,6 +140,8 @@ export async function saveCharacter(charData) {
     gems: charData.gems,
     power: charData.power,
     defense: charData.defense,
+    unlocked_level: charData.unlockedLevel || charData.unlocked_level || 1,
+    completed_side_zones: charData.completedSideZones || charData.completed_side_zones || [],
     inventory: charData.inventory,
     equipped: charData.equipped,
     professions: charData.professions,
