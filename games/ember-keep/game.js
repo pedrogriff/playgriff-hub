@@ -2315,6 +2315,14 @@ function renderPaperdollGrid() {
 
     container.appendChild(slotEl);
   });
+
+  container.onclick = (e) => {
+    const btn = e.target.closest(".btn-unequip-slot");
+    if (btn) {
+      const slotKey = btn.dataset.slot;
+      unequipItem(slotKey);
+    }
+  };
 }
 
 const DUNGEONS = [
@@ -2577,7 +2585,7 @@ function renderInventory() {
     };
 
     const isConsumable = item.type === "consumable" || item.type === "food";
-    const isEquippable = item.type === "weapon" || item.type === "armor" || item.type === "ring" || (inv.metadata && inv.metadata.slot_type) || Boolean(item.slot_type);
+    const isEquippable = Boolean(getEquipmentSlot(item, inv)) || item.type === "weapon" || item.type === "armor" || item.type === "ring" || item.type === "head" || item.type === "legs" || (inv.metadata && inv.metadata.slot_type) || Boolean(item.slot_type);
     const qtyStr = (inv.qty && inv.qty > 1) ? ` (x${inv.qty})` : "";
     
     let statsHtml = `<p>${item.desc || "Item"}</p>`;
@@ -2697,9 +2705,8 @@ function buyItem(itemId) {
     return;
   }
 
-  const isOwned = playerState.equipment.weapon === itemId ||
-                  playerState.equipment.armor   === itemId ||
-                  playerState.equipment.ring    === itemId ||
+  const targetSlot = getEquipmentSlot(item);
+  const isOwned = (playerState.equipment && targetSlot && (playerState.equipment[targetSlot] === itemId || playerState.equipment.weapon === itemId || playerState.equipment.armor === itemId || playerState.equipment.ring === itemId)) ||
                   playerState.inventory.some(i => i.id === itemId);
   if (isOwned) { showToast("You already own this item!", "error"); return; }
   if (playerState.gold < item.cost) { showToast("Not enough gold!", "error"); return; }
@@ -2710,24 +2717,148 @@ function buyItem(itemId) {
   if (typeof playSound === "function") playSound("purchase");
 }
 
-function equipItem(itemId) {
-  const item = ALL_ITEMS[itemId];
-  if (!item) return;
-  let oldId = null;
-  if (item.type === "weapon") { oldId = playerState.equipment.weapon; playerState.equipment.weapon = itemId; }
-  else if (item.type === "armor")  { oldId = playerState.equipment.armor;  playerState.equipment.armor  = itemId; }
-  else if (item.type === "ring")   { oldId = playerState.equipment.ring;   playerState.equipment.ring   = itemId; }
+function getEquipmentSlot(itemOrId, invItem) {
+  let item = typeof itemOrId === "object" ? itemOrId : ALL_ITEMS[itemOrId];
+  let slotType = (invItem && invItem.metadata && invItem.metadata.slot_type) ||
+                 (item && item.slot_type) ||
+                 (item && item.type) ||
+                 (invItem && invItem.type);
 
-  if (oldId) playerState.inventory.push({ id: oldId });
-  const invIdx = playerState.inventory.findIndex(i => i.id === itemId);
-  if (invIdx > -1) playerState.inventory.splice(invIdx, 1);
+  if (!slotType && typeof itemOrId === "string") {
+    const lower = itemOrId.toLowerCase();
+    if (lower.includes("head") || lower.includes("helm") || lower.includes("hat") || lower.includes("cap")) return "head";
+    if (lower.includes("chest") || lower.includes("vest") || lower.includes("plate") || lower.includes("robe") || lower.includes("armor") || lower.includes("mail")) return "chest";
+    if (lower.includes("legs") || lower.includes("pant") || lower.includes("greave") || lower.includes("kilt")) return "legs";
+    if (lower.includes("sword") || lower.includes("bow") || lower.includes("staff") || lower.includes("wand") || lower.includes("blade") || lower.includes("mace") || lower.includes("dagger") || lower.includes("weap")) return "main_hand";
+    if (lower.includes("shield") || lower.includes("off_hand")) return "off_hand";
+    if (lower.includes("ring") || lower.includes("band") || lower.includes("amulet")) return "accessory";
+  }
 
-  savePlayerState(); renderStats(); renderShop(); renderInventory();
+  if (!slotType) return null;
+  const s = String(slotType).toLowerCase();
+  if (s === "head" || s === "helmet" || s === "hat") return "head";
+  if (s === "chest" || s === "armor" || s === "body" || s === "vest") return "chest";
+  if (s === "legs" || s === "pants" || s === "leggings") return "legs";
+  if (s === "main_hand" || s === "weapon" || s === "sword" || s === "dagger" || s === "bow" || s === "wand" || s === "staff" || s === "mace" || s === "hammer") return "main_hand";
+  if (s === "off_hand" || s === "shield") return "off_hand";
+  if (s === "accessory" || s === "ring" || s === "amulet") return "accessory";
+  return null;
 }
 
-function equipItemFromInventory(itemId) {
-  equipItem(itemId);
-  showToast(`✅ Equipped ${ALL_ITEMS[itemId]?.name}!`, "success");
+function equipItem(itemId, invIndex) {
+  let invItem = null;
+  if (invIndex !== undefined && invIndex >= 0 && playerState.inventory[invIndex]) {
+    invItem = playerState.inventory[invIndex];
+  } else if (Array.isArray(playerState.inventory)) {
+    invItem = playerState.inventory.find(i => i.id === itemId || i.dbId === itemId);
+  }
+
+  const itemDef = ALL_ITEMS[itemId] || (invItem ? ALL_ITEMS[invItem.id] : null);
+  const slotKey = getEquipmentSlot(itemDef || itemId, invItem);
+
+  if (!slotKey) {
+    showToast("This item cannot be equipped!", "error");
+    return;
+  }
+
+  if (!playerState.equipment) {
+    playerState.equipment = { head: null, chest: null, legs: null, main_hand: null, off_hand: null, accessory: null, weapon: null, armor: null, ring: null };
+  }
+
+  // Get old item in this slot
+  let oldEquipped = playerState.equipment[slotKey];
+  if (!oldEquipped) {
+    if (slotKey === "main_hand") oldEquipped = playerState.equipment.weapon;
+    else if (slotKey === "chest") oldEquipped = playerState.equipment.armor;
+    else if (slotKey === "accessory") oldEquipped = playerState.equipment.ring;
+  }
+
+  const newPayload = invItem ? (invItem.metadata ? { item_id: invItem.id || itemId, id: invItem.id || itemId, name: invItem.name || itemDef?.name, metadata: invItem.metadata } : (invItem.id || itemId)) : itemId;
+
+  // Set new equipment
+  playerState.equipment[slotKey] = newPayload;
+  if (slotKey === "main_hand") playerState.equipment.weapon = itemId;
+  else if (slotKey === "chest") playerState.equipment.armor = itemId;
+  else if (slotKey === "accessory") playerState.equipment.ring = itemId;
+
+  // Move old item back to inventory
+  if (oldEquipped) {
+    const oldId = typeof oldEquipped === "object" ? (oldEquipped.item_id || oldEquipped.id) : oldEquipped;
+    if (oldId && oldId !== itemId) {
+      playerState.inventory.push({ id: oldId, qty: 1 });
+    }
+  }
+
+  // Remove equipped item from inventory
+  if (invIndex !== undefined && invIndex >= 0) {
+    playerState.inventory.splice(invIndex, 1);
+  } else {
+    const idx = playerState.inventory.findIndex(i => i.id === itemId || i.dbId === itemId);
+    if (idx > -1) playerState.inventory.splice(idx, 1);
+  }
+
+  if (typeof AccountStore !== "undefined") {
+    const activeChar = AccountStore.getActiveCharacter();
+    if (activeChar) activeChar.equipped = playerState.equipment;
+  }
+
+  savePlayerState();
+  renderStats();
+  renderShop();
+  renderInventory();
+  if (typeof renderPaperdollGrid === "function") renderPaperdollGrid();
+}
+
+function unequipItem(slotKey) {
+  if (!playerState.equipment) return;
+
+  let raw = playerState.equipment[slotKey];
+  if (!raw) {
+    if (slotKey === "main_hand") raw = playerState.equipment.weapon;
+    else if (slotKey === "chest") raw = playerState.equipment.armor;
+    else if (slotKey === "accessory") raw = playerState.equipment.ring;
+  }
+
+  if (!raw) {
+    showToast("No item equipped in that slot!", "error");
+    return;
+  }
+
+  const itemId = typeof raw === "object" ? (raw.item_id || raw.id) : raw;
+  const maxSlots = playerState.maxInventorySlots || 20;
+
+  if (playerState.inventory.length >= maxSlots) {
+    showToast("Inventory is full! Cannot unequip.", "error");
+    return;
+  }
+
+  // Clear slot
+  playerState.equipment[slotKey] = null;
+  if (slotKey === "main_hand") playerState.equipment.weapon = null;
+  else if (slotKey === "chest") playerState.equipment.armor = null;
+  else if (slotKey === "accessory") playerState.equipment.ring = null;
+
+  playerState.inventory.push({ id: itemId, qty: 1 });
+
+  if (typeof AccountStore !== "undefined") {
+    const activeChar = AccountStore.getActiveCharacter();
+    if (activeChar) activeChar.equipped = playerState.equipment;
+  }
+
+  savePlayerState();
+  renderStats();
+  renderShop();
+  renderInventory();
+  if (typeof renderPaperdollGrid === "function") renderPaperdollGrid();
+
+  const itemDef = ALL_ITEMS[itemId];
+  showToast(`📦 Unequipped ${itemDef ? itemDef.name : itemId}!`, "info");
+}
+
+function equipItemFromInventory(itemId, invIndex) {
+  equipItem(itemId, invIndex);
+  const itemDef = ALL_ITEMS[itemId];
+  showToast(`✅ Equipped ${itemDef ? itemDef.name : itemId}!`, "success");
 }
 
 function sellItemFromInventory(itemId, index) {

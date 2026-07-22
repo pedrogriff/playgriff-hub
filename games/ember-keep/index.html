@@ -706,40 +706,44 @@
   <!-- =============================================
        DAILY REWARD MODAL
        ============================================= -->
-  <div id="daily-reward-modal" class="modal">
-    <div class="modal-content" style="max-width: 400px; text-align: center;">
-      <h3 style="color: var(--gold); margin-top:0;">📅 Daily Reward</h3>
-      <p style="margin-bottom:20px; font-size: 0.9rem; color:var(--text-muted);">Log in every day to receive free Gems!</p>
-      
-      <div style="font-size: 3rem; margin-bottom: 10px;">💎</div>
-      
-      <div id="daily-reward-streak" style="font-size: 1.1rem; margin-bottom: 20px;">
-        Current Streak: <strong style="color:var(--ember);">0 Days</strong>
+  <div id="daily-reward-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="daily-reward-title">
+    <div class="modal-content modal-content--sm text-center">
+      <div class="modal-header">
+        <h2 id="daily-reward-title">📅 Daily Reward</h2>
+        <button class="close-modal-btn" onclick="document.getElementById('daily-reward-modal').classList.remove('active')">×</button>
       </div>
-      
-      <p id="daily-reward-amount" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 25px;">
-        +1 Gem Today!
-      </p>
-
-      <button class="btn-action" style="width: 100%; font-size: 1.1rem; padding: 12px;" onclick="claimDailyReward()">Claim</button>
+      <div class="modal-body">
+        <p class="mb-md text-muted font-sm">Log in every day to receive free Gems!</p>
+        <div class="daily-reward-icon">💎</div>
+        <div id="daily-reward-streak" class="daily-reward-streak mb-md">
+          Current Streak: <strong class="text-ember">0 Days</strong>
+        </div>
+        <p id="daily-reward-amount" class="daily-reward-amount mb-lg font-lg text-gold font-bold">
+          +1 Gem Today!
+        </p>
+        <button class="btn-action w-full" onclick="claimDailyReward()">Claim Reward</button>
+      </div>
     </div>
   </div>
 
   <!-- =============================================
        PREMIUM STORE MODAL
        ============================================= -->
-  <div id="premium-store-modal" class="modal">
-    <div class="modal-content" style="max-width: 600px;">
+  <div id="premium-store-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="premium-store-title">
+    <div class="modal-content modal-content--md">
       <div class="modal-header">
-        <h3>💎 Ember Store</h3>
-<div class="shop-tabs">
-        <button class="shop-tab active" onclick="renderPremiumStore('pass')">Ember Pass</button>
-        <button class="shop-tab" onclick="renderPremiumStore('gems')">Gems</button>
-        <button class="shop-tab" onclick="renderPremiumStore('consumables')">Consumables</button>
+        <h2 id="premium-store-title">💎 Ember Store</h2>
+        <button class="close-modal-btn" onclick="document.getElementById('premium-store-modal').classList.remove('active')">×</button>
       </div>
-
-      <div id="premium-store-content" style="margin-top: 15px; max-height:60vh; overflow-y:auto; padding-right:10px;">
-        <!-- Rendered dynamically -->
+      <div class="modal-body">
+        <div class="sub-nav">
+          <button class="sub-nav-btn active" onclick="renderPremiumStore('pass')">Ember Pass</button>
+          <button class="sub-nav-btn" onclick="renderPremiumStore('gems')">Gems</button>
+          <button class="sub-nav-btn" onclick="renderPremiumStore('consumables')">Consumables</button>
+        </div>
+        <div id="premium-store-content" class="store-content-scroll">
+          <!-- Rendered dynamically -->
+        </div>
       </div>
     </div>
   </div>
