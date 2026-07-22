@@ -149,15 +149,30 @@ export async function saveCharacter(charData) {
     updated_at: new Date().toISOString()
   };
 
-  const { data, error } = await supabase
-    .from("characters")
-    .update(updates)
-    .eq("id", charData.id)
-    .select()
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("characters")
+      .update(updates)
+      .eq("id", charData.id)
+      .select()
+      .single();
 
-  if (error) throw error;
-  return data;
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    if (err && (err.code === "PGRST204" || (err.message && err.message.includes("completed_side_zones")))) {
+      delete updates.completed_side_zones;
+      delete updates.unlocked_level;
+      const { data, error } = await supabase
+        .from("characters")
+        .update(updates)
+        .eq("id", charData.id)
+        .select()
+        .single();
+      if (!error) return data;
+    }
+    throw err;
+  }
 }
 
 export async function deleteCharacter(characterId) {
