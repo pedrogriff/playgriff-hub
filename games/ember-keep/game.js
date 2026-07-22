@@ -682,6 +682,15 @@ function initTabs() {
       const target = document.getElementById(btn.dataset.tab);
       if (target) target.classList.add("active");
       if (typeof playSound === "function") playSound("button");
+
+      if (btn.dataset.tab === "character-tab") {
+        renderStats();
+        renderInventory();
+        renderShop();
+        if (typeof renderPaperdollGrid === "function") renderPaperdollGrid();
+      } else if (btn.dataset.tab === "forge-tab") {
+        if (typeof renderProfessions === "function") renderProfessions();
+      }
     });
   });
 }
@@ -2575,26 +2584,43 @@ function renderInventory() {
   }
 
   items.forEach((inv, realIdx) => {
-    const item = ALL_ITEMS[inv.id] || {
-      id: inv.id,
-      name: inv.name || inv.id,
-      icon: inv.icon || "📦",
-      type: inv.type || "material",
-      desc: "Material Resource",
-      cost: inv.value || 10
+    const itemKey = inv.item_id || inv.id;
+    const itemDef = ALL_ITEMS[itemKey] || ALL_ITEMS[inv.id] || ALL_ITEMS[inv.item_id];
+    const meta = inv.metadata || {};
+
+    const item = itemDef ? {
+      ...itemDef,
+      ...inv,
+      ...meta,
+      id: itemDef.id || itemKey,
+      name: inv.name || meta.name || itemDef.name,
+      icon: inv.icon || meta.icon || itemDef.icon || "📦",
+      type: meta.slot_type || itemDef.slot_type || itemDef.type || inv.item_type || inv.type || "equipment"
+    } : {
+      id: itemKey,
+      name: inv.name || meta.name || itemKey,
+      icon: inv.icon || meta.icon || "📦",
+      type: meta.slot_type || inv.item_type || inv.type || "material",
+      slot_type: meta.slot_type || inv.item_type || inv.type,
+      desc: "Equipment or Resource",
+      cost: inv.value || meta.cost || 10
     };
 
     const isConsumable = item.type === "consumable" || item.type === "food";
-    const isEquippable = Boolean(getEquipmentSlot(item, inv)) || item.type === "weapon" || item.type === "armor" || item.type === "ring" || item.type === "head" || item.type === "legs" || (inv.metadata && inv.metadata.slot_type) || Boolean(item.slot_type);
+    const slot = getEquipmentSlot(itemDef || item, inv);
+    const isEquippable = Boolean(slot) || item.type === "weapon" || item.type === "armor" || item.type === "ring" || item.type === "head" || item.type === "legs" || Boolean(meta.slot_type);
     const qtyStr = (inv.qty && inv.qty > 1) ? ` (x${inv.qty})` : "";
-    
+
     let statsHtml = `<p>${item.desc || "Item"}</p>`;
-    if (isEquippable && (item.stat || (inv.metadata && (inv.metadata.attack_power || inv.metadata.defense)))) {
-      const meta = inv.metadata || {};
-      const statLabel = item.stat === "power" ? "Power" : item.stat === "defense" ? "Defense" :
-                        item.stat === "critChance" ? "Crit Chance" : "Gear Stat";
-      const statValue = item.stat?.includes("Chance") ? `+${Math.round(item.value * 100)}%` : `+${item.value || meta.attack_power || meta.defense || 0}`;
-      statsHtml = `<p>${statLabel} ${statValue}</p>`;
+    if (isEquippable) {
+      const statsList = [];
+      const atk = meta.attack_power || meta.power || item.value || item.attack_power;
+      const def = meta.defense || (item.stat === "defense" ? item.value : null);
+      const crit = meta.crit_chance || (item.stat === "critChance" ? item.value : null);
+      if (atk) statsList.push(`+${atk} Atk`);
+      if (def) statsList.push(`+${def} Def`);
+      if (crit) statsList.push(`+${Math.round(crit * 100)}% Crit`);
+      statsHtml = `<p>${statsList.length ? statsList.join(" | ") : (item.desc || "Equippable Gear")}</p>`;
     }
 
     let actionsHtml = `<button class="btn-sell" data-item="${item.id}" data-index="${realIdx}">Sell ${Math.round((item.cost || 10) * 0.5)}g</button>`;
@@ -2750,11 +2776,12 @@ function equipItem(itemId, invIndex) {
   if (invIndex !== undefined && invIndex >= 0 && playerState.inventory[invIndex]) {
     invItem = playerState.inventory[invIndex];
   } else if (Array.isArray(playerState.inventory)) {
-    invItem = playerState.inventory.find(i => i.id === itemId || i.dbId === itemId);
+    invItem = playerState.inventory.find(i => i.id === itemId || i.item_id === itemId || i.dbId === itemId);
   }
 
-  const itemDef = ALL_ITEMS[itemId] || (invItem ? ALL_ITEMS[invItem.id] : null);
-  const slotKey = getEquipmentSlot(itemDef || itemId, invItem);
+  const actualItemId = invItem ? (invItem.item_id || invItem.id || itemId) : itemId;
+  const itemDef = ALL_ITEMS[actualItemId] || ALL_ITEMS[itemId] || invItem;
+  const slotKey = getEquipmentSlot(itemDef || actualItemId, invItem);
 
   if (!slotKey) {
     showToast("This item cannot be equipped!", "error");
@@ -2773,19 +2800,19 @@ function equipItem(itemId, invIndex) {
     else if (slotKey === "accessory") oldEquipped = playerState.equipment.ring;
   }
 
-  const newPayload = invItem ? (invItem.metadata ? { item_id: invItem.id || itemId, id: invItem.id || itemId, name: invItem.name || itemDef?.name, metadata: invItem.metadata } : (invItem.id || itemId)) : itemId;
+  const newPayload = invItem ? (invItem.metadata ? { item_id: actualItemId, id: actualItemId, name: invItem.name || itemDef?.name || actualItemId, metadata: invItem.metadata } : actualItemId) : actualItemId;
 
   // Set new equipment
   playerState.equipment[slotKey] = newPayload;
-  if (slotKey === "main_hand") playerState.equipment.weapon = itemId;
-  else if (slotKey === "chest") playerState.equipment.armor = itemId;
-  else if (slotKey === "accessory") playerState.equipment.ring = itemId;
+  if (slotKey === "main_hand") playerState.equipment.weapon = actualItemId;
+  else if (slotKey === "chest") playerState.equipment.armor = actualItemId;
+  else if (slotKey === "accessory") playerState.equipment.ring = actualItemId;
 
   // Move old item back to inventory
   if (oldEquipped) {
     const oldId = typeof oldEquipped === "object" ? (oldEquipped.item_id || oldEquipped.id) : oldEquipped;
-    if (oldId && oldId !== itemId) {
-      playerState.inventory.push({ id: oldId, qty: 1 });
+    if (oldId && oldId !== actualItemId) {
+      playerState.inventory.push({ id: oldId, item_id: oldId, qty: 1 });
     }
   }
 
@@ -2793,7 +2820,7 @@ function equipItem(itemId, invIndex) {
   if (invIndex !== undefined && invIndex >= 0) {
     playerState.inventory.splice(invIndex, 1);
   } else {
-    const idx = playerState.inventory.findIndex(i => i.id === itemId || i.dbId === itemId);
+    const idx = playerState.inventory.findIndex(i => i.id === itemId || i.item_id === itemId || i.id === actualItemId || i.item_id === actualItemId);
     if (idx > -1) playerState.inventory.splice(idx, 1);
   }
 
