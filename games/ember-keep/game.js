@@ -36,11 +36,16 @@ window.renderStats = function() {
   }
 };
 
-// Dynamic Getter for window.playerState mapping to AccountStore active character
+// Dynamic Property for window.playerState mapping to AccountStore active character
+let _localPlayerState = null;
 if (!Object.getOwnPropertyDescriptor(window, "playerState")) {
   Object.defineProperty(window, "playerState", {
     get() {
-      return typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+      const char = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+      return char || _localPlayerState;
+    },
+    set(val) {
+      _localPlayerState = val;
     },
     configurable: true
   });
