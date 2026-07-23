@@ -101,6 +101,9 @@ export async function createCharacter(slotIndex, name, classId) {
     defense: classId === "Warrior" ? 8 : classId === "Paladin" ? 10 : 5,
     gold: 50,
     gems: 0,
+    skill_points: 0,
+    allocated_stats: { hp: 0, power: 0, defense: 0 },
+    house: { tier: 0, name: "No Housing", slots: [], decorations: [] },
     inventory: [
       { id: "potion_hp_small", name: "Small HP Potion", type: "consumable", qty: 3, icon: "🧪", value: 30 }
     ],
@@ -140,6 +143,9 @@ export async function saveCharacter(charData) {
     gems: charData.gems,
     power: charData.power,
     defense: charData.defense,
+    skill_points: charData.skillPoints !== undefined ? charData.skillPoints : charData.skill_points || 0,
+    allocated_stats: charData.allocatedStats || charData.upgrades || charData.allocated_stats || { hp: 0, power: 0, defense: 0 },
+    house: charData.house || { tier: 0, name: "No Housing", slots: [], decorations: [] },
     unlocked_level: charData.unlockedLevel || charData.unlocked_level || 1,
     completed_side_zones: charData.completedSideZones || charData.completed_side_zones || [],
     inventory: charData.inventory,

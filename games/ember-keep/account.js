@@ -63,6 +63,7 @@ export function createDefaultCharacter(id = 1, name = "Hero", className = "Warri
     activePet: null,
     equippedPets: [],
     activePerks: [],
+    house: { tier: 0, name: "No Housing", slots: [], decorations: [] },
     createdAt: Date.now()
   };
 }
@@ -79,8 +80,7 @@ function createDefaultAccount() {
       1: null,
       2: null,
       3: null,
-      4: null,
-      5: null
+      4: null
     },
     activeTasks: {
       1: null,
@@ -127,11 +127,11 @@ export const AccountStore = {
 
       const dbChars = await getCharacters();
       const previousSlots = { ...accountData.characterSlots };
-      accountData.characterSlots = { 1: null, 2: null, 3: null, 4: null, 5: null };
+      accountData.characterSlots = { 1: null, 2: null, 3: null, 4: null };
 
       dbChars.forEach(row => {
         const slot = row.slot_index;
-        if (slot >= 1 && slot <= 5) {
+        if (slot >= 1 && slot <= 4) {
           const localChar = previousSlots[slot];
           const remoteUnlocked = row.unlocked_level || row.unlockedLevel;
           const localUnlocked = localChar ? (localChar.unlockedLevel || localChar.unlocked_level) : 1;
@@ -157,11 +157,14 @@ export const AccountStore = {
             maxHp: row.max_hp || 100,
             power: row.power,
             defense: row.defense,
+            skillPoints: row.skill_points !== undefined ? row.skill_points : (localChar ? localChar.skillPoints : 0),
+            allocatedStats: row.allocated_stats || (localChar ? localChar.allocatedStats : { hp: 0, power: 0, defense: 0 }),
             critChance: Number(row.crit_chance || 0.05),
             critDamage: Number(row.crit_damage || 1.5),
             dodgeChance: Number(row.dodge_chance || 0.05),
             gold: row.gold,
             gems: row.gems,
+            house: row.house || (localChar ? localChar.house : { tier: 0, name: "No Housing", slots: [], decorations: [] }),
             unlockedLevel: finalUnlocked,
             completedSideZones: finalSideZones,
             inventory: row.inventory || [],
@@ -285,7 +288,7 @@ export const AccountStore = {
   },
 
   setActiveSlot(slotId) {
-    if (!accountData || slotId < 1 || slotId > 5) return false;
+    if (!accountData || slotId < 1 || slotId > 4) return false;
     if (!accountData.characterSlots[slotId]) return false;
     accountData.activeSlotId = slotId;
     this.saveLocalCache();
@@ -293,7 +296,7 @@ export const AccountStore = {
   },
 
   async createCharacter(slotId, name, className) {
-    if (!accountData || slotId < 1 || slotId > 5) return null;
+    if (!accountData || slotId < 1 || slotId > 4) return null;
 
     try {
       const user = await getUser();
@@ -315,8 +318,11 @@ export const AccountStore = {
           maxHp: row.max_hp || 100,
           power: row.power,
           defense: row.defense,
+          skillPoints: row.skill_points || 0,
+          allocatedStats: row.allocated_stats || { hp: 0, power: 0, defense: 0 },
           gold: row.gold,
           gems: row.gems,
+          house: row.house || { tier: 0, name: "No Housing", slots: [], decorations: [] },
           inventory: row.inventory || [],
           equipped: row.equipped || { weapon: null, armor: null, ring: null },
           professions: row.professions || {},
@@ -339,7 +345,7 @@ export const AccountStore = {
   },
 
   async deleteCharacter(slotId) {
-    if (!accountData || slotId < 1 || slotId > 5) return false;
+    if (!accountData || slotId < 1 || slotId > 4) return false;
     const char = accountData.characterSlots[slotId];
     if (!char) return false;
 

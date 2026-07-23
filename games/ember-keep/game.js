@@ -227,6 +227,58 @@ const RING_ITEMS = {
   ring_8: { id:"ring_8", class:null, type:"ring", name:"Specter's Ring",     stat:"dodgeChance", value:0.12, cost:1500, icon:"👻", tier:4 },
   ring_9: { id:"ring_9", class:null, type:"ring", name:"Void Ring",          stat:"power",       value:35,   cost:5000, icon:"🌀", tier:5 },
   ring_10:{ id:"ring_10",class:null, type:"ring", name:"Aegis Pendant",      stat:"defense",     value:30,   cost:5000, icon:"🏺", tier:5 },
+const EXPANDED_ITEMS = {
+  head_leather_cap:       { id:"head_leather_cap",       slot_type:"head",      name:"Novice Leather Cap",     defense:2,  max_hp:10, min_level:1,  cost:15,   icon:"🪖", rarity:"common",   is_shop_item:true },
+  chest_cloth_tunic:      { id:"chest_cloth_tunic",      slot_type:"chest",     name:"Apprentice Cloth Tunic", defense:3,  max_hp:15, min_level:1,  cost:20,   icon:"🥋", rarity:"common",   is_shop_item:true },
+  legs_leather_pants:     { id:"legs_leather_pants",     slot_type:"legs",      name:"Rough Leather Pants",    defense:2,  max_hp:10, min_level:1,  cost:15,   icon:"👖", rarity:"common",   is_shop_item:true },
+  main_iron_dagger:       { id:"main_iron_dagger",       slot_type:"main_hand", name:"Iron Dagger",            power:6,   crit_chance:0.02, min_level:1, cost:25, icon:"🗡️", rarity:"common", is_shop_item:true },
+  off_wooden_shield:      { id:"off_wooden_shield",      slot_type:"off_hand",  name:"Wooden Buckler",         defense:4,  dodge_chance:0.01, min_level:1, cost:20, icon:"🛡️", rarity:"common", is_shop_item:true },
+  acc_copper_ring:        { id:"acc_copper_ring",        slot_type:"accessory", name:"Copper Band",            max_hp:15,  crit_chance:0.01, min_level:1, cost:30, icon:"💍", rarity:"common", is_shop_item:true },
+
+  head_iron_helm:         { id:"head_iron_helm",         slot_type:"head",      name:"Iron Vanguard Helm",     defense:6,  max_hp:25, min_level:5,  cost:45,   icon:"🪖", rarity:"uncommon", is_shop_item:true },
+  chest_iron_cuirass:      { id:"chest_iron_cuirass",      slot_type:"chest",     name:"Reinforced Iron Cuirass",defense:8,  max_hp:35, min_level:5,  cost:60,   icon:"🥋", rarity:"uncommon", is_shop_item:true },
+  legs_iron_greaves:      { id:"legs_iron_greaves",      slot_type:"legs",      name:"Iron Plate Greaves",     defense:6,  max_hp:25, min_level:5,  cost:50,   icon:"👖", rarity:"uncommon", is_shop_item:true },
+  main_steel_sword:       { id:"main_steel_sword",       slot_type:"main_hand", name:"Forged Steel Blade",     power:14,  crit_chance:0.03, min_level:5, cost:75, icon:"⚔️", rarity:"uncommon", is_shop_item:true },
+  off_iron_shield:        { id:"off_iron_shield",        slot_type:"off_hand",  name:"Iron Wall Shield",       defense:9,  max_hp:20, min_level:5,  cost:65,   icon:"🛡️", rarity:"uncommon", is_shop_item:true },
+  acc_silver_amulet:      { id:"acc_silver_amulet",      slot_type:"accessory", name:"Silver Wolf Amulet",     power:4,   crit_chance:0.03, min_level:8, cost:90, icon:"📿", rarity:"uncommon", is_shop_item:true },
+
+  head_scout_hood:        { id:"head_scout_hood",        slot_type:"head",      name:"Hunter Scout Hood",      defense:9,  max_hp:35, dodge_chance:0.02, min_level:10, cost:110, icon:"🧢", rarity:"uncommon", is_shop_item:true },
+  chest_scout_vest:       { id:"chest_scout_vest",       slot_type:"chest",     name:"Hunter Scout Vest",      defense:12, max_hp:50, min_level:10, cost:130, icon:"🎽", rarity:"uncommon", is_shop_item:true },
+  legs_scout_breeches:    { id:"legs_scout_breeches",    slot_type:"legs",      name:"Hunter Scout Breeches",  defense:10, max_hp:40, min_level:10, cost:120, icon:"👖", rarity:"uncommon", is_shop_item:true },
+  main_recurve_bow:       { id:"main_recurve_bow",       slot_type:"main_hand", name:"Composite Recurve Bow",  power:22,  crit_chance:0.04, min_level:10, cost:150, icon:"🏹", rarity:"uncommon", is_shop_item:true },
+  off_scout_quiver:       { id:"off_scout_quiver",       slot_type:"off_hand",  name:"Precision Quiver",       power:6,   crit_chance:0.03, min_level:10, cost:120, icon:"🎒", rarity:"uncommon", is_shop_item:true },
+  acc_ruby_ring:          { id:"acc_ruby_ring",          slot_type:"accessory", name:"Ruby Flame Ring",        power:8,   max_hp:30, min_level:12, cost:140, icon:"💍", rarity:"uncommon", is_shop_item:true },
+
+  head_drakescale_cowl:   { id:"head_drakescale_cowl",   slot_type:"head",      name:"Drakescale Cowl",        defense:15, max_hp:65, crit_chance:0.03, min_level:15, cost:220, icon:"👺", rarity:"rare", is_shop_item:true },
+  chest_drakescale_hauberk:{ id:"chest_drakescale_hauberk",slot_type:"chest",   name:"Drakescale Hauberk",    defense:22, max_hp:90, dodge_chance:0.02, min_level:15, cost:280, icon:"🥋", rarity:"rare", is_shop_item:true },
+  legs_drakescale_greaves:{ id:"legs_drakescale_greaves",slot_type:"legs",     name:"Drakescale Greaves",    defense:17, max_hp:70, min_level:15, cost:240, icon:"👖", rarity:"rare", is_shop_item:true },
+  main_frost_blade:       { id:"main_frost_blade",       slot_type:"main_hand", name:"Frostbite Claymore",     power:32,  crit_chance:0.05, min_level:18, cost:350, icon:"⚔️", rarity:"rare", is_shop_item:true },
+  off_tower_shield:       { id:"off_tower_shield",       slot_type:"off_hand",  name:"Aegis Tower Shield",     defense:24, max_hp:60, min_level:18, cost:300, icon:"🛡️", rarity:"rare", is_shop_item:true },
+  acc_ruby_signet:        { id:"acc_ruby_signet",        slot_type:"accessory", name:"Ruby Warlord Ring",      power:12,  crit_chance:0.04, min_level:20, cost:380, icon:"💍", rarity:"rare", is_shop_item:true },
+
+  head_shadow_hood:       { id:"head_shadow_hood",       slot_type:"head",      name:"Shadowwalker Hood",      defense:24, crit_chance:0.06, dodge_chance:0.04, min_level:25, cost:0, icon:"🥷", rarity:"epic", is_shop_item:false },
+  chest_shadow_harness:   { id:"chest_shadow_harness",   slot_type:"chest",     name:"Shadowfang Cuirass",     defense:32, max_hp:140, dodge_chance:0.05, min_level:25, cost:0, icon:"🎽", rarity:"epic", is_shop_item:false },
+  legs_shadow_leggings:  { id:"legs_shadow_leggings",  slot_type:"legs",      name:"Shadowfang Leggings",    defense:26, max_hp:110, dodge_chance:0.03, min_level:25, cost:0, icon:"👖", rarity:"epic", is_shop_item:false },
+  main_shadow_blade:      { id:"main_shadow_blade",      slot_type:"main_hand", name:"Shadowfang Dagger",      power:48,  crit_chance:0.08, min_level:25, cost:0, icon:"🗡️", rarity:"epic", is_shop_item:false },
+  off_shadow_orb:         { id:"off_shadow_orb",         slot_type:"off_hand",  name:"Shadow Orb of Power",    power:18,  crit_chance:0.05, min_level:25, cost:0, icon:"🔮", rarity:"epic", is_shop_item:false },
+  head_titan_visor:       { id:"head_titan_visor",       slot_type:"head",      name:"Titan Iron Visor",       defense:30, max_hp:130, min_level:30, cost:500, icon:"🪖", rarity:"rare", is_shop_item:true },
+  chest_titan_plate:      { id:"chest_titan_plate",      slot_type:"chest",     name:"Titanium Greatplate",    defense:42, max_hp:180, min_level:30, cost:700, icon:"🛡️", rarity:"rare", is_shop_item:true },
+  legs_titan_greaves:     { id:"legs_titan_greaves",     slot_type:"legs",      name:"Titanium Legguards",     defense:34, max_hp:140, min_level:30, cost:600, icon:"👖", rarity:"rare", is_shop_item:true },
+  main_ember_scimitar:    { id:"main_ember_scimitar",    slot_type:"main_hand", name:"Emberflame Scimitar",    power:58,  crit_chance:0.06, min_level:32, cost:850, icon:"🗡️", rarity:"rare", is_shop_item:true },
+  acc_dragon_eye:         { id:"acc_dragon_eye",         slot_type:"accessory", name:"Dragon Eye Pendant",     power:22,  crit_chance:0.05, max_hp:110, min_level:35, cost:1000, icon:"📿", rarity:"rare", is_shop_item:true },
+
+  head_phoenix_crown:     { id:"head_phoenix_crown",     slot_type:"head",      name:"Phoenix Crown of Light", defense:40, max_hp:180, crit_chance:0.05, min_level:40, cost:0, icon:"👑", rarity:"epic", is_shop_item:false },
+  chest_phoenix_robes:    { id:"chest_phoenix_robes",    slot_type:"chest",     name:"Phoenixfire Robes",      defense:50, max_hp:240, crit_chance:0.06, min_level:40, cost:0, icon:"🥋", rarity:"epic", is_shop_item:false },
+  legs_phoenix_greaves:   { id:"legs_phoenix_greaves",   slot_type:"legs",      name:"Phoenixfire Greaves",    defense:42, max_hp:200, min_level:40, cost:0, icon:"👖", rarity:"epic", is_shop_item:false },
+  main_phoenix_blade:     { id:"main_phoenix_blade",     slot_type:"main_hand", name:"Phoenix Heart Greatsword",power:85, crit_chance:0.09, max_hp:160, min_level:40, cost:0, icon:"🔥", rarity:"epic", is_shop_item:false },
+  off_phoenix_crest:      { id:"off_phoenix_crest",      slot_type:"off_hand",  name:"Phoenix Wall Aegis",     defense:50, max_hp:200, dodge_chance:0.04, min_level:40, cost:0, icon:"🛡️", rarity:"epic", is_shop_item:false },
+  acc_phoenix_band:       { id:"acc_phoenix_band",       slot_type:"accessory", name:"Phoenixfire Ring",       power:28,  crit_chance:0.07, max_hp:140, min_level:40, cost:0, icon:"💍", rarity:"epic", is_shop_item:false },
+  head_celestial_crown:   { id:"head_celestial_crown",   slot_type:"head",      name:"Crown of the Sun God",   defense:55, max_hp:260, crit_chance:0.07, min_level:48, cost:0, icon:"👑", rarity:"legendary", is_shop_item:false },
+  chest_celestial_harness:{ id:"chest_celestial_harness",slot_type:"chest",     name:"Celestial Star Plate",   defense:75, max_hp:350, dodge_chance:0.07, min_level:48, cost:0, icon:"✨", rarity:"legendary", is_shop_item:false },
+  legs_celestial_greaves: { id:"legs_celestial_greaves", slot_type:"legs",      name:"Celestial Legguards",    defense:60, max_hp:280, min_level:48, cost:0, icon:"👖", rarity:"legendary", is_shop_item:false },
+  main_excalibur:         { id:"main_excalibur",         slot_type:"main_hand", name:"Excalibur Holy Relic",   power:135, crit_chance:0.12, max_hp:300, min_level:50, cost:0, icon:"⚔️", rarity:"legendary", is_shop_item:false },
+  off_celestial_shield:   { id:"off_celestial_shield",   slot_type:"off_hand",  name:"Aegis of Eternity",      defense:65, max_hp:280, dodge_chance:0.06, min_level:50, cost:0, icon:"🛡️", rarity:"legendary", is_shop_item:false },
+  acc_sovereign_ring:     { id:"acc_sovereign_ring",     slot_type:"accessory", name:"Sovereign Ring",         power:50,  defense:35, crit_chance:0.10, max_hp:400, min_level:50, cost:0, icon:"🌟", rarity:"legendary", is_shop_item:false }
 };
 
 const CONSUMABLE_ITEMS = {
@@ -243,6 +295,13 @@ const FOOD_ITEMS = {
 };
 
 const MATERIAL_ITEMS = {
+  // Task drop unified items
+  item_ore_iron:     { id:"item_ore_iron", type:"material", name:"Iron Ore", cost:10, icon:"🪨", tier:1, desc:"Gathered from mining. Used for smithing." },
+  item_wood_oak:     { id:"item_wood_oak", type:"material", name:"Oak Wood", cost:10, icon:"🪵", tier:1, desc:"Gathered from woodcutting. Used for crafting." },
+  item_fish_trout:   { id:"item_fish_trout", type:"material", name:"Raw Trout", cost:10, icon:"🐟", tier:1, desc:"Caught from fishing. Used for cooking." },
+  item_monster_hide: { id:"item_monster_hide", type:"material", name:"Monster Hide", cost:12, icon:"🥩", tier:1, desc:"Obtained in combat. Used for tanning." },
+  item_herb_red:     { id:"item_herb_red", type:"material", name:"Red Herb", cost:8, icon:"🌿", tier:1, desc:"Used for brewing potions." },
+
   mat_herb:  { id:"mat_herb", type:"material", name:"Healing Herb", cost:5, icon:"🌿", tier:1, desc:"Used for crafting." },
   mat_vial:  { id:"mat_vial", type:"material", name:"Empty Vial", cost:5, icon:"🫙", tier:1, desc:"Used for crafting." },
   mat_shard: { id:"mat_shard", type:"material", name:"Magic Shard", cost:15, icon:"🔮", tier:2, desc:"Used for crafting." },
@@ -352,10 +411,14 @@ const PRODUCTION_RECIPES = [
   { id:"prod_tailor_armor", skill:"tailoring", tier:2, name:"Sew Armor", resultId:"arm_armor_craft", resultQty:1, ingredients:[{ id:"mat_reinf_l", qty:2 }, { id:"mat_thread", qty:3 }], timeMs:60000, xpGain:12 },
   { id:"prod_tailor_mantle", skill:"tailoring", tier:3, name:"Sew Cloak", resultId:"arm_mantle_craft", resultQty:1, ingredients:[{ id:"mat_exo_l", qty:2 }, { id:"mat_silk", qty:2 }], timeMs:90000, xpGain:25 },
   { id:"prod_tailor_epic", skill:"tailoring", tier:4, name:"Epic Armor", resultId:"arm_epic_craft", resultQty:1, ingredients:[{ id:"mat_drag_l", qty:1 }, { id:"mat_ench_thread", qty:2 }], timeMs:150000, xpGain:45 },
-  { id:"prod_tailor_legend", skill:"tailoring", tier:5, name:"Legendary Armor", resultId:"arm_legend_craft", resultQty:1, ingredients:[{ id:"mat_cel_l", qty:1 }, { id:"mat_phoenix_f", qty:1 }, { id:"mat_star_thread", qty:1 }], timeMs:240000, xpGain:80 },
+  // Task Drop Recipes (Smelting, Woodworking, Cooking, Tanning)
+  { id:"prod_smelt_iron", skill:"blacksmith", tier:1, name:"Smelt Iron Ore", resultId:"mat_iron_ore", resultQty:2, ingredients:[{ id:"item_ore_iron", qty:2 }], timeMs:15000, xpGain:5 },
+  { id:"prod_process_oak", skill:"tanning", tier:1, name:"Process Oak Wood", resultId:"mat_l_strip", resultQty:2, ingredients:[{ id:"item_wood_oak", qty:2 }], timeMs:15000, xpGain:5 },
+  { id:"prod_cook_trout", skill:"alchemy", tier:1, name:"Cook Fresh Trout", resultId:"food_soup", resultQty:1, ingredients:[{ id:"item_fish_trout", qty:1 }], timeMs:20000, xpGain:5 },
+  { id:"prod_tan_hide", skill:"tanning", tier:1, name:"Tan Monster Hide", resultId:"mat_leather", resultQty:2, ingredients:[{ id:"item_monster_hide", qty:2 }], timeMs:20000, xpGain:5 },
 ];
 
-const ALL_ITEMS = { ...CLASS_ITEMS, ...CRAFTED_GEAR, ...RING_ITEMS, ...CONSUMABLE_ITEMS, ...FOOD_ITEMS, ...MATERIAL_ITEMS };
+const ALL_ITEMS = { ...EXPANDED_ITEMS, ...CLASS_ITEMS, ...CRAFTED_GEAR, ...RING_ITEMS, ...CONSUMABLE_ITEMS, ...FOOD_ITEMS, ...MATERIAL_ITEMS };
 
 // Skill point upgrade options
 const SP_OPTIONS = [
@@ -967,6 +1030,13 @@ window.renderActiveCharacterUI = function() {
   playerState.stamina = activeChar.stamina !== undefined ? activeChar.stamina : 100;
   playerState.gold = activeChar.gold !== undefined ? activeChar.gold : 50;
   playerState.gems = activeChar.gems !== undefined ? activeChar.gems : 0;
+  playerState.skillPoints = activeChar.skillPoints !== undefined ? activeChar.skillPoints : (activeChar.skill_points || 0);
+  if (activeChar.allocatedStats || activeChar.upgrades) {
+    playerState.upgrades = activeChar.allocatedStats || activeChar.upgrades || { hpLevel: 0, powerLevel: 0, defenseLevel: 0 };
+  }
+  if (activeChar.house) {
+    playerState.house = JSON.parse(JSON.stringify(activeChar.house));
+  }
   const savedUnlocked = activeChar.unlockedLevel || activeChar.unlocked_level || playerState.unlockedLevel || 1;
   playerState.unlockedLevel = Math.max(playerState.unlockedLevel || 1, savedUnlocked);
   const savedSide = Array.isArray(activeChar.completedSideZones) ? activeChar.completedSideZones : [];
@@ -1020,6 +1090,11 @@ function savePlayerState() {
       activeChar.gold = playerState.gold;
       activeChar.gems = playerState.gems;
       activeChar.stamina = playerState.stamina;
+      activeChar.skillPoints = playerState.skillPoints || 0;
+      activeChar.skill_points = playerState.skillPoints || 0;
+      activeChar.allocatedStats = playerState.upgrades || { hpLevel: 0, powerLevel: 0, defenseLevel: 0 };
+      activeChar.allocated_stats = playerState.upgrades || { hpLevel: 0, powerLevel: 0, defenseLevel: 0 };
+      activeChar.house = playerState.house || { tier: 0, name: "No Housing", slots: [], decorations: [] };
       activeChar.unlockedLevel = playerState.unlockedLevel || 1;
       activeChar.completedSideZones = playerState.completedSideZones || [];
       activeChar.inventory = playerState.inventory;
@@ -1321,7 +1396,7 @@ function getClanTerritoryBonuses() {
 }
 
 function getEffectiveStats() {
-  let extraPower = 0, extraDefense = 0, extraCrit = 0, extraDodge = 0;
+  let extraPower = 0, extraDefense = 0, extraCrit = 0, extraDodge = 0, extraMaxHp = 0;
 
   const slots = ['head', 'chest', 'legs', 'main_hand', 'off_hand', 'accessory', 'weapon', 'armor', 'ring'];
   slots.forEach(slotKey => {
@@ -1335,10 +1410,11 @@ function getEffectiveStats() {
       const itemDef = ALL_ITEMS[raw];
       if (itemDef) {
         meta = {
-          attack_power: itemDef.stat === "power" ? itemDef.value : 0,
-          defense: itemDef.stat === "defense" ? itemDef.value : 0,
-          crit_chance: itemDef.stat === "critChance" ? itemDef.value : 0,
-          dodge_chance: itemDef.stat === "dodgeChance" ? itemDef.value : 0
+          attack_power: itemDef.stat === "power" ? itemDef.value : (itemDef.power || 0),
+          defense: itemDef.stat === "defense" ? itemDef.value : (itemDef.defense || 0),
+          crit_chance: itemDef.stat === "critChance" ? itemDef.value : (itemDef.crit_chance || 0),
+          dodge_chance: itemDef.stat === "dodgeChance" ? itemDef.value : (itemDef.dodge_chance || 0),
+          max_hp: itemDef.max_hp || itemDef.maxHp || 0
         };
       }
     }
@@ -1348,12 +1424,13 @@ function getEffectiveStats() {
       extraDefense += (meta.defense || 0);
       extraCrit += (meta.crit_chance || meta.critChance || 0);
       extraDodge += (meta.dodge_chance || meta.dodgeChance || 0);
+      extraMaxHp += (meta.max_hp || meta.maxHp || 0);
     }
   });
   
   const clanBonuses = getClanTerritoryBonuses();
   
-  let finalMaxHp = playerState.stats.maxHp;
+  let finalMaxHp = playerState.stats.maxHp + extraMaxHp;
   if (isPremiumActive()) {
     finalMaxHp = Math.floor(finalMaxHp * 1.20);
   }
@@ -1419,6 +1496,14 @@ function getPlayerPowerRating(state) {
 function checkClassSelection() {
   const modal = document.getElementById("class-selection-modal");
   if (!modal) return;
+  
+  if (!playerState.class && typeof AccountStore !== "undefined") {
+    const activeChar = AccountStore.getActiveCharacter();
+    if (activeChar && activeChar.class) {
+      playerState.class = activeChar.class;
+    }
+  }
+
   if (!playerState.class) {
     modal.style.display = "flex";
     modal.classList.add("active");
@@ -1751,11 +1836,13 @@ async function renderShop() {
   if (foodCont) foodCont.innerHTML = "";
   if (matsCont) matsCont.innerHTML = "";
 
+  let renderedDynamic = false;
   const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
   if (activeChar && typeof activeChar.id === "string" && activeChar.id.includes("-")) {
     try {
       const shopItems = await getShopInventoryRPC(activeChar.id);
       if (Array.isArray(shopItems) && shopItems.length > 0) {
+        renderedDynamic = true;
         shopItems.forEach(item => {
           const rarity = (item.rarity || "common").toLowerCase();
           const canAfford = playerState.gold >= item.price;
@@ -1766,7 +1853,7 @@ async function renderShop() {
           el.id = `item-${item.item_id}`;
 
           const statsStr = item.stats ? Object.entries(item.stats)
-            .map(([k, v]) => `${k === "attack_power" ? "Atk" : k === "defense" ? "Def" : k}: +${v}`)
+            .map(([k, v]) => `${k === "attack_power" ? "Atk" : k === "defense" ? "Def" : k === "max_hp" ? "HP" : k}: +${v}`)
             .join(" | ") : "";
 
           el.innerHTML = `
@@ -1797,18 +1884,47 @@ async function renderShop() {
     }
   }
 
-  // Class-specific weapons and armor
-  Object.values(CLASS_ITEMS).forEach(item => {
-    if (item.class !== playerState.class) return;
-    const el = createShopItemEl(item);
-    if (item.type === "weapon") weaponsCont.appendChild(el);
-    else armorCont.appendChild(el);
-  });
+  // Local/Offline Fallback for Expanded Equipment
+  if (!renderedDynamic) {
+    Object.values(EXPANDED_ITEMS).forEach(item => {
+      if (!item.is_shop_item) return;
+      const rarity = (item.rarity || "common").toLowerCase();
+      const canAfford = playerState.gold >= item.cost;
+      const meetsLevel = playerState.level >= item.min_level;
 
-  // Universal rings
-  Object.values(RING_ITEMS).forEach(item => {
-    ringsCont.appendChild(createShopItemEl(item));
-  });
+      const el = document.createElement("div");
+      el.className = `shop-item rarity-${rarity}`;
+      el.id = `item-${item.id}`;
+
+      const statsList = [];
+      if (item.power) statsList.push(`Atk: +${item.power}`);
+      if (item.defense) statsList.push(`Def: +${item.defense}`);
+      if (item.max_hp) statsList.push(`HP: +${item.max_hp}`);
+      if (item.crit_chance) statsList.push(`Crit: +${Math.round(item.crit_chance * 100)}%`);
+
+      el.innerHTML = `
+        <div class="item-icon">${item.icon || "📦"}</div>
+        <div class="item-details">
+          <h5>${item.name} <span class="rarity-badge ${rarity}">${rarity.toUpperCase()}</span></h5>
+          <p>${statsList.join(" | ") || item.slot_type}</p>
+          <span class="item-tier" style="color:var(--gold);font-size:0.65rem;">Min Lv. ${item.min_level} | ${item.slot_type}</span>
+        </div>
+        <button class="btn-buy btn-buy-expansion"
+                data-item="${item.id}"
+                ${(!canAfford || !meetsLevel) ? "disabled" : ""}>
+          ${!meetsLevel ? `Lv ${item.min_level} Req` : `Buy <span class="cost">${formatNumber(item.cost)}g</span>`}
+        </button>
+      `;
+
+      if (item.slot_type === "main_hand" || item.slot_type === "off_hand") {
+        weaponsCont.appendChild(el);
+      } else if (item.slot_type === "accessory") {
+        ringsCont.appendChild(el);
+      } else {
+        armorCont.appendChild(el);
+      }
+    });
+  }
 
   // Consumables
   Object.values(CONSUMABLE_ITEMS).forEach(item => {
@@ -1822,7 +1938,7 @@ async function renderShop() {
 
   // Materials
   Object.values(MATERIAL_ITEMS).forEach(item => {
-    if (item.id.includes("seed") || item.tier === 1) { // Only show base mats and seeds
+    if (item.id.includes("seed") || item.id.includes("item_") || item.tier === 1) {
       if (matsCont) matsCont.appendChild(createShopItemEl(item));
     }
   });
@@ -2493,6 +2609,7 @@ function openDungeonBattleModal(combatLog) {
       outcomeCard.style.display = "block";
       const titleEl = document.getElementById("dungeon-outcome-title");
       const rewardsEl = document.getElementById("dungeon-outcome-rewards");
+      const nextFloorBtn = document.getElementById("btn-next-dungeon-floor");
 
       if (titleEl) {
         titleEl.textContent = combatLog.result === "victory" ? "🏆 VICTORY!" : "💀 DEFEAT!";
@@ -2504,6 +2621,29 @@ function openDungeonBattleModal(combatLog) {
           <span>✨ EXP: +${combatLog.exp_gained || 0}</span>
           <span>🪙 Gold: +${combatLog.gold_gained || 0}</span>
         `;
+      }
+
+      if (nextFloorBtn) {
+        if (combatLog.result === "victory") {
+          nextFloorBtn.style.display = "block";
+          nextFloorBtn.onclick = async () => {
+            playbackOptions.cancelled = true;
+            modal.style.display = "none";
+            modal.classList.remove("active");
+            const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+            if (activeChar) {
+              const nextFloor = (combatLog.floor || 1) + 1;
+              try {
+                const nextLog = await runDungeonEncounterRPC(activeChar.id, combatLog.dungeon_id, nextFloor);
+                if (nextLog) openDungeonBattleModal(nextLog);
+              } catch (err) {
+                showToast(err.message || "Cannot advance to next floor.", "error");
+              }
+            }
+          };
+        } else {
+          nextFloorBtn.style.display = "none";
+        }
       }
     }
   });
@@ -3399,6 +3539,7 @@ function startBattleSimulation(level) {
 
   // UI lock
   _hide("start-battle-btn");
+  _hide("next-level-btn");
   _hide("close-battle-modal-btn");
   _hide("close-battle-btn");
   _hide("rematch-battle-btn");
@@ -3732,6 +3873,19 @@ function handleBattleVictory(level) {
   _show("close-battle-modal-btn");
   _show("close-battle-btn");
   _show("rematch-battle-btn");
+
+  const nextLevelBtn = document.getElementById("next-level-btn");
+  if (nextLevelBtn) {
+    if (playerState.unlockedLevel <= LEVELS.length) {
+      nextLevelBtn.style.display = "inline-flex";
+      nextLevelBtn.onclick = () => {
+        nextLevelBtn.style.display = "none";
+        startBattle(playerState.unlockedLevel);
+      };
+    } else {
+      nextLevelBtn.style.display = "none";
+    }
+  }
 }
 
 // ── DEFEAT ──
@@ -3746,6 +3900,7 @@ function handleBattleDefeat() {
   playerState.currentHp = 0;
   savePlayerState();
 
+  _hide("next-level-btn");
   _show("close-battle-modal-btn");
   _show("close-battle-btn");
   _show("rematch-battle-btn");
@@ -3764,47 +3919,29 @@ function checkForLootDrop(level) {
   
   if (Math.random() > dropChance) return; // Drop chance with bonus
 
-  const isRingDrop = Math.random() < 0.28; // 28% chance for ring
-  if (isRingDrop) {
-    let tier = 1;
-    const refId = typeof level.id === "number" ? level.id : (level.botLevel || 1);
-    if (refId >= 6 && refId < 16) tier = 2;
-    if (refId >= 16) tier = 3;
-    if (typeof level.id === "string" && level.id.includes("15")) tier = 3;
+  const levelId = typeof level.id === "number" ? level.id : (level.botLevel || playerState.level || 1);
+  const possible = Object.values(EXPANDED_ITEMS).filter(i => i.min_level <= levelId + 5 && i.min_level >= Math.max(1, levelId - 10));
+  const candidatePool = possible.length ? possible : Object.values(EXPANDED_ITEMS);
+  const loot = candidatePool[Math.floor(Math.random() * candidatePool.length)];
 
-    const possibleRings = Object.values(RING_ITEMS).filter(r => r.tier === tier);
-    if (!possibleRings.length) return;
-    const loot = possibleRings[Math.floor(Math.random() * possibleRings.length)];
-    const equippedRing = playerState.equipment.ring ? ALL_ITEMS[playerState.equipment.ring] : null;
+  if (!loot) return;
 
-    if (gameSettings.autoEquip && (!equippedRing || loot.value > equippedRing.value)) {
-      equipLootImmediately(loot);
-      showToast(`💍 Auto-equipped ${loot.name}!`, "success");
-    } else {
-      pendingLoot = loot;
-      showCompareModal(equippedRing, loot);
-    }
+  let slotKey = loot.slot_type;
+  if (slotKey === "main_hand" || slotKey === "off_hand") slotKey = "weapon";
+  else if (slotKey === "accessory") slotKey = "ring";
+  else if (slotKey === "chest" || slotKey === "head" || slotKey === "legs") slotKey = "armor";
+
+  const equipped = playerState.equipment[slotKey];
+  const equippedItem = equipped ? (typeof equipped === "object" ? equipped : ALL_ITEMS[equipped]) : null;
+  const lootPower = loot.power || loot.defense || loot.max_hp || 10;
+  const equippedPower = equippedItem ? (equippedItem.power || equippedItem.defense || equippedItem.max_hp || 5) : 0;
+
+  if (gameSettings.autoEquip && (!equippedItem || lootPower > equippedPower)) {
+    equipLootImmediately(loot);
+    showToast(`🎁 Auto-equipped ${loot.name}!`, "success");
   } else {
-    let tier = 1;
-    const levelId = typeof level.id === "number" ? level.id : (level.botLevel || 6);
-    if (levelId >= 4 && levelId <= 10) tier = 2;
-    if (levelId >= 11 && levelId <= 20) tier = 3;
-    if (levelId >= 21 && levelId <= 25) tier = 4;
-    if (levelId >= 26) tier = 5;
-
-    const possible = Object.values(CLASS_ITEMS).filter(i => i.class === playerState.class && i.tier === tier);
-    if (!possible.length) return;
-    const loot = possible[Math.floor(Math.random() * possible.length)];
-    const equipped = loot.type === "weapon" ? playerState.equipment.weapon : playerState.equipment.armor;
-    const equippedItem = equipped ? ALL_ITEMS[equipped] : null;
-
-    if (gameSettings.autoEquip && (!equippedItem || loot.value > equippedItem.value)) {
-      equipLootImmediately(loot);
-      showToast(`🎁 Auto-equipped ${loot.name}!`, "success");
-    } else {
-      pendingLoot = loot;
-      showCompareModal(equippedItem, loot);
-    }
+    pendingLoot = loot;
+    showCompareModal(equippedItem, loot);
   }
 
   if (typeof playSound === "function") playSound("loot");

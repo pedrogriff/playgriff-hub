@@ -291,16 +291,15 @@ export const UIManager = {
       <div class="command-center-bar">
         <div class="command-center-title">
           <span>🔥 Command Center</span>
-          <span class="ap-badge" title="Ascension Points">✨ ${account.ascensionPoints || 0}/${account.maxAp || 10} AP</span>
         </div>
         <div class="command-center-slots">
     `;
 
-    [1, 2, 3, 4, 5].forEach(slotId => {
+    [1, 2, 3, 4].forEach(slotId => {
       const char = account.characterSlots ? account.characterSlots[slotId] : null;
       const activeTask = account.activeTasks ? account.activeTasks[slotId] : null;
       const isActiveSlot = account.activeSlotId === slotId;
-      const isUnlockedSlot = slotId <= 3; // Slots 1-3 active parallel, 4-5 extra unlockable
+      const isUnlockedSlot = slotId <= 3; // Slots 1-3 active parallel, slot 4 extra unlockable
 
       if (char) {
         const taskStatusText = activeTask ? `${activeTask.icon} ${activeTask.targetName}` : "Idle";
