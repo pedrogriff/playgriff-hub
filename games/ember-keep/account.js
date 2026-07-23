@@ -91,6 +91,8 @@ function createDefaultAccount() {
 }
 
 export const AccountStore = {
+  isInitialized: false,
+
   async init() {
     accountData = createDefaultAccount();
     
@@ -115,6 +117,7 @@ export const AccountStore = {
 
     this.updateAscensionPoints();
     this.setupTabSynchronization();
+    this.isInitialized = true;
   },
 
   async loadFromSupabase() {

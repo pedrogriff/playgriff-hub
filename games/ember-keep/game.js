@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (window.renderActiveCharacterUI) {
     window.renderActiveCharacterUI();
   }
+  checkClassSelection();
 
   // Run Aggregated Offline Progress Check
   const aggregatedReport = await GameAPI.simulateOfflineProgressAll();
@@ -1039,6 +1040,7 @@ window.renderActiveCharacterUI = function() {
   if (activeChar.house) {
     playerState.house = JSON.parse(JSON.stringify(activeChar.house));
   }
+  playerState.dungeonProgress = activeChar.dungeonProgress || activeChar.dungeon_progress || playerState.dungeonProgress || {};
   const savedUnlocked = activeChar.unlockedLevel || activeChar.unlocked_level || playerState.unlockedLevel || 1;
   playerState.unlockedLevel = Math.max(playerState.unlockedLevel || 1, savedUnlocked);
   const savedSide = Array.isArray(activeChar.completedSideZones) ? activeChar.completedSideZones : [];
@@ -1097,6 +1099,8 @@ function savePlayerState() {
       activeChar.allocatedStats = playerState.upgrades || { hpLevel: 0, powerLevel: 0, defenseLevel: 0 };
       activeChar.allocated_stats = playerState.upgrades || { hpLevel: 0, powerLevel: 0, defenseLevel: 0 };
       activeChar.house = playerState.house || { tier: 0, name: "No Housing", slots: [], decorations: [] };
+      activeChar.dungeonProgress = playerState.dungeonProgress || {};
+      activeChar.dungeon_progress = playerState.dungeonProgress || {};
       activeChar.unlockedLevel = playerState.unlockedLevel || 1;
       activeChar.completedSideZones = playerState.completedSideZones || [];
       activeChar.inventory = playerState.inventory;
@@ -1499,6 +1503,13 @@ function checkClassSelection() {
   const modal = document.getElementById("class-selection-modal");
   if (!modal) return;
   
+  // If AccountStore has not finished initializing, prevent modal flash by keeping it hidden
+  if (typeof AccountStore !== "undefined" && !AccountStore.isInitialized) {
+    modal.style.display = "none";
+    modal.classList.remove("active");
+    return;
+  }
+
   if (!playerState.class && typeof AccountStore !== "undefined") {
     const activeChar = AccountStore.getActiveCharacter();
     if (activeChar && activeChar.class) {
@@ -2490,25 +2501,52 @@ function renderDungeonSelector() {
   if (!container) return;
   container.innerHTML = "";
 
+  const dProg = playerState.dungeonProgress || {};
+
   DUNGEONS.forEach(dungeon => {
+    const highestCleared = dProg[dungeon.id] || 0;
+    const isMastered = highestCleared >= dungeon.maxFloors;
+    const defaultFloor = Math.min(dungeon.maxFloors, Math.max(1, highestCleared + 1));
+
     const el = document.createElement("div");
-    el.className = "dungeon-card panel";
+    el.className = `dungeon-card panel ${isMastered ? 'dungeon-mastered' : ''}`;
+    if (isMastered) {
+      el.style.border = "1px solid var(--gold)";
+      el.style.boxShadow = "var(--glow-gold)";
+    }
+
+    const options = Array.from({ length: dungeon.maxFloors }, (_, i) => {
+      const fNum = i + 1;
+      const isCleared = fNum <= highestCleared;
+      const isSelected = fNum === defaultFloor;
+      return `<option value="${fNum}" ${isSelected ? 'selected' : ''}>
+        Floor ${fNum} ${isCleared ? '✓ Cleared' : ''}
+      </option>`;
+    }).join("");
+
     el.innerHTML = `
       <div class="dungeon-header">
         <div class="dungeon-icon">${dungeon.icon}</div>
         <div class="dungeon-title-group">
-          <h4>${dungeon.name}</h4>
+          <h4>${dungeon.name} ${isMastered ? '👑' : ''}</h4>
           <span class="dungeon-theme">${dungeon.theme}</span>
         </div>
+      </div>
+      <div class="dungeon-progress-bar-wrap" style="margin: 8px 0; background: rgba(0,0,0,0.4); border-radius: 6px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid ${isMastered ? 'var(--gold)' : 'var(--border)'};">
+        <span style="font-size: 0.78rem; color: ${isMastered ? 'var(--gold)' : 'var(--text-muted)'}; font-weight: 700;">
+          ${isMastered ? '🏆 MASTERED' : '🚩 Progress'}
+        </span>
+        <span style="font-size: 0.8rem; font-weight: 700; color: ${isMastered ? 'var(--gold)' : '#fff'};">
+          Floor ${highestCleared} / ${dungeon.maxFloors}
+        </span>
       </div>
       <div class="dungeon-info-row">
         <span>⚔️ Rec Atk: ${dungeon.recPower}</span>
         <span>🛡️ Rec Def: ${dungeon.recDef}</span>
-        <span>🚩 Max Floors: ${dungeon.maxFloors}</span>
       </div>
       <div class="dungeon-action-row">
         <select class="dungeon-floor-select" id="floor-select-${dungeon.id}">
-          ${Array.from({ length: dungeon.maxFloors }, (_, i) => `<option value="${i + 1}">Floor ${i + 1}</option>`).join("")}
+          ${options}
         </select>
         <button class="btn-action btn-challenge-dungeon" data-dungeon="${dungeon.id}">⚔️ Enter Encounter</button>
       </div>
@@ -2613,28 +2651,32 @@ function openDungeonBattleModal(combatLog) {
       const rewardsEl = document.getElementById("dungeon-outcome-rewards");
       const nextFloorBtn = document.getElementById("btn-next-dungeon-floor");
 
-      if (titleEl) {
-        titleEl.textContent = combatLog.result === "victory" ? "🏆 VICTORY!" : "💀 DEFEAT!";
-        titleEl.className = combatLog.result === "victory" ? "victory" : "defeat";
+      const dungeonDef = DUNGEONS.find(d => d.id === combatLog.dungeon_id);
+      const maxFloors = dungeonDef ? dungeonDef.maxFloors : 10;
+      const currentFloor = combatLog.floor || 1;
+      const isVictory = combatLog.result === "victory";
+
+      if (isVictory) {
+        if (!playerState.dungeonProgress) playerState.dungeonProgress = {};
+        const curHighest = playerState.dungeonProgress[combatLog.dungeon_id] || 0;
+        playerState.dungeonProgress[combatLog.dungeon_id] = Math.max(curHighest, currentFloor);
+        savePlayerState();
+        if (typeof renderDungeonSelector === "function") renderDungeonSelector();
       }
 
-      if (rewardsEl) {
-        rewardsEl.innerHTML = `
-          <span>✨ EXP: +${combatLog.exp_gained || 0}</span>
-          <span>🪙 Gold: +${combatLog.gold_gained || 0}</span>
-        `;
-      }
+      const hasNextFloor = isVictory && currentFloor < maxFloors;
 
       if (nextFloorBtn) {
-        if (combatLog.result === "victory") {
+        if (hasNextFloor) {
           nextFloorBtn.style.display = "block";
+          nextFloorBtn.textContent = `➡️ Floor ${currentFloor + 1}`;
           nextFloorBtn.onclick = async () => {
             playbackOptions.cancelled = true;
             modal.style.display = "none";
             modal.classList.remove("active");
             const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
             if (activeChar) {
-              const nextFloor = (combatLog.floor || 1) + 1;
+              const nextFloor = currentFloor + 1;
               try {
                 const nextLog = await runDungeonEncounterRPC(activeChar.id, combatLog.dungeon_id, nextFloor);
                 if (nextLog) openDungeonBattleModal(nextLog);
@@ -2645,6 +2687,39 @@ function openDungeonBattleModal(combatLog) {
           };
         } else {
           nextFloorBtn.style.display = "none";
+        }
+      }
+
+      if (titleEl) {
+        if (isVictory) {
+          if (currentFloor >= maxFloors) {
+            titleEl.textContent = "👑 DUNGEON MASTERED!";
+            titleEl.className = "victory";
+            if (rewardsEl) {
+              rewardsEl.innerHTML = `
+                <div style="width:100%; text-align:center; padding:10px; background:rgba(255,215,0,0.15); border:1px solid var(--gold); border-radius:8px; margin-bottom:10px;">
+                  <span style="color:var(--gold); font-weight:700; font-size:0.95rem;">🎉 Congratulations! You conquered all ${maxFloors} Floors of ${dungeonDef ? dungeonDef.name : 'this Dungeon'}!</span>
+                </div>
+                <span>✨ EXP: +${combatLog.exp_gained || 0}</span>
+                <span>🪙 Gold: +${combatLog.gold_gained || 0}</span>
+              `;
+            }
+          } else {
+            titleEl.textContent = `🏆 FLOOR ${currentFloor} CLEARED!`;
+            titleEl.className = "victory";
+            if (rewardsEl) {
+              rewardsEl.innerHTML = `
+                <span>✨ EXP: +${combatLog.exp_gained || 0}</span>
+                <span>🪙 Gold: +${combatLog.gold_gained || 0}</span>
+              `;
+            }
+          }
+        } else {
+          titleEl.textContent = "💀 DEFEAT!";
+          titleEl.className = "defeat";
+          if (rewardsEl) {
+            rewardsEl.innerHTML = `<span>Better luck next time! Upgrade your stats & gear.</span>`;
+          }
         }
       }
     }
