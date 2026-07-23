@@ -57,22 +57,28 @@ export function createClan(name, tag, icon) {
     return false;
   }
 
-  if (playerState.level < 5) {
+  const pState = window.playerState || (typeof playerState !== "undefined" ? playerState : {});
+  const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+
+  const charLevel = pState.level || (activeChar ? activeChar.level : 1);
+  const charGold  = pState.gold !== undefined ? pState.gold : (activeChar ? activeChar.gold : 0);
+  const charClan  = pState.clan || (activeChar ? activeChar.clan : null);
+
+  if (charLevel < 5) {
     if (typeof showToast === "function") showToast("Level 5 required to found a Clan!", "error");
     return false;
   }
-  if (playerState.gold < 500) {
+  if (charGold < 500) {
     if (typeof showToast === "function") showToast("500g required to found a Clan!", "error");
     return false;
   }
-  if (playerState.clan) {
+  if (charClan) {
     if (typeof showToast === "function") showToast("You already belong to a clan!", "error");
     return false;
   }
 
-  const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
   const charId = (activeChar && activeChar.id) || "player";
-  const charName = playerState.name || (activeChar && activeChar.name) || "Hero";
+  const charName = pState.name || (activeChar && activeChar.name) || "Hero";
 
   const clan = {
     ...JSON.parse(JSON.stringify(DEFAULT_CLAN)),
@@ -84,8 +90,8 @@ export function createClan(name, tag, icon) {
     members: [{
       id: charId,
       name: charName,
-      class: playerState.class || "Warrior",
-      level: playerState.level || 1,
+      class: pState.class || (activeChar ? activeChar.class : "Warrior"),
+      level: charLevel,
       power: (typeof getEffectiveStats === "function" ? (getEffectiveStats().power + getEffectiveStats().defense) : 150),
       isBot: false,
       joinedAt: Date.now(),
@@ -93,14 +99,19 @@ export function createClan(name, tag, icon) {
     createdAt: Date.now(),
   };
 
-  playerState.gold -= 500;
-  playerState.clan = { id: clan.id, name: clan.name, tag: clan.tag, icon: clan.icon, role: "leader" };
+  if (pState.gold !== undefined) pState.gold -= 500;
+  if (activeChar) activeChar.gold = Math.max(0, (activeChar.gold || 0) - 500);
+
+  const clanObj = { id: clan.id, name: clan.name, tag: clan.tag, icon: clan.icon, role: "leader" };
+  pState.clan = clanObj;
+  if (activeChar) activeChar.clan = clanObj;
 
   // Fill with 5-8 bot members to start
   fillClanWithBots(clan, 5 + Math.floor(Math.random() * 4));
 
   saveClan(clan);
   if (typeof savePlayerState === "function") savePlayerState();
+  if (typeof renderStats === "function") renderStats();
   if (typeof showToast === "function") showToast(`⚔️ Clan [${clan.tag}] ${clan.name} founded!`, "success");
 
   if (typeof checkAchievements === "function") checkAchievements("clan");

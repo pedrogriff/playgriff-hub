@@ -3,7 +3,7 @@
 // Native ES Module with Supabase Integration
 // ================================================================
 
-import { getCharacters, createCharacter as createSupabaseChar, saveCharacter as saveSupabaseChar, deleteCharacter as deleteSupabaseChar, getAccountProfile, getUser } from "./db.js";
+import { getCharacters, createCharacter as createSupabaseChar, saveCharacter as saveSupabaseChar, deleteCharacter as deleteSupabaseChar, getAccountProfile, getUser, getActiveTasks } from "./db.js";
 
 const STORAGE_KEY = "ember_account_v2";
 const LEGACY_STORAGE_KEY = "rpg_player_state";
@@ -177,6 +177,41 @@ export const AccountStore = {
           };
         }
       });
+
+      // Fetch running active tasks from Supabase to restore activeTasks on login
+      const charIds = Object.values(accountData.characterSlots)
+        .filter(c => c && typeof c.id === "string" && c.id.includes("-"))
+        .map(c => c.id);
+
+      if (charIds.length > 0) {
+        try {
+          const runningTasks = await getActiveTasks(charIds);
+          if (runningTasks && runningTasks.length > 0) {
+            accountData.activeTasks = accountData.activeTasks || {};
+            runningTasks.forEach(taskRow => {
+              const matchedSlot = Object.keys(accountData.characterSlots).find(
+                s => accountData.characterSlots[s] && accountData.characterSlots[s].id === taskRow.character_id
+              );
+              if (matchedSlot) {
+                accountData.activeTasks[matchedSlot] = {
+                  id: taskRow.id,
+                  dbTaskId: taskRow.id,
+                  type: taskRow.task_type,
+                  targetId: taskRow.target_id,
+                  targetName: taskRow.target_id,
+                  startTime: new Date(taskRow.started_at).getTime(),
+                  cycleMs: 4000,
+                  cyclesCompleted: 0,
+                  foodQuantity: taskRow.allocated_food || 0,
+                  status: "ACTIVE"
+                };
+              }
+            });
+          }
+        } catch (e) {
+          console.warn("Failed to load active tasks from Supabase on init:", e);
+        }
+      }
 
       // Set activeSlotId to first available character
       const firstActive = Object.keys(accountData.characterSlots).find(k => accountData.characterSlots[k] !== null);

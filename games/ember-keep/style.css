@@ -701,6 +701,54 @@ select option {
 }
 
 /* ================================================================
+   SHOP SUB-TAB NAVIGATION
+   ================================================================ */
+.shop-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: var(--bg-dark);
+  padding: 6px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.shop-tab-btn {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.shop-tab-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.shop-tab-btn.active {
+  background: var(--bg-elevated);
+  color: var(--gold);
+  border-color: var(--border-bright);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ================================================================
    MAP TAB
    ================================================================ */
 .map-container { padding: 4px 0; }

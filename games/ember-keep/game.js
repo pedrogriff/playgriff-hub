@@ -599,6 +599,7 @@ const DEFAULT_PLAYER_STATE = {
 // MODULE-LEVEL STATE
 // ================================================================
 let playerState = {};
+window.playerState = playerState;
 let activeBattleInterval = null;
 let pendingLoot = null;
 let staminaInterval = null;
