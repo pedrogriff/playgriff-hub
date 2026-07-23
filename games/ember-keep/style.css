@@ -508,6 +508,92 @@ body {
 }
 
 /* ================================================================
+   FORM CONTROLS (Inputs, Selects & Forms)
+   ================================================================ */
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="email"],
+select,
+textarea {
+  background: rgba(18, 18, 28, 0.95);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid var(--border-bright);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.35), inset 0 2px 4px rgba(0, 0, 0, 0.5);
+  background: #181826;
+}
+
+input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+/* Custom styled Select Dropdown */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23f59e0b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+select option {
+  background: #151522;
+  color: var(--text-primary);
+  padding: 8px;
+}
+
+/* Form Layout Containers */
+.create-clan-form,
+.add-friend-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.create-clan-form input,
+.create-clan-form select,
+.add-friend-form input {
+  flex: 1;
+  min-width: 120px;
+  height: 40px;
+}
+
+.create-clan-form button,
+.add-friend-form button {
+  height: 40px;
+  padding: 0 18px;
+  min-height: 40px;
+}
+
+/* ================================================================
    BUTTONS
    ================================================================ */
 .btn-action {
@@ -842,14 +928,17 @@ body {
    ================================================================ */
 .character-layout {
   display: grid;
-  grid-template-columns: 280px 1fr 220px;
+  grid-template-columns: 280px 1fr 320px;
   gap: var(--gap-md);
   align-items: start;
 }
 
+@media (max-width: 1100px) {
+  .character-layout { grid-template-columns: 280px 1fr 280px; }
+}
 @media (max-width: 900px) {
   .character-layout { grid-template-columns: 1fr 1fr; }
-  .inventory-panel  { grid-column: 1 / -1; }
+  .hero-right-sidebar { grid-column: 1 / -1; }
 }
 @media (max-width: 580px) {
   .character-layout { grid-template-columns: 1fr; }

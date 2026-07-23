@@ -8,6 +8,7 @@ import { CombatEngine } from "./combat.js";
 import { VillageEngine } from "./village.js";
 import { MarketEngine } from "./market.js";
 import { UIManager } from "./ui.js";
+import { createClan, joinClan, leaveClan, getAvailableClans, loadClan, saveClan, initializeBotClans } from "./clans.js";
 import { equipItemRPC, unequipItemRPC, getCharacterInventory, runDungeonEncounterRPC, getDungeonProgress, craftItemRPC, getShopInventoryRPC, buyShopItemRPC } from "./db.js";
 
 // Initialize ES Engine Systems
@@ -1034,9 +1035,15 @@ window.renderActiveCharacterUI = function() {
   playerState.gold = activeChar.gold !== undefined ? activeChar.gold : 50;
   playerState.gems = activeChar.gems !== undefined ? activeChar.gems : 0;
   playerState.skillPoints = activeChar.skillPoints !== undefined ? activeChar.skillPoints : (activeChar.skill_points || 0);
-  if (activeChar.allocatedStats || activeChar.upgrades) {
-    playerState.upgrades = activeChar.allocatedStats || activeChar.upgrades || { hpLevel: 0, powerLevel: 0, defenseLevel: 0 };
-  }
+  const rawUpgrades = activeChar.allocatedStats || activeChar.allocated_stats || activeChar.upgrades || {};
+  playerState.upgrades = {
+    hpLevel: Number(rawUpgrades.hpLevel ?? rawUpgrades.hp ?? 0),
+    powerLevel: Number(rawUpgrades.powerLevel ?? rawUpgrades.power ?? 0),
+    defenseLevel: Number(rawUpgrades.defenseLevel ?? rawUpgrades.defense ?? 0),
+    hp: Number(rawUpgrades.hpLevel ?? rawUpgrades.hp ?? 0),
+    power: Number(rawUpgrades.powerLevel ?? rawUpgrades.power ?? 0),
+    defense: Number(rawUpgrades.defenseLevel ?? rawUpgrades.defense ?? 0)
+  };
   if (activeChar.house) {
     playerState.house = JSON.parse(JSON.stringify(activeChar.house));
   }
@@ -1096,8 +1103,17 @@ function savePlayerState() {
       activeChar.stamina = playerState.stamina;
       activeChar.skillPoints = playerState.skillPoints || 0;
       activeChar.skill_points = playerState.skillPoints || 0;
-      activeChar.allocatedStats = playerState.upgrades || { hpLevel: 0, powerLevel: 0, defenseLevel: 0 };
-      activeChar.allocated_stats = playerState.upgrades || { hpLevel: 0, powerLevel: 0, defenseLevel: 0 };
+      const upgObj = {
+        hp: playerState.upgrades?.hpLevel ?? playerState.upgrades?.hp ?? 0,
+        power: playerState.upgrades?.powerLevel ?? playerState.upgrades?.power ?? 0,
+        defense: playerState.upgrades?.defenseLevel ?? playerState.upgrades?.defense ?? 0,
+        hpLevel: playerState.upgrades?.hpLevel ?? playerState.upgrades?.hp ?? 0,
+        powerLevel: playerState.upgrades?.powerLevel ?? playerState.upgrades?.power ?? 0,
+        defenseLevel: playerState.upgrades?.defenseLevel ?? playerState.upgrades?.defense ?? 0
+      };
+      activeChar.allocatedStats = upgObj;
+      activeChar.allocated_stats = upgObj;
+      activeChar.upgrades = upgObj;
       activeChar.house = playerState.house || { tier: 0, name: "No Housing", slots: [], decorations: [] };
       activeChar.dungeonProgress = playerState.dungeonProgress || {};
       activeChar.dungeon_progress = playerState.dungeonProgress || {};
@@ -1803,9 +1819,13 @@ function renderStats() {
   _setText("stat-dodge",   `${Math.round(effStats.dodgeChance * 100)}%`);
 
   // Upgrade costs
-  const hpCost  = 10 + playerState.upgrades.hpLevel * 15;
-  const pwrCost = 10 + playerState.upgrades.powerLevel * 15;
-  const defCost = 10 + playerState.upgrades.defenseLevel * 15;
+  const hpLvl  = Number(playerState.upgrades?.hpLevel  ?? playerState.upgrades?.hp  ?? 0) || 0;
+  const pwrLvl = Number(playerState.upgrades?.powerLevel ?? playerState.upgrades?.power ?? 0) || 0;
+  const defLvl = Number(playerState.upgrades?.defenseLevel ?? playerState.upgrades?.defense ?? 0) || 0;
+
+  const hpCost  = 10 + hpLvl * 15;
+  const pwrCost = 10 + pwrLvl * 15;
+  const defCost = 10 + defLvl * 15;
   _setText("cost-hp",      `${hpCost}g`);
   _setText("cost-power",   `${pwrCost}g`);
   _setText("cost-defense", `${defCost}g`);
@@ -2796,8 +2816,10 @@ document.addEventListener("click", async (e) => {
           renderShop();
         }
       } catch (err) {
-        alert(err.message || "Failed to buy item.");
+        showToast(err.message || "Failed to buy item.", "error");
       }
+    } else {
+      buyItem(itemId);
     }
   }
 });
@@ -2908,11 +2930,13 @@ function renderAvatar(containerId, imageSrc, emojiAlt) {
 // ================================================================
 function initUpgradeButtons() {
   document.getElementById("upgrade-hp-btn").addEventListener("click", () => {
-    const cost = 10 + playerState.upgrades.hpLevel * 15;
+    const hpLvl = Number(playerState.upgrades?.hpLevel ?? playerState.upgrades?.hp ?? 0) || 0;
+    const cost = 10 + hpLvl * 15;
     if (playerState.gold >= cost) {
       playerState.gold -= cost;
       playerState.stats.maxHp += 10;
-      playerState.upgrades.hpLevel++;
+      playerState.upgrades.hpLevel = hpLvl + 1;
+      playerState.upgrades.hp = hpLvl + 1;
       savePlayerState(); renderStats(); renderShop();
       showToast("❤️ HP upgraded!", "success");
       if (typeof playSound === "function") playSound("purchase");
@@ -2920,22 +2944,26 @@ function initUpgradeButtons() {
     }
   });
   document.getElementById("upgrade-power-btn").addEventListener("click", () => {
-    const cost = 10 + playerState.upgrades.powerLevel * 15;
+    const pwrLvl = Number(playerState.upgrades?.powerLevel ?? playerState.upgrades?.power ?? 0) || 0;
+    const cost = 10 + pwrLvl * 15;
     if (playerState.gold >= cost) {
       playerState.gold -= cost;
       playerState.stats.power += 2;
-      playerState.upgrades.powerLevel++;
+      playerState.upgrades.powerLevel = pwrLvl + 1;
+      playerState.upgrades.power = pwrLvl + 1;
       savePlayerState(); renderStats(); renderShop();
       showToast("⚔️ Power upgraded!", "success");
       if (typeof playSound === "function") playSound("purchase");
     }
   });
   document.getElementById("upgrade-defense-btn").addEventListener("click", () => {
-    const cost = 10 + playerState.upgrades.defenseLevel * 15;
+    const defLvl = Number(playerState.upgrades?.defenseLevel ?? playerState.upgrades?.defense ?? 0) || 0;
+    const cost = 10 + defLvl * 15;
     if (playerState.gold >= cost) {
       playerState.gold -= cost;
       playerState.stats.defense += 1;
-      playerState.upgrades.defenseLevel++;
+      playerState.upgrades.defenseLevel = defLvl + 1;
+      playerState.upgrades.defense = defLvl + 1;
       savePlayerState(); renderStats(); renderShop();
       showToast("🛡️ Defense upgraded!", "success");
       if (typeof playSound === "function") playSound("purchase");
@@ -2951,7 +2979,7 @@ function initShopButtons() {
     const btn = e.target.closest(".btn-buy");
     if (btn && !btn.disabled) buyItem(btn.dataset.item);
   };
-    ["shop-weapons-container","shop-armor-container","shop-rings-container","shop-consumables-container","shop-food-container"].forEach(id => {
+  ["shop-weapons-container","shop-armor-container","shop-rings-container","shop-consumables-container","shop-food-container","shop-materials-container"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("click", handleBuy);
   });

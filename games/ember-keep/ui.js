@@ -499,11 +499,14 @@ export const UIManager = {
     aggregatedReport.reports.forEach(r => {
       const durationStr = formatDuration(r.elapsedMs || 0);
       let statusWarning = "";
+      if (r.elapsedMs >= 24 * 3600 * 1000) {
+        statusWarning += `<p class="status-alert warning">⏰ 24-Hour Max Idle Limit Reached (Daily Check-in Required)</p>`;
+      }
       if (r.inventoryFullPaused) {
-        statusWarning = `<p class="status-alert warning">⚠️ Task paused: Inventory reached maximum capacity (${r.cyclesProcessed} cycles completed)!</p>`;
+        statusWarning += `<p class="status-alert warning">⚠️ Task paused: Inventory reached maximum capacity (${r.cyclesProcessed} cycles completed)!</p>`;
       }
       if (r.foodExhausted) {
-        statusWarning = `<p class="status-alert danger">🚨 Combat stopped: Food exhausted! 100% rewards kept, auto-teleported to town.</p>`;
+        statusWarning += `<p class="status-alert danger">🚨 Combat stopped: Food exhausted! 100% rewards kept, auto-teleported to town.</p>`;
       }
 
       let lootListHTML = "";
@@ -512,11 +515,12 @@ export const UIManager = {
       }
 
       const levelBadge = r.newLevel ? `<span class="level-up-badge">🎉 Reached Level ${r.newLevel}!</span>` : '';
+      const taskNameStr = r.activeTaskSpec ? ` (${r.activeTaskSpec.name || r.activeTaskSpec.type})` : '';
 
       reportsHTML += `
         <div class="offline-char-card">
           <div class="offline-char-header">
-            <h4>🛡️ Character Slot ${r.slotId}: ${r.charName}</h4>
+            <h4>🛡️ Character Slot ${r.slotId}: ${r.charName}${taskNameStr}</h4>
             ${levelBadge}
           </div>
           <div class="offline-stats-grid">
@@ -536,19 +540,33 @@ export const UIManager = {
           <h2>📜 Aggregated Offline Progression Summary</h2>
         </div>
         <div class="modal-body">
-          <p class="offline-subtitle">Welcome back! Server time verified your idle progress across active slots:</p>
+          <p class="offline-subtitle">Welcome back! Server time verified your idle progress (24h max limit per daily session):</p>
           <div class="offline-reports-list">
             ${reportsHTML}
           </div>
         </div>
-        <div class="modal-footer">
-          <button id="close-offline-modal-btn" class="btn-action btn-claim-all">✨ Claim All Rewards</button>
+        <div class="modal-footer" style="display:flex;gap:12px;">
+          <button id="continue-offline-modal-btn" class="btn-action" style="flex:1;">▶️ Claim & Continue Task(s)</button>
+          <button id="close-offline-modal-btn" class="btn-secondary" style="flex:1;">🛑 Claim & Complete Task(s)</button>
         </div>
       </div>
     `;
 
+    document.getElementById("continue-offline-modal-btn").addEventListener("click", async () => {
+      modal.classList.remove("active");
+      if (typeof window.GameAPI !== "undefined" && typeof window.GameAPI.continueTasksFromReport === "function") {
+        await window.GameAPI.continueTasksFromReport(aggregatedReport.reports);
+      }
+      if (typeof showToast === "function") {
+        showToast("▶️ Rewards claimed & tasks continued for a new 24h cycle!", "success");
+      }
+    });
+
     document.getElementById("close-offline-modal-btn").addEventListener("click", () => {
       modal.classList.remove("active");
+      if (typeof showToast === "function") {
+        showToast("✨ Rewards claimed & task completed.", "info");
+      }
     });
   }
 };

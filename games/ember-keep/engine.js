@@ -1,8 +1,8 @@
 import { AccountStore } from "./account.js";
 import { getServerTime, startTask as dbStartTask, getActiveTasks as dbGetActiveTasks, claimTaskRewards as dbClaimTaskRewards, claimTaskRewardsRPC, getCharacterInventory } from "./db.js";
 
-const BASE_MAX_IDLE_MS = 6 * 3600 * 1000; // 6 hours base
-const PREMIUM_MAX_IDLE_MS = 8 * 3600 * 1000; // 8 hours Ember Pass
+const BASE_MAX_IDLE_MS = 24 * 3600 * 1000; // 24 hours max execution limit
+const PREMIUM_MAX_IDLE_MS = 24 * 3600 * 1000; // 24 hours max execution limit
 const MAX_INVENTORY_SLOTS = 30;
 
 /**
@@ -309,9 +309,11 @@ export const GameAPI = {
     const estimatedServerNow = getEstimatedServerTime();
     const reports = [];
 
-    const slots = [1, 2, 3, 4, 5];
+    const slots = [1, 2, 3, 4];
     for (const slotId of slots) {
       const char = AccountStore.getCharacter(slotId);
+      const existingTask = account.activeTasks ? account.activeTasks[slotId] : null;
+
       if (char && typeof char.id === "string" && char.id.includes("-")) {
         try {
           const rpcRes = await claimTaskRewardsRPC(char.id);
@@ -341,7 +343,8 @@ export const GameAPI = {
               lootItems: rpcRes.items_added || [],
               inventoryFullPaused: rpcRes.inventory_full,
               foodExhausted: rpcRes.food_exhausted,
-              newLevel: rpcRes.new_level
+              newLevel: rpcRes.new_level,
+              activeTaskSpec: existingTask ? { ...existingTask } : null
             });
 
             if (account.activeTasks) account.activeTasks[slotId] = null;
@@ -349,11 +352,17 @@ export const GameAPI = {
         } catch (e) {
           console.warn(`Atomic RPC offline claim failed for slot ${slotId}:`, e);
           const report = this.processTaskProgress(slotId, estimatedServerNow);
-          if (report && report.cyclesProcessed > 0) reports.push(report);
+          if (report && report.cyclesProcessed > 0) {
+            report.activeTaskSpec = existingTask ? { ...existingTask } : null;
+            reports.push(report);
+          }
         }
       } else {
         const report = this.processTaskProgress(slotId, estimatedServerNow);
-        if (report && report.cyclesProcessed > 0) reports.push(report);
+        if (report && report.cyclesProcessed > 0) {
+          report.activeTaskSpec = existingTask ? { ...existingTask } : null;
+          reports.push(report);
+        }
       }
     }
 
@@ -366,6 +375,27 @@ export const GameAPI = {
       totalCharactersProcessed: reports.length,
       reports
     };
+  },
+
+  /**
+   * Continue running tasks from offline report starting new 24h cycle
+   */
+  async continueTasksFromReport(reports) {
+    if (!reports || !Array.isArray(reports)) return;
+    for (const r of reports) {
+      if (r.activeTaskSpec && !r.inventoryFullPaused && !r.foodExhausted) {
+        const spec = r.activeTaskSpec;
+        await this.startTask(r.slotId, {
+          type: spec.type,
+          category: spec.category,
+          name: spec.name,
+          icon: spec.icon,
+          totalStack: spec.totalStack || 9999,
+          cycleMs: spec.cycleMs || 4000,
+          foodQuantity: spec.foodQuantity || 0
+        });
+      }
+    }
   }
 };
 

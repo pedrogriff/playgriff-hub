@@ -470,4 +470,57 @@ export async function buyShopItemRPC(characterId, itemId) {
   }
 }
 
+/**
+ * SUGGESTED PLAYERS FROM OTHER ACCOUNTS
+ */
+export async function getSuggestedPlayersFromDB() {
+  try {
+    const user = await getUser();
+    const currentUserId = user ? user.id : null;
+
+    const { data, error } = await supabase.rpc("get_suggested_players", {
+      p_account_id: currentUserId
+    });
+
+    if (error) {
+      console.warn("RPC get_suggested_players unavailable, querying characters:", error.message);
+      const { data: directData } = await supabase
+        .from("characters")
+        .select("id, account_id, name, class_id, level, power")
+        .limit(20);
+      if (directData && directData.length) {
+        return directData.map(c => ({
+          id: c.id,
+          name: c.name,
+          class: c.class_id ? c.class_id.charAt(0).toUpperCase() + c.class_id.slice(1) : "Warrior",
+          level: c.level || 1,
+          power: c.power || (c.level * 50 + 100),
+          isBot: false,
+          isOnline: true
+        }));
+      }
+      return [];
+    }
+
+    if (!data || !data.length) return [];
+
+    return data.map(char => ({
+      id: char.character_id,
+      name: char.character_name,
+      class: char.class_id ? char.class_id.charAt(0).toUpperCase() + char.class_id.slice(1) : "Warrior",
+      level: char.level || 1,
+      power: char.power || (char.level * 50 + 100),
+      isBot: false,
+      isOnline: true
+    }));
+  } catch (err) {
+    console.warn("Failed to load suggested players from DB:", err);
+    return [];
+  }
+}
+
+if (typeof window !== "undefined") {
+  window.getSuggestedPlayersFromDB = getSuggestedPlayersFromDB;
+}
+
 

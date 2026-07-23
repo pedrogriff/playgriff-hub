@@ -1,73 +1,62 @@
 -- ================================================================
--- EMBER KEEP — Phase 3: Inventory Schema & Atomic Claim RPC
+-- EMBER KEEP — PHASE 9: SUGGESTED FRIENDS, 24H IDLE CAP & PUBLIC PROFILES
 -- Execute this script in the Supabase SQL Editor
 -- ================================================================
 
--- 1. Ensure characters table has max_inventory_slots column
-ALTER TABLE public.characters 
-  ADD COLUMN IF NOT EXISTS max_inventory_slots INT DEFAULT 20 CHECK (max_inventory_slots >= 5);
+-- 1. Create a SECURITY DEFINER function to retrieve main characters of other accounts
+CREATE OR REPLACE FUNCTION public.get_suggested_players(p_account_id UUID DEFAULT NULL)
+RETURNS TABLE (
+  character_id UUID,
+  account_id UUID,
+  character_name VARCHAR,
+  class_id VARCHAR,
+  level INT,
+  power INT,
+  defense INT,
+  max_hp INT
+) AS $$
+BEGIN
+  RETURN QUERY
+  WITH RankedChars AS (
+    SELECT 
+      c.id AS character_id,
+      c.account_id,
+      c.name AS character_name,
+      c.class_id,
+      c.level,
+      c.power,
+      c.defense,
+      c.max_hp,
+      ROW_NUMBER() OVER (PARTITION BY c.account_id ORDER BY c.level DESC, c.power DESC) as rn
+    FROM public.characters c
+    WHERE (p_account_id IS NULL OR c.account_id != p_account_id)
+  )
+  SELECT 
+    rc.character_id,
+    rc.account_id,
+    rc.character_name,
+    rc.class_id,
+    rc.level,
+    rc.power,
+    rc.defense,
+    rc.max_hp
+  FROM RankedChars rc
+  WHERE rc.rn = 1
+  ORDER BY rc.level DESC, rc.power DESC
+  LIMIT 20;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 2. Create character_inventories table
-CREATE TABLE IF NOT EXISTS public.character_inventories (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  character_id UUID NOT NULL REFERENCES public.characters(id) ON DELETE CASCADE,
-  item_id VARCHAR(100) NOT NULL,
-  item_name VARCHAR(100) NOT NULL,
-  item_type VARCHAR(50) NOT NULL DEFAULT 'material',
-  quantity INT NOT NULL DEFAULT 1 CHECK (quantity >= 0),
-  icon VARCHAR(20) DEFAULT '📦',
-  metadata JSONB DEFAULT '{}'::jsonb,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CONSTRAINT unique_char_item UNIQUE (character_id, item_id)
-);
+-- Grant permissions for RPC call
+GRANT EXECUTE ON FUNCTION public.get_suggested_players(UUID) TO anon, authenticated;
 
--- Index for performance
-CREATE INDEX IF NOT EXISTS idx_character_inventories_char 
-  ON public.character_inventories(character_id);
+-- 2. Add RLS policy allowing public SELECT on character profiles for social & leaderboards
+DROP POLICY IF EXISTS "Public select on character profiles" ON public.characters;
+CREATE POLICY "Public select on character profiles"
+  ON public.characters FOR SELECT
+  USING (true);
 
--- 3. Enable Row Level Security (RLS) on character_inventories
-ALTER TABLE public.character_inventories ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "Users can view inventory for their characters" ON public.character_inventories;
-CREATE POLICY "Users can view inventory for their characters"
-  ON public.character_inventories FOR SELECT
-  USING (
-    character_id IN (
-      SELECT id FROM public.characters WHERE account_id = auth.uid()
-    )
-  );
-
-DROP POLICY IF EXISTS "Users can insert inventory for their characters" ON public.character_inventories;
-CREATE POLICY "Users can insert inventory for their characters"
-  ON public.character_inventories FOR INSERT
-  WITH CHECK (
-    character_id IN (
-      SELECT id FROM public.characters WHERE account_id = auth.uid()
-    )
-  );
-
-DROP POLICY IF EXISTS "Users can update inventory for their characters" ON public.character_inventories;
-CREATE POLICY "Users can update inventory for their characters"
-  ON public.character_inventories FOR UPDATE
-  USING (
-    character_id IN (
-      SELECT id FROM public.characters WHERE account_id = auth.uid()
-    )
-  );
-
-DROP POLICY IF EXISTS "Users can delete inventory for their characters" ON public.character_inventories;
-CREATE POLICY "Users can delete inventory for their characters"
-  ON public.character_inventories FOR DELETE
-  USING (
-    character_id IN (
-      SELECT id FROM public.characters WHERE account_id = auth.uid()
-    )
-  );
-
--- ================================================================
--- 4. ATOMIC STORED PROCEDURE: claim_task_rewards
--- ================================================================
+-- 3. Update claim_task_rewards Stored Procedure with 24-Hour Max Execution Limit (86,400s)
 CREATE OR REPLACE FUNCTION public.claim_task_rewards(p_character_id UUID)
 RETURNS JSONB AS $$
 DECLARE
@@ -135,7 +124,7 @@ BEGIN
     );
   END IF;
 
-  -- Idle Cap Determination (6h standard / 8h Ember Pass check)
+  -- Idle Cap Determination (24h max execution timer)
   v_raw_elapsed := EXTRACT(EPOCH FROM (v_now - v_task.started_at))::INT;
   v_effective_elapsed := LEAST(v_raw_elapsed, v_max_idle);
   v_total_possible_cycles := v_effective_elapsed / 4; -- 4 seconds per cycle

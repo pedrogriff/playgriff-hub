@@ -1,6 +1,9 @@
 // ================================================================
-// SYSTEM: CLANS
+// EMBER KEEP — Clans System Module (clans.js)
+// Native ES Module
 // ================================================================
+
+import { AccountStore } from "./account.js";
 
 const DEFAULT_CLAN = {
   id: null,
@@ -23,122 +26,175 @@ const BOT_CLAN_NAMES = [
   "Golden Hawks", "Void Walkers", "Dragon Sworn", "Phoenix Order",
 ];
 
-function loadClan(clanId) {
+export function loadClan(clanId) {
+  if (!clanId) return null;
   const saved = localStorage.getItem(`clan_${clanId}`);
   if (!saved) return null;
-  return JSON.parse(saved);
+  try {
+    return JSON.parse(saved);
+  } catch (e) {
+    return null;
+  }
 }
 
-function saveClan(clan) {
-  clan.totalPower = clan.members.reduce((sum, m) => sum + m.power, 0);
+export function saveClan(clan) {
+  if (!clan || !clan.id) return;
+  clan.totalPower = (clan.members || []).reduce((sum, m) => sum + (m.power || 0), 0);
   localStorage.setItem(`clan_${clan.id}`, JSON.stringify(clan));
 }
 
-function createClan(name, tag, icon) {
-  if (playerState.level < 5) { showToast("Level 5 required!", "error"); return; }
-  if (playerState.gold < 500) { showToast("500g required!", "error"); return; }
-  if (playerState.clan) { showToast("You already belong to a clan!", "error"); return; }
-  
+export function createClan(name, tag, icon) {
+  name = (name || "").trim();
+  tag = (tag || "").trim();
+  icon = icon || "⚔️";
+
+  if (!name) {
+    if (typeof showToast === "function") showToast("Please enter a Clan name!", "error");
+    return false;
+  }
+  if (!tag) {
+    if (typeof showToast === "function") showToast("Please enter a 4-letter Clan TAG!", "error");
+    return false;
+  }
+
+  if (playerState.level < 5) {
+    if (typeof showToast === "function") showToast("Level 5 required to found a Clan!", "error");
+    return false;
+  }
+  if (playerState.gold < 500) {
+    if (typeof showToast === "function") showToast("500g required to found a Clan!", "error");
+    return false;
+  }
+  if (playerState.clan) {
+    if (typeof showToast === "function") showToast("You already belong to a clan!", "error");
+    return false;
+  }
+
+  const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+  const charId = (activeChar && activeChar.id) || "player";
+  const charName = playerState.name || (activeChar && activeChar.name) || "Hero";
+
   const clan = {
     ...JSON.parse(JSON.stringify(DEFAULT_CLAN)),
-    id: `clan_player_${Date.now()}`,
+    id: `clan_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
     name: name,
     tag: tag.substring(0, 4).toUpperCase(),
     icon: icon,
-    leader: "player",
+    leader: charId,
     members: [{
-      id: "player", name: playerState.name,
-      class: playerState.class || "Warrior", level: playerState.level,
-      power: getEffectiveStats().power + getEffectiveStats().defense,
+      id: charId,
+      name: charName,
+      class: playerState.class || "Warrior",
+      level: playerState.level || 1,
+      power: (typeof getEffectiveStats === "function" ? (getEffectiveStats().power + getEffectiveStats().defense) : 150),
       isBot: false,
       joinedAt: Date.now(),
     }],
     createdAt: Date.now(),
   };
-  
+
   playerState.gold -= 500;
-  playerState.clan = { id: clan.id, name: clan.name, role: "leader" };
-  
-  // Fill with bots
-  fillClanWithBots(clan, 5 + Math.floor(Math.random() * 8));
-  
+  playerState.clan = { id: clan.id, name: clan.name, tag: clan.tag, icon: clan.icon, role: "leader" };
+
+  // Fill with 5-8 bot members to start
+  fillClanWithBots(clan, 5 + Math.floor(Math.random() * 4));
+
   saveClan(clan);
-  savePlayerState();
-  showToast(`Clan [${clan.tag}] created!`, "success");
-  
+  if (typeof savePlayerState === "function") savePlayerState();
+  if (typeof showToast === "function") showToast(`⚔️ Clan [${clan.tag}] ${clan.name} founded!`, "success");
+
   if (typeof checkAchievements === "function") checkAchievements("clan");
-  
-  // Update UI if on screen
-  if (typeof renderClanTab === "function") renderClanTab();
+  if (typeof window.renderClanTab === "function") window.renderClanTab();
+  return true;
 }
 
-function fillClanWithBots(clan, count) {
+export function fillClanWithBots(clan, count) {
   for(let i=0; i<count; i++) {
     if (clan.members.length >= clan.maxMembers) break;
     const isOfficer = Math.random() < 0.2;
     const botId = `bot_${Math.random().toString(36).substr(2, 9)}`;
     const botName = generateBotName();
-    const classes = Object.keys(CLASS_PRESETS);
+    const classes = ["Warrior", "Ranger", "Mage", "Paladin"];
     const botClass = classes[Math.floor(Math.random() * classes.length)];
-    const avgLvl = Math.max(1, (clan.members[0].level || 10) + Math.floor(Math.random()*6 - 3));
-    
+    const avgLvl = Math.max(1, (clan.members[0]?.level || 10) + Math.floor(Math.random()*6 - 3));
+
     clan.members.push({
-      id: botId, name: botName, class: botClass, level: avgLvl,
-      power: avgLvl * 15 + Math.floor(Math.random() * 50),
+      id: botId,
+      name: botName,
+      class: botClass,
+      level: avgLvl,
+      power: avgLvl * 25 + Math.floor(Math.random() * 50),
       isBot: true,
       joinedAt: Date.now() - Math.floor(Math.random() * 100000000),
     });
-    
+
     if (isOfficer) clan.officers.push(botId);
   }
 }
 
-function generateBotName() {
-  const f = ["Dark", "Iron", "Storm", "Frost", "Ember", "Shadow", "Light", "Void"];
-  const l = ["blade", "heart", "weaver", "strike", "born", "walker", "smith", "soul"];
+export function generateBotName() {
+  const f = ["Dark", "Iron", "Storm", "Frost", "Ember", "Shadow", "Light", "Void", "Grim", "Star"];
+  const l = ["blade", "heart", "weaver", "strike", "born", "walker", "smith", "soul", "guard", "rider"];
   return f[Math.floor(Math.random()*f.length)] + l[Math.floor(Math.random()*l.length)];
 }
 
-function getAvailableClans() {
+export function getAvailableClans() {
+  initializeBotClans();
   const clans = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key.startsWith("clan_")) {
-      clans.push(JSON.parse(localStorage.getItem(key)));
+      try {
+        const c = JSON.parse(localStorage.getItem(key));
+        if (c && c.id) clans.push(c);
+      } catch (e) {}
     }
   }
-  return clans.sort((a,b) => b.totalPower - a.totalPower);
+  return clans.sort((a,b) => (b.totalPower || 0) - (a.totalPower || 0));
 }
 
-function joinClan(clanId) {
-  if (playerState.clan) return;
+export function joinClan(clanId) {
+  if (playerState.clan) {
+    if (typeof showToast === "function") showToast("You already belong to a clan!", "error");
+    return false;
+  }
   const clan = loadClan(clanId);
   if (!clan || clan.members.length >= clan.maxMembers) {
-    showToast("Clan is full or doesn't exist!", "error");
-    return;
+    if (typeof showToast === "function") showToast("Clan is full or unavailable!", "error");
+    return false;
   }
-  
+
+  const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+  const charId = (activeChar && activeChar.id) || "player";
+  const charName = playerState.name || (activeChar && activeChar.name) || "Hero";
+
   clan.members.push({
-    id: "player", name: playerState.name,
-    class: playerState.class || "Warrior", level: playerState.level,
-    power: getEffectiveStats().power + getEffectiveStats().defense,
+    id: charId,
+    name: charName,
+    class: playerState.class || "Warrior",
+    level: playerState.level || 1,
+    power: (typeof getEffectiveStats === "function" ? (getEffectiveStats().power + getEffectiveStats().defense) : 150),
     isBot: false,
     joinedAt: Date.now(),
   });
-  
-  playerState.clan = { id: clan.id, name: clan.name, role: "member" };
+
+  playerState.clan = { id: clan.id, name: clan.name, tag: clan.tag, icon: clan.icon, role: "member" };
   saveClan(clan);
-  savePlayerState();
-  showToast(`Welcome to [${clan.tag}]!`, "success");
-  if (typeof renderClanTab === "function") renderClanTab();
+  if (typeof savePlayerState === "function") savePlayerState();
+  if (typeof showToast === "function") showToast(`⚔️ Joined [${clan.tag}] ${clan.name}!`, "success");
+  if (typeof window.renderClanTab === "function") window.renderClanTab();
+  return true;
 }
 
-function leaveClan() {
+export function leaveClan() {
   if (!playerState.clan) return;
+  const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+  const charId = (activeChar && activeChar.id) || "player";
+
   const clan = loadClan(playerState.clan.id);
   if (clan) {
-    clan.members = clan.members.filter(m => m.id !== "player");
-    if (clan.leader === "player") {
+    clan.members = (clan.members || []).filter(m => m.id !== charId && m.id !== "player");
+    if (clan.leader === charId || clan.leader === "player") {
       if (clan.members.length > 0) {
         clan.leader = clan.members[0].id;
       } else {
@@ -148,42 +204,48 @@ function leaveClan() {
     if (clan.members.length > 0) saveClan(clan);
   }
   playerState.clan = null;
-  savePlayerState();
-  showToast("You left the clan.", "info");
-  if (typeof renderClanTab === "function") renderClanTab();
+  if (typeof savePlayerState === "function") savePlayerState();
+  if (typeof showToast === "function") showToast("You left the clan.", "info");
+  if (typeof window.renderClanTab === "function") window.renderClanTab();
 }
 
-// Initialize bots if they don't exist
-function initializeBotClans() {
+export function initializeBotClans() {
   if (localStorage.getItem("bot_clans_initialized")) return;
-  
-  // Create 10 bot clans
-  for(let i=0; i<10; i++) {
-    const clanName = BOT_CLAN_NAMES[i % BOT_CLAN_NAMES.length] + (i >= BOT_CLAN_NAMES.length ? ` ${i}` : "");
+
+  for(let i=0; i<8; i++) {
+    const clanName = BOT_CLAN_NAMES[i % BOT_CLAN_NAMES.length];
+    const tag = clanName.substring(0, 3).toUpperCase() + (i + 1);
     const clan = {
       ...JSON.parse(JSON.stringify(DEFAULT_CLAN)),
       id: `clan_bot_${i}`,
       name: clanName,
-      tag: clanName.substring(0, 3).toUpperCase(),
-      icon: ["🐺","🦅","🦁","🐉","💀","🔥","⚡","❄️","🌑","🔮"][i%10],
-      leader: "bot_leader",
+      tag: tag,
+      icon: ["🐺","🦅","🦁","🐉","💀","🔥","⚡","❄️"][i%8],
+      leader: `bot_leader_${i}`,
       members: [],
       createdAt: Date.now() - Math.floor(Math.random() * 5000000000),
     };
-    
-    // Average bot level based on the region they'll try to control
+
     const baseLvl = 5 + (i * 2);
-    
-    // Leader
     clan.members.push({
-      id: "bot_leader", name: generateBotName(), class: "Warrior", level: baseLvl + 5,
+      id: `bot_leader_${i}`, name: generateBotName(), class: "Warrior", level: baseLvl + 5,
       power: (baseLvl+5) * 20, isBot: true, joinedAt: clan.createdAt
     });
-    clan.leader = "bot_leader";
-    
-    fillClanWithBots(clan, 10 + Math.floor(Math.random()*9));
+    clan.leader = `bot_leader_${i}`;
+
+    fillClanWithBots(clan, 8 + Math.floor(Math.random()*6));
     saveClan(clan);
   }
-  
+
   localStorage.setItem("bot_clans_initialized", "true");
+}
+
+if (typeof window !== "undefined") {
+  window.loadClan = loadClan;
+  window.saveClan = saveClan;
+  window.createClan = createClan;
+  window.joinClan = joinClan;
+  window.leaveClan = leaveClan;
+  window.getAvailableClans = getAvailableClans;
+  window.initializeBotClans = initializeBotClans;
 }
