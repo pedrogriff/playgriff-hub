@@ -26,6 +26,28 @@ const BOT_CLAN_NAMES = [
   "Golden Hawks", "Void Walkers", "Dragon Sworn", "Phoenix Order",
 ];
 
+function toast(msg, type = "info") {
+  if (typeof window.showToast === "function") window.showToast(msg, type);
+  else if (typeof showToast === "function") showToast(msg, type);
+}
+
+function saveState() {
+  if (typeof window.savePlayerState === "function") window.savePlayerState();
+  else if (typeof savePlayerState === "function") savePlayerState();
+  else if (typeof AccountStore !== "undefined" && typeof AccountStore.save === "function") AccountStore.save();
+}
+
+function refreshStats() {
+  if (typeof window.renderStats === "function") window.renderStats();
+  else if (typeof renderStats === "function") renderStats();
+  else if (typeof window.renderActiveCharacterUI === "function") window.renderActiveCharacterUI();
+}
+
+function checkAch(type) {
+  if (typeof window.checkAchievements === "function") window.checkAchievements(type);
+  else if (typeof checkAchievements === "function") checkAchievements(type);
+}
+
 export function loadClan(clanId) {
   if (!clanId) return null;
   const saved = localStorage.getItem(`clan_${clanId}`);
@@ -49,36 +71,47 @@ export function createClan(name, tag, icon) {
   icon = icon || "⚔️";
 
   if (!name) {
-    if (typeof showToast === "function") showToast("Please enter a Clan name!", "error");
+    toast("Please enter a Clan name!", "error");
     return false;
   }
   if (!tag) {
-    if (typeof showToast === "function") showToast("Please enter a 4-letter Clan TAG!", "error");
+    toast("Please enter a 4-letter Clan TAG!", "error");
     return false;
   }
 
-  const pState = window.playerState || (typeof playerState !== "undefined" ? playerState : {});
   const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+  const pState = window.playerState || activeChar || {};
 
-  const charLevel = pState.level || (activeChar ? activeChar.level : 1);
+  const charLevel = pState.level !== undefined ? pState.level : (activeChar ? activeChar.level : 1);
   const charGold  = pState.gold !== undefined ? pState.gold : (activeChar ? activeChar.gold : 0);
   const charClan  = pState.clan || (activeChar ? activeChar.clan : null);
 
   if (charLevel < 5) {
-    if (typeof showToast === "function") showToast("Level 5 required to found a Clan!", "error");
+    toast("Level 5 required to found a Clan!", "error");
     return false;
   }
   if (charGold < 500) {
-    if (typeof showToast === "function") showToast("500g required to found a Clan!", "error");
+    toast("500g required to found a Clan!", "error");
     return false;
   }
-  if (charClan) {
-    if (typeof showToast === "function") showToast("You already belong to a clan!", "error");
+  if (charClan && charClan.id) {
+    toast("You already belong to a clan!", "error");
     return false;
   }
 
-  const charId = (activeChar && activeChar.id) || "player";
+  const charId = (activeChar && activeChar.id) || pState.id || "player";
   const charName = pState.name || (activeChar && activeChar.name) || "Hero";
+
+  let charPower = 150;
+  if (typeof window.getEffectiveStats === "function") {
+    const stats = window.getEffectiveStats();
+    charPower = (stats.power || 0) + (stats.defense || 0);
+  } else if (typeof getEffectiveStats === "function") {
+    const stats = getEffectiveStats();
+    charPower = (stats.power || 0) + (stats.defense || 0);
+  } else if (pState.power) {
+    charPower = pState.power + (pState.defense || 0);
+  }
 
   const clan = {
     ...JSON.parse(JSON.stringify(DEFAULT_CLAN)),
@@ -92,14 +125,14 @@ export function createClan(name, tag, icon) {
       name: charName,
       class: pState.class || (activeChar ? activeChar.class : "Warrior"),
       level: charLevel,
-      power: (typeof getEffectiveStats === "function" ? (getEffectiveStats().power + getEffectiveStats().defense) : 150),
+      power: charPower,
       isBot: false,
       joinedAt: Date.now(),
     }],
     createdAt: Date.now(),
   };
 
-  if (pState.gold !== undefined) pState.gold -= 500;
+  if (pState.gold !== undefined) pState.gold = Math.max(0, pState.gold - 500);
   if (activeChar) activeChar.gold = Math.max(0, (activeChar.gold || 0) - 500);
 
   const clanObj = { id: clan.id, name: clan.name, tag: clan.tag, icon: clan.icon, role: "leader" };
@@ -110,11 +143,11 @@ export function createClan(name, tag, icon) {
   fillClanWithBots(clan, 5 + Math.floor(Math.random() * 4));
 
   saveClan(clan);
-  if (typeof savePlayerState === "function") savePlayerState();
-  if (typeof renderStats === "function") renderStats();
-  if (typeof showToast === "function") showToast(`⚔️ Clan [${clan.tag}] ${clan.name} founded!`, "success");
+  saveState();
+  refreshStats();
+  toast(`⚔️ Clan [${clan.tag}] ${clan.name} founded!`, "success");
 
-  if (typeof checkAchievements === "function") checkAchievements("clan");
+  checkAch("clan");
   if (typeof window.renderClanTab === "function") window.renderClanTab();
   return true;
 }
@@ -165,44 +198,63 @@ export function getAvailableClans() {
 }
 
 export function joinClan(clanId) {
-  if (playerState.clan) {
-    if (typeof showToast === "function") showToast("You already belong to a clan!", "error");
+  const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+  const pState = window.playerState || activeChar || {};
+
+  if (pState.clan && pState.clan.id) {
+    toast("You already belong to a clan!", "error");
     return false;
   }
   const clan = loadClan(clanId);
-  if (!clan || clan.members.length >= clan.maxMembers) {
-    if (typeof showToast === "function") showToast("Clan is full or unavailable!", "error");
+  if (!clan || (clan.members && clan.members.length >= (clan.maxMembers || 20))) {
+    toast("Clan is full or unavailable!", "error");
     return false;
   }
 
-  const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
-  const charId = (activeChar && activeChar.id) || "player";
-  const charName = playerState.name || (activeChar && activeChar.name) || "Hero";
+  const charId = (activeChar && activeChar.id) || pState.id || "player";
+  const charName = pState.name || (activeChar && activeChar.name) || "Hero";
 
+  let charPower = 150;
+  if (typeof window.getEffectiveStats === "function") {
+    const stats = window.getEffectiveStats();
+    charPower = (stats.power || 0) + (stats.defense || 0);
+  } else if (typeof getEffectiveStats === "function") {
+    const stats = getEffectiveStats();
+    charPower = (stats.power || 0) + (stats.defense || 0);
+  } else if (pState.power) {
+    charPower = pState.power + (pState.defense || 0);
+  }
+
+  clan.members = clan.members || [];
   clan.members.push({
     id: charId,
     name: charName,
-    class: playerState.class || "Warrior",
-    level: playerState.level || 1,
-    power: (typeof getEffectiveStats === "function" ? (getEffectiveStats().power + getEffectiveStats().defense) : 150),
+    class: pState.class || "Warrior",
+    level: pState.level || 1,
+    power: charPower,
     isBot: false,
     joinedAt: Date.now(),
   });
 
-  playerState.clan = { id: clan.id, name: clan.name, tag: clan.tag, icon: clan.icon, role: "member" };
+  const clanObj = { id: clan.id, name: clan.name, tag: clan.tag, icon: clan.icon, role: "member" };
+  pState.clan = clanObj;
+  if (activeChar) activeChar.clan = clanObj;
+
   saveClan(clan);
-  if (typeof savePlayerState === "function") savePlayerState();
-  if (typeof showToast === "function") showToast(`⚔️ Joined [${clan.tag}] ${clan.name}!`, "success");
+  saveState();
+  refreshStats();
+  toast(`⚔️ Joined [${clan.tag}] ${clan.name}!`, "success");
   if (typeof window.renderClanTab === "function") window.renderClanTab();
   return true;
 }
 
 export function leaveClan() {
-  if (!playerState.clan) return;
   const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
-  const charId = (activeChar && activeChar.id) || "player";
+  const pState = window.playerState || activeChar;
+  if (!pState || !pState.clan || !pState.clan.id) return;
+  const charId = (activeChar && activeChar.id) || pState.id || "player";
 
-  const clan = loadClan(playerState.clan.id);
+  const clan = loadClan(pState.clan.id);
   if (clan) {
     clan.members = (clan.members || []).filter(m => m.id !== charId && m.id !== "player");
     if (clan.leader === charId || clan.leader === "player") {
@@ -214,9 +266,12 @@ export function leaveClan() {
     }
     if (clan.members.length > 0) saveClan(clan);
   }
-  playerState.clan = null;
-  if (typeof savePlayerState === "function") savePlayerState();
-  if (typeof showToast === "function") showToast("You left the clan.", "info");
+  pState.clan = null;
+  if (activeChar) activeChar.clan = null;
+
+  saveState();
+  refreshStats();
+  toast("You left the clan.", "info");
   if (typeof window.renderClanTab === "function") window.renderClanTab();
 }
 

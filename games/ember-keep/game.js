@@ -10,6 +10,10 @@ import { MarketEngine } from "./market.js";
 import { UIManager } from "./ui.js";
 import { createClan, joinClan, leaveClan, getAvailableClans, loadClan, saveClan, initializeBotClans } from "./clans.js";
 import { equipItemRPC, unequipItemRPC, getCharacterInventory, runDungeonEncounterRPC, getDungeonProgress, craftItemRPC, getShopInventoryRPC, buyShopItemRPC } from "./db.js";
+import "./social.js";
+import "./pets.js";
+import "./siege.js";
+import "./audio.js";
 
 // Initialize ES Engine Systems
 window.AccountStore = AccountStore;
@@ -17,6 +21,30 @@ window.GameAPI = GameAPI;
 window.CombatEngine = CombatEngine;
 window.VillageEngine = VillageEngine;
 window.MarketEngine = MarketEngine;
+
+// Expose Core Global Helpers to Window Scope
+window.showToast = showToast;
+window.formatNumber = formatNumber;
+window.savePlayerState = function() {
+  if (typeof AccountStore !== "undefined" && typeof AccountStore.save === "function") {
+    AccountStore.save();
+  }
+};
+window.renderStats = function() {
+  if (typeof window.renderActiveCharacterUI === "function") {
+    window.renderActiveCharacterUI();
+  }
+};
+
+// Dynamic Getter for window.playerState mapping to AccountStore active character
+if (!Object.getOwnPropertyDescriptor(window, "playerState")) {
+  Object.defineProperty(window, "playerState", {
+    get() {
+      return typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+    },
+    configurable: true
+  });
+}
 
 // Expose Inline HTML Event Handlers to Global Window Scope
 window.claimDailyReward = function(...args) { if (typeof claimDailyReward === "function") return claimDailyReward(...args); };

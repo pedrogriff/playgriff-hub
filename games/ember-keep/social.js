@@ -316,11 +316,15 @@
 
     if (typeof window.initializeBotClans === "function") window.initializeBotClans();
 
-    if (playerState && playerState.clan && playerState.clan.id) {
-      const clan = typeof window.loadClan === "function" ? window.loadClan(playerState.clan.id) : null;
+    const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+    const pState = window.playerState || activeChar;
+
+    if (pState && pState.clan && pState.clan.id) {
+      const clan = typeof window.loadClan === "function" ? window.loadClan(pState.clan.id) : null;
       if (!clan) {
-        playerState.clan = null;
-        if (typeof savePlayerState === "function") savePlayerState();
+        pState.clan = null;
+        if (activeChar) activeChar.clan = null;
+        if (typeof window.savePlayerState === "function") window.savePlayerState();
         renderClanTab();
         return;
       }
@@ -337,27 +341,26 @@
       if (myName) myName.textContent = `[${clan.tag}] ${clan.name}`;
       if (myStats) {
         const totalPwr = (clan.members || []).reduce((s, m) => s + (m.power || 0), 0);
-        const formattedPwr = typeof formatNumber === "function" ? formatNumber(totalPwr) : totalPwr;
-        myStats.textContent = `Members: ${clan.members.length}/${clan.maxMembers || 20} · Total Power: ${formattedPwr}`;
+        const fmt = window.formatNumber || (typeof formatNumber === "function" ? formatNumber : (n => n));
+        myStats.textContent = `Members: ${clan.members.length}/${clan.maxMembers || 20} · Total Power: ${fmt(totalPwr)}`;
       }
 
       if (membersList) {
         membersList.innerHTML = "";
-        const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
         (clan.members || []).forEach(member => {
           const li = document.createElement("li");
           li.className = "suggested-item";
           const isLeader = member.id === clan.leader;
           const isMe = member.id === "player" || (activeChar && member.id === activeChar.id);
           const roleTag = isLeader ? "👑 Leader" : "⚔️ Member";
-          const formattedPwr = typeof formatNumber === "function" ? formatNumber(member.power) : member.power;
+          const fmt = window.formatNumber || (typeof formatNumber === "function" ? formatNumber : (n => n));
 
           li.innerHTML = `
             <div style="display:flex;align-items:center;gap:8px;">
               <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc71;"></span>
               <div>
                 <strong>${member.name}</strong> ${isMe ? "<span style='color:var(--gold);font-size:0.75rem;'>(You)</span>" : ""}
-                <div style="color:var(--text-muted);font-size:0.72rem;">${member.class || "Hero"} · Lv.${member.level || 1} (${formattedPwr} Pwr) · <span style="color:var(--gold-dim);">${roleTag}</span></div>
+                <div style="color:var(--text-muted);font-size:0.72rem;">${member.class || "Hero"} · Lv.${member.level || 1} (${fmt(member.power)} Pwr) · <span style="color:var(--gold-dim);">${roleTag}</span></div>
               </div>
             </div>
           `;
@@ -377,23 +380,26 @@
         clans.slice(0, 10).forEach(clan => {
           const li = document.createElement("li");
           li.className = "suggested-item";
-          const formattedPwr = typeof formatNumber === "function" ? formatNumber(clan.totalPower) : clan.totalPower;
+          const totalPwr = (clan.members || []).reduce((s, m) => s + (m.power || 0), 0);
+          const fmt = window.formatNumber || (typeof formatNumber === "function" ? formatNumber : (n => n));
 
           li.innerHTML = `
             <div style="display:flex;align-items:center;gap:10px;">
               <span style="font-size:1.4rem;">${clan.icon || "⚔️"}</span>
               <div>
                 <strong>[${clan.tag}] ${clan.name}</strong>
-                <div style="color:var(--text-muted);font-size:0.72rem;">Members: ${clan.members.length}/${clan.maxMembers || 20} · Power: ${formattedPwr}</div>
+                <div style="color:var(--text-muted);font-size:0.72rem;">Members: ${clan.members.length}/${clan.maxMembers || 20} · Power: ${fmt(totalPwr)}</div>
               </div>
             </div>
             <button class="btn-action btn-join-clan" data-clan-id="${clan.id}" style="padding:4px 12px;font-size:0.78rem;min-height:28px;">Join</button>
           `;
 
           const joinBtn = li.querySelector(".btn-join-clan");
-          joinBtn.addEventListener("click", () => {
-            if (typeof window.joinClan === "function") window.joinClan(clan.id);
-          });
+          if (joinBtn) {
+            joinBtn.addEventListener("click", () => {
+              if (typeof window.joinClan === "function") window.joinClan(clan.id);
+            });
+          }
 
           availableList.appendChild(li);
         });
@@ -451,11 +457,25 @@
 
         if (typeof window.createClan === "function") {
           const created = window.createClan(name, tag, icon);
-          if (created && nameInput) nameInput.value = "";
-          if (created && tagInput) tagInput.value = "";
+          if (created) {
+            if (nameInput) nameInput.value = "";
+            if (tagInput) tagInput.value = "";
+          }
         }
       });
     }
+
+    const nameInp = document.getElementById("clan-name-input");
+    const tagInp  = document.getElementById("clan-tag-input");
+    [nameInp, tagInp].forEach(inp => {
+      if (inp) {
+        inp.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && createClanBtn) {
+            createClanBtn.click();
+          }
+        });
+      }
+    });
 
     if (leaveClanBtn) {
       leaveClanBtn.addEventListener("click", () => {
@@ -501,7 +521,7 @@
   });
 
   // ── Init ──
-  document.addEventListener("DOMContentLoaded", () => {
+  function initSocial() {
     loadFriends();
     initSocialControls();
     renderSuggested();
@@ -514,6 +534,12 @@
       simulateBotActivity();
       renderLeaderboard();
     }, 45_000);
-  });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initSocial);
+  } else {
+    initSocial();
+  }
 
 })();
