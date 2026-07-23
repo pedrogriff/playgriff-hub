@@ -226,7 +226,9 @@ const RING_ITEMS = {
   ring_7: { id:"ring_7", class:null, type:"ring", name:"Thunderstruck Ring", stat:"critChance",  value:0.10, cost:1500, icon:"⚡", tier:4 },
   ring_8: { id:"ring_8", class:null, type:"ring", name:"Specter's Ring",     stat:"dodgeChance", value:0.12, cost:1500, icon:"👻", tier:4 },
   ring_9: { id:"ring_9", class:null, type:"ring", name:"Void Ring",          stat:"power",       value:35,   cost:5000, icon:"🌀", tier:5 },
-  ring_10:{ id:"ring_10",class:null, type:"ring", name:"Aegis Pendant",      stat:"defense",     value:30,   cost:5000, icon:"🏺", tier:5 },
+  ring_10:{ id:"ring_10",class:null, type:"ring", name:"Aegis Pendant",      stat:"defense",     value:30,   cost:5000, icon:"🏺", tier:5 }
+};
+
 const EXPANDED_ITEMS = {
   head_leather_cap:       { id:"head_leather_cap",       slot_type:"head",      name:"Novice Leather Cap",     defense:2,  max_hp:10, min_level:1,  cost:15,   icon:"🪖", rarity:"common",   is_shop_item:true },
   chest_cloth_tunic:      { id:"chest_cloth_tunic",      slot_type:"chest",     name:"Apprentice Cloth Tunic", defense:3,  max_hp:15, min_level:1,  cost:20,   icon:"🥋", rarity:"common",   is_shop_item:true },
