@@ -388,6 +388,8 @@ export const GameAPI = {
         await this.startTask(r.slotId, {
           type: spec.type,
           category: spec.category,
+          targetId: spec.targetId || spec.type || "default_target",
+          targetName: spec.targetName || spec.name || "Action",
           name: spec.name,
           icon: spec.icon,
           totalStack: spec.totalStack || 9999,

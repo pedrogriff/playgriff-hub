@@ -224,8 +224,8 @@ export async function startTask(characterId, taskType, targetId, durationSeconds
   // 2. Insert new running task
   const newTask = {
     character_id: characterId,
-    task_type: taskType,
-    target_id: targetId,
+    task_type: taskType || "mining",
+    target_id: targetId || taskType || "default_target",
     started_at: new Date().toISOString(),
     duration_seconds: durationSeconds || 0,
     allocated_food: foodAmount || 0,
