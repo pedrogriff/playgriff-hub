@@ -175,7 +175,7 @@ BEGIN
         v_req_qty := v_ing.quantity * p_amount;
 
         SELECT COALESCE(SUM(quantity), 0) INTO v_held_qty
-        FROM public.inventory
+        FROM public.character_inventories
         WHERE character_id = p_character_id AND item_id = v_req_item_id;
 
         IF v_held_qty < v_req_qty THEN
@@ -183,12 +183,12 @@ BEGIN
         END IF;
 
         -- Deduct ingredient
-        UPDATE public.inventory
+        UPDATE public.character_inventories
         SET quantity = quantity - v_req_qty
         WHERE character_id = p_character_id AND item_id = v_req_item_id;
 
         -- Clean up empty stacks
-        DELETE FROM public.inventory
+        DELETE FROM public.character_inventories
         WHERE character_id = p_character_id AND item_id = v_req_item_id AND quantity <= 0;
     END LOOP;
 
@@ -205,20 +205,20 @@ BEGIN
     v_output_meta := v_recipe->'output'->'metadata';
 
     -- Check if item already in inventory
-    IF EXISTS (SELECT 1 FROM public.inventory WHERE character_id = p_character_id AND item_id = v_output_item_id) THEN
-        UPDATE public.inventory
+    IF EXISTS (SELECT 1 FROM public.character_inventories WHERE character_id = p_character_id AND item_id = v_output_item_id) THEN
+        UPDATE public.character_inventories
         SET quantity = quantity + v_output_qty
         WHERE character_id = p_character_id AND item_id = v_output_item_id;
     ELSE
         SELECT COUNT(DISTINCT item_id) INTO v_used_slots
-        FROM public.inventory
+        FROM public.character_inventories
         WHERE character_id = p_character_id;
 
         IF v_used_slots >= 20 THEN
             RAISE EXCEPTION 'Inventory is full. Cannot add crafted item.';
         END IF;
 
-        INSERT INTO public.inventory (character_id, item_id, quantity, metadata)
+        INSERT INTO public.character_inventories (character_id, item_id, quantity, metadata)
         VALUES (p_character_id, v_output_item_id, v_output_qty, v_output_meta);
     END IF;
 

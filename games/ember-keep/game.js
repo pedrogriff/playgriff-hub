@@ -1351,6 +1351,40 @@ function startProductionTicker() {
     if (!playerState.class) return;
     checkProductionTimers();
   }, 1000); // Check every second
+function addToInventory(itemId, qty = 1) {
+  if (!playerState.inventory) playerState.inventory = [];
+  const existing = playerState.inventory.find(i => i.id === itemId || i.item_id === itemId);
+  if (existing) {
+    existing.qty = (existing.qty || 1) + qty;
+  } else {
+    const itemDef = ALL_ITEMS[itemId];
+    playerState.inventory.push({
+      id: itemId,
+      item_id: itemId,
+      name: itemDef?.name || itemId,
+      type: itemDef?.type || "material",
+      icon: itemDef?.icon || "📦",
+      qty: qty
+    });
+  }
+  savePlayerState();
+  if (typeof renderInventory === "function") renderInventory();
+}
+
+function removeFromInventory(itemId, qty = 1) {
+  if (!playerState.inventory) return;
+  const idx = playerState.inventory.findIndex(i => i.id === itemId || i.item_id === itemId);
+  if (idx !== -1) {
+    const item = playerState.inventory[idx];
+    const currentQty = item.qty || 1;
+    if (currentQty > qty) {
+      item.qty = currentQty - qty;
+    } else {
+      playerState.inventory.splice(idx, 1);
+    }
+  }
+  savePlayerState();
+  if (typeof renderInventory === "function") renderInventory();
 }
 
 function startProduction(recipeId) {
