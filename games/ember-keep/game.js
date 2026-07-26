@@ -1433,10 +1433,14 @@ function startProduction(recipeId) {
   const skillLvl = Math.max(1, rawSkill?.level || 1);
   let reduction = Math.min(0.5, skillLvl * 0.02);
   
-  const stationSpeedBonus = getStationSpeedBonus(recipe.skill);
+  const stationSpeedBonus = typeof getStationSpeedBonus === "function" ? getStationSpeedBonus(recipe.skill) : 0;
   reduction += stationSpeedBonus;
 
-  const durationMs = Math.max(2000, recipe.baseTime * (1 - reduction));
+  const baseMs = recipe.timeMs || recipe.baseTime || 30000;
+  let finalTimeMs = Math.max(2000, baseMs * (1 - reduction));
+  if (typeof isPremiumActive === "function" && isPremiumActive()) {
+    finalTimeMs = Math.floor(finalTimeMs * PREMIUM_BONUSES.prodTimeMult);
+  }
 
   playerState.productionTimers.push({
     recipeId: recipe.id,
