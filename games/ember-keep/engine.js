@@ -219,7 +219,6 @@ export const GameAPI = {
     const keepMaterials = lootFilter.keep_materials !== false;
 
     // Ember Shard Bonuses (Phase 10: Rebirth permanent buffs)
-    const account = AccountStore.getAccount();
     const emberShards = account ? (account.emberShards || 0) : 0;
     const shardXpMult = 1 + (emberShards * 0.02);   // +2% XP per shard
     const shardGoldMult = 1 + (emberShards * 0.01);  // +1% Gold per shard
