@@ -304,6 +304,42 @@ export async function getCharacterInventory(characterId) {
   return data || [];
 }
 
+export async function syncInventoryItemToDB(characterId, item) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return;
+  try {
+    const itemId = item.id || item.item_id;
+    const qty = item.qty || item.quantity || 1;
+
+    const { data: existing } = await supabase
+      .from("character_inventories")
+      .select("id, quantity")
+      .eq("character_id", characterId)
+      .eq("item_id", itemId)
+      .maybeSingle();
+
+    if (existing) {
+      await supabase
+        .from("character_inventories")
+        .update({ quantity: qty, updated_at: new Date().toISOString() })
+        .eq("id", existing.id);
+    } else {
+      await supabase
+        .from("character_inventories")
+        .insert([{
+          character_id: characterId,
+          item_id: itemId,
+          item_name: item.name || itemId,
+          item_type: item.type || "material",
+          quantity: qty,
+          icon: item.icon || "📦",
+          metadata: item.metadata || {}
+        }]);
+    }
+  } catch (e) {
+    console.warn("Failed syncing item to Supabase character_inventories:", e);
+  }
+}
+
 export async function claimTaskRewardsRPC(characterId) {
   if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
 

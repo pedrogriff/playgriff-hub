@@ -9,7 +9,7 @@ import { VillageEngine } from "./village.js";
 import { MarketEngine } from "./market.js";
 import { UIManager } from "./ui.js";
 import { createClan, joinClan, leaveClan, getAvailableClans, loadClan, saveClan, initializeBotClans } from "./clans.js";
-import { equipItemRPC, unequipItemRPC, getCharacterInventory, runDungeonEncounterRPC, getDungeonProgress, craftItemRPC, getShopInventoryRPC, buyShopItemRPC } from "./db.js";
+import { equipItemRPC, unequipItemRPC, getCharacterInventory, runDungeonEncounterRPC, getDungeonProgress, craftItemRPC, getShopInventoryRPC, buyShopItemRPC, syncInventoryItemToDB } from "./db.js";
 import { GarrisonEngine, GARRISON_STATIONS } from "./garrison.js";
 import { WorldEngine } from "./world.js";
 import { SeasonsEngine } from "./seasons.js";
@@ -1353,21 +1353,26 @@ function startProductionTicker() {
   }, 1000); // Check every second
 function addToInventory(itemId, qty = 1) {
   if (!playerState.inventory) playerState.inventory = [];
-  const existing = playerState.inventory.find(i => i.id === itemId || i.item_id === itemId);
-  if (existing) {
-    existing.qty = (existing.qty || 1) + qty;
+  let itemObj = playerState.inventory.find(i => i.id === itemId || i.item_id === itemId);
+  if (itemObj) {
+    itemObj.qty = (itemObj.qty || 1) + qty;
   } else {
     const itemDef = ALL_ITEMS[itemId];
-    playerState.inventory.push({
+    itemObj = {
       id: itemId,
       item_id: itemId,
       name: itemDef?.name || itemId,
       type: itemDef?.type || "material",
       icon: itemDef?.icon || "📦",
       qty: qty
-    });
+    };
+    playerState.inventory.push(itemObj);
   }
   savePlayerState();
+  const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+  if (activeChar && typeof activeChar.id === "string" && activeChar.id.includes("-")) {
+    syncInventoryItemToDB(activeChar.id, itemObj);
+  }
   if (typeof renderInventory === "function") renderInventory();
 }
 
@@ -1377,13 +1382,18 @@ function removeFromInventory(itemId, qty = 1) {
   if (idx !== -1) {
     const item = playerState.inventory[idx];
     const currentQty = item.qty || 1;
-    if (currentQty > qty) {
-      item.qty = currentQty - qty;
+    const newQty = currentQty > qty ? currentQty - qty : 0;
+    if (newQty > 0) {
+      item.qty = newQty;
     } else {
       playerState.inventory.splice(idx, 1);
     }
+    savePlayerState();
+    const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
+    if (activeChar && typeof activeChar.id === "string" && activeChar.id.includes("-")) {
+      syncInventoryItemToDB(activeChar.id, { id: itemId, qty: newQty });
+    }
   }
-  savePlayerState();
   if (typeof renderInventory === "function") renderInventory();
 }
 
@@ -3162,13 +3172,8 @@ function buyItem(itemId) {
   if (item.type === "consumable" || item.type === "material" || item.type === "food") {
     if (playerState.gold < item.cost) { showToast("Not enough gold!", "error"); return; }
     playerState.gold -= item.cost;
-    const existing = playerState.inventory.find(i => i.id === itemId);
-    if (existing) {
-      existing.qty = (existing.qty || 1) + 1;
-    } else {
-      playerState.inventory.push({ id: itemId, qty: 1 });
-    }
-    savePlayerState(); renderStats(); renderShop(); renderInventory();
+    addToInventory(itemId, 1);
+    renderStats(); renderShop(); renderInventory();
     if (typeof renderMaterials === "function") renderMaterials();
     showToast(`✅ Purchased ${item.name}!`, "success");
     if (typeof playSound === "function") playSound("purchase");
@@ -4158,7 +4163,7 @@ function handleBattleVictory(level) {
       nextLevelBtn.style.display = "inline-flex";
       nextLevelBtn.onclick = () => {
         nextLevelBtn.style.display = "none";
-        startBattle(playerState.unlockedLevel);
+        startBattleSimulation(playerState.unlockedLevel);
       };
     } else {
       nextLevelBtn.style.display = "none";
