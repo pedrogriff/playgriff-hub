@@ -208,12 +208,45 @@ export const AccountStore = {
                 s => accountData.characterSlots[s] && accountData.characterSlots[s].id === taskRow.character_id
               );
               if (matchedSlot) {
+                let icon = "⚡";
+                let targetName = taskRow.target_id || "Task";
+                
+                const tType = (taskRow.task_type || "").toLowerCase();
+                const tId = (taskRow.target_id || "").toLowerCase();
+
+                if (tType === "mining") {
+                  icon = "⛏️";
+                  if (tId === "coal_vein") targetName = "Coal Vein";
+                  else if (tId === "iron_deposit") targetName = "Iron Deposit";
+                  else targetName = tId.replace(/_/g, " ");
+                } else if (tType === "woodcutting") {
+                  icon = "🪓";
+                  if (tId === "oak_forest") targetName = "Oak Forest";
+                  else if (tId === "willow_grove") targetName = "Willow Grove";
+                  else targetName = tId.replace(/_/g, " ");
+                } else if (tType === "fishing") {
+                  icon = "🎣";
+                  if (tId === "greenhollow_river") targetName = "River Fishing";
+                  else targetName = tId.replace(/_/g, " ");
+                } else if (tType === "combat") {
+                  icon = "⚔️";
+                  if (tId === "mossy_grotto") targetName = "Mossy Grotto";
+                  else if (tId === "goblin_warren") targetName = "Goblin Warren";
+                  else if (tId.startsWith("level_")) {
+                    const lvlNum = tId.replace("level_", "");
+                    targetName = `Dungeon Level ${lvlNum}`;
+                  } else {
+                    targetName = tId.replace(/_/g, " ");
+                  }
+                }
+
                 accountData.activeTasks[matchedSlot] = {
                   id: taskRow.id,
                   dbTaskId: taskRow.id,
                   type: taskRow.task_type,
                   targetId: taskRow.target_id,
-                  targetName: taskRow.target_id,
+                  targetName: targetName,
+                  icon: icon,
                   startTime: new Date(taskRow.started_at).getTime(),
                   cycleMs: 4000,
                   cyclesCompleted: 0,

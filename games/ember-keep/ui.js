@@ -345,7 +345,24 @@ export const UIManager = {
       const slotTitle = isSeasonalSlot ? `Slot 5 (Echo)` : `Slot ${slotId}`;
 
       if (char) {
-        const taskStatusText = activeTask ? `${activeTask.icon} ${activeTask.targetName}` : "Idle";
+        let taskIcon = activeTask?.icon;
+        if (!taskIcon || taskIcon === "undefined") {
+          const tType = (activeTask?.type || "").toLowerCase();
+          if (tType === "mining") taskIcon = "⛏️";
+          else if (tType === "woodcutting") taskIcon = "🪓";
+          else if (tType === "fishing") taskIcon = "🎣";
+          else if (tType === "combat") taskIcon = "⚔️";
+          else taskIcon = "⚡";
+        }
+
+        let taskName = activeTask?.targetName || activeTask?.targetId || "Active Task";
+        if (typeof taskName === "string" && taskName.startsWith("level_")) {
+          taskName = `Dungeon Level ${taskName.replace("level_", "")}`;
+        } else if (typeof taskName === "string") {
+          taskName = taskName.replace(/_/g, " ");
+        }
+
+        const taskStatusText = activeTask ? `${taskIcon} ${taskName}` : "Idle";
         const statusClass = activeTask ? "status-active" : "status-idle";
         const taskBtnText = activeTask ? "🛑 Stop" : "⚡ Task";
         const taskBtnClass = activeTask ? "btn-stop-task" : "btn-start-task";
