@@ -28,6 +28,24 @@
     localStorage.setItem("rpg_social_friends", JSON.stringify(friends));
   }
 
+  // ── Technical Guard A: Clan LocalStorage -> Supabase Migration ──
+  async function checkClanMigration() {
+    try {
+      const localClan = localStorage.getItem("ember_clan_data");
+      if (localClan && typeof syncLocalClanToSupabaseRPC === "function") {
+        const parsed = JSON.parse(localClan);
+        await syncLocalClanToSupabaseRPC(parsed);
+        localStorage.removeItem("ember_clan_data");
+      }
+    } catch (e) {
+      console.warn("Clan migration hook skipped:", e);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    checkClanMigration();
+  });
+
   // ── Generate starting bots ──
   function generateInitialBots() {
     const shuffle = arr => arr.sort(() => Math.random() - 0.5);

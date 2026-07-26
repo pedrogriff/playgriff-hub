@@ -649,6 +649,111 @@ export async function transmuteItemsRPC(characterId, itemIds) {
   }
 }
 
+export async function syncLocalClanToSupabaseRPC(localClan) {
+  if (!localClan || !localClan.name || !localClan.tag) return null;
+  const user = await getUser();
+  if (!user) return null;
+
+  try {
+    const { data, error } = await supabase
+      .from("clans")
+      .insert({
+        name: localClan.name,
+        tag: localClan.tag,
+        icon: localClan.icon || "⚔️",
+        leader_account_id: user.id,
+        max_members: localClan.maxMembers || 20,
+        siege_points: localClan.siegePoints || 0,
+        total_power: localClan.totalPower || 0,
+        fortresses: localClan.fortresses || [],
+        members: localClan.members || []
+      })
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.warn("Could not sync local clan to Supabase:", error.message);
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.warn("syncLocalClanToSupabaseRPC error:", err);
+    return null;
+  }
+}
+
+export async function enqueueTaskRPC(characterId, queuePos, taskType, targetId, targetName, totalCycles = 50, allocatedFood = 0) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("enqueue_task", {
+      p_character_id: characterId,
+      p_queue_position: queuePos,
+      p_task_type: taskType,
+      p_target_id: targetId,
+      p_target_name: targetName,
+      p_total_cycles: totalCycles,
+      p_allocated_food: allocatedFood
+    });
+
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.error("enqueueTaskRPC failed:", err);
+    throw err;
+  }
+}
+
+export async function clearTaskQueueRPC(characterId) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("clear_task_queue", {
+      p_character_id: characterId
+    });
+
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.error("clearTaskQueueRPC failed:", err);
+    throw err;
+  }
+}
+
+export async function updateWebhookSettingsRPC(webhookUrl, events) {
+  const user = await getUser();
+  if (!user) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("update_webhook_settings", {
+      p_webhook_url: webhookUrl,
+      p_events: events
+    });
+
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.error("updateWebhookSettingsRPC failed:", err);
+    throw err;
+  }
+}
+
+export async function visitHousingHearthRPC(hostAccountId) {
+  if (!hostAccountId) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("visit_housing_hearth", {
+      p_host_account_id: hostAccountId
+    });
+
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.error("visitHousingHearthRPC failed:", err);
+    throw err;
+  }
+}
+
 if (typeof window !== "undefined") {
   window.getSuggestedPlayersFromDB = getSuggestedPlayersFromDB;
   window.performRebirthRPC = performRebirthRPC;
@@ -657,6 +762,14 @@ if (typeof window !== "undefined") {
   window.reforgeItemRPC = reforgeItemRPC;
   window.enhanceItemRPC = enhanceItemRPC;
   window.transmuteItemsRPC = transmuteItemsRPC;
+  window.syncLocalClanToSupabaseRPC = syncLocalClanToSupabaseRPC;
+  window.enqueueTaskRPC = enqueueTaskRPC;
+  window.clearTaskQueueRPC = clearTaskQueueRPC;
+  window.updateWebhookSettingsRPC = updateWebhookSettingsRPC;
+  window.visitHousingHearthRPC = visitHousingHearthRPC;
 }
+
+
+
 
 

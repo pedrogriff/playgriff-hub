@@ -307,11 +307,19 @@ export const GameAPI = {
 
     AccountStore.saveLocalCache();
 
+    // Technical Guard C: Fallback Safety Guard
+    // When a task pauses/fails (e.g. inventory full or food exhausted), check if inventory is full BEFORE initiating a fallback task
+    const isInventoryFull = (char.inventory || []).reduce((acc, item) => acc + (item.qty || 1), 0) >= MAX_INVENTORY_SLOTS;
+
+    if ((inventoryFullPaused || foodExhausted) && isInventoryFull) {
+      // Do NOT trigger fallback task if inventory is completely full to avoid infinite loops
+      console.warn(`[TaskQueue Guard C] Inventory is full (${char.inventory.length}/${MAX_INVENTORY_SLOTS}). Skipping fallback task.`);
+    }
+
+    AccountStore.save();
+
     return {
-      slotId,
-      charName: char.name,
       cyclesProcessed,
-      elapsedMs: effectiveElapsed,
       expGained,
       goldGained,
       lootItems,
@@ -319,6 +327,13 @@ export const GameAPI = {
       foodExhausted,
       newLevel: char.level
     };
+  },
+
+  /**
+   * Return Queue capacity based on housing tier
+   */
+  getQueueCapacity(housingTier = 0) {
+    return Math.min(5, Math.max(1, housingTier));
   },
 
   /**
@@ -331,6 +346,14 @@ export const GameAPI = {
     await syncServerClockOffset();
     const estimatedServerNow = getEstimatedServerTime();
     const reports = [];
+
+    // Technical Guard B: Compute Scout Tower task speed buff BEFORE evaluating active character's task cycles
+    let garrisonAssignments = [];
+    let garrisonBuffs = { taskSpeedMultiplier: 1.0 };
+    if (typeof window !== "undefined" && window.GarrisonEngine) {
+      garrisonAssignments = await window.GarrisonEngine.getAssignments().catch(() => []);
+      garrisonBuffs = window.GarrisonEngine.computeAccountBuffs(garrisonAssignments);
+    }
 
     const slots = [1, 2, 3, 4];
     for (const slotId of slots) {

@@ -10,6 +10,9 @@ import { MarketEngine } from "./market.js";
 import { UIManager } from "./ui.js";
 import { createClan, joinClan, leaveClan, getAvailableClans, loadClan, saveClan, initializeBotClans } from "./clans.js";
 import { equipItemRPC, unequipItemRPC, getCharacterInventory, runDungeonEncounterRPC, getDungeonProgress, craftItemRPC, getShopInventoryRPC, buyShopItemRPC } from "./db.js";
+import { GarrisonEngine, GARRISON_STATIONS } from "./garrison.js";
+import { WorldEngine } from "./world.js";
+import { SeasonsEngine } from "./seasons.js";
 import "./social.js";
 import "./pets.js";
 import "./siege.js";
@@ -21,6 +24,10 @@ window.GameAPI = GameAPI;
 window.CombatEngine = CombatEngine;
 window.VillageEngine = VillageEngine;
 window.MarketEngine = MarketEngine;
+window.GarrisonEngine = GarrisonEngine;
+window.GARRISON_STATIONS = GARRISON_STATIONS;
+window.WorldEngine = WorldEngine;
+window.SeasonsEngine = SeasonsEngine;
 
 // Expose Core Global Helpers to Window Scope
 window.showToast = showToast;
@@ -801,6 +808,10 @@ function initTabs() {
         if (typeof renderPaperdollGrid === "function") renderPaperdollGrid();
       } else if (btn.dataset.tab === "forge-tab") {
         if (typeof renderProfessions === "function") renderProfessions();
+      } else if (btn.dataset.tab === "garrison-tab") {
+        if (typeof renderGarrisonPanel === "function") renderGarrisonPanel();
+      } else if (btn.dataset.tab === "world-tab") {
+        if (typeof renderWorldRiftPanel === "function") renderWorldRiftPanel();
       }
     });
   });
@@ -1176,6 +1187,8 @@ function savePlayerState() {
 
   if (typeof renderLootFilterSettings === "function") renderLootFilterSettings();
   if (typeof renderDifficultySelector === "function") renderDifficultySelector();
+  if (typeof renderTaskQueuePanel === "function") renderTaskQueuePanel();
+  if (typeof renderSeasonalPortal === "function") renderSeasonalPortal();
 }
 
 function checkDailyLogin() {
@@ -4941,4 +4954,426 @@ window.renderRebirthModal = renderRebirthModal;
 window.renderLootFilterSettings = renderLootFilterSettings;
 window.renderDifficultySelector = renderDifficultySelector;
 window.getRandomNarratorLine = getRandomNarratorLine;
+
+// ── GARRISON NETWORK PANEL UI ──
+export async function renderGarrisonPanel() {
+  const container = document.getElementById("garrison-tab-container");
+  if (!container) return;
+
+  const account = AccountStore.getAccount() || {};
+  const activeChar = AccountStore.getActiveCharacter() || {};
+  const assignments = await GarrisonEngine.getAssignments().catch(() => []);
+  const buffs = GarrisonEngine.computeAccountBuffs(assignments);
+
+  const altChars = Object.values(account.characterSlots || {}).filter(c => c && c.id !== activeChar.id);
+
+  let stationsHTML = "";
+  Object.values(GARRISON_STATIONS).forEach(st => {
+    const assigned = assignments.find(a => a.station_id === st.id);
+    const assignedChar = assigned ? Object.values(account.characterSlots || {}).find(c => c && c.id === assigned.character_id) : null;
+
+    stationsHTML += `
+      <div class="garrison-card panel" style="padding:14px; border:1px solid var(--border); display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h4 style="margin:0; color:var(--gold,#f59e0b);">${st.icon} ${st.name}</h4>
+            <span style="font-size:0.75rem; background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:4px;">${st.statBuffDesc}</span>
+          </div>
+          <p style="font-size:0.8rem; color:#aaa; margin:8px 0;">${st.desc}</p>
+        </div>
+        <div style="margin-top:12px; background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">
+          ${assignedChar ? `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-weight:bold; font-size:0.85rem; color:#10b981;">🛡️ ${assignedChar.name} (Lv. ${assignedChar.level})</span>
+              <button class="btn-action btn-unassign-garrison" data-char="${assignedChar.id}" style="padding:2px 8px; font-size:0.75rem; background:#ef4444; border:none; cursor:pointer;">Unassign</button>
+            </div>
+          ` : `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.8rem; color:#888;">Empty Station</span>
+              <select class="select-assign-garrison btn-action" data-station="${st.id}" style="padding:2px 6px; font-size:0.75rem;">
+                <option value="">+ Assign Alt Hero</option>
+                ${altChars.map(alt => `<option value="${alt.id}">${alt.name} (Lv. ${alt.level})</option>`).join('')}
+              </select>
+            </div>
+          `}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = `
+    <div style="padding:15px;">
+      <div class="panel" style="margin-bottom:15px; background:linear-gradient(135deg, rgba(245,158,11,0.1), rgba(0,0,0,0.4));">
+        <h3 style="margin-top:0; color:var(--gold);">🏰 Account Garrison Network</h3>
+        <p style="font-size:0.85rem; color:#ccc;">Station your inactive alt heroes in garrison network posts to passively empower your active main character!</p>
+        <div style="display:flex; gap:20px; flex-wrap:wrap; font-size:0.85rem; margin-top:10px;">
+          <span>⚡ Global Task Speed: <strong style="color:#10b981;">x${buffs.taskSpeedMultiplier.toFixed(2)}</strong></span>
+          <span>🛡️ Gear Stat Bonus: <strong style="color:#60a5fa;">+${Math.round((buffs.gearStatMultiplier - 1) * 100)}%</strong></span>
+          <span>🧪 Alchemy Brew: <strong style="color:${buffs.hasAlchemyLab ? '#10b981' : '#666'};">${buffs.hasAlchemyLab ? 'Active' : 'Inactive'}</strong></span>
+          <span>🎯 Alt Training: <strong style="color:${buffs.hasTrainingGrounds ? '#10b981' : '#666'};">${buffs.hasTrainingGrounds ? 'Active' : 'Inactive'}</strong></span>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:15px;">
+        ${stationsHTML}
+      </div>
+    </div>
+  `;
+
+  // Event Listeners
+  container.querySelectorAll(".btn-unassign-garrison").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const charId = e.currentTarget.dataset.char;
+      await GarrisonEngine.removeFromStation(charId);
+      if (typeof showToast === "function") showToast("Alt unassigned from Garrison", "info");
+      renderGarrisonPanel();
+    });
+  });
+
+  container.querySelectorAll(".select-assign-garrison").forEach(sel => {
+    sel.addEventListener("change", async (e) => {
+      const charId = e.target.value;
+      const stationId = e.target.dataset.station;
+      if (!charId || !stationId) return;
+
+      try {
+        await GarrisonEngine.assignToStation(charId, stationId);
+        if (typeof showToast === "function") showToast("Alt hero assigned to Garrison station!", "success");
+        renderGarrisonPanel();
+      } catch (err) {
+        if (typeof showToast === "function") showToast(err.message || "Failed to assign alt", "error");
+      }
+    });
+  });
+}
+
+// ── WORLD RIFT & COMMUNITY BOUNTY PANEL UI ──
+export async function renderWorldRiftPanel() {
+  const container = document.getElementById("world-rift-container");
+  if (!container) return;
+
+  const activeChar = AccountStore.getActiveCharacter() || {};
+  const rift = await WorldEngine.getActiveRift();
+  const bounty = await WorldEngine.getActiveBounty();
+  const leaderboard = await WorldEngine.getRiftLeaderboard(rift ? rift.id : null);
+
+  const riftPct = rift ? Math.max(0, Math.min(100, (rift.current_hp / rift.total_hp) * 100)) : 0;
+  const bountyPct = bounty ? Math.max(0, Math.min(100, (bounty.current_quantity / bounty.target_quantity) * 100)) : 0;
+
+  container.innerHTML = `
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:15px; padding:15px;">
+      <!-- World Rift Card -->
+      <div class="panel" style="border:2px solid #ef4444;">
+        <h3 style="margin-top:0; color:#ef4444; display:flex; align-items:center; gap:8px;">
+          ${rift.boss_icon || '🐲'} ${rift.name}
+        </h3>
+        <p style="font-size:0.8rem; color:#aaa;">${rift.description || ''}</p>
+        
+        <!-- HP Bar -->
+        <div style="background:rgba(0,0,0,0.5); padding:8px; border-radius:6px; margin:12px 0;">
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
+            <span>World Boss HP</span>
+            <strong>${(rift.current_hp || 0).toLocaleString()} / ${(rift.total_hp || 0).toLocaleString()}</strong>
+          </div>
+          <div style="background:#333; height:14px; border-radius:7px; overflow:hidden;">
+            <div style="background:linear-gradient(90deg, #ef4444, #f59e0b); width:${riftPct}%; height:100%; transition:width 0.5s;"></div>
+          </div>
+        </div>
+
+        <button id="btn-attack-world-rift" class="btn-action" style="width:100%; padding:10px; background:linear-gradient(135deg, #ef4444, #991b1b); font-weight:bold; font-size:1rem; cursor:pointer;">
+          ⚔️ Strike World Boss (Submit DPS Benchmark)
+        </button>
+
+        <hr class="panel-divider" style="margin:15px 0;">
+        <h4 style="margin:0 0 8px 0;">🏆 Top Contributors</h4>
+        <div style="max-height:160px; overflow-y:auto; font-size:0.8rem;">
+          ${leaderboard.map((lb, idx) => `
+            <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+              <span>#${idx + 1} 🛡️ ${lb.character_name}</span>
+              <strong style="color:#f59e0b;">${(lb.damage_dealt || 0).toLocaleString()} dmg</strong>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Community Bounty Card -->
+      <div class="panel" style="border:2px solid #38bdf8;">
+        <h3 style="margin-top:0; color:#38bdf8; display:flex; align-items:center; gap:8px;">
+          ${bounty.resource_icon || '📦'} ${bounty.title}
+        </h3>
+        <p style="font-size:0.8rem; color:#aaa;">Server-wide commodity sink to unlock global account buffs!</p>
+        <p style="font-size:0.85rem; color:#fbbf24;">🎁 Reward: <strong>${bounty.reward_description}</strong></p>
+
+        <!-- Progress Bar -->
+        <div style="background:rgba(0,0,0,0.5); padding:8px; border-radius:6px; margin:12px 0;">
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
+            <span>Goal: ${bounty.resource_name}</span>
+            <strong>${(bounty.current_quantity || 0).toLocaleString()} / ${(bounty.target_quantity || 0).toLocaleString()}</strong>
+          </div>
+          <div style="background:#333; height:14px; border-radius:7px; overflow:hidden;">
+            <div style="background:linear-gradient(90deg, #38bdf8, #10b981); width:${bountyPct}%; height:100%; transition:width 0.5s;"></div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; align-items:center; margin-top:12px;">
+          <input type="number" id="input-bounty-qty" value="50" min="1" class="btn-action" style="width:90px; padding:6px;" />
+          <button id="btn-donate-bounty" class="btn-action" style="flex:1; padding:8px; background:#10b981; font-weight:bold; cursor:pointer;">
+            📦 Donate ${bounty.resource_name}
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Strike Rift Boss Event
+  const btnAttack = document.getElementById("btn-attack-world-rift");
+  if (btnAttack) {
+    btnAttack.addEventListener("click", async () => {
+      const pwr = activeChar.power || 100;
+      const dmg = pwr * 120 + Math.floor(Math.random() * 500);
+
+      try {
+        const res = await WorldEngine.submitDamage(activeChar.id, rift.id, dmg);
+        if (res && res.success) {
+          if (typeof showToast === "function") showToast(`⚔️ Struck World Boss for ${(res.damage_dealt || dmg).toLocaleString()} damage!`, "success");
+          renderWorldRiftPanel();
+        }
+      } catch (err) {
+        if (typeof showToast === "function") showToast("Rift attack failed: " + (err.message || err), "error");
+      }
+    });
+  }
+
+  // Donate Bounty Event
+  const btnDonate = document.getElementById("btn-donate-bounty");
+  if (btnDonate) {
+    btnDonate.addEventListener("click", async () => {
+      const qtyInput = document.getElementById("input-bounty-qty");
+      const qty = parseInt(qtyInput ? qtyInput.value : "50") || 50;
+
+      try {
+        const res = await WorldEngine.donateToBounty(activeChar.id, bounty.id, bounty.resource_target, qty);
+        if (res && res.success) {
+          if (typeof showToast === "function") showToast(`📦 Donated ${qty}x ${bounty.resource_name} to the King's Bounty!`, "success");
+          renderWorldRiftPanel();
+        }
+      } catch (err) {
+        if (typeof showToast === "function") showToast("Donation failed: " + (err.message || err), "error");
+      }
+    });
+  }
+}
+
+// Global window assignments
+window.renderGarrisonPanel = renderGarrisonPanel;
+window.renderWorldRiftPanel = renderWorldRiftPanel;
+
+// ── TASK QUEUE PANEL UI ──
+export function renderTaskQueuePanel() {
+  const container = document.getElementById("task-queue-panel");
+  if (!container) return;
+
+  const activeChar = AccountStore.getActiveCharacter() || {};
+  const house = activeChar.house || { tier: 0 };
+  const queueCap = GameAPI.getQueueCapacity ? GameAPI.getQueueCapacity(house.tier) : 1;
+
+  container.innerHTML = `
+    <div class="panel" style="padding:12px; margin-top:10px; border:1px solid rgba(255,255,255,0.1);">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h4 style="margin:0;">📋 Action Sequence Queue (${queueCap} Max Slot${queueCap > 1 ? 's' : ''})</h4>
+        <span style="font-size:0.75rem; color:#aaa;">Housing Tier ${house.tier || 0}</span>
+      </div>
+      <p style="font-size:0.8rem; color:#aaa; margin:4px 0 10px 0;">Sequence sequential tasks before going offline. Upgrade Housing to unlock up to 5 queue slots!</p>
+
+      <div id="queue-slots-grid" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+        ${Array.from({ length: queueCap }, (_, idx) => `
+          <div style="background:rgba(0,0,0,0.3); border:1px dashed var(--border); padding:8px 12px; border-radius:6px; flex:1; min-width:110px;">
+            <div style="font-size:0.75rem; color:#888;">Step ${idx + 1}</div>
+            <strong style="font-size:0.85rem; color:var(--gold);">Slot ${idx + 1} Task</strong>
+          </div>
+        `).join('')}
+      </div>
+      
+      <div style="display:flex; gap:8px;">
+        <button id="btn-clear-queue" class="btn-action" style="padding:4px 10px; font-size:0.8rem; background:#ef4444; border:none; cursor:pointer;">Clear Queue</button>
+      </div>
+    </div>
+  `;
+
+  const btnClear = document.getElementById("btn-clear-queue");
+  if (btnClear) {
+    btnClear.addEventListener("click", async () => {
+      if (typeof clearTaskQueueRPC === "function" && activeChar.id && activeChar.id.includes("-")) {
+        await clearTaskQueueRPC(activeChar.id).catch(() => {});
+      }
+      if (typeof showToast === "function") showToast("Action sequence queue cleared", "info");
+    });
+  }
+}
+
+// ── SEASONAL ECHO LEAGUES UI ──
+export async function renderSeasonalPortal() {
+  const container = document.getElementById("seasonal-portal-container");
+  if (!container) return;
+
+  const realm = await SeasonsEngine.getActiveRealm();
+  const leaderboard = await SeasonsEngine.getSeasonalLeaderboard(realm ? realm.id : null);
+  const account = AccountStore.getAccount() || {};
+  const echoChar = account.characterSlots ? account.characterSlots[5] : null;
+
+  container.innerHTML = `
+    <div class="panel" style="border:2px solid #8b5cf6; padding:15px; margin-top:15px;">
+      <h3 style="margin-top:0; color:#a78bfa; display:flex; align-items:center; gap:8px;">
+        🏆 ${realm.name} (Seasonal Echo League)
+      </h3>
+      <p style="font-size:0.85rem; color:#ccc;">${realm.description}</p>
+
+      <div style="display:flex; gap:20px; flex-wrap:wrap; background:rgba(139,92,246,0.1); padding:10px; border-radius:8px; margin:12px 0;">
+        <span>⚡ Execution Speed: <strong style="color:#a78bfa;">${realm.mutator_config?.speed_multiplier || 3}x</strong></span>
+        <span>⚔️ Mob Damage: <strong style="color:#ef4444;">+${(realm.mutator_config?.mob_damage_bonus || 0.5) * 100}%</strong></span>
+        <span>📍 Dedicated Slot: <strong style="color:#10b981;">Slot 5</strong></span>
+      </div>
+
+      ${echoChar ? `
+        <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div>
+            <strong style="color:#a78bfa; font-size:1rem;">🛡️ ${echoChar.name} (Level ${echoChar.level} ${echoChar.class})</strong>
+            <div style="font-size:0.8rem; color:#aaa;">Active Seasonal Hero (Slot 5)</div>
+          </div>
+          <button id="btn-select-echo-hero" class="btn-action" style="padding:6px 14px; background:#8b5cf6; font-weight:bold; cursor:pointer;">Play Echo Hero</button>
+        </div>
+      ` : `
+        <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:8px; margin-bottom:12px;">
+          <h4 style="margin-top:0;">🌟 Enter the Seasonal Realm (Create Slot 5 Hero)</h4>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <input type="text" id="input-echo-name" placeholder="Echo Hero Name" class="btn-action" style="padding:6px 10px; flex:1; min-width:140px;" />
+            <select id="select-echo-class" class="btn-action" style="padding:6px 10px;">
+              <option value="Warrior">Warrior</option>
+              <option value="Ranger">Ranger</option>
+              <option value="Mage">Mage</option>
+              <option value="Paladin">Paladin</option>
+            </select>
+            <button id="btn-create-echo-char" class="btn-action" style="padding:6px 16px; background:linear-gradient(135deg, #8b5cf6, #38bdf8); font-weight:bold; cursor:pointer;">
+              🚀 Launch Echo Hero
+            </button>
+          </div>
+        </div>
+      `}
+
+      <hr class="panel-divider" style="margin:12px 0;">
+      <h4 style="margin:0 0 8px 0;">🏆 Seasonal Leaderboard</h4>
+      <div style="max-height:140px; overflow-y:auto; font-size:0.8rem;">
+        ${leaderboard.map((lb, idx) => `
+          <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+            <span>#${idx + 1} 🛡️ ${lb.name} (${lb.class_id || 'Hero'})</span>
+            <strong style="color:#a78bfa;">Lv. ${lb.level} (${(lb.power || 0).toLocaleString()} pwr)</strong>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  // Create Echo Hero Event
+  const btnCreate = document.getElementById("btn-create-echo-char");
+  if (btnCreate) {
+    btnCreate.addEventListener("click", async () => {
+      const nameInput = document.getElementById("input-echo-name");
+      const classSelect = document.getElementById("select-echo-class");
+      const name = nameInput ? nameInput.value.trim() : "Echo Hero";
+      const classId = classSelect ? classSelect.value : "Warrior";
+
+      try {
+        await SeasonsEngine.createEchoCharacter(name, classId);
+        if (typeof showToast === "function") showToast(`🚀 Seasonal Echo Hero "${name}" created in Slot 5!`, "success");
+        renderSeasonalPortal();
+        if (typeof renderActiveCharacterUI === "function") renderActiveCharacterUI();
+      } catch (err) {
+        if (typeof showToast === "function") showToast("Failed to create Echo hero: " + (err.message || err), "error");
+      }
+    });
+  }
+
+  // Play Echo Hero Event
+  const btnPlay = document.getElementById("btn-select-echo-hero");
+  if (btnPlay) {
+    btnPlay.addEventListener("click", () => {
+      account.activeSlotId = 5;
+      AccountStore.save();
+      if (typeof renderActiveCharacterUI === "function") renderActiveCharacterUI();
+      if (typeof showToast === "function") showToast("Switched to Seasonal Echo Hero (Slot 5)", "info");
+    });
+  }
+}
+
+// Global window assignments
+window.renderTaskQueuePanel = renderTaskQueuePanel;
+window.renderSeasonalPortal = renderSeasonalPortal;
+
+// ── DISCORD WEBHOOK SETTINGS UI ──
+export function renderWebhookSettingsModal() {
+  let modal = document.getElementById("webhook-settings-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "webhook-settings-modal";
+    modal.className = "modal";
+    document.body.appendChild(modal);
+  }
+
+  const account = AccountStore.getAccount() || {};
+  const currentUrl = account.discordWebhookUrl || "";
+  const events = account.webhookEvents || ["rebirth", "rift_kill", "market_sale", "pet_hatch", "bounty_completed"];
+
+  modal.innerHTML = `
+    <div class="modal-content panel" style="max-width:480px; border:2px solid #5865f2;">
+      <div class="modal-header">
+        <h3 style="color:#5865f2;">🔔 Discord Webhook Integration</h3>
+        <button class="modal-close-btn" onclick="document.getElementById('webhook-settings-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="modal-body" style="padding:15px;">
+        <p style="font-size:0.85rem; color:#ccc;">Connect a Discord Channel Webhook URL to receive live notifications for major in-game accomplishments!</p>
+        
+        <label style="display:block; font-size:0.85rem; margin-bottom:8px;">Discord Webhook URL:
+          <input type="text" id="input-webhook-url" value="${currentUrl}" placeholder="https://discord.com/api/webhooks/..." class="btn-action" style="width:100%; margin-top:4px; padding:8px;" />
+        </label>
+
+        <h4 style="margin:12px 0 6px 0;">Select Notification Events:</h4>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.85rem;">
+          <label><input type="checkbox" class="chk-wh-event" value="rebirth" ${events.includes("rebirth") ? 'checked' : ''}> 🔥 Rebirth Milestones</label>
+          <label><input type="checkbox" class="chk-wh-event" value="rift_kill" ${events.includes("rift_kill") ? 'checked' : ''}> 🐲 World Rift Kills</label>
+          <label><input type="checkbox" class="chk-wh-event" value="bounty_completed" ${events.includes("bounty_completed") ? 'checked' : ''}> 📦 Bounty Completion</label>
+          <label><input type="checkbox" class="chk-wh-event" value="hearth_visit" ${events.includes("hearth_visit") ? 'checked' : ''}> 🏡 Hearth Visits</label>
+        </div>
+
+        <button id="btn-save-webhook-settings" class="btn-action" style="width:100%; margin-top:15px; padding:10px; background:#5865f2; font-weight:bold; cursor:pointer;">
+          💾 Save Webhook Settings
+        </button>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add("active");
+
+  const btnSave = document.getElementById("btn-save-webhook-settings");
+  if (btnSave) {
+    btnSave.addEventListener("click", async () => {
+      const urlInput = document.getElementById("input-webhook-url");
+      const url = urlInput ? urlInput.value.trim() : "";
+      const selectedEvents = Array.from(modal.querySelectorAll(".chk-wh-event:checked")).map(cb => cb.value);
+
+      account.discordWebhookUrl = url;
+      account.webhookEvents = selectedEvents;
+      if (typeof updateWebhookSettingsRPC === "function") {
+        await updateWebhookSettingsRPC(url, selectedEvents).catch(() => {});
+      }
+      AccountStore.save();
+      if (typeof showToast === "function") showToast("Discord Webhook settings saved!", "success");
+      modal.classList.remove("active");
+    });
+  }
+}
+
+// Global window assignments
+window.renderWebhookSettingsModal = renderWebhookSettingsModal;
+
+
+
 
