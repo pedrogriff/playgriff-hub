@@ -2946,6 +2946,54 @@ select option {
   text-shadow: 0 0 8px rgba(245, 158, 11, 0.8);
 }
 
+.rarity-mythic {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.7);
+  animation: mythicPulse 2s infinite alternate ease-in-out;
+}
+
+.rarity-badge.mythic {
+  background: rgba(139, 92, 246, 0.25);
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.7);
+}
+
+@keyframes mythicPulse {
+  0% { box-shadow: 0 0 12px rgba(139, 92, 246, 0.5); }
+  100% { box-shadow: 0 0 26px rgba(167, 139, 250, 0.95); }
+}
+
+.rarity-celestial {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.8);
+  animation: celestialShimmer 1.8s infinite alternate ease-in-out;
+}
+
+.rarity-badge.celestial {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(245, 158, 11, 0.3));
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.8);
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.8);
+}
+
+@keyframes celestialShimmer {
+  0% { box-shadow: 0 0 14px rgba(56, 189, 248, 0.6); }
+  100% { box-shadow: 0 0 28px rgba(245, 158, 11, 0.9); }
+}
+
+.mutator-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
 /* ================================================================
    GLOBAL CUSTOM SCROLLBARS & FOCUS STATES
    ================================================================ */

@@ -315,7 +315,17 @@ const EXPANDED_ITEMS = {
   legs_celestial_greaves: { id:"legs_celestial_greaves", slot_type:"legs",      name:"Celestial Legguards",    defense:60, max_hp:280, min_level:48, cost:0, icon:"👖", rarity:"legendary", is_shop_item:false },
   main_excalibur:         { id:"main_excalibur",         slot_type:"main_hand", name:"Excalibur Holy Relic",   power:135, crit_chance:0.12, max_hp:300, min_level:50, cost:0, icon:"⚔️", rarity:"legendary", is_shop_item:false },
   off_celestial_shield:   { id:"off_celestial_shield",   slot_type:"off_hand",  name:"Aegis of Eternity",      defense:65, max_hp:280, dodge_chance:0.06, min_level:50, cost:0, icon:"🛡️", rarity:"legendary", is_shop_item:false },
-  acc_sovereign_ring:     { id:"acc_sovereign_ring",     slot_type:"accessory", name:"Sovereign Ring",         power:50,  defense:35, crit_chance:0.10, max_hp:400, min_level:50, cost:0, icon:"🌟", rarity:"legendary", is_shop_item:false }
+  acc_sovereign_ring:     { id:"acc_sovereign_ring",     slot_type:"accessory", name:"Sovereign Ring",         power:50,  defense:35, crit_chance:0.10, max_hp:400, min_level:50, cost:0, icon:"🌟", rarity:"legendary", is_shop_item:false },
+
+  // Mythic Items (Tier 5 - Level 55+)
+  main_abyssal_reaper:    { id:"main_abyssal_reaper",    slot_type:"main_hand", name:"Abyssal Soul Reaper",    power:180, crit_chance:0.15, max_hp:450, min_level:55, cost:0, icon:"🔱", rarity:"mythic", is_shop_item:false },
+  chest_void_plate:       { id:"chest_void_plate",       slot_type:"chest",     name:"Voidforged Plate",       defense:100, max_hp:500, dodge_chance:0.08, min_level:55, cost:0, icon:"🌌", rarity:"mythic", is_shop_item:false },
+  acc_eye_of_infinity:    { id:"acc_eye_of_infinity",    slot_type:"accessory", name:"Eye of Infinity",        power:75,  defense:50, crit_chance:0.12, max_hp:550, min_level:55, cost:0, icon:"👁️", rarity:"mythic", is_shop_item:false },
+
+  // Celestial Items (Tier 6 - Level 60+)
+  main_godslayer_blade:   { id:"main_godslayer_blade",   slot_type:"main_hand", name:"Godslayer Celestial Blade", power:250, crit_chance:0.20, max_hp:700, min_level:60, cost:0, icon:"⚡", rarity:"celestial", is_shop_item:false },
+  chest_aether_cuirass:   { id:"chest_aether_cuirass",   slot_type:"chest",     name:"Aetherial Sun Cuirass",  defense:140, max_hp:800, dodge_chance:0.10, min_level:60, cost:0, icon:"☀️", rarity:"celestial", is_shop_item:false },
+  acc_singularity_core:   { id:"acc_singularity_core",   slot_type:"accessory", name:"Core of Singularity",    power:110, defense:80, crit_chance:0.15, max_hp:900, min_level:60, cost:0, icon:"💫", rarity:"celestial", is_shop_item:false }
 };
 
 const CONSUMABLE_ITEMS = {
@@ -1163,6 +1173,9 @@ function savePlayerState() {
       AccountStore.save();
     }
   }
+
+  if (typeof renderLootFilterSettings === "function") renderLootFilterSettings();
+  if (typeof renderDifficultySelector === "function") renderDifficultySelector();
 }
 
 function checkDailyLogin() {
@@ -4704,3 +4717,228 @@ window.startPvPDuel = (botId) => {
 
   openBattleModal(mockLevel);
 };
+
+// ================================================================
+// EXPANSION PHASE 1 & 2: NARRATOR, REBIRTH, LOOT FILTERS & THE FORGE
+// ================================================================
+
+export const NARRATOR_LINES = {
+  afk_short: [
+    "Your hero sharpened their blade while keeping watch over the keep.",
+    "A quiet breeze passed through the valley as your hero stood guard.",
+    "Your hero practiced form, waiting patiently for your command."
+  ],
+  afk_long: [
+    "While you were away, your hero fought relentlessly through dawn and dusk.",
+    "Legends whisper of the endless battles fought in your absence.",
+    "Your hero gathered spoils and stood firm against the darkness."
+  ],
+  level_up: [
+    "The ember within burns brighter. You feel... changed.",
+    "New strength surges through your veins as your ember awakens!",
+    "Boundless potential unlocks as you conquer another threshold."
+  ],
+  rebirth: [
+    "From the ashes of your past self, a celestial fire is ignited!",
+    "The Ember King's defeat marks not an end, but a glorious rebirth!",
+    "Your mortality burns away, leaving only pure, primordial ember."
+  ]
+};
+
+export function getRandomNarratorLine(category = "afk_long") {
+  const lines = NARRATOR_LINES[category] || NARRATOR_LINES.afk_long;
+  return lines[Math.floor(Math.random() * lines.length)];
+}
+
+// ── REBIRTH SYSTEM UI ──
+export async function handlePerformRebirth() {
+  const activeChar = AccountStore.getActiveCharacter();
+  if (!activeChar) return;
+
+  if ((activeChar.unlockedLevel || 1) < 30) {
+    if (typeof showToast === "function") showToast("Must defeat Level 30 (The Ember King) before Rebirth!", "error");
+    return;
+  }
+
+  if (!confirm("🔥 Are you sure you want to REBIRTH? Your level, gold, and equipment will reset, but you will gain Ember Shards and permanent account bonuses!")) {
+    return;
+  }
+
+  try {
+    let result = null;
+    if (typeof performRebirthRPC === "function" && activeChar.id && activeChar.id.includes("-")) {
+      result = await performRebirthRPC(activeChar.id);
+    } else {
+      // Local fallback for offline mode
+      const account = AccountStore.getAccount();
+      account.rebirthCount = (account.rebirthCount || 0) + 1;
+      account.emberShards = (account.emberShards || 0) + 1;
+      activeChar.level = 1;
+      activeChar.xp = 0;
+      activeChar.gold = 50;
+      activeChar.equipped = { head: null, chest: null, legs: null, main_hand: null, off_hand: null, accessory: null };
+      activeChar.unlockedLevel = 1;
+      result = { success: true, rebirth_number: account.rebirthCount, shards_earned: 1 };
+    }
+
+    if (result && result.success) {
+      if (typeof showToast === "function") showToast(`🔥 REBIRTH SUCCESSFUL! Rebirth #${result.rebirth_number} complete! Gained ${result.shards_earned} Ember Shard(s)!`, "success");
+      await AccountStore.loadFromSupabase().catch(() => {});
+      if (typeof renderActiveCharacterUI === "function") renderActiveCharacterUI();
+      const modal = document.getElementById("rebirth-modal");
+      if (modal) modal.classList.remove("active");
+    }
+  } catch (err) {
+    if (typeof showToast === "function") showToast("Rebirth failed: " + (err.message || err), "error");
+  }
+}
+
+export function renderRebirthModal() {
+  let modal = document.getElementById("rebirth-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "rebirth-modal";
+    modal.className = "modal";
+    document.body.appendChild(modal);
+  }
+
+  const account = AccountStore.getAccount() || {};
+  const activeChar = AccountStore.getActiveCharacter() || {};
+  const rebirthCount = account.rebirthCount || 0;
+  const emberShards = account.emberShards || 0;
+  const isEligible = (activeChar.unlockedLevel || 1) >= 30;
+
+  modal.innerHTML = `
+    <div class="modal-content panel" style="max-width:520px; border:2px solid var(--gold,#f59e0b);">
+      <div class="modal-header">
+        <h3 style="color:var(--gold,#f59e0b);">🔥 Ember Rebirth (Prestige)</h3>
+        <button class="modal-close-btn" onclick="document.getElementById('rebirth-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="modal-body" style="text-align:center; padding:15px;">
+        <p class="narrator-quote" style="font-style:italic; color:#fbbf24; margin-bottom:12px;">
+          "${getRandomNarratorLine('rebirth')}"
+        </p>
+        <div style="display:flex; justify-content:space-around; margin:15px 0; background:rgba(0,0,0,0.3); padding:12px; border-radius:8px;">
+          <div><div style="font-size:1.4rem; font-weight:bold; color:#f59e0b;">${rebirthCount}</div><div style="font-size:0.8rem; color:#aaa;">Rebirths</div></div>
+          <div><div style="font-size:1.4rem; font-weight:bold; color:#ef4444;">💎 ${emberShards}</div><div style="font-size:0.8rem; color:#aaa;">Ember Shards</div></div>
+          <div><div style="font-size:1.4rem; font-weight:bold; color:#10b981;">+${emberShards * 2}%</div><div style="font-size:0.8rem; color:#aaa;">Global XP Bonus</div></div>
+        </div>
+        <div style="text-align:left; background:rgba(255,255,255,0.05); padding:12px; border-radius:8px; margin-bottom:15px;">
+          <h4 style="margin-top:0;">⚠️ What happens on Rebirth?</h4>
+          <ul style="margin:5px 0; padding-left:20px; font-size:0.85rem; color:#ddd;">
+            <li><span style="color:#ef4444;">Resets:</span> Character Level → 1, Gold → 50g, Equipment cleared, Stage progress reset</li>
+            <li><span style="color:#10b981;">Keeps:</span> Production Skills, Pet collection, Housing tier, Clan membership</li>
+            <li><span style="color:#f59e0b;">Gains:</span> +1 Ember Shard (+2% XP, +1% Gold per shard), unlocks higher Difficulty Tiers!</li>
+          </ul>
+        </div>
+        ${isEligible 
+          ? `<button id="btn-confirm-rebirth" class="btn-action" style="background:linear-gradient(135deg, #ef4444, #f59e0b); font-size:1.1rem; padding:10px 24px; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🔥 Ignite Rebirth</button>`
+          : `<p style="color:#ef4444; font-weight:bold;">🔒 Must reach Level 30 (Clear Act III) to unlock Rebirth.</p>`}
+      </div>
+    </div>
+  `;
+
+  modal.classList.add("active");
+
+  const confirmBtn = document.getElementById("btn-confirm-rebirth");
+  if (confirmBtn) {
+    confirmBtn.addEventListener("click", handlePerformRebirth);
+  }
+}
+
+// ── LOOT FILTER SETTINGS UI ──
+export function renderLootFilterSettings() {
+  const container = document.getElementById("loot-filter-panel");
+  if (!container) return;
+
+  const activeChar = AccountStore.getActiveCharacter() || {};
+  const filter = activeChar.lootFilter || { auto_salvage_below: null, keep_materials: true };
+
+  container.innerHTML = `
+    <div class="panel" style="padding:12px; margin-top:10px; border:1px solid rgba(255,255,255,0.1);">
+      <h4 style="margin-top:0;">🧹 Auto-Salvage Loot Filter</h4>
+      <p style="font-size:0.8rem; color:#aaa;">Automatically converts drops below threshold to gold during AFK tasks.</p>
+      <div style="display:flex; gap:15px; align-items:center; flex-wrap:wrap;">
+        <label style="font-size:0.85rem;">Auto-salvage below:
+          <select id="select-salvage-threshold" class="btn-action" style="padding:4px 8px; margin-left:6px;">
+            <option value="" ${!filter.auto_salvage_below ? 'selected' : ''}>Disabled (Keep All Loot)</option>
+            <option value="uncommon" ${filter.auto_salvage_below === 'uncommon' ? 'selected' : ''}>Common</option>
+            <option value="rare" ${filter.auto_salvage_below === 'rare' ? 'selected' : ''}>Uncommon & Below</option>
+            <option value="epic" ${filter.auto_salvage_below === 'epic' ? 'selected' : ''}>Rare & Below</option>
+          </select>
+        </label>
+        <label style="font-size:0.85rem; display:flex; align-items:center; gap:5px;">
+          <input type="checkbox" id="chk-keep-materials" ${filter.keep_materials !== false ? 'checked' : ''} />
+          Always keep Crafting Materials
+        </label>
+        <button id="btn-save-loot-filter" class="btn-action" style="padding:4px 12px; font-size:0.85rem;">Save Filter</button>
+      </div>
+    </div>
+  `;
+
+  const btnSave = document.getElementById("btn-save-loot-filter");
+  if (btnSave) {
+    btnSave.addEventListener("click", async () => {
+      const sel = document.getElementById("select-salvage-threshold").value || null;
+      const chk = document.getElementById("chk-keep-materials").checked;
+      const newFilter = { auto_salvage_below: sel, keep_materials: chk };
+
+      activeChar.lootFilter = newFilter;
+      if (typeof updateLootFilterRPC === "function" && activeChar.id && activeChar.id.includes("-")) {
+        await updateLootFilterRPC(activeChar.id, newFilter).catch(() => {});
+      }
+      AccountStore.save();
+      if (typeof showToast === "function") showToast("Loot filter settings saved!", "success");
+    });
+  }
+}
+
+// ── DIFFICULTY TIER SELECTOR UI ──
+export function renderDifficultySelector() {
+  const container = document.getElementById("difficulty-selector-container");
+  if (!container) return;
+
+  const account = AccountStore.getAccount() || {};
+  const currentDiff = account.activeDifficulty || "normal";
+  const rebirths = account.rebirthCount || 0;
+
+  const tiers = [
+    { id: "normal", label: "⚔️ Normal", req: 0 },
+    { id: "hardened", label: "🔥 Hardened (+20% Drop Rate)", req: 1 },
+    { id: "infernal", label: "💀 Infernal (+50% Drop Rate)", req: 3 },
+    { id: "mythic", label: "🌌 Mythic (+100% Drop Rate)", req: 6 }
+  ];
+
+  container.innerHTML = `
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span style="font-size:0.85rem; color:#aaa;">Difficulty:</span>
+      <select id="select-active-difficulty" class="btn-action" style="padding:4px 8px; font-size:0.85rem;">
+        ${tiers.map(t => `
+          <option value="${t.id}" ${currentDiff === t.id ? 'selected' : ''} ${rebirths < t.req ? 'disabled' : ''}>
+            ${t.label} ${rebirths < t.req ? `(Requires ${t.req} Rebirths)` : ''}
+          </option>
+        `).join('')}
+      </select>
+    </div>
+  `;
+
+  const sel = document.getElementById("select-active-difficulty");
+  if (sel) {
+    sel.addEventListener("change", async (e) => {
+      const val = e.target.value;
+      account.activeDifficulty = val;
+      if (typeof updateActiveDifficultyRPC === "function") {
+        await updateActiveDifficultyRPC(val).catch(() => {});
+      }
+      AccountStore.save();
+      if (typeof showToast === "function") showToast(`Difficulty changed to ${val.toUpperCase()}!`, "info");
+    });
+  }
+}
+
+// Global window assignments
+window.renderRebirthModal = renderRebirthModal;
+window.renderLootFilterSettings = renderLootFilterSettings;
+window.renderDifficultySelector = renderDifficultySelector;
+window.getRandomNarratorLine = getRandomNarratorLine;
+

@@ -519,8 +519,144 @@ export async function getSuggestedPlayersFromDB() {
   }
 }
 
+/**
+ * REBIRTH & DIFFICULTY RPC HELPERS (PHASE 10)
+ */
+export async function performRebirthRPC(characterId) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("perform_rebirth", {
+      p_character_id: characterId
+    });
+
+    if (error) {
+      console.error("Error executing perform_rebirth RPC:", error);
+      throw error;
+    }
+    return data;
+  } catch (err) {
+    console.error("perform_rebirth RPC execution failed:", err);
+    throw err;
+  }
+}
+
+export async function updateLootFilterRPC(characterId, lootFilter) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  try {
+    const { data, error } = await supabase
+      .from("characters")
+      .update({ loot_filter: lootFilter, updated_at: new Date().toISOString() })
+      .eq("id", characterId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error updating loot filter:", error);
+      throw error;
+    }
+    return data;
+  } catch (err) {
+    console.error("updateLootFilterRPC failed:", err);
+    throw err;
+  }
+}
+
+export async function updateActiveDifficultyRPC(difficulty) {
+  const user = await getUser();
+  if (!user) return null;
+
+  try {
+    const { data, error } = await supabase
+      .from("accounts_profile")
+      .update({ active_difficulty: difficulty, updated_at: new Date().toISOString() })
+      .eq("id", user.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error updating active difficulty:", error);
+      throw error;
+    }
+    return data;
+  } catch (err) {
+    console.error("updateActiveDifficultyRPC failed:", err);
+    throw err;
+  }
+}
+
+/**
+ * THE FORGE RPC HELPERS (PHASE 11)
+ */
+export async function reforgeItemRPC(characterId, inventoryItemId) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("reforge_item", {
+      p_character_id: characterId,
+      p_inventory_item_id: inventoryItemId
+    });
+
+    if (error) {
+      console.error("Error executing reforge_item RPC:", error);
+      throw error;
+    }
+    return data;
+  } catch (err) {
+    console.error("reforge_item RPC execution failed:", err);
+    throw err;
+  }
+}
+
+export async function enhanceItemRPC(characterId, inventoryItemId) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("enhance_item", {
+      p_character_id: characterId,
+      p_inventory_item_id: inventoryItemId
+    });
+
+    if (error) {
+      console.error("Error executing enhance_item RPC:", error);
+      throw error;
+    }
+    return data;
+  } catch (err) {
+    console.error("enhance_item RPC execution failed:", err);
+    throw err;
+  }
+}
+
+export async function transmuteItemsRPC(characterId, itemIds) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("transmute_items", {
+      p_character_id: characterId,
+      p_item_ids: itemIds
+    });
+
+    if (error) {
+      console.error("Error executing transmute_items RPC:", error);
+      throw error;
+    }
+    return data;
+  } catch (err) {
+    console.error("transmute_items RPC execution failed:", err);
+    throw err;
+  }
+}
+
 if (typeof window !== "undefined") {
   window.getSuggestedPlayersFromDB = getSuggestedPlayersFromDB;
+  window.performRebirthRPC = performRebirthRPC;
+  window.updateLootFilterRPC = updateLootFilterRPC;
+  window.updateActiveDifficultyRPC = updateActiveDifficultyRPC;
+  window.reforgeItemRPC = reforgeItemRPC;
+  window.enhanceItemRPC = enhanceItemRPC;
+  window.transmuteItemsRPC = transmuteItemsRPC;
 }
 
 

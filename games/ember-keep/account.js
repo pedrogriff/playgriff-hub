@@ -73,6 +73,9 @@ function createDefaultAccount() {
     version: 2,
     lastLoginTime: Date.now(),
     ascensionPoints: 0,
+    rebirthCount: 0,
+    emberShards: 0,
+    activeDifficulty: "normal",
     lastApAccrualTime: Date.now(),
     maxAp: 10,
     activeSlotId: 1,
@@ -125,6 +128,9 @@ export const AccountStore = {
       const profile = await getAccountProfile();
       if (profile) {
         accountData.ascensionPoints = profile.ascension_points || 0;
+        accountData.rebirthCount = profile.rebirth_count || 0;
+        accountData.emberShards = profile.ember_shards || 0;
+        accountData.activeDifficulty = profile.active_difficulty || "normal";
         accountData.maxAp = profile.max_ap || 10;
       }
 
@@ -173,6 +179,7 @@ export const AccountStore = {
             inventory: row.inventory || [],
             equipped: row.equipped || { weapon: null, armor: null, ring: null },
             professions: row.professions || {},
+            lootFilter: row.loot_filter || (localChar ? localChar.lootFilter : { auto_salvage_below: null, keep_materials: true }),
             locationNode: row.location_node || "greenhollow"
           };
         }

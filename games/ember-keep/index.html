@@ -173,6 +173,8 @@
         <span class="stat-pill" id="pill-gold"><strong id="header-gold">50</strong>💰</span>
         <span class="stat-pill" id="pill-gems" style="cursor:pointer; border-color:var(--ember);" onclick="document.getElementById('premium-store-modal').classList.add('active'); renderPremiumStore('pass');" title="Ember Store"><strong id="header-gems">0</strong>💎</span>
         <span class="stat-pill" id="pill-stamina"><strong id="header-stamina">100/100</strong>⚡</span>
+        <button id="btn-open-rebirth" class="btn-action" style="background:linear-gradient(135deg, #ef4444, #f59e0b); border:none; padding:4px 10px; font-size:0.8rem; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="if(window.renderRebirthModal) window.renderRebirthModal()" title="Ember Rebirth (Prestige)">🔥 Rebirth</button>
+        <div id="difficulty-selector-container" style="display:inline-block;"></div>
       </div>
     </header>
 
@@ -316,6 +318,9 @@
                 <p class="empty-message">Skills unlock as you level up.</p>
               </div>
             </div>
+
+            <!-- Auto-Salvage Loot Filter Panel -->
+            <div id="loot-filter-panel"></div>
 
             <!-- Pet Panel -->
             <div class="panel pet-panel" style="margin-bottom: 0;">

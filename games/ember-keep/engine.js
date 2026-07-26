@@ -210,6 +210,19 @@ export const GameAPI = {
     let lootItems = [];
     let inventoryFullPaused = false;
     let foodExhausted = false;
+    let autoSalvagedGold = 0;
+
+    // Loot Filter Configuration (Phase 10: Auto-Salvage)
+    const RARITY_RANK = { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5, mythic: 6, celestial: 7 };
+    const lootFilter = char.lootFilter || {};
+    const salvageThreshold = lootFilter.auto_salvage_below ? RARITY_RANK[lootFilter.auto_salvage_below] || 0 : 0;
+    const keepMaterials = lootFilter.keep_materials !== false;
+
+    // Ember Shard Bonuses (Phase 10: Rebirth permanent buffs)
+    const account = AccountStore.getAccount();
+    const emberShards = account ? (account.emberShards || 0) : 0;
+    const shardXpMult = 1 + (emberShards * 0.02);   // +2% XP per shard
+    const shardGoldMult = 1 + (emberShards * 0.01);  // +1% Gold per shard
 
     // Check inventory capacity
     const currentInventoryCount = (char.inventory || []).reduce((acc, item) => acc + (item.qty || 1), 0);
@@ -241,16 +254,27 @@ export const GameAPI = {
       cyclesProcessed++;
       task.cyclesCompleted++;
 
-      const cycleExp = 25;
-      const cycleGold = 10;
+      const cycleExp = Math.floor(25 * shardXpMult);
+      const cycleGold = Math.floor(10 * shardGoldMult);
 
       expGained += cycleExp;
       goldGained += cycleGold;
 
       if (Math.random() < 0.3) {
-        lootItems.push({ id: "item_ore_iron", name: "Iron Ore", type: "material", qty: 1, icon: "🪨" });
+        const droppedItem = { id: "item_ore_iron", name: "Iron Ore", type: "material", qty: 1, icon: "🪨", rarity: "common" };
+
+        // Auto-Salvage Filter: convert to gold if below threshold (skip materials if keepMaterials is true)
+        const itemRank = RARITY_RANK[droppedItem.rarity] || 1;
+        if (salvageThreshold > 0 && itemRank < salvageThreshold && !(keepMaterials && droppedItem.type === "material")) {
+          autoSalvagedGold += (droppedItem.qty || 1) * 5; // 5g per salvaged item
+        } else {
+          lootItems.push(droppedItem);
+        }
       }
     }
+
+    // Add auto-salvage gold to total
+    goldGained += autoSalvagedGold;
 
     char.xp = (char.xp || 0) + expGained;
     char.gold = (char.gold || 0) + goldGained;
