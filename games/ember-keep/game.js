@@ -2468,15 +2468,17 @@ function initSkillsTabControls() {
                 }));
               }
               if (window.renderActiveCharacterUI) window.renderActiveCharacterUI();
+              return;
             }
           } catch (err) {
-            alert(err.message || "Failed to craft item.");
+            console.warn("Supabase RPC craft fallback to local production engine:", err);
           }
-        } else {
-          startProduction(recipeId);
-          renderProfessions();
-          renderSkillRecipes(selectedProfession);
         }
+
+        // Fallback to local production engine if RPC is missing recipe or in local mode
+        startProduction(recipeId);
+        renderProfessions();
+        renderSkillRecipes(selectedProfession);
       }
     });
   }
