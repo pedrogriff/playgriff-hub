@@ -169,6 +169,9 @@ export async function saveCharacter(charData) {
       .single();
 
     if (error) throw error;
+    if (Array.isArray(charData.inventory)) {
+      syncInventoryWithDB(charData.id, charData.inventory).catch(() => {});
+    }
     return data;
   } catch (err) {
     if (err && (err.code === "PGRST204" || (err.message && (err.message.includes("completed_side_zones") || err.message.includes("house"))))) {
@@ -340,6 +343,42 @@ export async function syncInventoryItemToDB(characterId, item) {
     }
   } catch (e) {
     console.warn("Failed syncing item to Supabase character_inventories:", e);
+  }
+}
+
+export async function syncInventoryWithDB(characterId, currentInventory) {
+  if (!characterId || typeof characterId !== "string" || !characterId.includes("-")) return;
+  try {
+    const invList = Array.isArray(currentInventory) ? currentInventory : [];
+    const activeIds = invList.map(i => i.id || i.item_id).filter(Boolean);
+
+    if (activeIds.length > 0) {
+      const { data: existingItems } = await supabase
+        .from("character_inventories")
+        .select("id, item_id")
+        .eq("character_id", characterId);
+
+      if (existingItems && existingItems.length > 0) {
+        const toDelete = existingItems.filter(e => !activeIds.includes(e.item_id)).map(e => e.id);
+        if (toDelete.length > 0) {
+          await supabase
+            .from("character_inventories")
+            .delete()
+            .in("id", toDelete);
+        }
+      }
+    } else {
+      await supabase
+        .from("character_inventories")
+        .delete()
+        .eq("character_id", characterId);
+    }
+
+    for (const item of invList) {
+      await syncInventoryItemToDB(characterId, item);
+    }
+  } catch (err) {
+    console.warn("Failed syncing full inventory with Supabase character_inventories:", err);
   }
 }
 

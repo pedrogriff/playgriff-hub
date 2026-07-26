@@ -1161,16 +1161,29 @@ window.renderActiveCharacterUI = function() {
   playerState.equipment = activeChar.equipped ? JSON.parse(JSON.stringify(activeChar.equipped)) : { weapon: null, armor: null, ring: null };
 
   if (activeChar.power || activeChar.defense || activeChar.maxHp) {
-    const effMaxHp = activeChar.maxHp || activeChar.hp || 100;
+    const preset = CLASS_PRESETS[playerState.class] || CLASS_PRESETS["Warrior"];
+    const hpLvl = playerState.upgrades.hpLevel || 0;
+    const pwrLvl = playerState.upgrades.powerLevel || 0;
+    const defLvl = playerState.upgrades.defenseLevel || 0;
+
+    const calculatedMaxHp = (preset ? preset.stats.maxHp : 100) + (hpLvl * 10);
+    const calculatedPower = (preset ? preset.stats.power : 10) + (pwrLvl * 2);
+    const calculatedDefense = (preset ? preset.stats.defense : 5) + (defLvl * 1);
+
+    const baseMaxHp = Math.max(calculatedMaxHp, activeChar.maxHp || 0);
+    const basePower = Math.max(calculatedPower, activeChar.power || 0);
+    const baseDefense = Math.max(calculatedDefense, activeChar.defense || 0);
+
     playerState.stats = {
-      maxHp: effMaxHp,
-      power: activeChar.power || 10,
-      defense: activeChar.defense || 5,
+      maxHp: baseMaxHp,
+      power: basePower,
+      defense: baseDefense,
       critChance: Number(activeChar.critChance || 0.05),
       critDamage: Number(activeChar.critDamage || 1.5),
       dodgeChance: Number(activeChar.dodgeChance || 0.05)
     };
-    playerState.currentHp = typeof activeChar.hp === "number" && activeChar.hp > 0 ? activeChar.hp : effMaxHp;
+    const effStats = getEffectiveStats();
+    playerState.currentHp = Math.min(effStats.maxHp, typeof activeChar.hp === "number" && activeChar.hp > 0 ? activeChar.hp : effStats.maxHp);
   }
 
   // Update overlay display for class selection
@@ -1990,6 +2003,9 @@ function renderStats() {
   if (preset) renderAvatar("char-avatar-container", preset.image, preset.avatar);
 
   // Stats
+  if (playerState.currentHp > effStats.maxHp) {
+    playerState.currentHp = effStats.maxHp;
+  }
   _setText("stat-hp",      `${Math.floor(playerState.currentHp)}/${effStats.maxHp}`);
   _setText("stat-power",   `${effStats.power} (+${effStats.power - playerState.stats.power})`);
   _setText("stat-defense", `${effStats.defense} (+${effStats.defense - playerState.stats.defense})`);
@@ -3001,7 +3017,7 @@ document.addEventListener("click", async (e) => {
         if (res && res.success) {
           showToast(`🛍️ Purchased ${res.item_name} for ${res.gold_spent}g!`, "success");
           const dbInv = await getCharacterInventory(activeChar.id);
-          if (dbInv) {
+          if (dbInv && dbInv.length > 0) {
             activeChar.inventory = dbInv.map(i => ({
               id: i.item_id,
               name: i.item_name,
@@ -3010,9 +3026,12 @@ document.addEventListener("click", async (e) => {
               icon: i.icon,
               metadata: i.metadata
             }));
+            playerState.inventory = JSON.parse(JSON.stringify(activeChar.inventory));
           }
+          savePlayerState();
           if (window.renderActiveCharacterUI) window.renderActiveCharacterUI();
           renderShop();
+          renderInventory();
         }
       } catch (err) {
         showToast(err.message || "Failed to buy item.", "error");
@@ -3162,9 +3181,10 @@ function initUpgradeButtons() {
     if (playerState.gold >= cost) {
       playerState.gold -= cost;
       playerState.stats.maxHp += 10;
-      playerState.currentHp += 10;
       playerState.upgrades.hpLevel = hpLvl + 1;
       playerState.upgrades.hp = hpLvl + 1;
+      const effStats = getEffectiveStats();
+      playerState.currentHp = Math.min(effStats.maxHp, playerState.currentHp + 10);
       savePlayerState(); renderStats(); renderShop();
       showToast("❤️ HP upgraded!", "success");
       if (typeof playSound === "function") playSound("purchase");
