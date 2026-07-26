@@ -2483,44 +2483,11 @@ function initSkillsTabControls() {
 
   const recList = document.getElementById("recipes-list");
   if (recList) {
-    recList.addEventListener("click", async (e) => {
+    recList.addEventListener("click", (e) => {
       const btn = e.target.closest(".btn-craft-recipe");
       if (btn && !btn.disabled) {
         const recipeId = btn.dataset.recipe;
-        const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
-
-        if (activeChar && typeof activeChar.id === "string" && activeChar.id.includes("-")) {
-          try {
-            const res = await craftItemRPC(activeChar.id, recipeId, 1);
-            if (res && res.success) {
-              if (res.leveled_up) {
-                showToast(`🎉 Level Up! ${res.profession} is now Lv. ${res.new_profession_level}!`, "success");
-              } else {
-                showToast(`✅ Crafted ${res.quantity_crafted}x ${res.crafted_item}!`, "success");
-              }
-              const dbInv = await getCharacterInventory(activeChar.id);
-              if (dbInv) {
-                activeChar.inventory = dbInv.map(i => ({
-                  id: i.item_id,
-                  name: i.item_name,
-                  type: i.item_type,
-                  qty: i.quantity,
-                  icon: i.icon,
-                  metadata: i.metadata
-                }));
-              }
-              if (window.renderActiveCharacterUI) window.renderActiveCharacterUI();
-              return;
-            }
-          } catch (err) {
-            console.warn("Supabase RPC craft fallback to local production engine:", err);
-          }
-        }
-
-        // Fallback to local production engine if RPC is missing recipe or in local mode
         startProduction(recipeId);
-        renderProfessions();
-        renderSkillRecipes(selectedProfession);
       }
     });
   }
