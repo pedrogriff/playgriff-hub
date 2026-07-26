@@ -2833,9 +2833,7 @@ select option {
 /* Tooltip Hover Styling */
 .rpg-slot-tooltip {
   position: absolute;
-  bottom: 110%;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 0;
   background: #0f111a;
   border: 1px solid var(--border);
   padding: 8px 12px;
@@ -2847,6 +2845,16 @@ select option {
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s ease;
+}
+
+.rpg-slots-column.left .rpg-slot-tooltip {
+  left: 108%;
+  right: auto;
+}
+
+.rpg-slots-column.right .rpg-slot-tooltip {
+  right: 108%;
+  left: auto;
 }
 
 .rpg-paperdoll-slot:hover .rpg-slot-tooltip {

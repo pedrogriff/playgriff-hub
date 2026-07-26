@@ -281,9 +281,16 @@ const EXPANDED_ITEMS = {
   head_leather_cap:       { id:"head_leather_cap",       slot_type:"head",      name:"Novice Leather Cap",     defense:2,  max_hp:10, min_level:1,  cost:15,   icon:"🪖", rarity:"common",   is_shop_item:true },
   chest_cloth_tunic:      { id:"chest_cloth_tunic",      slot_type:"chest",     name:"Apprentice Cloth Tunic", defense:3,  max_hp:15, min_level:1,  cost:20,   icon:"🥋", rarity:"common",   is_shop_item:true },
   legs_leather_pants:     { id:"legs_leather_pants",     slot_type:"legs",      name:"Rough Leather Pants",    defense:2,  max_hp:10, min_level:1,  cost:15,   icon:"👖", rarity:"common",   is_shop_item:true },
+  gloves_leather:         { id:"gloves_leather",         slot_type:"gloves",    name:"Novice Leather Gloves",  defense:2,  power:1,   min_level:1,  cost:15,   icon:"🧤", rarity:"common",   is_shop_item:true },
+  boots_leather:          { id:"boots_leather",          slot_type:"boots",     name:"Rough Leather Boots",    defense:2,  dodge_chance:0.01, min_level:1, cost:15, icon:"👢", rarity:"common", is_shop_item:true },
+  trinket_lucky_coin:     { id:"trinket_lucky_coin",     slot_type:"trinket",   name:"Lucky Coin Trinket",     crit_chance:0.02, min_level:1, cost:25, icon:"🔮", rarity:"common", is_shop_item:true },
   main_iron_dagger:       { id:"main_iron_dagger",       slot_type:"main_hand", name:"Iron Dagger",            power:6,   crit_chance:0.02, min_level:1, cost:25, icon:"🗡️", rarity:"common", is_shop_item:true },
   off_wooden_shield:      { id:"off_wooden_shield",      slot_type:"off_hand",  name:"Wooden Buckler",         defense:4,  dodge_chance:0.01, min_level:1, cost:20, icon:"🛡️", rarity:"common", is_shop_item:true },
   acc_copper_ring:        { id:"acc_copper_ring",        slot_type:"accessory", name:"Copper Band",            max_hp:15,  crit_chance:0.01, min_level:1, cost:30, icon:"💍", rarity:"common", is_shop_item:true },
+
+  gloves_iron:            { id:"gloves_iron",            slot_type:"gloves",    name:"Iron Clad Gauntlets",    defense:5,  power:3,   min_level:5,  cost:45,   icon:"🥊", rarity:"uncommon", is_shop_item:true },
+  boots_iron:             { id:"boots_iron",             slot_type:"boots",     name:"Heavy Iron Boots",       defense:6,  max_hp:15, min_level:5,  cost:45,   icon:"🥾", rarity:"uncommon", is_shop_item:true },
+  trinket_war_banner:     { id:"trinket_war_banner",     slot_type:"trinket",   name:"War Banner Trinket",     power:5,   defense:3, min_level:5,  cost:60,   icon:"🚩", rarity:"uncommon", is_shop_item:true },
 
   head_iron_helm:         { id:"head_iron_helm",         slot_type:"head",      name:"Iron Vanguard Helm",     defense:6,  max_hp:25, min_level:5,  cost:45,   icon:"🪖", rarity:"uncommon", is_shop_item:true },
   chest_iron_cuirass:      { id:"chest_iron_cuirass",      slot_type:"chest",     name:"Reinforced Iron Cuirass",defense:8,  max_hp:35, min_level:5,  cost:60,   icon:"🥋", rarity:"uncommon", is_shop_item:true },
@@ -1575,7 +1582,7 @@ function getClanTerritoryBonuses() {
 function getEffectiveStats() {
   let extraPower = 0, extraDefense = 0, extraCrit = 0, extraDodge = 0, extraMaxHp = 0;
 
-  const slots = ['head', 'chest', 'legs', 'main_hand', 'off_hand', 'accessory', 'weapon', 'armor', 'ring'];
+  const slots = ['head', 'chest', 'legs', 'gloves', 'boots', 'trinket', 'main_hand', 'off_hand', 'accessory', 'weapon', 'armor', 'ring'];
   slots.forEach(slotKey => {
     const raw = playerState.equipment ? playerState.equipment[slotKey] : null;
     if (!raw) return;
@@ -2562,8 +2569,9 @@ function renderPaperdollGrid() {
 
   const equipped = playerState.equipment || {};
   const heroClass = playerState.class || "Warrior";
-  const totalPower = playerState.power || 0;
-  const totalDefense = playerState.defense || 0;
+  const effStats = typeof getEffectiveStats === "function" ? getEffectiveStats() : {};
+  const totalPower = effStats.power || playerState.stats?.power || 0;
+  const totalDefense = effStats.defense || playerState.stats?.defense || 0;
 
   function renderSlotHTML(slot) {
     let raw = equipped[slot.key];
