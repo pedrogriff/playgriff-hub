@@ -50,30 +50,58 @@ export const SeasonsEngine = {
 
     const user = await getUser();
     if (user) {
-      // Create character in slot 5 with realm_id
-      const { data, error } = await supabase
-        .from("characters")
-        .insert({
-          account_id: user.id,
-          slot_index: 5,
-          name: name || "Echo Hero",
-          class_id: classId || "Warrior",
-          realm_id: realm.id,
-          level: 1,
-          exp: 0,
-          max_exp: 100,
-          hp: classId === "Warrior" ? 120 : classId === "Paladin" ? 140 : 100,
-          max_hp: classId === "Warrior" ? 120 : classId === "Paladin" ? 140 : 100,
-          power: classId === "Mage" ? 15 : classId === "Ranger" ? 12 : 10,
-          defense: classId === "Warrior" ? 8 : classId === "Paladin" ? 10 : 5,
-          gold: 50
-        })
-        .select()
-        .single();
+      // Validate realm_id UUID
+      const isUuid = realm.id && typeof realm.id === "string" && realm.id.includes("-");
+      const validRealmId = isUuid ? realm.id : null;
 
-      if (error) throw error;
+      // Check if slot 5 character already exists to prevent HTTP 409 Conflict
+      const { data: existingChar } = await supabase
+        .from("characters")
+        .select("id")
+        .eq("account_id", user.id)
+        .eq("slot_index", 5)
+        .maybeSingle();
+
+      const charPayload = {
+        account_id: user.id,
+        slot_index: 5,
+        name: name || "Echo Hero",
+        class_id: classId || "Warrior",
+        realm_id: validRealmId,
+        level: 1,
+        exp: 0,
+        max_exp: 100,
+        hp: classId === "Warrior" ? 120 : classId === "Paladin" ? 140 : 100,
+        max_hp: classId === "Warrior" ? 120 : classId === "Paladin" ? 140 : 100,
+        power: classId === "Mage" ? 15 : classId === "Ranger" ? 12 : 10,
+        defense: classId === "Warrior" ? 8 : classId === "Paladin" ? 10 : 5,
+        gold: 50
+      };
+
+      let result;
+      if (existingChar) {
+        // Update existing slot 5 character
+        const { data, error } = await supabase
+          .from("characters")
+          .update(charPayload)
+          .eq("id", existingChar.id)
+          .select()
+          .single();
+        if (error) throw error;
+        result = data;
+      } else {
+        // Insert new slot 5 character
+        const { data, error } = await supabase
+          .from("characters")
+          .insert(charPayload)
+          .select()
+          .single();
+        if (error) throw error;
+        result = data;
+      }
+
       await AccountStore.loadFromSupabase().catch(() => {});
-      return data;
+      return result;
     }
 
     // Local Fallback

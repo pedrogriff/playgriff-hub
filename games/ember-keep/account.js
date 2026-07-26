@@ -139,11 +139,11 @@ export const AccountStore = {
 
       const dbChars = await getCharacters();
       const previousSlots = { ...accountData.characterSlots };
-      accountData.characterSlots = { 1: null, 2: null, 3: null, 4: null };
+      accountData.characterSlots = { 1: null, 2: null, 3: null, 4: null, 5: null };
 
       dbChars.forEach(row => {
         const slot = row.slot_index;
-        if (slot >= 1 && slot <= 4) {
+        if (slot >= 1 && slot <= 5) {
           const localChar = previousSlots[slot];
           const remoteUnlocked = row.unlocked_level || row.unlockedLevel;
           const localUnlocked = localChar ? (localChar.unlockedLevel || localChar.unlocked_level) : 1;
@@ -393,7 +393,7 @@ export const AccountStore = {
   },
 
   async deleteCharacter(slotId) {
-    if (!accountData || slotId < 1 || slotId > 4) return false;
+    if (!accountData || slotId < 1 || slotId > 5) return false;
     const char = accountData.characterSlots[slotId];
     if (!char) return false;
 

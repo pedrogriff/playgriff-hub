@@ -295,51 +295,45 @@ export const UIManager = {
         <div class="command-center-slots">
     `;
 
-    [1, 2, 3, 4].forEach(slotId => {
+    [1, 2, 3, 4, 5].forEach(slotId => {
       const char = account.characterSlots ? account.characterSlots[slotId] : null;
       const activeTask = account.activeTasks ? account.activeTasks[slotId] : null;
       const isActiveSlot = account.activeSlotId === slotId;
-      const isUnlockedSlot = slotId <= 3; // Slots 1-3 active parallel, slot 4 extra unlockable
+      const isSeasonalSlot = slotId === 5;
+      const slotTitle = isSeasonalSlot ? `Slot 5 (Echo)` : `Slot ${slotId}`;
 
       if (char) {
         const taskStatusText = activeTask ? `${activeTask.icon} ${activeTask.targetName}` : "Idle";
         const statusClass = activeTask ? "status-active" : "status-idle";
-        const taskBtnText = activeTask ? "🛑 Stop Task" : "⚡ Start Task";
+        const taskBtnText = activeTask ? "🛑 Stop" : "⚡ Task";
         const taskBtnClass = activeTask ? "btn-stop-task" : "btn-start-task";
 
         html += `
-          <div class="slot-card ${isActiveSlot ? 'slot-current' : ''}" data-slot="${slotId}">
-            <div class="slot-header">
-              <span class="slot-number">Slot ${slotId}</span>
-              <span class="slot-name">${char.name} (Lv.${char.level})</span>
+          <div class="slot-card ${isActiveSlot ? 'slot-current' : ''} ${isSeasonalSlot ? 'slot-seasonal' : ''}" data-slot="${slotId}">
+            <div class="slot-header" style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="slot-number" style="font-size:0.75rem; color:var(--text-muted);">${slotTitle}</span>
+              <button class="btn-slot-delete" data-slot="${slotId}" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.8rem; padding:0 2px;" title="Delete Character">🗑️</button>
             </div>
-            <div class="slot-task ${statusClass}">
+            <div class="slot-name" style="font-weight:bold; font-size:0.85rem;">${char.name} (Lv.${char.level})</div>
+            <div class="slot-task ${statusClass}" style="font-size:0.75rem;">
               ${taskStatusText}
             </div>
-            <div class="slot-actions-group">
-              <button class="btn-slot-action ${taskBtnClass}" data-slot="${slotId}">
+            <div class="slot-actions-group" style="display:flex; gap:4px; margin-top:4px;">
+              <button class="btn-slot-action ${taskBtnClass}" data-slot="${slotId}" style="padding:2px 6px; font-size:0.75rem;">
                 ${taskBtnText}
               </button>
-              <button class="btn-slot-switch" data-slot="${slotId}" ${isActiveSlot ? 'disabled' : ''}>
+              <button class="btn-slot-switch" data-slot="${slotId}" ${isActiveSlot ? 'disabled' : ''} style="padding:2px 6px; font-size:0.75rem;">
                 ${isActiveSlot ? 'Active' : 'Switch'}
               </button>
             </div>
           </div>
         `;
-      } else if (isUnlockedSlot) {
-        html += `
-          <div class="slot-card slot-empty" data-slot="${slotId}">
-            <span class="slot-number">Slot ${slotId}</span>
-            <span class="slot-empty-text">Empty Slot</span>
-            <button class="btn-create-char" data-slot="${slotId}">+ Create</button>
-          </div>
-        `;
       } else {
         html += `
-          <div class="slot-card slot-locked" data-slot="${slotId}" style="opacity:0.6;">
-            <span class="slot-number">Slot ${slotId}</span>
-            <span class="slot-empty-text">🔒 Locked Slot</span>
-            <button class="btn-create-char" data-slot="${slotId}">Unlock</button>
+          <div class="slot-card slot-empty ${isSeasonalSlot ? 'slot-seasonal' : ''}" data-slot="${slotId}">
+            <span class="slot-number" style="font-size:0.75rem; color:var(--text-muted);">${slotTitle}</span>
+            <span class="slot-empty-text" style="font-size:0.8rem; display:block; margin:2px 0;">Empty</span>
+            <button class="btn-create-char" data-slot="${slotId}" style="padding:2px 8px; font-size:0.75rem; background:var(--gold); border:none; border-radius:4px; font-weight:bold; cursor:pointer;">+ Create</button>
           </div>
         `;
       }
@@ -359,6 +353,22 @@ export const UIManager = {
         AccountStore.setActiveSlot(slot);
         this.renderCommandCenter();
         if (window.renderActiveCharacterUI) window.renderActiveCharacterUI();
+      });
+    });
+
+    container.querySelectorAll(".btn-slot-delete").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const slot = parseInt(e.target.getAttribute("data-slot"), 10);
+        const char = account.characterSlots ? account.characterSlots[slot] : null;
+        if (!char) return;
+
+        const confirmDelete = confirm(`Are you sure you want to DELETE Level ${char.level} "${char.name}"?\n\nThis will remove the hero and their equipment from Slot ${slot}. This action cannot be undone!`);
+        if (confirmDelete) {
+          await AccountStore.deleteCharacter(slot);
+          if (typeof showToast === "function") showToast(`Hero "${char.name}" deleted`, "info");
+          this.renderCommandCenter();
+          if (window.renderActiveCharacterUI) window.renderActiveCharacterUI();
+        }
       });
     });
 

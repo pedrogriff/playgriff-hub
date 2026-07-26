@@ -192,6 +192,10 @@
         <span class="tab-icon">🛡️</span>
         <span class="tab-label">Hero</span>
       </button>
+      <button class="tab-btn" data-tab="shop-tab" id="tab-shop" role="tab" aria-selected="false" aria-controls="shop-tab">
+        <span class="tab-icon">🏪</span>
+        <span class="tab-label">Shop</span>
+      </button>
       <button class="tab-btn" data-tab="forge-tab" id="tab-forge" role="tab" aria-selected="false" aria-controls="forge-tab">
         <span class="tab-icon">🛠️</span>
         <span class="tab-label">Craft</span>
@@ -361,36 +365,6 @@
             </div>
           </div>
 
-          <!-- Shop Panel -->
-          <div class="panel shop-panel">
-            <h3 class="panel-title">🏪 Equipment Shop</h3>
-            <div class="shop-tabs" role="tablist">
-              <button class="shop-tab-btn active" data-shop-tab="weapons" id="shop-tab-weapons" role="tab">⚔️ Weapons</button>
-              <button class="shop-tab-btn" data-shop-tab="armor" id="shop-tab-armor" role="tab">🛡️ Armor</button>
-              <button class="shop-tab-btn" data-shop-tab="rings" id="shop-tab-rings" role="tab">💍 Rings</button>
-              <button class="shop-tab-btn" data-shop-tab="consumables" id="shop-tab-consumables" role="tab">🧪 Items</button>
-              <button class="shop-tab-btn" data-shop-tab="materials" id="shop-tab-materials" role="tab">🌿 Mats</button>
-            </div>
-            <div class="shop-tab-content active" id="shop-weapons-panel" role="tabpanel">
-              <div id="shop-weapons-container"></div>
-            </div>
-            <div class="shop-tab-content" id="shop-armor-panel" role="tabpanel">
-              <div id="shop-armor-container"></div>
-            </div>
-            <div class="shop-tab-content" id="shop-rings-panel" role="tabpanel">
-              <div id="shop-rings-container"></div>
-            </div>
-            <div class="shop-tab-content" id="shop-consumables-panel" role="tabpanel">
-              <div id="shop-consumables-container"></div>
-            </div>
-            <div class="shop-tab-content" id="shop-materials-panel" role="tabpanel">
-              <div id="shop-materials-container"></div>
-            </div>
-            <div class="shop-tab-content" id="shop-food-panel" role="tabpanel">
-              <div id="shop-food-container"></div>
-            </div>
-          </div>
-
           <!-- Right Column: Inventory & Paperdoll Grid -->
           <div class="hero-right-sidebar" style="display: flex; flex-direction: column; gap: var(--gap-md);">
             <!-- Inventory Panel -->
@@ -403,13 +377,45 @@
 
             <!-- Paperdoll Equipment Grid -->
             <div class="panel paperdoll-panel">
-              <h3 class="panel-title">🛡️ Equipped Gear (Paperdoll)</h3>
+              <h3 class="panel-title">🛡️ Equipped Gear</h3>
               <div class="paperdoll-grid" id="paperdoll-grid">
                 <!-- Rendered by JS -->
               </div>
             </div>
           </div>
 
+        </div>
+      </section>
+
+      <!-- ======= EQUIPMENT SHOP TAB ======= -->
+      <section id="shop-tab" class="tab-content" role="tabpanel" aria-labelledby="tab-shop">
+        <div class="panel shop-panel" style="max-width:900px; margin:0 auto;">
+          <h3 class="panel-title">🏪 Equipment & Merchant Shop</h3>
+          <div class="shop-tabs" role="tablist">
+            <button class="shop-tab-btn active" data-shop-tab="weapons" id="shop-tab-weapons" role="tab">⚔️ Weapons</button>
+            <button class="shop-tab-btn" data-shop-tab="armor" id="shop-tab-armor" role="tab">🛡️ Armor</button>
+            <button class="shop-tab-btn" data-shop-tab="rings" id="shop-tab-rings" role="tab">💍 Rings</button>
+            <button class="shop-tab-btn" data-shop-tab="consumables" id="shop-tab-consumables" role="tab">🧪 Items</button>
+            <button class="shop-tab-btn" data-shop-tab="materials" id="shop-tab-materials" role="tab">🌿 Mats</button>
+          </div>
+          <div class="shop-tab-content active" id="shop-weapons-panel" role="tabpanel">
+            <div id="shop-weapons-container"></div>
+          </div>
+          <div class="shop-tab-content" id="shop-armor-panel" role="tabpanel">
+            <div id="shop-armor-container"></div>
+          </div>
+          <div class="shop-tab-content" id="shop-rings-panel" role="tabpanel">
+            <div id="shop-rings-container"></div>
+          </div>
+          <div class="shop-tab-content" id="shop-consumables-panel" role="tabpanel">
+            <div id="shop-consumables-container"></div>
+          </div>
+          <div class="shop-tab-content" id="shop-materials-panel" role="tabpanel">
+            <div id="shop-materials-container"></div>
+          </div>
+          <div class="shop-tab-content" id="shop-food-panel" role="tabpanel">
+            <div id="shop-food-container"></div>
+          </div>
         </div>
       </section>
 

@@ -804,8 +804,9 @@ function initTabs() {
       if (btn.dataset.tab === "character-tab") {
         renderStats();
         renderInventory();
-        renderShop();
         if (typeof renderPaperdollGrid === "function") renderPaperdollGrid();
+      } else if (btn.dataset.tab === "shop-tab") {
+        renderShop();
       } else if (btn.dataset.tab === "forge-tab") {
         if (typeof renderProfessions === "function") renderProfessions();
       } else if (btn.dataset.tab === "garrison-tab") {
@@ -1189,6 +1190,7 @@ function savePlayerState() {
   if (typeof renderDifficultySelector === "function") renderDifficultySelector();
   if (typeof renderTaskQueuePanel === "function") renderTaskQueuePanel();
   if (typeof renderSeasonalPortal === "function") renderSeasonalPortal();
+  if (typeof UIManager !== "undefined" && UIManager.renderCommandCenter) UIManager.renderCommandCenter();
 }
 
 function checkDailyLogin() {
@@ -2457,23 +2459,33 @@ function initSkillsTabControls() {
   }
 }
 
-const PAPERDOLL_SLOTS = [
-  { key: "head", label: "Head", defaultIcon: "🪖" },
-  { key: "chest", label: "Chest", defaultIcon: "🥋" },
-  { key: "legs", label: "Legs", defaultIcon: "👖" },
-  { key: "main_hand", label: "Main Hand", defaultIcon: "⚔️" },
-  { key: "off_hand", label: "Off Hand", defaultIcon: "🛡️" },
-  { key: "accessory", label: "Accessory", defaultIcon: "💍" }
-];
+const RPG_PAPERDOLL_CONFIG = {
+  left: [
+    { key: "head", label: "Head", defaultIcon: "🪖" },
+    { key: "amulet", label: "Necklace", defaultIcon: "📿" },
+    { key: "chest", label: "Armor", defaultIcon: "🥋" },
+    { key: "main_hand", label: "Weapon", defaultIcon: "🗡️" },
+    { key: "off_hand", label: "Off-Hand", defaultIcon: "🛡️" }
+  ],
+  right: [
+    { key: "gloves", label: "Gloves", defaultIcon: "🧤" },
+    { key: "accessory", label: "Ring", defaultIcon: "💍" },
+    { key: "legs", label: "Legs", defaultIcon: "👖" },
+    { key: "boots", label: "Boots", defaultIcon: "👢" },
+    { key: "trinket", label: "Trinket", defaultIcon: "🔮" }
+  ]
+};
 
 function renderPaperdollGrid() {
   const container = document.getElementById("paperdoll-grid");
   if (!container) return;
-  container.innerHTML = "";
 
   const equipped = playerState.equipment || {};
+  const heroClass = playerState.class || "Warrior";
+  const totalPower = playerState.power || 0;
+  const totalDefense = playerState.defense || 0;
 
-  PAPERDOLL_SLOTS.forEach(slot => {
+  function renderSlotHTML(slot) {
     let raw = equipped[slot.key];
     if (!raw) {
       if (slot.key === "main_hand") raw = equipped.weapon;
@@ -2496,51 +2508,90 @@ function renderPaperdollGrid() {
       meta = def || { name: raw };
     }
 
-    const slotEl = document.createElement("div");
     const rarity = (meta?.rarity || "common").toLowerCase();
-    slotEl.className = `paperdoll-slot-card rarity-${rarity} ${meta && itemId ? 'occupied' : 'empty'}`;
+    const isOccupied = !!(meta && itemId);
+    const enhancementLevel = meta?.enhancement_level || 0;
 
-    if (meta && itemId) {
+    let tooltipContent = "";
+    if (isOccupied) {
       const statsList = [];
-      if (meta.attack_power || meta.power) statsList.push(`+${meta.attack_power || meta.power} Atk`);
-      if (meta.defense) statsList.push(`+${meta.defense} Def`);
+      if (meta.attack_power || meta.power) statsList.push(`+${meta.attack_power || meta.power} Power`);
+      if (meta.defense) statsList.push(`+${meta.defense} Defense`);
       if (meta.crit_chance) statsList.push(`+${Math.round(meta.crit_chance * 100)}% Crit`);
 
-      slotEl.innerHTML = `
-        <div class="slot-header">
-          <span class="slot-type-label">${slot.label}</span>
-          <span class="rarity-badge ${rarity}">${rarity.toUpperCase()}</span>
+      tooltipContent = `
+        <div class="rpg-slot-tooltip">
+          <strong class="item-name ${rarity}">${itemName} ${enhancementLevel ? '+' + enhancementLevel : ''}</strong>
+          <span class="item-rarity-tag ${rarity}">${rarity.toUpperCase()} ${slot.label.toUpperCase()}</span>
+          <div class="item-stats">${statsList.length ? statsList.join('<br>') : 'Equipped Item'}</div>
+          <span class="click-hint">Click to Unequip</span>
         </div>
-        <div class="slot-item-body">
-          <div class="item-icon">${meta.icon || slot.defaultIcon}</div>
-          <div class="item-info">
-            <h5>${itemName}</h5>
-            <p class="item-stat-snippet">${statsList.length ? statsList.join(" | ") : "Equipped Gear"}</p>
-          </div>
-        </div>
-        <button class="btn-unequip-slot" data-slot="${slot.key}">Unequip</button>
       `;
     } else {
-      slotEl.innerHTML = `
-        <div class="slot-header">
-          <span class="slot-type-label">${slot.label}</span>
-        </div>
-        <div class="slot-item-body empty-body">
-          <div class="item-icon empty-icon">${slot.defaultIcon}</div>
-          <div class="item-info">
-            <p class="empty-slot-text">Empty ${slot.label}</p>
-          </div>
+      tooltipContent = `
+        <div class="rpg-slot-tooltip">
+          <strong>Empty ${slot.label} Slot</strong>
         </div>
       `;
     }
 
-    container.appendChild(slotEl);
-  });
+    return `
+      <div class="rpg-paperdoll-slot rarity-${rarity} ${isOccupied ? 'occupied' : 'empty'}" 
+           data-slot="${slot.key}" 
+           title="${itemName || 'Empty ' + slot.label}">
+        <span class="slot-label">${slot.label}</span>
+        <div class="slot-icon-box">
+          <span class="icon">${meta?.icon || slot.defaultIcon}</span>
+          ${enhancementLevel ? `<span class="enhancement-badge">+${enhancementLevel}</span>` : ''}
+        </div>
+        ${tooltipContent}
+      </div>
+    `;
+  }
 
+  container.innerHTML = `
+    <div class="rpg-paperdoll-wrapper">
+      <div class="rpg-paperdoll-header-bar">
+        <span>🛡️ EQUIPMENT</span>
+      </div>
+
+      <div class="rpg-paperdoll-grid-layout">
+        <!-- Left Slots Column -->
+        <div class="rpg-slots-column left">
+          ${RPG_PAPERDOLL_CONFIG.left.map(s => renderSlotHTML(s)).join('')}
+        </div>
+
+        <!-- Center Hero Silhouette Avatar -->
+        <div class="rpg-hero-avatar-center">
+          <div class="rpg-class-title">${heroClass.toUpperCase()}</div>
+          <div class="rpg-hero-silhouette">
+            <svg viewBox="0 0 100 160" width="80" height="130" fill="currentColor">
+              <path d="M50,15 C42,15 36,22 36,30 C36,36 40,41 45,43 C32,48 20,62 18,85 L15,130 C15,133 17,135 20,135 C23,135 25,133 25,130 L28,95 L38,95 L35,150 C35,153 38,155 41,155 C44,155 46,153 46,150 L49,105 L51,105 L54,150 C54,153 56,155 59,155 C62,155 65,153 65,150 L62,95 L72,95 L75,130 C75,133 77,135 80,135 C83,135 85,133 85,130 L82,85 C80,62 68,48 55,43 C60,41 64,36 64,30 C64,22 58,15 50,15 Z" opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="rpg-paperdoll-stats-footer">
+            <div class="stat-badge armor" title="Total Armor Rating">
+              🛡️ Armor: <strong>${totalDefense}</strong>
+            </div>
+            <div class="stat-badge power" title="Total Power Rating">
+              ⚡ Power: <strong>${totalPower}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Slots Column -->
+        <div class="rpg-slots-column right">
+          ${RPG_PAPERDOLL_CONFIG.right.map(s => renderSlotHTML(s)).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Slot Unequip Event Handler
   container.onclick = (e) => {
-    const btn = e.target.closest(".btn-unequip-slot");
-    if (btn) {
-      const slotKey = btn.dataset.slot;
+    const slotCard = e.target.closest(".rpg-paperdoll-slot.occupied");
+    if (slotCard) {
+      const slotKey = slotCard.dataset.slot;
       unequipItem(slotKey);
     }
   };
