@@ -4853,7 +4853,7 @@ window.startPvPDuel = (botId) => {
 // EXPANSION PHASE 1 & 2: NARRATOR, REBIRTH, LOOT FILTERS & THE FORGE
 // ================================================================
 
-export const NARRATOR_LINES = {
+const NARRATOR_LINES = {
   afk_short: [
     "Your hero sharpened their blade while keeping watch over the keep.",
     "A quiet breeze passed through the valley as your hero stood guard.",
@@ -4876,13 +4876,13 @@ export const NARRATOR_LINES = {
   ]
 };
 
-export function getRandomNarratorLine(category = "afk_long") {
+function getRandomNarratorLine(category = "afk_long") {
   const lines = NARRATOR_LINES[category] || NARRATOR_LINES.afk_long;
   return lines[Math.floor(Math.random() * lines.length)];
 }
 
 // ── REBIRTH SYSTEM UI ──
-export async function handlePerformRebirth() {
+async function handlePerformRebirth() {
   const activeChar = AccountStore.getActiveCharacter();
   if (!activeChar) return;
 
@@ -4924,7 +4924,7 @@ export async function handlePerformRebirth() {
   }
 }
 
-export function renderRebirthModal() {
+function renderRebirthModal() {
   let modal = document.getElementById("rebirth-modal");
   if (!modal) {
     modal = document.createElement("div");
@@ -4978,7 +4978,7 @@ export function renderRebirthModal() {
 }
 
 // ── LOOT FILTER SETTINGS UI ──
-export function renderLootFilterSettings() {
+function renderLootFilterSettings() {
   const container = document.getElementById("loot-filter-panel");
   if (!container) return;
 
@@ -5025,7 +5025,7 @@ export function renderLootFilterSettings() {
 }
 
 // ── DIFFICULTY TIER SELECTOR UI ──
-export function renderDifficultySelector() {
+function renderDifficultySelector() {
   const container = document.getElementById("difficulty-selector-container");
   if (!container) return;
 
@@ -5074,7 +5074,7 @@ window.renderDifficultySelector = renderDifficultySelector;
 window.getRandomNarratorLine = getRandomNarratorLine;
 
 // ── GARRISON NETWORK PANEL UI ──
-export async function renderGarrisonPanel() {
+async function renderGarrisonPanel() {
   const container = document.getElementById("garrison-tab-container");
   if (!container) return;
 
@@ -5165,7 +5165,7 @@ export async function renderGarrisonPanel() {
 }
 
 // ── WORLD RIFT & COMMUNITY BOUNTY PANEL UI ──
-export async function renderWorldRiftPanel() {
+async function renderWorldRiftPanel() {
   const container = document.getElementById("world-rift-container");
   if (!container) return;
 
@@ -5286,7 +5286,7 @@ window.renderGarrisonPanel = renderGarrisonPanel;
 window.renderWorldRiftPanel = renderWorldRiftPanel;
 
 // ── TASK QUEUE PANEL UI ──
-export function renderTaskQueuePanel() {
+function renderTaskQueuePanel() {
   const container = document.getElementById("task-queue-panel");
   if (!container) return;
 
@@ -5329,7 +5329,7 @@ export function renderTaskQueuePanel() {
 }
 
 // ── SEASONAL ECHO LEAGUES UI ──
-export async function renderSeasonalPortal() {
+async function renderSeasonalPortal() {
   const container = document.getElementById("seasonal-portal-container");
   if (!container) return;
 
@@ -5427,7 +5427,7 @@ window.renderTaskQueuePanel = renderTaskQueuePanel;
 window.renderSeasonalPortal = renderSeasonalPortal;
 
 // ── DISCORD WEBHOOK SETTINGS UI ──
-export function renderWebhookSettingsModal() {
+function renderWebhookSettingsModal() {
   let modal = document.getElementById("webhook-settings-modal");
   if (!modal) {
     modal = document.createElement("div");
