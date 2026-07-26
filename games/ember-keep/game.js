@@ -1351,6 +1351,8 @@ function startProductionTicker() {
     if (!playerState.class) return;
     checkProductionTimers();
   }, 1000); // Check every second
+}
+
 function addToInventory(itemId, qty = 1) {
   if (!playerState.inventory) playerState.inventory = [];
   let itemObj = playerState.inventory.find(i => i.id === itemId || i.item_id === itemId);
