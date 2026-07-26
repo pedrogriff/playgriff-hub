@@ -166,7 +166,7 @@ export const AccountStore = {
             level: row.level,
             xp: row.exp,
             maxXp: row.max_exp || 100,
-            stamina: row.stamina,
+            stamina: (typeof row.stamina === "number" && !isNaN(row.stamina)) ? row.stamina : (row.max_stamina || 100),
             maxStamina: row.max_stamina || 100,
             mana: row.mana,
             maxMana: row.max_mana || 50,
@@ -181,7 +181,9 @@ export const AccountStore = {
             dodgeChance: Number(row.dodge_chance || 0.05),
             gold: row.gold,
             gems: row.gems,
-            house: row.house || (localChar ? localChar.house : { tier: 0, name: "No Housing", slots: [], decorations: [] }),
+            house: (localChar && localChar.house && (localChar.house.tier || 0) > (row.house?.tier || 0))
+              ? localChar.house
+              : (row.house || (localChar ? localChar.house : { tier: 1, name: "Simple Tent", slots: [], decorations: [] })),
             unlockedLevel: finalUnlocked,
             completedSideZones: finalSideZones,
             inventory: row.inventory || [],
@@ -396,7 +398,7 @@ export const AccountStore = {
           level: row.level,
           xp: row.exp,
           maxXp: row.max_exp || 100,
-          stamina: row.stamina,
+          stamina: (typeof row.stamina === "number" && !isNaN(row.stamina)) ? row.stamina : (row.max_stamina || 100),
           maxStamina: row.max_stamina || 100,
           mana: row.mana,
           maxMana: row.max_mana || 50,

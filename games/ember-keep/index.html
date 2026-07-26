@@ -348,9 +348,12 @@
           <div class="hero-bottom-row" style="display:flex; flex-direction:column; gap:16px;">
             <!-- Horizontal Inventory Backpack -->
             <div class="panel inventory-panel horizontal-backpack">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
                 <h3 class="panel-title" style="margin:0;">🎒 Adventurer Backpack</h3>
-                <span class="inventory-capacity-pill">Capacity: <strong id="inv-count">0</strong>/<strong id="inv-max">20</strong></span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <button id="btn-bulk-sell-modal" class="btn-bulk-sell" title="Bulk sell items in backpack">⚡ Bulk Sell</button>
+                  <span class="inventory-capacity-pill">Capacity: <strong id="inv-count">0</strong>/<strong id="inv-max">20</strong></span>
+                </div>
               </div>
               <div class="inventory-list horizontal-backpack-grid" id="inventory-list">
                 <p class="empty-message">Your inventory is empty.</p>

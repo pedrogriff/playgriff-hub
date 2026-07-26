@@ -142,7 +142,7 @@ export async function saveCharacter(charData) {
     level: charData.level,
     exp: charData.exp || charData.xp || 0,
     max_exp: charData.max_exp || charData.maxXp || 100,
-    stamina: charData.stamina,
+    stamina: (typeof charData.stamina === "number" && !isNaN(charData.stamina)) ? charData.stamina : 100,
     hp: charData.hp,
     gold: charData.gold,
     gems: charData.gems,
@@ -171,9 +171,12 @@ export async function saveCharacter(charData) {
     if (error) throw error;
     return data;
   } catch (err) {
-    if (err && (err.code === "PGRST204" || (err.message && err.message.includes("completed_side_zones")))) {
+    if (err && (err.code === "PGRST204" || (err.message && (err.message.includes("completed_side_zones") || err.message.includes("house"))))) {
       delete updates.completed_side_zones;
       delete updates.unlocked_level;
+      if (err.message && err.message.includes("house")) {
+        delete updates.house;
+      }
       const { data, error } = await supabase
         .from("characters")
         .update(updates)

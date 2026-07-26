@@ -88,6 +88,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (aggregatedReport) {
     UIManager.showOfflineSummaryModal(aggregatedReport);
   }
+  if (typeof UIManager !== "undefined" && UIManager.renderCommandCenter) {
+    UIManager.renderCommandCenter();
+  }
+  if (window.renderActiveCharacterUI) {
+    window.renderActiveCharacterUI();
+  }
 });
 
 // ================================================================
@@ -924,16 +930,30 @@ function initClassSelectionControls() {
 // ── INVENTORY CONTROLS ──
 function initInventoryControls() {
   const list = document.getElementById("inventory-list");
-  if (!list) return;
-  list.addEventListener("click", (e) => {
-    if (e.target.classList.contains("btn-equip")) {
-      equipItemFromInventory(e.target.dataset.item, parseInt(e.target.dataset.index));
-    } else if (e.target.classList.contains("btn-sell")) {
-      sellItemFromInventory(e.target.dataset.item, parseInt(e.target.dataset.index));
-    } else if (e.target.classList.contains("btn-use")) {
-      useConsumableFromInventory(e.target.dataset.item, parseInt(e.target.dataset.index));
-    }
-  });
+  if (list) {
+    list.addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      const itemId = btn.dataset.item;
+      const idx = parseInt(btn.dataset.index, 10);
+      if (btn.classList.contains("btn-equip")) {
+        equipItemFromInventory(itemId, idx);
+      } else if (btn.classList.contains("btn-sell-all")) {
+        sellAllStackFromInventory(itemId, idx);
+      } else if (btn.classList.contains("btn-sell")) {
+        sellItemFromInventory(itemId, idx);
+      } else if (btn.classList.contains("btn-use")) {
+        useConsumableFromInventory(itemId, idx);
+      }
+    });
+  }
+
+  const bulkSellBtn = document.getElementById("btn-bulk-sell-modal");
+  if (bulkSellBtn) {
+    bulkSellBtn.addEventListener("click", () => {
+      showBulkSellModal();
+    });
+  }
 }
 
 // ── COMPARE MODAL ──
@@ -1106,8 +1126,8 @@ window.renderActiveCharacterUI = function() {
   playerState.class = activeChar.class || null;
   playerState.level = activeChar.level || 1;
   playerState.xp = activeChar.xp || activeChar.exp || 0;
-  playerState.xpNeeded = activeChar.maxXp || activeChar.max_exp || 100;
-  playerState.stamina = activeChar.stamina !== undefined ? activeChar.stamina : 100;
+  const maxStam = getMaxStamina(playerState.level || 1);
+  playerState.stamina = (typeof activeChar.stamina === "number" && !isNaN(activeChar.stamina) && activeChar.stamina !== null) ? activeChar.stamina : maxStam;
   playerState.gold = activeChar.gold !== undefined ? activeChar.gold : 50;
   playerState.gems = activeChar.gems !== undefined ? activeChar.gems : 0;
   playerState.skillPoints = activeChar.skillPoints !== undefined ? activeChar.skillPoints : (activeChar.skill_points || 0);
@@ -1133,16 +1153,17 @@ window.renderActiveCharacterUI = function() {
   playerState.inventory = Array.isArray(activeChar.inventory) ? JSON.parse(JSON.stringify(activeChar.inventory)) : [];
   playerState.equipment = activeChar.equipped ? JSON.parse(JSON.stringify(activeChar.equipped)) : { weapon: null, armor: null, ring: null };
 
-  if (activeChar.power || activeChar.defense) {
+  if (activeChar.power || activeChar.defense || activeChar.maxHp) {
+    const effMaxHp = activeChar.maxHp || activeChar.hp || 100;
     playerState.stats = {
-      maxHp: activeChar.maxHp || activeChar.hp || 100,
+      maxHp: effMaxHp,
       power: activeChar.power || 10,
       defense: activeChar.defense || 5,
       critChance: Number(activeChar.critChance || 0.05),
       critDamage: Number(activeChar.critDamage || 1.5),
       dodgeChance: Number(activeChar.dodgeChance || 0.05)
     };
-    playerState.currentHp = activeChar.hp || activeChar.maxHp || 100;
+    playerState.currentHp = typeof activeChar.hp === "number" && activeChar.hp > 0 ? activeChar.hp : effMaxHp;
   }
 
   // Update overlay display for class selection
@@ -1202,6 +1223,7 @@ function savePlayerState() {
         activeChar.defense = playerState.stats.defense;
         activeChar.maxHp = playerState.stats.maxHp;
       }
+      activeChar.hp = playerState.currentHp;
       AccountStore.save();
     }
   }
@@ -1273,7 +1295,7 @@ function recoverOfflineStamina() {
     if (recovered > 0) {
       playerState.stamina = Math.min(maxStam, playerState.stamina + recovered);
       
-      const hpRegenRate = Math.max(1, Math.floor(effStats.maxHp * 0.005 * hpRegMult));
+      const hpRegenRate = Math.max(2, Math.round(effStats.maxHp * 0.02 * hpRegMult));
       if (playerState.currentHp < effStats.maxHp) {
         playerState.currentHp = Math.min(effStats.maxHp, (playerState.currentHp || effStats.maxHp) + (hpRegenRate * recovered));
       }
@@ -1295,14 +1317,18 @@ function startStaminaTicker() {
     const effStats = getEffectiveStats();
     let changed = false;
 
-    if (playerState.stamina < maxStam) {
-      playerState.stamina++;
+    const currentStam = (typeof playerState.stamina === "number" && !isNaN(playerState.stamina) && playerState.stamina !== null) ? playerState.stamina : maxStam;
+    if (currentStam < maxStam) {
+      playerState.stamina = currentStam + 1;
+      changed = true;
+    } else if (playerState.stamina !== currentStam) {
+      playerState.stamina = currentStam;
       changed = true;
     }
     if (playerState.currentHp < effStats.maxHp) {
       const houseInfo = getHouseInfo();
       const totalHpRegenMult = houseInfo.hpRegenBonus * hpRegMult;
-      const hpRegenRate = Math.max(1, Math.floor(effStats.maxHp * 0.005 * totalHpRegenMult));
+      const hpRegenRate = Math.max(2, Math.round(effStats.maxHp * 0.02 * totalHpRegenMult));
       playerState.currentHp = Math.min(effStats.maxHp, (playerState.currentHp || effStats.maxHp) + hpRegenRate);
       changed = true;
     }
@@ -1627,18 +1653,31 @@ function getEffectiveStats() {
 }
 
 function getPlayerPowerRating(state) {
-  if (!state?.stats) return 0;
-  let pwr = state.stats.power, def = state.stats.defense, hp = state.stats.maxHp;
-  const w = ALL_ITEMS[state.equipment?.weapon];
-  const a = ALL_ITEMS[state.equipment?.armor];
-  const r = ALL_ITEMS[state.equipment?.ring];
-  if (w) pwr += w.value;
-  if (a) def += a.value;
-  if (r) {
-    if (r.stat === "power")   pwr += r.value;
-    if (r.stat === "defense") def += r.value;
+  let effStats = null;
+  if (typeof getEffectiveStats === "function") {
+    try { effStats = getEffectiveStats(); } catch (e) {}
   }
-  return Math.round(pwr * 2 + def * 1.5 + hp * 0.1);
+  const stats = effStats || state?.stats || {};
+  const pwr = Number(stats.power || 0);
+  const def = Number(stats.defense || 0);
+  const hp  = Number(stats.maxHp || stats.hp || 0);
+  const crit = Number(stats.critChance || 0.05);
+
+  let pr = Math.round(pwr * 2.5 + def * 2 + hp * 0.1 + crit * 150);
+
+  if (!effStats && state?.equipment) {
+    Object.values(state.equipment).forEach(itemRef => {
+      if (!itemRef) return;
+      const item = typeof itemRef === "string" ? ALL_ITEMS[itemRef] : itemRef;
+      if (!item) return;
+      const itemPwr = Number(item.power || item.attack_power || item.attack || item.pwr || item.value || 0);
+      const itemDef = Number(item.defense || item.def || 0);
+      const itemHp  = Number(item.max_hp || item.hp || 0);
+      pr += Math.round(itemPwr * 2.5 + itemDef * 2 + itemHp * 0.1);
+    });
+  }
+
+  return isNaN(pr) ? 0 : pr;
 }
 
 // ================================================================
@@ -1912,11 +1951,14 @@ function renderStats() {
   const maxStam  = getMaxStamina(playerState.level);
   const pr       = getPlayerPowerRating(playerState);
 
+  const curStam  = (typeof playerState.stamina === "number" && !isNaN(playerState.stamina) && playerState.stamina !== null) ? playerState.stamina : maxStam;
+  if (playerState.stamina !== curStam) playerState.stamina = curStam;
+
   // Header
   _setText("header-level", playerState.level);
   _setText("header-gold",  playerState.gold);
   _setText("header-gems",  playerState.gems || 0);
-  _setText("header-stamina", `${playerState.stamina}/${maxStam}`);
+  _setText("header-stamina", `${curStam}/${maxStam}`);
   _setText("store-gems-count", playerState.gems || 0);
 
   // Character panel
@@ -1927,7 +1969,7 @@ function renderStats() {
   _setText("char-class-display",  playerState.class);
   _setText("char-level",          playerState.level);
   _setText("char-xp-text",        `${playerState.xp}/${playerState.xpNeeded}`);
-  _setText("char-stamina-text",   `${playerState.stamina}/${maxStam}`);
+  _setText("char-stamina-text",   `${curStam}/${maxStam}`);
   _setText("char-mana-text",      `${playerState.maxMana}/${playerState.maxMana}`);
   _setText("char-power-rating",   pr);
 
@@ -2982,6 +3024,11 @@ function renderInventory() {
   const items = playerState.inventory || [];
   const usedSlots = items.length;
 
+  const invCountEl = document.getElementById("inv-count");
+  const invMaxEl = document.getElementById("inv-max");
+  if (invCountEl) invCountEl.textContent = usedSlots;
+  if (invMaxEl) invMaxEl.textContent = maxSlots;
+
   let counterEl = document.getElementById("inventory-capacity-counter");
   if (!counterEl) {
     counterEl = document.createElement("div");
@@ -3023,10 +3070,15 @@ function renderInventory() {
       cost: inv.value || meta.cost || 10
     };
 
+    const qty = Math.max(1, Number(inv.qty ?? inv.quantity ?? 1));
+    inv.qty = qty;
+    inv.quantity = qty;
+
     const isConsumable = item.type === "consumable" || item.type === "food";
     const slot = getEquipmentSlot(itemDef || item, inv);
     const isEquippable = Boolean(slot) || item.type === "weapon" || item.type === "armor" || item.type === "ring" || item.type === "head" || item.type === "legs" || Boolean(meta.slot_type);
-    const qtyStr = (inv.qty && inv.qty > 1) ? ` (x${inv.qty})` : "";
+
+    const qtyBadgeHTML = `<span class="item-qty-badge" title="Quantity: ${qty}">x${qty}</span>`;
 
     let statsHtml = `<p>${item.desc || "Item"}</p>`;
     if (isEquippable) {
@@ -3040,7 +3092,19 @@ function renderInventory() {
       statsHtml = `<p>${statsList.length ? statsList.join(" | ") : (item.desc || "Equippable Gear")}</p>`;
     }
 
-    let actionsHtml = `<button class="btn-sell" data-item="${item.id}" data-index="${realIdx}">Sell ${Math.round((item.cost || 10) * 0.5)}g</button>`;
+    const singlePrice = Math.round((item.cost || 10) * 0.5);
+    const totalPrice = singlePrice * qty;
+
+    let actionsHtml = "";
+    if (qty > 1) {
+      actionsHtml = `
+        <button class="btn-sell btn-sell-one" data-item="${item.id}" data-index="${realIdx}">Sell 1 (${singlePrice}g)</button>
+        <button class="btn-sell btn-sell-all" data-item="${item.id}" data-index="${realIdx}">Sell All (${totalPrice}g)</button>
+      `;
+    } else {
+      actionsHtml = `<button class="btn-sell" data-item="${item.id}" data-index="${realIdx}">Sell ${singlePrice}g</button>`;
+    }
+
     if (isConsumable) {
       actionsHtml = `<button class="btn-upgrade btn-use" data-item="${item.id}" data-index="${realIdx}">Use</button>` + actionsHtml;
     } else if (isEquippable) {
@@ -3051,7 +3115,13 @@ function renderInventory() {
     el.className = "inventory-item";
     el.innerHTML = `
       <div class="item-icon">${inv.icon || item.icon}</div>
-      <div class="item-details"><h5>${inv.name || item.name}${qtyStr}</h5>${statsHtml}</div>
+      <div class="item-details">
+        <h5 style="display:flex; align-items:center; gap:6px; margin:0 0 4px 0;">
+          <span>${inv.name || item.name}</span>
+          ${qtyBadgeHTML}
+        </h5>
+        ${statsHtml}
+      </div>
       <div class="inventory-item-actions">${actionsHtml}</div>
     `;
     list.appendChild(el);
@@ -3084,6 +3154,7 @@ function initUpgradeButtons() {
     if (playerState.gold >= cost) {
       playerState.gold -= cost;
       playerState.stats.maxHp += 10;
+      playerState.currentHp += 10;
       playerState.upgrades.hpLevel = hpLvl + 1;
       playerState.upgrades.hp = hpLvl + 1;
       savePlayerState(); renderStats(); renderShop();
@@ -3310,21 +3381,205 @@ function equipItemFromInventory(itemId, invIndex) {
 }
 
 function sellItemFromInventory(itemId, index) {
-  const item = ALL_ITEMS[itemId];
-  if (!item) return;
   const inv = playerState.inventory[index];
-  const price = Math.round(item.cost * 0.5);
-  
+  if (!inv) return;
+  const itemKey = inv.item_id || inv.id || itemId;
+  const itemDef = ALL_ITEMS[itemKey] || ALL_ITEMS[itemId];
+  const cost = itemDef ? (itemDef.cost || itemDef.value || 10) : (inv.cost || inv.value || 10);
+  const price = Math.round(cost * 0.5);
+
+  const currentQty = Math.max(1, Number(inv.qty ?? inv.quantity ?? 1));
+
   playerState.gold += price;
-  if (inv.qty && inv.qty > 1) {
-    inv.qty--;
+
+  if (currentQty > 1) {
+    inv.qty = currentQty - 1;
+    inv.quantity = currentQty - 1;
   } else {
     playerState.inventory.splice(index, 1);
   }
-  
+
   savePlayerState(); renderStats(); renderShop(); renderInventory();
   if (typeof renderMaterials === "function") renderMaterials();
-  showToast(`💰 Sold ${item.name} for ${price}g!`, "success");
+  showToast(`💰 Sold 1x ${inv.name || (itemDef ? itemDef.name : itemKey)} for ${price}g!`, "success");
+}
+
+function sellAllStackFromInventory(itemId, index) {
+  const inv = playerState.inventory[index];
+  if (!inv) return;
+  const itemKey = inv.item_id || inv.id || itemId;
+  const itemDef = ALL_ITEMS[itemKey] || ALL_ITEMS[itemId];
+  const cost = itemDef ? (itemDef.cost || itemDef.value || 10) : (inv.cost || inv.value || 10);
+  const singlePrice = Math.round(cost * 0.5);
+  const currentQty = Math.max(1, Number(inv.qty ?? inv.quantity ?? 1));
+  const totalPrice = singlePrice * currentQty;
+
+  playerState.gold += totalPrice;
+  playerState.inventory.splice(index, 1);
+
+  savePlayerState(); renderStats(); renderShop(); renderInventory();
+  if (typeof renderMaterials === "function") renderMaterials();
+  showToast(`💰 Sold x${currentQty} ${inv.name || (itemDef ? itemDef.name : itemKey)} for ${totalPrice}g!`, "success");
+}
+
+function showBulkSellModal() {
+  let modal = document.getElementById("bulk-sell-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "bulk-sell-modal";
+    modal.className = "modal active";
+    document.body.appendChild(modal);
+  } else {
+    modal.classList.add("active");
+  }
+
+  const items = playerState.inventory || [];
+
+  let matCount = 0;
+  let matItemsCount = 0;
+  let matGold = 0;
+
+  let gearCount = 0;
+  let gearGold = 0;
+
+  let totalCount = 0;
+  let totalGold = 0;
+
+  items.forEach(inv => {
+    const itemKey = inv.item_id || inv.id;
+    const itemDef = ALL_ITEMS[itemKey] || ALL_ITEMS[inv.id] || ALL_ITEMS[inv.item_id];
+    const cost = itemDef ? (itemDef.cost || itemDef.value || 10) : (inv.cost || inv.value || 10);
+    const singlePrice = Math.round(cost * 0.5);
+    const qty = Math.max(1, Number(inv.qty ?? inv.quantity ?? 1));
+    const itemType = inv.type || inv.item_type || (itemDef ? itemDef.type : "material");
+
+    const itemTotalVal = singlePrice * qty;
+    totalCount += qty;
+    totalGold += itemTotalVal;
+
+    if (itemType === "material") {
+      matItemsCount++;
+      matCount += qty;
+      matGold += itemTotalVal;
+    } else if (itemType === "weapon" || itemType === "armor" || itemType === "ring" || itemType === "head" || itemType === "legs" || itemType === "equipment") {
+      gearCount += qty;
+      gearGold += itemTotalVal;
+    }
+  });
+
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width:440px;">
+      <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>⚡ Bulk Sell Inventory</h2>
+        <button class="close-modal-btn" onclick="document.getElementById('bulk-sell-modal').classList.remove('active')" style="background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">×</button>
+      </div>
+      <div class="modal-body" style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">
+        <p style="font-size:0.85rem; color:var(--text-muted); margin:0;">Select a category to quick sell items directly from your backpack:</p>
+
+        <button id="btn-bulk-sell-materials" class="btn-action" style="padding:10px 14px; text-align:left; display:flex; justify-content:space-between; align-items:center; background:var(--bg-elevated); border:1px solid var(--border); border-radius:6px; cursor:pointer;" ${matCount === 0 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>
+          <div>
+            <strong style="display:block; font-size:0.9rem;">🧹 Sell All Materials</strong>
+            <span style="font-size:0.75rem; color:var(--text-muted);">${matCount} items (${matItemsCount} stacks)</span>
+          </div>
+          <span style="color:var(--gold); font-weight:bold;">+${matGold}g</span>
+        </button>
+
+        <button id="btn-bulk-sell-gear" class="btn-action" style="padding:10px 14px; text-align:left; display:flex; justify-content:space-between; align-items:center; background:var(--bg-elevated); border:1px solid var(--border); border-radius:6px; cursor:pointer;" ${gearCount === 0 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>
+          <div>
+            <strong style="display:block; font-size:0.9rem;">🗡️ Sell All Unequipped Gear</strong>
+            <span style="font-size:0.75rem; color:var(--text-muted);">${gearCount} items</span>
+          </div>
+          <span style="color:var(--gold); font-weight:bold;">+${gearGold}g</span>
+        </button>
+
+        <button id="btn-bulk-sell-all-items" class="btn-danger" style="padding:10px 14px; text-align:left; display:flex; justify-content:space-between; align-items:center; background:var(--danger-dim); border:1px solid var(--danger); border-radius:6px; cursor:pointer;" ${totalCount === 0 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>
+          <div>
+            <strong style="display:block; font-size:0.9rem;">🎒 Sell Everything in Backpack</strong>
+            <span style="font-size:0.75rem; color:var(--text-muted);">${totalCount} items total</span>
+          </div>
+          <span style="color:#ff6b6b; font-weight:bold;">+${totalGold}g</span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  const closeM = () => modal.classList.remove("active");
+
+  const matBtn = document.getElementById("btn-bulk-sell-materials");
+  if (matBtn && matCount > 0) {
+    matBtn.addEventListener("click", () => {
+      closeM();
+      bulkSellCategory("material");
+    });
+  }
+
+  const gearBtn = document.getElementById("btn-bulk-sell-gear");
+  if (gearBtn && gearCount > 0) {
+    gearBtn.addEventListener("click", () => {
+      closeM();
+      bulkSellCategory("gear");
+    });
+  }
+
+  const allBtn = document.getElementById("btn-bulk-sell-all-items");
+  if (allBtn && totalCount > 0) {
+    allBtn.addEventListener("click", () => {
+      closeM();
+      bulkSellCategory("all");
+    });
+  }
+}
+
+function bulkSellCategory(category) {
+  const items = playerState.inventory || [];
+  if (!items.length) return;
+
+  let soldQty = 0;
+  let totalGoldGained = 0;
+
+  const remainingItems = [];
+
+  items.forEach(inv => {
+    const itemKey = inv.item_id || inv.id;
+    const itemDef = ALL_ITEMS[itemKey] || ALL_ITEMS[inv.id] || ALL_ITEMS[inv.item_id];
+    const cost = itemDef ? (itemDef.cost || itemDef.value || 10) : (inv.cost || inv.value || 10);
+    const singlePrice = Math.round(cost * 0.5);
+    const qty = Math.max(1, Number(inv.qty ?? inv.quantity ?? 1));
+    const itemType = inv.type || inv.item_type || (itemDef ? itemDef.type : "material");
+
+    let shouldSell = false;
+    if (category === "all") {
+      shouldSell = true;
+    } else if (category === "material" && itemType === "material") {
+      shouldSell = true;
+    } else if (category === "gear" && (itemType === "weapon" || itemType === "armor" || itemType === "ring" || itemType === "head" || itemType === "legs" || itemType === "equipment")) {
+      shouldSell = true;
+    }
+
+    if (shouldSell) {
+      soldQty += qty;
+      totalGoldGained += (singlePrice * qty);
+    } else {
+      remainingItems.push(inv);
+    }
+  });
+
+  if (soldQty === 0) {
+    showToast("No items matched bulk sell selection.", "info");
+    return;
+  }
+
+  playerState.inventory = remainingItems;
+  playerState.gold += totalGoldGained;
+
+  savePlayerState();
+  renderStats();
+  renderShop();
+  renderInventory();
+  if (typeof renderMaterials === "function") renderMaterials();
+
+  const label = category === "material" ? "materials" : (category === "gear" ? "gear items" : "items");
+  showToast(`💰 Bulk sold ${soldQty} ${label} for +${totalGoldGained}g!`, "success");
 }
 
 function useConsumableFromInventory(itemId, index) {
@@ -3463,7 +3718,7 @@ function openBattleModal(level) {
   _setText("battle-title",      `${typeof level.id === "number" ? "Level " + level.id + ": " : ""}${level.name}`);
   _setText("enemy-name",        level.name);
   _setText("suggested-power-val",formatNumber(level.suggested || 0));
-  _setText("player-power-val",  playerPR);
+  _setText("player-power-val",  formatNumber(playerPR || 0));
   _setText("battle-stamina-cost",staminaCost);
   _setText("battle-player-name",playerState.name || "Hero");
 
@@ -4330,33 +4585,79 @@ function getHouseInfo() {
   };
 }
 
+function findInventoryMaterial(matId) {
+  const invList = playerState.inventory || [];
+  return invList.find(i => {
+    const id = (i.id || i.item_id || "").toLowerCase();
+    const name = (i.name || "").toLowerCase();
+    const target = (matId || "").toLowerCase();
+
+    if (id === target) return true;
+
+    if (target === "mat_wood" && (id.includes("wood") || id.includes("log") || name.includes("wood"))) return true;
+    if (target === "mat_stone" && (id.includes("stone") || name.includes("stone"))) return true;
+    if (target === "mat_iron_ore" && (id.includes("iron") || id.includes("ore") || name.includes("iron"))) return true;
+    if (target === "mat_leather" && (id.includes("leather") || id.includes("hide") || name.includes("hide") || name.includes("leather"))) return true;
+
+    return false;
+  });
+}
+
+function getMaterialQty(matId) {
+  const inv = findInventoryMaterial(matId);
+  if (!inv) return 0;
+  return Math.max(0, Number(inv.qty ?? inv.quantity ?? 1));
+}
+
 function upgradeHouse() {
-  const nextTier = playerState.house.tier + 1;
+  const currentTier = playerState.house ? (playerState.house.tier || 0) : 0;
+  const nextTier = currentTier + 1;
   if (nextTier > 5) { showToast("House is already at max level!", "error"); return; }
   
   const tierData = HOUSE_TIERS[nextTier];
-  if (playerState.gold < tierData.cost) { showToast("Not enough Gold to upgrade house!", "error"); return; }
+  if (playerState.gold < tierData.cost) { showToast(`Not enough Gold! Costs ${tierData.cost}g to upgrade.`, "error"); return; }
   
   // Verify materials
-  if (tierData.materials) {
+  if (tierData.materials && tierData.materials.length > 0) {
     for (const mat of tierData.materials) {
-      const inv = playerState.inventory.find(i => i.id === mat.id);
-      if (!inv || (inv.qty || 1) < mat.qty) {
-        showToast(`Not enough material: ${ALL_ITEMS[mat.id]?.name || mat.id}`, "error");
+      const currentQty = getMaterialQty(mat.id);
+      if (currentQty < mat.qty) {
+        const matDef = ALL_ITEMS[mat.id];
+        let matName = matDef ? matDef.name : mat.id;
+        if (mat.id === "mat_wood") matName = "Wood";
+        if (mat.id === "mat_stone") matName = "Stone";
+        if (mat.id === "mat_iron_ore") matName = "Iron Ore";
+        showToast(`Not enough material: ${matName} (${currentQty}/${mat.qty})`, "error");
         return;
       }
     }
+
     // Deduct materials
     tierData.materials.forEach(mat => {
-      const idx = playerState.inventory.findIndex(i => i.id === mat.id);
-      if (idx !== -1) {
-        playerState.inventory[idx].qty -= mat.qty;
-        if (playerState.inventory[idx].qty <= 0) playerState.inventory.splice(idx, 1);
+      let needed = mat.qty;
+      while (needed > 0) {
+        const inv = findInventoryMaterial(mat.id);
+        if (!inv) break;
+        const currentQty = Math.max(1, Number(inv.qty ?? inv.quantity ?? 1));
+        const idx = playerState.inventory.indexOf(inv);
+        if (idx === -1) break;
+
+        if (currentQty > needed) {
+          inv.qty = currentQty - needed;
+          inv.quantity = inv.qty;
+          needed = 0;
+        } else {
+          needed -= currentQty;
+          playerState.inventory.splice(idx, 1);
+        }
       }
     });
   }
   
   playerState.gold -= tierData.cost;
+  if (!playerState.house) {
+    playerState.house = { tier: 1, name: "Simple Tent", slots: [], decorations: [], unlockedDecorations: [] };
+  }
   playerState.house.tier = nextTier;
   playerState.house.name = tierData.name;
   savePlayerState();
@@ -4520,14 +4821,59 @@ function renderHouse() {
   if (!container) return;
   const houseInfo = getHouseInfo();
   
-  // Create Header
-  const tierData = HOUSE_TIERS[houseInfo.tier];
-  let upgradeBtnHtml = "";
+  let upgradeSectionHtml = "";
   if (houseInfo.tier < 5) {
     const nextTier = HOUSE_TIERS[houseInfo.tier + 1];
-    upgradeBtnHtml = `<button class="btn-action" onclick="upgradeHouse()">⬆️ Upgrade <span class="cost">${nextTier.cost}g</span></button>`;
-  } else {
-    upgradeBtnHtml = `<button class="btn-secondary" disabled>Max Level</button>`;
+    
+    let materialsHtml = "";
+    if (nextTier.materials && nextTier.materials.length > 0) {
+      const matItems = nextTier.materials.map(mat => {
+        const currentQty = getMaterialQty(mat.id);
+        const hasEnough = currentQty >= mat.qty;
+        const matDef = ALL_ITEMS[mat.id];
+        let displayName = matDef ? matDef.name : (mat.id.replace(/_/g, " ").replace("mat ", ""));
+        if (mat.id === "mat_wood") displayName = "Wood";
+        if (mat.id === "mat_iron_ore") displayName = "Iron Ore";
+        if (mat.id === "mat_stone") displayName = "Stone";
+        const icon = matDef ? matDef.icon : (mat.id.includes("wood") ? "🪵" : mat.id.includes("stone") ? "🪨" : mat.id.includes("iron") ? "⛏️" : "📦");
+
+        const statusColor = hasEnough ? "#4ade80" : "#ef4444";
+        const statusIcon = hasEnough ? "✓" : "✗";
+
+        return `
+          <span style="display:inline-flex; align-items:center; gap:4px; padding:3px 8px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; font-size:0.78rem;">
+            <span>${icon}</span>
+            <span>${displayName}:</span>
+            <strong style="color:${statusColor};">${currentQty}/${mat.qty} ${statusIcon}</strong>
+          </span>
+        `;
+      }).join("");
+
+      materialsHtml = `
+        <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+          <span style="font-size:0.78rem; color:var(--text-muted); font-weight:bold;">Required Upfront:</span>
+          ${matItems}
+        </div>
+      `;
+    } else {
+      materialsHtml = `<div style="font-size:0.78rem; color:var(--text-muted); margin-top:6px;">No materials required for this tier upgrade.</div>`;
+    }
+
+    const hasGold = playerState.gold >= nextTier.cost;
+    const goldColor = hasGold ? "var(--gold)" : "#ef4444";
+
+    upgradeSectionHtml = `
+      <div class="house-upgrade-banner" style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-card); border:1px solid var(--border); padding:12px 16px; border-radius:var(--r-md); margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+        <div style="flex:1; min-width:220px;">
+          <div style="font-weight:bold; font-size:0.95rem; color:var(--text-primary);">⬆️ Upgrade to ${nextTier.name} (Tier ${nextTier.tier})</div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">${nextTier.desc} (${nextTier.slots} slots, ${nextTier.maxDecorations} decos)</div>
+          ${materialsHtml}
+        </div>
+        <button class="btn-action" onclick="upgradeHouse()" style="white-space:nowrap; padding:8px 16px; font-size:0.85rem;">
+          ⬆️ Upgrade <span class="cost" style="color:${goldColor}; font-weight:bold;">${nextTier.cost}g</span>
+        </button>
+      </div>
+    `;
   }
 
   let html = `
@@ -4539,8 +4885,8 @@ function renderHouse() {
           <span class="house-tier-label">Tier ${houseInfo.tier}</span>
         </div>
       </div>
-      ${upgradeBtnHtml}
     </div>
+    ${upgradeSectionHtml}
   `;
 
   // Bonuses

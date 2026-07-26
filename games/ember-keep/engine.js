@@ -154,6 +154,11 @@ export const GameAPI = {
             newLevel: rpcRes.new_level
           };
         }
+        
+        const task = account.activeTasks[slotId];
+        if (task && task.dbTaskId) {
+          await dbClaimTaskRewards(task.dbTaskId);
+        }
       } catch (e) {
         console.warn("Atomic RPC claim failed during stopTask, falling back:", e);
       }
@@ -161,7 +166,7 @@ export const GameAPI = {
 
     if (!summary) {
       const task = account.activeTasks[slotId];
-      task.status = "STOPPED";
+      if (task) task.status = "STOPPED";
       summary = this.processTaskProgress(slotId, getEstimatedServerTime());
     }
 
@@ -355,7 +360,7 @@ export const GameAPI = {
       garrisonBuffs = window.GarrisonEngine.computeAccountBuffs(garrisonAssignments);
     }
 
-    const slots = [1, 2, 3, 4];
+    const slots = [1, 2, 3, 4, 5];
     for (const slotId of slots) {
       const char = AccountStore.getCharacter(slotId);
       const existingTask = account.activeTasks ? account.activeTasks[slotId] : null;

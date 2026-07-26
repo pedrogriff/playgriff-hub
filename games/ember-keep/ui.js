@@ -190,6 +190,10 @@ export const UIManager = {
           if (offlineReport) {
             this.showOfflineSummaryModal(offlineReport);
           }
+          this.renderCommandCenter();
+          if (typeof window.renderActiveCharacterUI === "function") {
+            window.renderActiveCharacterUI();
+          }
         }
       } catch (err) {
         let message = err.message || "Authentication failed.";
@@ -619,13 +623,41 @@ export const UIManager = {
       if (typeof window.GameAPI !== "undefined" && typeof window.GameAPI.continueTasksFromReport === "function") {
         await window.GameAPI.continueTasksFromReport(aggregatedReport.reports);
       }
+      this.renderCommandCenter();
+      if (typeof window.renderActiveCharacterUI === "function") {
+        window.renderActiveCharacterUI();
+      }
       if (typeof showToast === "function") {
         showToast("▶️ Rewards claimed & tasks continued for a new 24h cycle!", "success");
       }
     });
 
-    document.getElementById("close-offline-modal-btn").addEventListener("click", () => {
+    document.getElementById("close-offline-modal-btn").addEventListener("click", async () => {
       modal.classList.remove("active");
+
+      const account = AccountStore.getAccount();
+      if (account) {
+        const slotsToStop = (aggregatedReport && aggregatedReport.reports)
+          ? aggregatedReport.reports.map(r => r.slotId)
+          : [1, 2, 3, 4, 5];
+
+        for (const slotId of slotsToStop) {
+          if (account.activeTasks && account.activeTasks[slotId]) {
+            if (typeof GameAPI !== "undefined" && typeof GameAPI.stopTask === "function") {
+              await GameAPI.stopTask(slotId);
+            } else {
+              account.activeTasks[slotId] = null;
+            }
+          }
+        }
+        AccountStore.save();
+      }
+
+      this.renderCommandCenter();
+      if (typeof window.renderActiveCharacterUI === "function") {
+        window.renderActiveCharacterUI();
+      }
+
       if (typeof showToast === "function") {
         showToast("✨ Rewards claimed & task completed.", "info");
       }
