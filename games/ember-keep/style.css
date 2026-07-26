@@ -987,9 +987,13 @@ select option {
 @media (max-width: 900px) {
   .character-layout { grid-template-columns: 1fr 1fr; }
   .hero-right-sidebar { grid-column: 1 / -1; }
+  .hero-top-row { grid-template-columns: 1fr !important; }
+  .aux-panels-grid { grid-template-columns: 1fr !important; }
 }
 @media (max-width: 580px) {
   .character-layout { grid-template-columns: 1fr; }
+  .hero-top-row { grid-template-columns: 1fr !important; }
+  .aux-panels-grid { grid-template-columns: 1fr !important; }
 }
 
 /* Character panel */
@@ -1185,6 +1189,21 @@ select option {
 /* ================================================================
    INVENTORY
    ================================================================ */
+/* Horizontal Backpack Grid Layout */
+.horizontal-backpack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.horizontal-backpack-grid .inventory-item {
+  margin-bottom: 0;
+  height: 100%;
+}
+
 .inventory-item {
   display: flex;
   align-items: center;

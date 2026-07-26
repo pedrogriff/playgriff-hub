@@ -332,7 +332,27 @@ const EXPANDED_ITEMS = {
   // Celestial Items (Tier 6 - Level 60+)
   main_godslayer_blade:   { id:"main_godslayer_blade",   slot_type:"main_hand", name:"Godslayer Celestial Blade", power:250, crit_chance:0.20, max_hp:700, min_level:60, cost:0, icon:"⚡", rarity:"celestial", is_shop_item:false },
   chest_aether_cuirass:   { id:"chest_aether_cuirass",   slot_type:"chest",     name:"Aetherial Sun Cuirass",  defense:140, max_hp:800, dodge_chance:0.10, min_level:60, cost:0, icon:"☀️", rarity:"celestial", is_shop_item:false },
-  acc_singularity_core:   { id:"acc_singularity_core",   slot_type:"accessory", name:"Core of Singularity",    power:110, defense:80, crit_chance:0.15, max_hp:900, min_level:60, cost:0, icon:"💫", rarity:"celestial", is_shop_item:false }
+  acc_singularity_core:   { id:"acc_singularity_core",   slot_type:"accessory", name:"Core of Singularity",    power:110, defense:80, crit_chance:0.15, max_hp:900, min_level:60, cost:0, icon:"💫", rarity:"celestial", is_shop_item:false },
+
+  // Amulets & Necklaces
+  amulet_bronze_talisman: { id:"amulet_bronze_talisman", slot_type:"amulet", name:"Bronze Guardian Talisman", power:3, max_hp:20, min_level:2, cost:30, icon:"📿", rarity:"common", is_shop_item:true },
+  amulet_ruby_pendant:    { id:"amulet_ruby_pendant",    slot_type:"amulet", name:"Ruby Flame Pendant",      power:12, max_hp:60, crit_chance:0.03, min_level:15, cost:200, icon:"📿", rarity:"rare", is_shop_item:true },
+  amulet_celestial_star:  { id:"amulet_celestial_star",  slot_type:"amulet", name:"Celestial Star Amulet",   power:45, max_hp:250, crit_chance:0.08, min_level:45, cost:0, icon:"✨", rarity:"legendary", is_shop_item:false },
+
+  // Gloves & Gauntlets
+  gloves_leather_wraps:   { id:"gloves_leather_wraps",   slot_type:"gloves", name:"Novice Leather Wraps",    defense:2, power:2, min_level:2, cost:25, icon:"🧤", rarity:"common", is_shop_item:true },
+  gloves_iron_gauntlets:  { id:"gloves_iron_gauntlets",  slot_type:"gloves", name:"Iron Brawler Gauntlets",  defense:6, power:5, min_level:10, cost:80, icon:"🧤", rarity:"uncommon", is_shop_item:true },
+  gloves_titan_gauntlets: { id:"gloves_titan_gauntlets", slot_type:"gloves", name:"Titanium Great Gloves",   defense:18, power:14, min_level:28, cost:350, icon:"🧤", rarity:"rare", is_shop_item:true },
+
+  // Boots & Sabatons
+  boots_leather_boots:    { id:"boots_leather_boots",    slot_type:"boots",  name:"Novice Leather Boots",    defense:2, dodge_chance:0.02, min_level:2, cost:25, icon:"👢", rarity:"common", is_shop_item:true },
+  boots_iron_sabatons:    { id:"boots_iron_sabatons",    slot_type:"boots",  name:"Iron Heavy Sabatons",     defense:7, dodge_chance:0.03, min_level:10, cost:85, icon:"👢", rarity:"uncommon", is_shop_item:true },
+  boots_windrunner_striders:{ id:"boots_windrunner_striders", slot_type:"boots", name:"Windrunner Striders",  defense:16, dodge_chance:0.06, min_level:25, cost:320, icon:"👢", rarity:"rare", is_shop_item:true },
+
+  // Trinkets & Relics
+  trinket_minor_charm:    { id:"trinket_minor_charm",    slot_type:"trinket", name:"Lucky Rabbit Foot",      max_hp:25, power:2, min_level:3, cost:35, icon:"🔮", rarity:"common", is_shop_item:true },
+  trinket_war_horn:       { id:"trinket_war_horn",       slot_type:"trinket", name:"Warlord Banner Relic",   power:10, max_hp:50, min_level:15, cost:220, icon:"🔮", rarity:"uncommon", is_shop_item:true },
+  trinket_celestial_relic:{ id:"trinket_celestial_relic",slot_type:"trinket", name:"Ember Star Relic",        power:40, max_hp:200, crit_chance:0.06, min_level:45, cost:0, icon:"🌟", rarity:"legendary", is_shop_item:false }
 };
 
 const CONSUMABLE_ITEMS = {
@@ -3130,19 +3150,22 @@ function buyItem(itemId) {
 
 function getEquipmentSlot(itemOrId, invItem) {
   let item = typeof itemOrId === "object" ? itemOrId : ALL_ITEMS[itemOrId];
-  let slotType = (invItem && invItem.metadata && invItem.metadata.slot_type) ||
-                 (item && item.slot_type) ||
-                 (item && item.type) ||
-                 (invItem && invItem.type);
+  if (!item && invItem) item = invItem;
 
-  if (!slotType && typeof itemOrId === "string") {
+  const slotType = item?.slot_type || item?.slotType || item?.type;
+
+  if (typeof itemOrId === "string") {
     const lower = itemOrId.toLowerCase();
-    if (lower.includes("head") || lower.includes("helm") || lower.includes("hat") || lower.includes("cap")) return "head";
-    if (lower.includes("chest") || lower.includes("vest") || lower.includes("plate") || lower.includes("robe") || lower.includes("armor") || lower.includes("mail")) return "chest";
-    if (lower.includes("legs") || lower.includes("pant") || lower.includes("greave") || lower.includes("kilt")) return "legs";
-    if (lower.includes("sword") || lower.includes("bow") || lower.includes("staff") || lower.includes("wand") || lower.includes("blade") || lower.includes("mace") || lower.includes("dagger") || lower.includes("weap")) return "main_hand";
-    if (lower.includes("shield") || lower.includes("off_hand")) return "off_hand";
-    if (lower.includes("ring") || lower.includes("band") || lower.includes("amulet")) return "accessory";
+    if (lower.includes("head") || lower.includes("helm") || lower.includes("hood") || lower.includes("crown")) return "head";
+    if (lower.includes("amulet") || lower.includes("neck") || lower.includes("pendant")) return "amulet";
+    if (lower.includes("chest") || lower.includes("armor") || lower.includes("plate") || lower.includes("robe")) return "chest";
+    if (lower.includes("main") || lower.includes("weapon") || lower.includes("sword") || lower.includes("blade") || lower.includes("bow") || lower.includes("staff")) return "main_hand";
+    if (lower.includes("off") || lower.includes("shield") || lower.includes("tome") || lower.includes("crest")) return "off_hand";
+    if (lower.includes("glove") || lower.includes("gauntlet") || lower.includes("hand")) return "gloves";
+    if (lower.includes("ring") || lower.includes("band") || lower.includes("acc")) return "accessory";
+    if (lower.includes("leg") || lower.includes("pant") || lower.includes("greave")) return "legs";
+    if (lower.includes("boot") || lower.includes("sabaton") || lower.includes("foot") || lower.includes("feet")) return "boots";
+    if (lower.includes("trinket") || lower.includes("relic") || lower.includes("charm")) return "trinket";
   }
 
   if (!slotType) return null;

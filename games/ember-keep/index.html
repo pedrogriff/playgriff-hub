@@ -257,12 +257,13 @@
 
       <!-- ======= HERO / CHARACTER TAB ======= -->
       <section id="character-tab" class="tab-content" role="tabpanel" aria-labelledby="tab-char">
-        <div class="character-layout">
+        <div class="character-layout-grid" style="display:flex; flex-direction:column; gap:16px;">
 
-          <!-- Left Column: Hero & Pets -->
-          <div class="left-column" style="display: flex; flex-direction: column; gap: 16px;">
-            <!-- Character Profile Panel -->
-            <div class="panel character-panel" style="margin-bottom: 0;">
+          <!-- TOP ROW: Hero Profile (Left) & Equipped Gear Paperdoll (Right) -->
+          <div class="hero-top-row" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; align-items:start;">
+            
+            <!-- Hero Profile Panel -->
+            <div class="panel character-panel" style="margin-bottom:0;">
               <h3 class="panel-title">⚔️ Hero Profile</h3>
               <div class="player-avatar" id="char-avatar-container">🧙‍♂️</div>
               <div class="char-identity">
@@ -329,57 +330,54 @@
               </div>
 
               <hr class="panel-divider">
-              <h4>🎒 Equipped Gear</h4>
-              <div class="equipped-gear-display">
-                <div class="gear-slot-row"><span>⚔️ Weapon:</span> <span id="equipped-weapon-name" class="gear-slot-value">None</span></div>
-                <div class="gear-slot-row"><span>🛡️ Armor:</span> <span id="equipped-armor-name" class="gear-slot-value">None</span></div>
-                <div class="gear-slot-row"><span>💍 Ring:</span> <span id="equipped-ring-name" class="gear-slot-value">None</span></div>
-              </div>
-
-              <hr class="panel-divider">
               <h4>✨ Active Skills</h4>
               <div class="skills-list" id="char-skills-list">
                 <p class="empty-message">Skills unlock as you level up.</p>
               </div>
             </div>
 
-            <!-- Auto-Salvage Loot Filter Panel -->
-            <div id="loot-filter-panel"></div>
-
-            <!-- Action Sequence Task Queue Panel -->
-            <div id="task-queue-panel"></div>
-
-            <!-- Pet Panel -->
-            <div class="panel pet-panel" style="margin-bottom: 0;">
-              <h3 class="panel-title">🐾 Companions</h3>
-              <div class="pet-active-display" id="active-pet-display">
-                <p class="empty-message">No active pet.</p>
-              </div>
-              <hr class="panel-divider">
-              <div class="pet-hatching-display" id="pet-hatching-display">
-                <!-- Hatching progress goes here -->
-              </div>
-              <div class="pet-collection-list" id="pet-collection-list">
-                <!-- Pet cards go here -->
+            <!-- RPG Paperdoll Equipment Panel (Top Right) -->
+            <div class="panel paperdoll-panel" style="margin-bottom:0;">
+              <div class="paperdoll-grid" id="paperdoll-grid">
+                <!-- Rendered by JS -->
               </div>
             </div>
           </div>
 
-          <!-- Right Column: Inventory & Paperdoll Grid -->
-          <div class="hero-right-sidebar" style="display: flex; flex-direction: column; gap: var(--gap-md);">
-            <!-- Inventory Panel -->
-            <div class="panel inventory-panel">
-              <h3 class="panel-title">🎒 Inventory</h3>
-              <div class="inventory-list" id="inventory-list">
+          <!-- BOTTOM ROW: Full-Width Horizontal Inventory Backpack & Aux Panels -->
+          <div class="hero-bottom-row" style="display:flex; flex-direction:column; gap:16px;">
+            <!-- Horizontal Inventory Backpack -->
+            <div class="panel inventory-panel horizontal-backpack">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 class="panel-title" style="margin:0;">🎒 Adventurer Backpack</h3>
+                <span class="inventory-capacity-pill">Capacity: <strong id="inv-count">0</strong>/<strong id="inv-max">20</strong></span>
+              </div>
+              <div class="inventory-list horizontal-backpack-grid" id="inventory-list">
                 <p class="empty-message">Your inventory is empty.</p>
               </div>
             </div>
 
-            <!-- Paperdoll Equipment Grid -->
-            <div class="panel paperdoll-panel">
-              <h3 class="panel-title">🛡️ Equipped Gear</h3>
-              <div class="paperdoll-grid" id="paperdoll-grid">
-                <!-- Rendered by JS -->
+            <!-- Aux Panels Grid: Loot Filter, Task Queue & Companions -->
+            <div class="aux-panels-grid" style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px;">
+              <!-- Auto-Salvage Loot Filter Panel -->
+              <div id="loot-filter-panel"></div>
+
+              <!-- Action Sequence Task Queue Panel -->
+              <div id="task-queue-panel"></div>
+
+              <!-- Pet Panel -->
+              <div class="panel pet-panel" style="margin-bottom: 0;">
+                <h3 class="panel-title">🐾 Companions</h3>
+                <div class="pet-active-display" id="active-pet-display">
+                  <p class="empty-message">No active pet.</p>
+                </div>
+                <hr class="panel-divider">
+                <div class="pet-hatching-display" id="pet-hatching-display">
+                  <!-- Hatching progress goes here -->
+                </div>
+                <div class="pet-collection-list" id="pet-collection-list">
+                  <!-- Pet cards go here -->
+                </div>
               </div>
             </div>
           </div>

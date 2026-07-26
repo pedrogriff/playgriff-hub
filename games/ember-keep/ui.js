@@ -275,8 +275,50 @@ export const UIManager = {
   },
 
   /**
-   * Render Multi-Character Command Center Dashboard Mini-Bar
+   * Show Custom In-Game Delete Confirmation Modal (Bypasses Sandboxed Window.confirm Restrictions)
    */
+  showDeleteConfirmationModal(slotId, charName, level) {
+    let modal = document.getElementById("delete-character-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "delete-character-modal";
+      modal.className = "modal";
+      document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+      <div class="modal-content panel" style="max-width:400px; border:2px solid #ef4444;">
+        <div class="modal-header">
+          <h3 style="color:#ef4444; margin:0;">⚠️ Delete Hero</h3>
+          <button class="modal-close-btn" onclick="document.getElementById('delete-character-modal').classList.remove('active')">✕</button>
+        </div>
+        <div class="modal-body" style="padding:15px; text-align:center;">
+          <p style="font-size:0.95rem; color:#fff;">Are you sure you want to <strong>DELETE</strong> Level ${level} <strong>${charName}</strong>?</p>
+          <p style="font-size:0.8rem; color:#ef4444; margin-top:8px;">This will permanently remove this hero and all their equipment from Slot ${slotId}. This action cannot be undone!</p>
+          
+          <div style="display:flex; gap:10px; margin-top:18px;">
+            <button id="cancel-delete-char-btn" class="btn-action" style="flex:1; padding:8px; background:var(--bg-elevated); cursor:pointer;">Cancel</button>
+            <button id="confirm-delete-char-btn" class="btn-action" style="flex:1; padding:8px; background:#ef4444; color:#fff; font-weight:bold; cursor:pointer;">Delete Hero</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    modal.classList.add("active");
+
+    document.getElementById("cancel-delete-char-btn").onclick = () => {
+      modal.classList.remove("active");
+    };
+
+    document.getElementById("confirm-delete-char-btn").onclick = async () => {
+      modal.classList.remove("active");
+      await AccountStore.deleteCharacter(slotId);
+      if (typeof showToast === "function") showToast(`Hero "${charName}" deleted`, "info");
+      this.renderCommandCenter();
+      if (window.renderActiveCharacterUI) window.renderActiveCharacterUI();
+    };
+  },
+
   /**
    * Render Multi-Character Command Center Dashboard Mini-Bar
    */
@@ -357,18 +399,11 @@ export const UIManager = {
     });
 
     container.querySelectorAll(".btn-slot-delete").forEach(btn => {
-      btn.addEventListener("click", async (e) => {
+      btn.addEventListener("click", (e) => {
         const slot = parseInt(e.target.getAttribute("data-slot"), 10);
         const char = account.characterSlots ? account.characterSlots[slot] : null;
         if (!char) return;
-
-        const confirmDelete = confirm(`Are you sure you want to DELETE Level ${char.level} "${char.name}"?\n\nThis will remove the hero and their equipment from Slot ${slot}. This action cannot be undone!`);
-        if (confirmDelete) {
-          await AccountStore.deleteCharacter(slot);
-          if (typeof showToast === "function") showToast(`Hero "${char.name}" deleted`, "info");
-          this.renderCommandCenter();
-          if (window.renderActiveCharacterUI) window.renderActiveCharacterUI();
-        }
+        this.showDeleteConfirmationModal(slot, char.name, char.level);
       });
     });
 
