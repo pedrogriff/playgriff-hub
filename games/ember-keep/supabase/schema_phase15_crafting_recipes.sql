@@ -218,8 +218,18 @@ BEGIN
             RAISE EXCEPTION 'Inventory is full. Cannot add crafted item.';
         END IF;
 
-        INSERT INTO public.character_inventories (character_id, item_id, quantity, metadata)
-        VALUES (p_character_id, v_output_item_id, v_output_qty, v_output_meta);
+        INSERT INTO public.character_inventories (
+            character_id, item_id, item_name, item_type, quantity, icon, metadata
+        )
+        VALUES (
+            p_character_id,
+            v_output_item_id,
+            COALESCE(v_output_meta->>'name', v_output_item_id),
+            COALESCE(v_output_meta->>'type', 'material'),
+            v_output_qty,
+            COALESCE(v_output_meta->>'icon', '📦'),
+            v_output_meta
+        );
     END IF;
 
     -- 5. Add Profession XP & Handle Level Ups

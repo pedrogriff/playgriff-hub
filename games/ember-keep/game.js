@@ -1376,6 +1376,8 @@ function addToInventory(itemId, qty = 1) {
     syncInventoryItemToDB(activeChar.id, itemObj);
   }
   if (typeof renderInventory === "function") renderInventory();
+  if (typeof renderProfessions === "function") renderProfessions();
+  if (typeof renderSkillRecipes === "function" && typeof selectedProfession !== "undefined") renderSkillRecipes(selectedProfession);
 }
 
 function removeFromInventory(itemId, qty = 1) {
@@ -1397,6 +1399,8 @@ function removeFromInventory(itemId, qty = 1) {
     }
   }
   if (typeof renderInventory === "function") renderInventory();
+  if (typeof renderProfessions === "function") renderProfessions();
+  if (typeof renderSkillRecipes === "function" && typeof selectedProfession !== "undefined") renderSkillRecipes(selectedProfession);
 }
 
 function startProduction(recipeId) {
@@ -1429,18 +1433,10 @@ function startProduction(recipeId) {
   const skillLvl = Math.max(1, rawSkill?.level || 1);
   let reduction = Math.min(0.5, skillLvl * 0.02);
   
-  // Apply house speed bonus
-  if (typeof getStationSpeedBonus === "function") {
-    const houseBonus = getStationSpeedBonus(recipe.skill);
-    reduction = Math.min(0.9, reduction + houseBonus); // Max 90% reduction total
-  }
+  const stationSpeedBonus = getStationSpeedBonus(recipe.skill);
+  reduction += stationSpeedBonus;
 
-  let finalTimeMs = Math.floor(recipe.timeMs * (1 - reduction));
-  
-  // Apply Premium time reduction
-  if (isPremiumActive()) {
-    finalTimeMs = Math.floor(finalTimeMs * PREMIUM_BONUSES.prodTimeMult);
-  }
+  const durationMs = Math.max(2000, recipe.baseTime * (1 - reduction));
 
   playerState.productionTimers.push({
     recipeId: recipe.id,
