@@ -52,12 +52,17 @@ export function createDefaultCharacter(id = 1, name = "Hero", className = "Warri
       { id: "potion_hp_small", name: "Small HP Potion", type: "consumable", qty: 3, icon: "🧪", value: 30 }
     ],
     professions: {
+      farming: { level: 1, xp: 0 },
+      ranching: { level: 1, xp: 0 },
+      alchemy: { level: 1, xp: 0 },
+      blacksmith: { level: 1, xp: 0 },
+      tanning: { level: 1, xp: 0 },
+      tailoring: { level: 1, xp: 0 },
       mining: { level: 1, xp: 0 },
       woodcutting: { level: 1, xp: 0 },
       fishing: { level: 1, xp: 0 },
       smelting: { level: 1, xp: 0 },
       cooking: { level: 1, xp: 0 },
-      alchemy: { level: 1, xp: 0 },
       forge: { level: 1, xp: 0 },
     },
     activePet: null,

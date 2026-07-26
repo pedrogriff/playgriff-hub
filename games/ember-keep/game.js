@@ -642,12 +642,12 @@ const DEFAULT_PLAYER_STATE = {
   inventory: [],
   completedSideZones: [],
   productionSkills: {
-    farming:    { level: 0, xp: 0 },
-    ranching:   { level: 0, xp: 0 },
-    alchemy:    { level: 0, xp: 0 },
-    blacksmith: { level: 0, xp: 0 },
-    tanning:    { level: 0, xp: 0 },
-    tailoring:  { level: 0, xp: 0 },
+    farming:    { level: 1, xp: 0 },
+    ranching:   { level: 1, xp: 0 },
+    alchemy:    { level: 1, xp: 0 },
+    blacksmith: { level: 1, xp: 0 },
+    tanning:    { level: 1, xp: 0 },
+    tailoring:  { level: 1, xp: 0 },
   },
   productionTimers: [],
   house: {
@@ -1379,7 +1379,8 @@ function startProduction(recipeId) {
   }
 
   // Calculate time reduction based on skill level (max 50%) and house stations
-  const skillLvl = playerState.productionSkills[recipe.skill].level;
+  const rawSkill = (playerState.productionSkills && playerState.productionSkills[recipe.skill]) || (playerState.professions && playerState.professions[recipe.skill]);
+  const skillLvl = Math.max(1, rawSkill?.level || 1);
   let reduction = Math.min(0.5, skillLvl * 0.02);
   
   // Apply house speed bonus
@@ -2305,7 +2306,8 @@ function renderProfessions() {
   list.innerHTML = "";
 
   Object.values(PRODUCTION_SKILLS).forEach(skill => {
-    const pSkill = playerState.productionSkills[skill.id];
+    const rawSkill = (playerState.productionSkills && playerState.productionSkills[skill.id]) || (playerState.professions && playerState.professions[skill.id]);
+    const pSkill = { level: Math.max(1, rawSkill?.level || 1), xp: rawSkill?.xp || 0 };
     const maxLevel = PROD_SKILL_XP_TABLE.length - 1;
     const isMax = pSkill.level >= maxLevel;
     const xpStr = isMax ? "MAX" : `${pSkill.xp}/${PROD_SKILL_XP_TABLE[pSkill.level + 1]}`;
@@ -2335,7 +2337,8 @@ function renderSkillRecipes(skillId) {
   list.innerHTML = "";
 
   const recipes = PRODUCTION_RECIPES.filter(r => r.skill === skillId);
-  const pSkill = playerState.productionSkills[skillId];
+  const rawSkill = (playerState.productionSkills && playerState.productionSkills[skillId]) || (playerState.professions && playerState.professions[skillId]);
+  const pSkill = { level: Math.max(1, rawSkill?.level || 1), xp: rawSkill?.xp || 0 };
 
   if (recipes.length === 0) {
     list.innerHTML = `<p class="empty-message">No recipes found.</p>`;

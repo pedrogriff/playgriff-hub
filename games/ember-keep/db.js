@@ -109,12 +109,17 @@ export async function createCharacter(slotIndex, name, classId) {
     ],
     equipped: { weapon: null, armor: null, ring: null },
     professions: {
+      farming: { level: 1, xp: 0 },
+      ranching: { level: 1, xp: 0 },
+      alchemy: { level: 1, xp: 0 },
+      blacksmith: { level: 1, xp: 0 },
+      tanning: { level: 1, xp: 0 },
+      tailoring: { level: 1, xp: 0 },
       mining: { level: 1, xp: 0 },
       woodcutting: { level: 1, xp: 0 },
       fishing: { level: 1, xp: 0 },
       smelting: { level: 1, xp: 0 },
       cooking: { level: 1, xp: 0 },
-      alchemy: { level: 1, xp: 0 },
       forge: { level: 1, xp: 0 },
     },
     location_node: "greenhollow"
