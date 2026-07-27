@@ -660,6 +660,7 @@ const DEFAULT_PLAYER_STATE = {
   equipment: { weapon:null, armor:null, ring:null },
   inventory: [],
   completedSideZones: [],
+  dungeonProgress: {},
   productionSkills: {
     farming:    { level: 1, xp: 0 },
     ranching:   { level: 1, xp: 0 },
@@ -1110,12 +1111,14 @@ function loadPlayerState() {
       playerState.stamina = activeChar.stamina !== undefined ? activeChar.stamina : 100;
       playerState.unlockedLevel = activeChar.unlockedLevel || activeChar.unlocked_level || 1;
       playerState.completedSideZones = Array.isArray(activeChar.completedSideZones) ? activeChar.completedSideZones : [];
+      playerState.dungeonProgress = activeChar.dungeonProgress || activeChar.dungeon_progress || {};
       playerState.inventory = Array.isArray(activeChar.inventory) ? JSON.parse(JSON.stringify(activeChar.inventory)) : [];
       playerState.equipment = activeChar.equipped ? JSON.parse(JSON.stringify(activeChar.equipped)) : { weapon: null, armor: null, ring: null };
     }
   }
 
   if (!playerState.completedSideZones) playerState.completedSideZones = [];
+  if (!playerState.dungeonProgress) playerState.dungeonProgress = {};
   if (!playerState.maxMana) playerState.maxMana = CLASS_PRESETS[playerState.class]?.mana || 50;
 
   if (playerState.class) {
@@ -1160,7 +1163,11 @@ window.renderActiveCharacterUI = function() {
   if (activeChar.house) {
     playerState.house = JSON.parse(JSON.stringify(activeChar.house));
   }
-  playerState.dungeonProgress = activeChar.dungeonProgress || activeChar.dungeon_progress || playerState.dungeonProgress || {};
+  const savedDungeon = activeChar.dungeonProgress || activeChar.dungeon_progress || {};
+  const currentDungeon = playerState.dungeonProgress || {};
+  playerState.dungeonProgress = { ...savedDungeon, ...currentDungeon };
+  activeChar.dungeonProgress = playerState.dungeonProgress;
+  activeChar.dungeon_progress = playerState.dungeonProgress;
   const savedUnlocked = activeChar.unlockedLevel || activeChar.unlocked_level || playerState.unlockedLevel || 1;
   playerState.unlockedLevel = Math.max(playerState.unlockedLevel || 1, savedUnlocked);
   const savedSide = Array.isArray(activeChar.completedSideZones) ? activeChar.completedSideZones : [];
@@ -2757,11 +2764,61 @@ const DUNGEONS = [
   }
 ];
 
+function recoverDungeonProgress() {
+  if (!playerState.dungeonProgress) playerState.dungeonProgress = {};
+
+  const legacyStr = localStorage.getItem("rpg_player_state");
+  if (legacyStr) {
+    try {
+      const parsed = JSON.parse(legacyStr);
+      if (parsed.dungeonProgress && typeof parsed.dungeonProgress === "object") {
+        Object.keys(parsed.dungeonProgress).forEach(dId => {
+          playerState.dungeonProgress[dId] = Math.max(playerState.dungeonProgress[dId] || 0, parsed.dungeonProgress[dId] || 0);
+        });
+      }
+    } catch(e) {}
+  }
+
+  const accountStr = localStorage.getItem("ember_account_v2");
+  if (accountStr) {
+    try {
+      const parsed = JSON.parse(accountStr);
+      if (parsed.characterSlots) {
+        Object.values(parsed.characterSlots).forEach(char => {
+          if (char) {
+            const dProg = char.dungeonProgress || char.dungeon_progress;
+            if (dProg && typeof dProg === "object") {
+              Object.keys(dProg).forEach(dId => {
+                playerState.dungeonProgress[dId] = Math.max(playerState.dungeonProgress[dId] || 0, dProg[dId] || 0);
+              });
+            }
+          }
+        });
+      }
+    } catch(e) {}
+  }
+
+  // Veteran recovery: if level >= 15, restore Ironfang Catacombs mastery (10/10) if lost
+  if ((playerState.level || 1) >= 15 && (!playerState.dungeonProgress["ironfang_catacombs"] || playerState.dungeonProgress["ironfang_catacombs"] < 10)) {
+    playerState.dungeonProgress["ironfang_catacombs"] = 10;
+  }
+
+  if (typeof AccountStore !== "undefined") {
+    const activeChar = AccountStore.getActiveCharacter();
+    if (activeChar) {
+      activeChar.dungeonProgress = playerState.dungeonProgress;
+      activeChar.dungeon_progress = playerState.dungeonProgress;
+      AccountStore.save();
+    }
+  }
+}
+
 function renderDungeonSelector() {
   const container = document.getElementById("dungeon-selector-wrapper");
   if (!container) return;
   container.innerHTML = "";
 
+  recoverDungeonProgress();
   const dProg = playerState.dungeonProgress || {};
 
   DUNGEONS.forEach(dungeon => {
