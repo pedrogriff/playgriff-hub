@@ -4875,6 +4875,22 @@ function findInventoryMaterial(matId) {
   });
 }
 
+function getMaterialQty(matId) {
+  if (!playerState || !Array.isArray(playerState.inventory)) return 0;
+  const items = playerState.inventory.filter(i => {
+    const id = (i.id || i.item_id || "").toLowerCase();
+    const name = (i.name || "").toLowerCase();
+    const target = (matId || "").toLowerCase();
+    if (id === target) return true;
+    if (target === "mat_wood" && (id.includes("wood") || id.includes("log") || name.includes("wood"))) return true;
+    if (target === "mat_stone" && (id.includes("stone") || name.includes("stone"))) return true;
+    if (target === "mat_iron_ore" && (id.includes("iron") || id.includes("ore") || name.includes("iron"))) return true;
+    if (target === "mat_leather" && (id.includes("leather") || id.includes("hide") || name.includes("hide") || name.includes("leather"))) return true;
+    return false;
+  });
+  return items.reduce((sum, item) => sum + Math.max(1, Number(item.qty ?? item.quantity ?? 1)), 0);
+}
+
 function promptQuickBuyForAction({ actionTitle, actionDesc, requiredMaterials, baseCost = 0, onConfirm }) {
   const missingItems = [];
   let matsTotalCost = 0;
