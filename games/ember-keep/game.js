@@ -656,7 +656,7 @@ const DEFAULT_PLAYER_STATE = {
   skillPoints: 0,
   stats: { maxHp:100, power:10, defense:5, critChance:0.05, critDamage:1.5, dodgeChance:0.05 },
   currentHp: 100,
-  upgrades: { hpLevel:0, powerLevel:0, defenseLevel:0 },
+  upgrades: { hp: 0, power: 0, defense: 0, crit: 0, dodge: 0, mana: 0, hpLevel: 0, powerLevel: 0, defenseLevel: 0 },
   equipment: { weapon:null, armor:null, ring:null },
   inventory: [],
   completedSideZones: [],
@@ -1147,12 +1147,15 @@ window.renderActiveCharacterUI = function() {
   playerState.skillPoints = activeChar.skillPoints !== undefined ? activeChar.skillPoints : (activeChar.skill_points || 0);
   const rawUpgrades = activeChar.allocatedStats || activeChar.allocated_stats || activeChar.upgrades || {};
   playerState.upgrades = {
+    hp: Number(rawUpgrades.hp ?? rawUpgrades.hpLevel ?? 0),
+    power: Number(rawUpgrades.power ?? rawUpgrades.powerLevel ?? 0),
+    defense: Number(rawUpgrades.defense ?? rawUpgrades.defenseLevel ?? 0),
+    crit: Number(rawUpgrades.crit ?? 0),
+    dodge: Number(rawUpgrades.dodge ?? 0),
+    mana: Number(rawUpgrades.mana ?? 0),
     hpLevel: Number(rawUpgrades.hpLevel ?? rawUpgrades.hp ?? 0),
     powerLevel: Number(rawUpgrades.powerLevel ?? rawUpgrades.power ?? 0),
-    defenseLevel: Number(rawUpgrades.defenseLevel ?? rawUpgrades.defense ?? 0),
-    hp: Number(rawUpgrades.hpLevel ?? rawUpgrades.hp ?? 0),
-    power: Number(rawUpgrades.powerLevel ?? rawUpgrades.power ?? 0),
-    defense: Number(rawUpgrades.defenseLevel ?? rawUpgrades.defense ?? 0)
+    defenseLevel: Number(rawUpgrades.defenseLevel ?? rawUpgrades.defense ?? 0)
   };
   if (activeChar.house) {
     playerState.house = JSON.parse(JSON.stringify(activeChar.house));
@@ -1167,15 +1170,21 @@ window.renderActiveCharacterUI = function() {
   playerState.inventory = Array.isArray(activeChar.inventory) ? JSON.parse(JSON.stringify(activeChar.inventory)) : [];
   playerState.equipment = activeChar.equipped ? JSON.parse(JSON.stringify(activeChar.equipped)) : { weapon: null, armor: null, ring: null };
 
-  if (activeChar.power || activeChar.defense || activeChar.maxHp) {
+  if (activeChar.power || activeChar.defense || activeChar.maxHp || playerState.upgrades) {
     const preset = CLASS_PRESETS[playerState.class] || CLASS_PRESETS["Warrior"];
-    const hpLvl = playerState.upgrades.hpLevel || 0;
-    const pwrLvl = playerState.upgrades.powerLevel || 0;
-    const defLvl = playerState.upgrades.defenseLevel || 0;
+    const hpLvl = playerState.upgrades.hp || 0;
+    const pwrLvl = playerState.upgrades.power || 0;
+    const defLvl = playerState.upgrades.defense || 0;
+    const critLvl = playerState.upgrades.crit || 0;
+    const dodgeLvl = playerState.upgrades.dodge || 0;
+    const manaLvl = playerState.upgrades.mana || 0;
 
     const calculatedMaxHp = (preset ? preset.stats.maxHp : 100) + (hpLvl * 10);
     const calculatedPower = (preset ? preset.stats.power : 10) + (pwrLvl * 2);
     const calculatedDefense = (preset ? preset.stats.defense : 5) + (defLvl * 1);
+    const calculatedCrit = 0.05 + (critLvl * 0.01);
+    const calculatedDodge = 0.05 + (dodgeLvl * 0.01);
+    const calculatedMana = (preset ? (preset.mana || preset.stats.maxMana || 50) : 50) + (manaLvl * 10);
 
     const baseMaxHp = Math.max(calculatedMaxHp, activeChar.maxHp || 0);
     const basePower = Math.max(calculatedPower, activeChar.power || 0);
@@ -1185,10 +1194,11 @@ window.renderActiveCharacterUI = function() {
       maxHp: baseMaxHp,
       power: basePower,
       defense: baseDefense,
-      critChance: Number(activeChar.critChance || 0.05),
+      critChance: Math.max(calculatedCrit, Number(activeChar.critChance || 0.05)),
       critDamage: Number(activeChar.critDamage || 1.5),
-      dodgeChance: Number(activeChar.dodgeChance || 0.05)
+      dodgeChance: Math.max(calculatedDodge, Number(activeChar.dodgeChance || 0.05))
     };
+    playerState.maxMana = Math.max(calculatedMana, activeChar.maxMana || activeChar.mana || 50);
     const effStats = getEffectiveStats();
     playerState.currentHp = Math.min(effStats.maxHp, typeof activeChar.hp === "number" && activeChar.hp > 0 ? activeChar.hp : effStats.maxHp);
   }
@@ -1228,9 +1238,12 @@ function savePlayerState() {
       activeChar.skillPoints = playerState.skillPoints || 0;
       activeChar.skill_points = playerState.skillPoints || 0;
       const upgObj = {
-        hp: playerState.upgrades?.hpLevel ?? playerState.upgrades?.hp ?? 0,
-        power: playerState.upgrades?.powerLevel ?? playerState.upgrades?.power ?? 0,
-        defense: playerState.upgrades?.defenseLevel ?? playerState.upgrades?.defense ?? 0,
+        hp: playerState.upgrades?.hp ?? playerState.upgrades?.hpLevel ?? 0,
+        power: playerState.upgrades?.power ?? playerState.upgrades?.powerLevel ?? 0,
+        defense: playerState.upgrades?.defense ?? playerState.upgrades?.defenseLevel ?? 0,
+        crit: playerState.upgrades?.crit ?? 0,
+        dodge: playerState.upgrades?.dodge ?? 0,
+        mana: playerState.upgrades?.mana ?? 0,
         hpLevel: playerState.upgrades?.hpLevel ?? playerState.upgrades?.hp ?? 0,
         powerLevel: playerState.upgrades?.powerLevel ?? playerState.upgrades?.power ?? 0,
         defenseLevel: playerState.upgrades?.defenseLevel ?? playerState.upgrades?.defense ?? 0
@@ -1238,6 +1251,7 @@ function savePlayerState() {
       activeChar.allocatedStats = upgObj;
       activeChar.allocated_stats = upgObj;
       activeChar.upgrades = upgObj;
+      activeChar.maxMana = playerState.maxMana;
       activeChar.house = playerState.house || { tier: 0, name: "No Housing", slots: [], decorations: [] };
       activeChar.dungeonProgress = playerState.dungeonProgress || {};
       activeChar.dungeon_progress = playerState.dungeonProgress || {};
@@ -1249,6 +1263,8 @@ function savePlayerState() {
         activeChar.power = playerState.stats.power;
         activeChar.defense = playerState.stats.defense;
         activeChar.maxHp = playerState.stats.maxHp;
+        activeChar.critChance = playerState.stats.critChance;
+        activeChar.dodgeChance = playerState.stats.dodgeChance;
       }
       activeChar.hp = playerState.currentHp;
       AccountStore.save();
@@ -3678,7 +3694,11 @@ function openSkillPointModal() {
   if (!modal) return;
   if (availableEl) availableEl.textContent = available;
 
-  // Allocation state
+  if (!playerState.upgrades) {
+    playerState.upgrades = { hp: 0, power: 0, defense: 0, crit: 0, dodge: 0, mana: 0 };
+  }
+
+  // Session allocation state (points being distributed right now)
   const allocations = {};
   SP_OPTIONS.forEach(o => allocations[o.id] = 0);
   let remaining = available;
@@ -3686,16 +3706,17 @@ function openSkillPointModal() {
   // Render options
   optionsEl.innerHTML = "";
   SP_OPTIONS.forEach(opt => {
+    const allocatedCount = Number(playerState.upgrades[opt.id] ?? 0);
     const card = document.createElement("div");
     card.className = "sp-option-card";
     card.innerHTML = `
       <div class="sp-option-info">
         <div class="sp-option-label">${opt.label}</div>
-        <div class="sp-option-desc">${opt.desc}</div>
+        <div class="sp-option-desc">${opt.desc} <span style="opacity: 0.75; font-size: 0.85em; margin-left: 6px;">(Allocated: ${allocatedCount} pts)</span></div>
       </div>
       <div class="sp-option-controls">
         <button class="sp-btn sp-minus" data-opt="${opt.id}" disabled>−</button>
-        <span class="sp-count" id="sp-count-${opt.id}">0</span>
+        <span class="sp-count" id="sp-count-${opt.id}">+0</span>
         <button class="sp-btn sp-plus" data-opt="${opt.id}">+</button>
       </div>`;
     optionsEl.appendChild(card);
@@ -3705,34 +3726,47 @@ function openSkillPointModal() {
     if (availableEl) availableEl.textContent = remaining;
     SP_OPTIONS.forEach(opt => {
       const countEl = document.getElementById(`sp-count-${opt.id}`);
-      if (countEl) countEl.textContent = allocations[opt.id];
+      if (countEl) countEl.textContent = `+${allocations[opt.id]}`;
       const minus = optionsEl.querySelector(`.sp-minus[data-opt="${opt.id}"]`);
       const plus  = optionsEl.querySelector(`.sp-plus[data-opt="${opt.id}"]`);
       if (minus) minus.disabled = allocations[opt.id] === 0;
       if (plus)  plus.disabled  = remaining === 0;
     });
-    if (confirmBtn) confirmBtn.disabled = remaining === available; // must spend at least 1
+    if (confirmBtn) confirmBtn.disabled = (remaining === available);
   }
 
-  optionsEl.addEventListener("click", (e) => {
+  optionsEl.onclick = (e) => {
     const plus  = e.target.closest(".sp-plus");
     const minus = e.target.closest(".sp-minus");
     if (plus && remaining > 0) { allocations[plus.dataset.opt]++; remaining--; refresh(); }
     if (minus && allocations[minus.dataset.opt] > 0) { allocations[minus.dataset.opt]--; remaining++; refresh(); }
-  });
+  };
 
   if (confirmBtn) {
     confirmBtn.onclick = () => {
+      const spent = available - remaining;
+      if (spent <= 0) return;
+
       SP_OPTIONS.forEach(opt => {
-        if (allocations[opt.id] <= 0) return;
+        const added = allocations[opt.id];
+        if (added <= 0) return;
+
+        playerState.upgrades[opt.id] = (playerState.upgrades[opt.id] || 0) + added;
+        if (opt.id === "hp") playerState.upgrades.hpLevel = playerState.upgrades.hp;
+        if (opt.id === "power") playerState.upgrades.powerLevel = playerState.upgrades.power;
+        if (opt.id === "defense") playerState.upgrades.defenseLevel = playerState.upgrades.defense;
+
         if (opt.statKey === "top") {
-          playerState[opt.stat] = (playerState[opt.stat] || 0) + opt.amount * allocations[opt.id];
+          playerState[opt.stat] = (playerState[opt.stat] || 0) + opt.amount * added;
         } else {
-          playerState.stats[opt.stat] = (playerState.stats[opt.stat] || 0) + opt.amount * allocations[opt.id];
+          playerState.stats[opt.stat] = (playerState.stats[opt.stat] || 0) + opt.amount * added;
         }
       });
-      playerState.skillPoints -= (available - remaining);
-      savePlayerState(); renderStats(); renderSkills();
+
+      playerState.skillPoints = Math.max(0, (playerState.skillPoints || 0) - spent);
+      savePlayerState();
+      renderStats();
+      if (typeof renderSkills === "function") renderSkills();
       modal.classList.remove("active");
       showToast("✨ Skill points allocated!", "success");
     };
