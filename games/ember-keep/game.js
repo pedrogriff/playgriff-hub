@@ -4867,10 +4867,134 @@ function findInventoryMaterial(matId) {
   });
 }
 
-function getMaterialQty(matId) {
-  const inv = findInventoryMaterial(matId);
-  if (!inv) return 0;
-  return Math.max(0, Number(inv.qty ?? inv.quantity ?? 1));
+function promptQuickBuyForAction({ actionTitle, actionDesc, requiredMaterials, baseCost = 0, onConfirm }) {
+  const missingItems = [];
+  let matsTotalCost = 0;
+  let hasUnbuyable = false;
+  const unbuyableNames = [];
+
+  (requiredMaterials || []).forEach(req => {
+    const currentQty = getMaterialQty(req.id);
+    if (currentQty < req.qty) {
+      const needed = req.qty - currentQty;
+      const itemDef = ALL_ITEMS[req.id];
+      const unitCost = itemDef ? (itemDef.cost || itemDef.price || 0) : 0;
+      let name = itemDef ? itemDef.name : req.id;
+      if (req.id === "mat_wood") name = "Wood";
+      if (req.id === "mat_stone") name = "Stone";
+      if (req.id === "mat_iron_ore") name = "Iron Ore";
+
+      if (unitCost > 0) {
+        const itemCost = unitCost * needed;
+        matsTotalCost += itemCost;
+        missingItems.push({
+          id: req.id,
+          name: name,
+          icon: itemDef?.icon || "📦",
+          needed: needed,
+          unitCost: unitCost,
+          itemCost: itemCost
+        });
+      } else {
+        hasUnbuyable = true;
+        unbuyableNames.push(`${name} (${currentQty}/${req.qty})`);
+      }
+    }
+  });
+
+  if (hasUnbuyable && missingItems.length === 0) {
+    showToast(`Missing non-purchasable items: ${unbuyableNames.join(", ")}`, "error");
+    return;
+  }
+
+  const grandTotal = matsTotalCost + baseCost;
+  const currentGold = playerState.gold || 0;
+  const remainingGold = currentGold - grandTotal;
+
+  if (currentGold < grandTotal) {
+    showToast(`Not enough gold! Total required: ${formatNumber(grandTotal)}g (You have ${formatNumber(currentGold)}g)`, "error");
+    return;
+  }
+
+  const modal = document.getElementById("quick-buy-modal");
+  if (!modal) return;
+
+  const titleEl = document.getElementById("qb-modal-title");
+  const descEl = document.getElementById("qb-action-desc");
+  const itemsListEl = document.getElementById("qb-items-list");
+  const matsCostEl = document.getElementById("qb-mats-cost");
+  const feeRowEl = document.getElementById("qb-fee-row");
+  const feeLabelEl = document.getElementById("qb-fee-label");
+  const feeCostEl = document.getElementById("qb-fee-cost");
+  const totalCostEl = document.getElementById("qb-total-cost");
+  const currentGoldEl = document.getElementById("qb-current-gold");
+  const remainingGoldEl = document.getElementById("qb-remaining-gold");
+  const confirmBtn = document.getElementById("confirm-qb-btn");
+  const cancelBtn = document.getElementById("cancel-qb-btn");
+  const cancelXBtn = document.getElementById("cancel-qb-x-btn");
+
+  if (titleEl) titleEl.textContent = `🛒 Quick Buy for ${actionTitle}`;
+  if (descEl) descEl.textContent = actionDesc || "Review missing materials and total cost before proceeding.";
+
+  if (itemsListEl) {
+    itemsListEl.innerHTML = missingItems.map(item => `
+      <div class="qb-item-card">
+        <div class="qb-item-info">
+          <span class="qb-item-icon">${item.icon}</span>
+          <div>
+            <div class="qb-item-name">${item.name}</div>
+            <div class="qb-item-qty">Need ${item.needed} × ${formatNumber(item.unitCost)}g</div>
+          </div>
+        </div>
+        <div class="qb-item-price">+${formatNumber(item.itemCost)}g</div>
+      </div>
+    `).join("");
+    if (hasUnbuyable) {
+      itemsListEl.innerHTML += `<div style="font-size:0.78rem; color:#ef4444; margin-top:4px;">⚠️ Non-purchasable required: ${unbuyableNames.join(", ")}</div>`;
+    }
+  }
+
+  if (matsCostEl) matsCostEl.textContent = `${formatNumber(matsTotalCost)}g`;
+  if (feeRowEl) {
+    if (baseCost > 0) {
+      feeRowEl.style.display = "flex";
+      if (feeLabelEl) feeLabelEl.textContent = `${actionTitle} Base Fee:`;
+      if (feeCostEl) feeCostEl.textContent = `${formatNumber(baseCost)}g`;
+    } else {
+      feeRowEl.style.display = "none";
+    }
+  }
+
+  if (totalCostEl) totalCostEl.textContent = `${formatNumber(grandTotal)}g`;
+  if (currentGoldEl) currentGoldEl.textContent = `${formatNumber(currentGold)}g`;
+  if (remainingGoldEl) remainingGoldEl.textContent = `${formatNumber(remainingGold)}g`;
+
+  const closeModal = () => {
+    modal.style.display = "none";
+    modal.classList.remove("active");
+  };
+
+  if (cancelBtn) cancelBtn.onclick = closeModal;
+  if (cancelXBtn) cancelXBtn.onclick = closeModal;
+
+  if (confirmBtn) {
+    confirmBtn.onclick = () => {
+      closeModal();
+      if (playerState.gold < grandTotal) {
+        showToast("Not enough gold!", "error");
+        return;
+      }
+      missingItems.forEach(item => {
+        addToInventory(item.id, item.needed);
+      });
+      if (typeof onConfirm === "function") {
+        onConfirm();
+      }
+    };
+  }
+
+  modal.style.display = "flex";
+  modal.classList.add("active");
 }
 
 function upgradeHouse() {
@@ -4881,22 +5005,31 @@ function upgradeHouse() {
   const tierData = HOUSE_TIERS[nextTier];
   if (playerState.gold < tierData.cost) { showToast(`Not enough Gold! Costs ${tierData.cost}g to upgrade.`, "error"); return; }
   
-  // Verify materials
+  // Check missing materials
+  const missingMats = [];
   if (tierData.materials && tierData.materials.length > 0) {
     for (const mat of tierData.materials) {
       const currentQty = getMaterialQty(mat.id);
       if (currentQty < mat.qty) {
-        const matDef = ALL_ITEMS[mat.id];
-        let matName = matDef ? matDef.name : mat.id;
-        if (mat.id === "mat_wood") matName = "Wood";
-        if (mat.id === "mat_stone") matName = "Stone";
-        if (mat.id === "mat_iron_ore") matName = "Iron Ore";
-        showToast(`Not enough material: ${matName} (${currentQty}/${mat.qty})`, "error");
-        return;
+        missingMats.push(mat);
       }
     }
+  }
 
-    // Deduct materials
+  if (missingMats.length > 0) {
+    promptQuickBuyForAction({
+      actionTitle: `House Tier ${nextTier}`,
+      actionDesc: `Upgrade to ${tierData.name} (Tier ${nextTier}) requiring ${formatNumber(tierData.cost)}g upgrade fee plus missing materials.`,
+      requiredMaterials: tierData.materials || [],
+      baseCost: tierData.cost,
+      onConfirm: () => upgradeHouse()
+    });
+    return;
+  }
+
+  if (playerState.gold < tierData.cost) { showToast(`Not enough Gold! Costs ${tierData.cost}g to upgrade.`, "error"); return; }
+
+  // Deduct materials
     tierData.materials.forEach(mat => {
       let needed = mat.qty;
       while (needed > 0) {
@@ -5126,6 +5259,10 @@ function renderHouse() {
     const hasGold = playerState.gold >= nextTier.cost;
     const goldColor = hasGold ? "var(--gold)" : "#ef4444";
 
+    const hasMissingMats = nextTier.materials && nextTier.materials.some(mat => getMaterialQty(mat.id) < mat.qty);
+    const btnLabel = hasMissingMats ? "🛒 Quick Buy & Upgrade" : "⬆️ Upgrade";
+    const btnStyle = hasMissingMats ? "background:linear-gradient(135deg, #2563eb, #4f46e5); border-color:#60a5fa;" : "";
+
     upgradeSectionHtml = `
       <div class="house-upgrade-banner" style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-card); border:1px solid var(--border); padding:12px 16px; border-radius:var(--r-md); margin-bottom:12px; flex-wrap:wrap; gap:10px;">
         <div style="flex:1; min-width:220px;">
@@ -5133,8 +5270,8 @@ function renderHouse() {
           <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">${nextTier.desc} (${nextTier.slots} slots, ${nextTier.maxDecorations} decos)</div>
           ${materialsHtml}
         </div>
-        <button class="btn-action" onclick="upgradeHouse()" style="white-space:nowrap; padding:8px 16px; font-size:0.85rem;">
-          ⬆️ Upgrade <span class="cost" style="color:${goldColor}; font-weight:bold;">${nextTier.cost}g</span>
+        <button class="btn-action" onclick="upgradeHouse()" style="white-space:nowrap; padding:8px 16px; font-size:0.85rem; ${btnStyle}">
+          ${btnLabel} <span class="cost" style="color:${goldColor}; font-weight:bold;">${nextTier.cost}g</span>
         </button>
       </div>
     `;
