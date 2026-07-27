@@ -138,7 +138,7 @@ export const AccountStore = {
         accountData.activeDifficulty = profile.active_difficulty || "normal";
         accountData.maxAp = profile.max_ap || 10;
         accountData.discordWebhookUrl = profile.discord_webhook_url || null;
-        accountData.webhookEvents = profile.webhook_events || ["rebirth", "rift_kill", "market_sale", "pet_hatch", "bounty_completed"];
+        accountData.webhookEvents = profile.webhook_events || ["rebirth", "rift_kill", "dungeon_mastered", "bounty_completed"];
         accountData.hearthBuffUntil = profile.hearth_buff_until || null;
       }
 

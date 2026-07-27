@@ -29,6 +29,12 @@ window.GARRISON_STATIONS = GARRISON_STATIONS;
 window.WorldEngine = WorldEngine;
 window.SeasonsEngine = SeasonsEngine;
 
+export function getRequiredXpForLevel(level) {
+  const lvl = Math.max(1, Number(level) || 1);
+  return Math.floor(100 + (lvl - 1) * 75 + Math.pow(lvl - 1, 1.8) * 20);
+}
+window.getRequiredXpForLevel = getRequiredXpForLevel;
+
 // Expose Core Global Helpers to Window Scope
 window.showToast = showToast;
 window.formatNumber = formatNumber;
@@ -1098,7 +1104,7 @@ function loadPlayerState() {
       playerState.class = activeChar.class || null;
       playerState.level = activeChar.level || 1;
       playerState.xp = activeChar.xp || activeChar.exp || 0;
-      playerState.xpNeeded = activeChar.maxXp || activeChar.max_exp || 100;
+      playerState.xpNeeded = getRequiredXpForLevel(playerState.level);
       playerState.gold = activeChar.gold !== undefined ? activeChar.gold : 50;
       playerState.gems = activeChar.gems !== undefined ? activeChar.gems : 0;
       playerState.stamina = activeChar.stamina !== undefined ? activeChar.stamina : 100;
@@ -1133,6 +1139,7 @@ window.renderActiveCharacterUI = function() {
   playerState.class = activeChar.class || null;
   playerState.level = activeChar.level || 1;
   playerState.xp = activeChar.xp || activeChar.exp || 0;
+  playerState.xpNeeded = getRequiredXpForLevel(playerState.level);
   const maxStam = getMaxStamina(playerState.level || 1);
   playerState.stamina = (typeof activeChar.stamina === "number" && !isNaN(activeChar.stamina) && activeChar.stamina !== null) ? activeChar.stamina : maxStam;
   playerState.gold = activeChar.gold !== undefined ? activeChar.gold : 50;
@@ -1988,13 +1995,16 @@ function renderStats() {
   
   _setText("char-class-display",  playerState.class);
   _setText("char-level",          playerState.level);
-  _setText("char-xp-text",        `${playerState.xp}/${playerState.xpNeeded}`);
+  if (!playerState.xpNeeded || playerState.xpNeeded <= 100 && playerState.level > 1) {
+    playerState.xpNeeded = getRequiredXpForLevel(playerState.level);
+  }
+  _setText("char-xp-text",        `${formatNumber(playerState.xp)}/${formatNumber(playerState.xpNeeded)}`);
   _setText("char-stamina-text",   `${curStam}/${maxStam}`);
   _setText("char-mana-text",      `${playerState.maxMana}/${playerState.maxMana}`);
   _setText("char-power-rating",   pr);
 
   // Progress bars
-  _setWidth("char-xp-fill",      (playerState.xp / playerState.xpNeeded) * 100);
+  _setWidth("char-xp-fill",      Math.min(100, (playerState.xp / (playerState.xpNeeded || 1)) * 100));
   _setWidth("char-stamina-fill", (playerState.stamina / maxStam) * 100);
   _setWidth("char-mana-fill",    100);
 
@@ -2930,6 +2940,12 @@ function openDungeonBattleModal(combatLog) {
           if (currentFloor >= maxFloors) {
             titleEl.textContent = "👑 DUNGEON MASTERED!";
             titleEl.className = "victory";
+            if (typeof sendDiscordWebhook === "function") {
+              sendDiscordWebhook("dungeon_mastered", {
+                dungeonName: dungeonDef ? dungeonDef.name : 'Dungeon',
+                floorCount: maxFloors
+              });
+            }
             if (rewardsEl) {
               rewardsEl.innerHTML = `
                 <div style="width:100%; text-align:center; padding:10px; background:rgba(255,215,0,0.15); border:1px solid var(--gold); border-radius:8px; margin-bottom:10px;">
@@ -4330,10 +4346,13 @@ function handleBattleVictory(level) {
 
   // Level up check
   let leveledUp = false;
+  if (!playerState.xpNeeded || playerState.xpNeeded <= 100 && playerState.level > 1) {
+    playerState.xpNeeded = getRequiredXpForLevel(playerState.level);
+  }
   while (playerState.xp >= playerState.xpNeeded) {
     playerState.xp -= playerState.xpNeeded;
     playerState.level++;
-    playerState.xpNeeded = Math.round(playerState.xpNeeded * 1.55);
+    playerState.xpNeeded = getRequiredXpForLevel(playerState.level);
     playerState.stats.maxHp   += 15;
     playerState.stats.power   += 3;
     playerState.stats.defense += 2;
@@ -4405,17 +4424,27 @@ function handleBattleVictory(level) {
   renderShop();
   renderSkills();
 
-  _show("close-battle-modal-btn");
-  _show("close-battle-btn");
-  _show("rematch-battle-btn");
+  _show("close-battle-modal-btn", "inline-flex");
+  _show("close-battle-btn", "inline-flex");
+
+  const rematchBtn = document.getElementById("rematch-battle-btn");
+  if (rematchBtn) {
+    rematchBtn.style.display = "inline-flex";
+    rematchBtn.onclick = () => {
+      openBattleModal(level);
+      startBattleSimulation(level);
+    };
+  }
 
   const nextLevelBtn = document.getElementById("next-level-btn");
   if (nextLevelBtn) {
-    if (playerState.unlockedLevel <= LEVELS.length) {
+    const currentId = typeof level.id === "number" ? level.id : playerState.unlockedLevel;
+    const nextLvl = LEVELS.find(l => l.id === currentId + 1);
+    if (nextLvl && nextLvl.id <= playerState.unlockedLevel) {
       nextLevelBtn.style.display = "inline-flex";
       nextLevelBtn.onclick = () => {
-        nextLevelBtn.style.display = "none";
-        startBattleSimulation(playerState.unlockedLevel);
+        openBattleModal(nextLvl);
+        startBattleSimulation(nextLvl);
       };
     } else {
       nextLevelBtn.style.display = "none";
@@ -4436,9 +4465,17 @@ function handleBattleDefeat() {
   savePlayerState();
 
   _hide("next-level-btn");
-  _show("close-battle-modal-btn");
-  _show("close-battle-btn");
-  _show("rematch-battle-btn");
+  _show("close-battle-modal-btn", "inline-flex");
+  _show("close-battle-btn", "inline-flex");
+
+  const rematchBtn = document.getElementById("rematch-battle-btn");
+  if (rematchBtn) {
+    rematchBtn.style.display = "inline-flex";
+    rematchBtn.onclick = () => {
+      openBattleModal(currentBattleLevel);
+      startBattleSimulation(currentBattleLevel);
+    };
+  }
 }
 
 // ================================================================
@@ -5125,7 +5162,7 @@ function checkDecoUnlocks() {
   if (changed) savePlayerState();
 }
 function _setDisabled(id, val) { const el = document.getElementById(id); if (el) el.disabled = val; }
-function _show(id) { const el = document.getElementById(id); if (el) el.style.display = ""; }
+function _show(id, displayType = "inline-block") { const el = document.getElementById(id); if (el) el.style.display = displayType; }
 function _hide(id) { const el = document.getElementById(id); if (el) el.style.display = "none"; }
 
 // Reset
@@ -5781,7 +5818,7 @@ function renderWebhookSettingsModal() {
 
   const account = AccountStore.getAccount() || {};
   const currentUrl = account.discordWebhookUrl || "";
-  const events = account.webhookEvents || ["rebirth", "rift_kill", "market_sale", "pet_hatch", "bounty_completed"];
+  const events = account.webhookEvents || ["rebirth", "rift_kill", "dungeon_mastered", "bounty_completed"];
 
   modal.innerHTML = `
     <div class="modal-content panel" style="max-width:480px; border:2px solid #5865f2;">
@@ -5798,6 +5835,7 @@ function renderWebhookSettingsModal() {
 
         <h4 style="margin:12px 0 6px 0;">Select Notification Events:</h4>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.85rem;">
+          <label><input type="checkbox" class="chk-wh-event" value="dungeon_mastered" ${events.includes("dungeon_mastered") ? 'checked' : ''}> 👑 Dungeon Mastery</label>
           <label><input type="checkbox" class="chk-wh-event" value="rebirth" ${events.includes("rebirth") ? 'checked' : ''}> 🔥 Rebirth Milestones</label>
           <label><input type="checkbox" class="chk-wh-event" value="rift_kill" ${events.includes("rift_kill") ? 'checked' : ''}> 🐲 World Rift Kills</label>
           <label><input type="checkbox" class="chk-wh-event" value="bounty_completed" ${events.includes("bounty_completed") ? 'checked' : ''}> 📦 Bounty Completion</label>
@@ -5832,7 +5870,66 @@ function renderWebhookSettingsModal() {
   }
 }
 
+async function sendDiscordWebhook(event, details = {}) {
+  const account = typeof AccountStore !== "undefined" ? AccountStore.getAccount() : null;
+  if (!account || !account.discordWebhookUrl) return;
+
+  const events = account.webhookEvents || ["rebirth", "rift_kill", "dungeon_mastered", "bounty_completed"];
+  if (!events.includes(event)) return;
+
+  const charName = playerState.name || "Hero";
+
+  let title = "🔥 Ember Keep Notification";
+  let color = 0xf59e0b; // Gold
+  let description = `Event triggered: **${event}**`;
+
+  if (event === "dungeon_mastered") {
+    title = "👑 Dungeon Mastered!";
+    color = 0xf59e0b; // Gold
+    const dName = details.dungeonName || "a Dungeon";
+    const floors = details.floorCount || 10;
+    description = `**${charName}** conquered & mastered **${dName}** (${floors} Floors Defeated)!`;
+  } else if (event === "rebirth") {
+    title = "🔥 Glorious Ember Rebirth!";
+    color = 0xef4444; // Red
+    description = `**${charName}** ignited a Rebirth and earned **+1 Ember Shard**!`;
+  } else if (event === "rift_kill") {
+    title = "🐲 World Rift Boss Defeated!";
+    color = 0x8b5cf6; // Purple
+    description = `**${charName}** slayed the World Rift Boss!`;
+  } else if (event === "bounty_completed") {
+    title = "📦 The King's Bounty Completed!";
+    color = 0x10b981; // Green
+    description = `Community target achieved! **+15% Gold & Drop Rate Buff** unlocked!`;
+  } else if (event === "hearth_visit") {
+    title = "🏡 Hearth Ignited!";
+    color = 0x38bdf8; // Cyan
+    description = `A friend visited your Hearth! Both heroes gained **+15% Production Speed**!`;
+  }
+
+  try {
+    await fetch(account.discordWebhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        embeds: [
+          {
+            title,
+            description,
+            color,
+            footer: { text: "Ember Keep Engine" },
+            timestamp: new Date().toISOString()
+          }
+        ]
+      })
+    });
+  } catch (e) {
+    console.warn("Failed sending Discord Webhook:", e);
+  }
+}
+
 // Global window assignments
+window.sendDiscordWebhook = sendDiscordWebhook;
 window.renderWebhookSettingsModal = renderWebhookSettingsModal;
 
 

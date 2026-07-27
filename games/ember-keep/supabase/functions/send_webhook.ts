@@ -26,7 +26,13 @@ serve(async (req) => {
     let color = 0xf59e0b; // Gold
     let description = `Event triggered: **${event}**`;
 
-    if (event === "rebirth") {
+    if (event === "dungeon_mastered") {
+      title = "👑 Dungeon Mastered!";
+      color = 0xf59e0b; // Gold
+      const dName = details?.dungeonName || "a Dungeon";
+      const floors = details?.floorCount || 10;
+      description = `**${character_name || "Hero"}** conquered & mastered **${dName}** (${floors} Floors Defeated)!`;
+    } else if (event === "rebirth") {
       title = "🔥 Glorious Ember Rebirth!";
       color = 0xef4444; // Red/Fire
       description = `**${character_name || "Hero"}** ignited a Rebirth and earned **+1 Ember Shard**!`;
