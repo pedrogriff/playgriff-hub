@@ -405,6 +405,8 @@ const MATERIAL_ITEMS = {
 
   mat_herb:  { id:"mat_herb", type:"material", name:"Healing Herb", cost:5, icon:"🌿", tier:1, desc:"Used for crafting." },
   mat_vial:  { id:"mat_vial", type:"material", name:"Empty Vial", cost:5, icon:"🫙", tier:1, desc:"Used for crafting." },
+  mat_wood:  { id:"mat_wood", type:"material", name:"Wood", cost:5, icon:"🪵", tier:1, desc:"Used for construction and crafting." },
+  mat_stone: { id:"mat_stone", type:"material", name:"Stone", cost:5, icon:"🪨", tier:1, desc:"Used for construction and crafting." },
   mat_shard: { id:"mat_shard", type:"material", name:"Magic Shard", cost:15, icon:"🔮", tier:2, desc:"Used for crafting." },
   mat_wheat: { id:"mat_wheat", type:"material", name:"Wheat", cost:3, icon:"🌾", tier:1, desc:"Used for baking." },
   mat_meat:  { id:"mat_meat", type:"material", name:"Raw Meat", cost:12, icon:"🍗", tier:2, desc:"Used for cooking." },
@@ -4901,12 +4903,28 @@ function promptQuickBuyForAction({ actionTitle, actionDesc, requiredMaterials, b
     const currentQty = getMaterialQty(req.id);
     if (currentQty < req.qty) {
       const needed = req.qty - currentQty;
-      const itemDef = ALL_ITEMS[req.id];
-      const unitCost = itemDef ? (itemDef.cost || itemDef.price || 0) : 0;
+      let itemDef = ALL_ITEMS[req.id];
+      if (!itemDef) {
+        if (req.id === "mat_wood") itemDef = { name: "Wood", cost: 5, icon: "🪵" };
+        else if (req.id === "mat_stone") itemDef = { name: "Stone", cost: 5, icon: "🪨" };
+        else if (req.id === "mat_celestial_ingot") itemDef = ALL_ITEMS["mat_cel_ingot"] || { name: "Celestial Ingot", cost: 250, icon: "✨" };
+        else if (req.id === "mat_dragon_scale") itemDef = ALL_ITEMS["mat_drag_scale"] || { name: "Dragon Scale", cost: 100, icon: "🦎" };
+      }
+
+      let unitCost = itemDef ? (itemDef.cost || itemDef.price || 0) : 0;
+      if (unitCost <= 0) {
+        if (req.id === "mat_wood" || req.id.includes("wood")) unitCost = 5;
+        else if (req.id === "mat_stone" || req.id.includes("stone")) unitCost = 5;
+        else if (req.id === "mat_iron_ore" || req.id.includes("iron")) unitCost = 10;
+        else if (req.id === "mat_leather" || req.id.includes("leather")) unitCost = 15;
+      }
+
       let name = itemDef ? itemDef.name : req.id;
       if (req.id === "mat_wood") name = "Wood";
       if (req.id === "mat_stone") name = "Stone";
       if (req.id === "mat_iron_ore") name = "Iron Ore";
+
+      const icon = itemDef?.icon || (req.id.includes("wood") ? "🪵" : req.id.includes("stone") ? "🪨" : req.id.includes("iron") ? "⛏️" : "📦");
 
       if (unitCost > 0) {
         const itemCost = unitCost * needed;
@@ -4914,7 +4932,7 @@ function promptQuickBuyForAction({ actionTitle, actionDesc, requiredMaterials, b
         missingItems.push({
           id: req.id,
           name: name,
-          icon: itemDef?.icon || "📦",
+          icon: icon,
           needed: needed,
           unitCost: unitCost,
           itemCost: itemCost
