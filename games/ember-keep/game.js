@@ -6017,7 +6017,7 @@ function renderWebhookSettingsModal() {
 
   const account = AccountStore.getAccount() || {};
   const currentUrl = account.discordWebhookUrl || "";
-  const events = account.webhookEvents || ["rebirth", "rift_kill", "dungeon_mastered", "bounty_completed"];
+  const events = account.webhookEvents || ["rebirth", "rift_kill", "dungeon_mastered", "bounty_completed", "hearth_visit"];
 
   modal.innerHTML = `
     <div class="modal-content panel" style="max-width:480px; border:2px solid #5865f2;">
@@ -6041,9 +6041,14 @@ function renderWebhookSettingsModal() {
           <label><input type="checkbox" class="chk-wh-event" value="hearth_visit" ${events.includes("hearth_visit") ? 'checked' : ''}> 🏡 Hearth Visits</label>
         </div>
 
-        <button id="btn-save-webhook-settings" class="btn-action" style="width:100%; margin-top:15px; padding:10px; background:#5865f2; font-weight:bold; cursor:pointer;">
-          💾 Save Webhook Settings
-        </button>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+          <button id="btn-save-webhook-settings" class="btn-action" style="flex:1; padding:10px; background:#5865f2; font-weight:bold; cursor:pointer;">
+            💾 Save Settings
+          </button>
+          <button id="btn-test-webhook" class="btn-secondary" style="padding:10px; font-weight:bold; cursor:pointer;">
+            🧪 Test Webhook
+          </button>
+        </div>
       </div>
     </div>
   `;
@@ -6067,22 +6072,46 @@ function renderWebhookSettingsModal() {
       modal.classList.remove("active");
     });
   }
+
+  const btnTest = document.getElementById("btn-test-webhook");
+  if (btnTest) {
+    btnTest.addEventListener("click", async () => {
+      const urlInput = document.getElementById("input-webhook-url");
+      const url = urlInput ? urlInput.value.trim() : "";
+      if (!url) {
+        showToast("Please enter a Discord Webhook URL first!", "error");
+        return;
+      }
+      showToast("Sending test notification to Discord...", "info");
+      const ok = await sendDiscordWebhook("test", { testUrl: url });
+      if (ok) {
+        showToast("🎉 Test notification delivered to Discord!", "success");
+      } else {
+        showToast("❌ Webhook failed. Verify your Discord URL.", "error");
+      }
+    });
+  }
 }
 
 async function sendDiscordWebhook(event, details = {}) {
   const account = typeof AccountStore !== "undefined" ? AccountStore.getAccount() : null;
-  if (!account || !account.discordWebhookUrl) return;
+  const targetUrl = details.testUrl || account?.discordWebhookUrl;
+  if (!targetUrl) return false;
 
-  const events = account.webhookEvents || ["rebirth", "rift_kill", "dungeon_mastered", "bounty_completed"];
-  if (!events.includes(event)) return;
+  const events = (account && account.webhookEvents) || ["rebirth", "rift_kill", "dungeon_mastered", "bounty_completed", "hearth_visit"];
+  if (event !== "test" && !events.includes(event)) return false;
 
-  const charName = playerState.name || "Hero";
+  const charName = (playerState && playerState.name) || "Hero";
 
   let title = "🔥 Ember Keep Notification";
   let color = 0xf59e0b; // Gold
   let description = `Event triggered: **${event}**`;
 
-  if (event === "dungeon_mastered") {
+  if (event === "test") {
+    title = "🧪 Discord Webhook Test";
+    color = 0x3b82f6; // Blue
+    description = `Your Ember Keep Discord Webhook integration is active and working! 🎉`;
+  } else if (event === "dungeon_mastered") {
     title = "👑 Dungeon Mastered!";
     color = 0xf59e0b; // Gold
     const dName = details.dungeonName || "a Dungeon";
@@ -6107,10 +6136,12 @@ async function sendDiscordWebhook(event, details = {}) {
   }
 
   try {
-    await fetch(account.discordWebhookUrl, {
+    const res = await fetch(targetUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        username: "Ember Keep Bot",
+        avatar_url: "https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f525.png",
         embeds: [
           {
             title,
@@ -6122,8 +6153,15 @@ async function sendDiscordWebhook(event, details = {}) {
         ]
       })
     });
+    if (!res.ok) {
+      const errText = await res.text().catch(() => "");
+      console.warn("Discord Webhook HTTP Error:", res.status, errText);
+      return false;
+    }
+    return true;
   } catch (e) {
     console.warn("Failed sending Discord Webhook:", e);
+    return false;
   }
 }
 

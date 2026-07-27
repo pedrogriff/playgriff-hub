@@ -140,7 +140,10 @@ export const AccountStore = {
         accountData.activeDifficulty = profile.active_difficulty || "normal";
         accountData.maxAp = profile.max_ap || 10;
         accountData.discordWebhookUrl = profile.discord_webhook_url || null;
-        accountData.webhookEvents = profile.webhook_events || ["rebirth", "rift_kill", "dungeon_mastered", "bounty_completed"];
+        const defaultEvents = ["rebirth", "rift_kill", "dungeon_mastered", "bounty_completed", "hearth_visit"];
+        let loadedEvents = Array.isArray(profile.webhook_events) ? profile.webhook_events : defaultEvents;
+        if (!loadedEvents.includes("dungeon_mastered")) loadedEvents.push("dungeon_mastered");
+        accountData.webhookEvents = loadedEvents;
         accountData.hearthBuffUntil = profile.hearth_buff_until || null;
       }
 
