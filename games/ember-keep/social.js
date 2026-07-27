@@ -4,6 +4,12 @@
 
 (function() {
 
+  // SECURITY: HTML escape utility to prevent XSS via user-controlled strings
+  function escapeHTML(str) {
+    if (typeof str !== "string") return String(str || "");
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+
   const BOT_NAMES = [
     "AshWarden", "EmberKnight", "NightVeil", "CinderBlade", "SoulForge",
     "Pyrothane", "GrimLight", "StormShade", "VoidCaster", "DawnStriker",
@@ -186,8 +192,8 @@
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${onlineColor};flex-shrink:0;"></span>
           <div>
-            <strong>${player.name}</strong>
-            <div style="color:var(--text-muted);font-size:0.72rem;">${player.class} · Lv.${player.level} (${formattedPwr} Pwr)</div>
+            <strong>${escapeHTML(player.name)}</strong>
+            <div style="color:var(--text-muted);font-size:0.72rem;">${escapeHTML(player.class)} · Lv.${player.level} (${formattedPwr} Pwr)</div>
           </div>
         </div>
         <button class="btn-action btn-add-suggested" style="padding:4px 10px;font-size:0.75rem;min-height:28px;line-height:1;">+ Add</button>
@@ -224,8 +230,8 @@
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${onlineColor};flex-shrink:0;"></span>
           <div>
-            <strong>${friend.name}</strong>
-            <div style="color:var(--text-muted);font-size:0.72rem;">${friend.class} · Lv.${friend.level} (${formattedPwr} Pwr)</div>
+            <strong>${escapeHTML(friend.name)}</strong>
+            <div style="color:var(--text-muted);font-size:0.72rem;">${escapeHTML(friend.class)} · Lv.${friend.level} (${formattedPwr} Pwr)</div>
           </div>
         </div>
         <div style="display:flex;gap:4px;">
@@ -318,7 +324,7 @@
 
       tr.innerHTML = `
         <td>${rankEmoji}</td>
-        <td>${entry.isPlayer ? `<strong>${entry.name}</strong> (You)` : entry.name}</td>
+        <td>${entry.isPlayer ? `<strong>${escapeHTML(entry.name)}</strong> (You)` : escapeHTML(entry.name)}</td>
         <td>Lv.${entry.level}</td>
         <td>${typeof formatNumber === "function" ? formatNumber(entry.power) : entry.power}</td>
         <td style="text-align: right;">${actionHtml}</td>`;
@@ -377,8 +383,8 @@
             <div style="display:flex;align-items:center;gap:8px;">
               <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc71;"></span>
               <div>
-                <strong>${member.name}</strong> ${isMe ? "<span style='color:var(--gold);font-size:0.75rem;'>(You)</span>" : ""}
-                <div style="color:var(--text-muted);font-size:0.72rem;">${member.class || "Hero"} · Lv.${member.level || 1} (${fmt(member.power)} Pwr) · <span style="color:var(--gold-dim);">${roleTag}</span></div>
+                <strong>${escapeHTML(member.name)}</strong> ${isMe ? "<span style='color:var(--gold);font-size:0.75rem;'>(You)</span>" : ""}
+                <div style="color:var(--text-muted);font-size:0.72rem;">${escapeHTML(member.class || "Hero")} · Lv.${member.level || 1} (${fmt(member.power)} Pwr) · <span style="color:var(--gold-dim);">${roleTag}</span></div>
               </div>
             </div>
           `;
@@ -403,9 +409,9 @@
 
           li.innerHTML = `
             <div style="display:flex;align-items:center;gap:10px;">
-              <span style="font-size:1.4rem;">${clan.icon || "⚔️"}</span>
+              <span style="font-size:1.4rem;">${escapeHTML(clan.icon || "⚔️")}</span>
               <div>
-                <strong>[${clan.tag}] ${clan.name}</strong>
+                <strong>[${escapeHTML(clan.tag)}] ${escapeHTML(clan.name)}</strong>
                 <div style="color:var(--text-muted);font-size:0.72rem;">Members: ${clan.members.length}/${clan.maxMembers || 20} · Power: ${fmt(totalPwr)}</div>
               </div>
             </div>

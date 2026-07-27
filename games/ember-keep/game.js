@@ -9,7 +9,7 @@ import { VillageEngine } from "./village.js";
 import { MarketEngine } from "./market.js";
 import { UIManager } from "./ui.js";
 import { createClan, joinClan, leaveClan, getAvailableClans, loadClan, saveClan, initializeBotClans } from "./clans.js";
-import { equipItemRPC, unequipItemRPC, getCharacterInventory, runDungeonEncounterRPC, getDungeonProgress, craftItemRPC, getShopInventoryRPC, buyShopItemRPC, syncInventoryItemToDB } from "./db.js";
+import { equipItemRPC, unequipItemRPC, getCharacterInventory, runDungeonEncounterRPC, getDungeonProgress, craftItemRPC, getShopInventoryRPC, buyShopItemRPC, syncInventoryItemToDB, isValidDiscordWebhookUrl } from "./db.js";
 import { GarrisonEngine, GARRISON_STATIONS } from "./garrison.js";
 import { WorldEngine } from "./world.js";
 import { SeasonsEngine } from "./seasons.js";
@@ -38,6 +38,14 @@ window.getRequiredXpForLevel = getRequiredXpForLevel;
 // Expose Core Global Helpers to Window Scope
 window.showToast = showToast;
 window.formatNumber = formatNumber;
+
+// SECURITY: Global HTML escape utility to prevent XSS via user-controlled strings
+function escapeHTML(str) {
+  if (typeof str !== "string") return String(str || "");
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+window.escapeHTML = escapeHTML;
+
 window.savePlayerState = function() {
   if (typeof AccountStore !== "undefined" && typeof AccountStore.save === "function") {
     AccountStore.save();
@@ -2029,7 +2037,7 @@ function renderStats() {
   // Character panel
   const charName = playerState.name || "Hero";
   const nameBadge = isPremiumActive() ? `<span title="Premium" style="color:var(--ember);">👑</span> ` : "";
-  document.getElementById("char-name").innerHTML = nameBadge + charName;
+  document.getElementById("char-name").innerHTML = nameBadge + escapeHTML(charName);
   
   _setText("char-class-display",  playerState.class);
   _setText("char-level",          playerState.level);
@@ -6199,6 +6207,12 @@ function renderWebhookSettingsModal() {
       const url = urlInput ? urlInput.value.trim() : "";
       const selectedEvents = Array.from(modal.querySelectorAll(".chk-wh-event:checked")).map(cb => cb.value);
 
+      // SECURITY: Validate webhook URL before saving
+      if (url && !isValidDiscordWebhookUrl(url)) {
+        if (typeof showToast === "function") showToast("Invalid URL. Only Discord webhook URLs (https://discord.com/api/webhooks/...) are allowed.", "error");
+        return;
+      }
+
       account.discordWebhookUrl = url;
       account.webhookEvents = selectedEvents;
       if (typeof updateWebhookSettingsRPC === "function") {
@@ -6234,6 +6248,13 @@ async function sendDiscordWebhook(event, details = {}) {
   const account = typeof AccountStore !== "undefined" ? AccountStore.getAccount() : null;
   const targetUrl = details.testUrl || account?.discordWebhookUrl;
   if (!targetUrl) return false;
+
+  // SECURITY: Validate webhook URL is a legitimate Discord endpoint (prevents SSRF)
+  if (!isValidDiscordWebhookUrl(targetUrl)) {
+    console.warn("[Security] Blocked webhook to non-Discord URL:", targetUrl);
+    if (typeof showToast === "function") showToast("Invalid webhook URL. Only Discord webhook URLs are allowed.", "error");
+    return false;
+  }
 
   const events = (account && account.webhookEvents) || ["rebirth", "rift_kill", "dungeon_mastered", "bounty_completed", "hearth_visit"];
   if (event !== "test" && !events.includes(event)) return false;

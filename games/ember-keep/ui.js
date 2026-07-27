@@ -7,6 +7,12 @@ import { AccountStore } from "./account.js";
 import { GameAPI } from "./engine.js";
 import { signIn, signUp, signOut, getUser } from "./db.js";
 
+// SECURITY: HTML escape utility to prevent XSS via user-controlled strings
+function escapeHTML(str) {
+  if (typeof str !== "string") return String(str || "");
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
 export const UIManager = {
   async init() {
     this.renderHeaderUserStatus();
@@ -176,7 +182,7 @@ export const UIManager = {
             submitBtn.textContent = "Sign In";
 
             errorMsg.className = "auth-info-msg";
-            errorMsg.innerHTML = `✨ <strong>Account created!</strong><br>A confirmation email has been sent to <strong>${email}</strong>.<br>Please check your inbox and click the verification link before signing in.`;
+            errorMsg.innerHTML = `✨ <strong>Account created!</strong><br>A confirmation email has been sent to <strong>${escapeHTML(email)}</strong>.<br>Please check your inbox and click the verification link before signing in.`;
             errorMsg.style.display = "block";
           }
         } else {

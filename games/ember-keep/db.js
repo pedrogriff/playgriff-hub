@@ -5,10 +5,35 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const SUPABASE_URL = "https://ixlfhisrxmsmkwciynys.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4bGZoaXNyeG1zbWt3Y2l5bnlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjM1OTQsImV4cCI6MjEwMDIzOTU5NH0.MRTrcX--xxdSeud2eG4i2x4r-c9LCkPWLfrnPcHXbr8";
+// SECURITY: Read Supabase config from <meta> tags (externalized from source code).
+// These are the public anon key + project URL — safe for client-side use.
+// The service role key must NEVER appear in client code.
+const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content;
+const SUPABASE_ANON_KEY = document.querySelector('meta[name="supabase-anon-key"]')?.content;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  throw new Error("[db.js] Missing Supabase configuration. Ensure <meta name='supabase-url'> and <meta name='supabase-anon-key'> are present in index.html.");
+}
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/**
+ * SECURITY: Validates that a URL is a legitimate Discord webhook endpoint.
+ * Prevents SSRF and data exfiltration via arbitrary URL targets.
+ */
+export function isValidDiscordWebhookUrl(url) {
+  if (!url || typeof url !== "string") return false;
+  try {
+    const parsed = new URL(url);
+    return (
+      parsed.protocol === "https:" &&
+      (parsed.hostname === "discord.com" || parsed.hostname === "discordapp.com") &&
+      parsed.pathname.startsWith("/api/webhooks/")
+    );
+  } catch {
+    return false;
+  }
+}
 
 /**
  * AUTH HELPERS
@@ -135,6 +160,10 @@ export async function createCharacter(slotIndex, name, classId) {
   return data;
 }
 
+// SECURITY WARNING: This function writes client-side state directly to the
+// characters table. An authenticated user can manipulate these values via
+// browser DevTools. Critical gameplay mutations (task rewards, dungeon loot,
+// crafting) should use server-side SECURITY DEFINER RPCs instead.
 export async function saveCharacter(charData) {
   if (!charData || !charData.id) return null;
 
@@ -566,10 +595,11 @@ export async function getSuggestedPlayersFromDB() {
     });
 
     if (error) {
-      console.warn("RPC get_suggested_players unavailable, querying characters:", error.message);
+      console.warn("RPC get_suggested_players unavailable, querying characters (limited columns):", error.message);
+      // SECURITY: Only query profile-safe columns (no inventory, equipped, professions)
       const { data: directData } = await supabase
         .from("characters")
-        .select("id, account_id, name, class_id, level, power")
+        .select("id, name, class_id, level, power")
         .limit(20);
       if (directData && directData.length) {
         return directData.map(c => ({
@@ -807,9 +837,14 @@ export async function updateWebhookSettingsRPC(webhookUrl, events) {
   const user = await getUser();
   if (!user) return null;
 
+  // SECURITY: Validate webhook URL is a legitimate Discord endpoint before persisting
+  if (webhookUrl && !isValidDiscordWebhookUrl(webhookUrl)) {
+    throw new Error("Invalid webhook URL. Only Discord webhook URLs (https://discord.com/api/webhooks/...) are allowed.");
+  }
+
   try {
     const { data, error } = await supabase.rpc("update_webhook_settings", {
-      p_webhook_url: webhookUrl,
+      p_webhook_url: webhookUrl || null,
       p_events: events
     });
 
