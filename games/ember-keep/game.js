@@ -5038,6 +5038,7 @@ function upgradeHouse() {
   if (playerState.gold < tierData.cost) { showToast(`Not enough Gold! Costs ${tierData.cost}g to upgrade.`, "error"); return; }
 
   // Deduct materials
+  if (tierData.materials && tierData.materials.length > 0) {
     tierData.materials.forEach(mat => {
       let needed = mat.qty;
       while (needed > 0) {
