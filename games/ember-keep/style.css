@@ -1186,6 +1186,107 @@ select option {
 .btn-buy.equipped { background: var(--text-muted); color: #fff; cursor: default; }
 .btn-buy:disabled { background: #2a2a3a; color: var(--text-muted); cursor: not-allowed; }
 
+/* Shop Bulk Quantity Controls */
+.shop-action-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.shop-qty-container {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 2px 4px;
+}
+.shop-qty-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: 3px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  user-select: none;
+}
+.shop-qty-btn:hover {
+  background: var(--bg-hover);
+  color: var(--gold);
+}
+.shop-qty-input {
+  width: 36px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-align: center;
+}
+.shop-qty-input::-webkit-inner-spin-button,
+.shop-qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.shop-qty-presets {
+  display: flex;
+  gap: 3px;
+}
+.shop-preset-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  font-weight: bold;
+  border-radius: 3px;
+  padding: 1px 5px;
+  cursor: pointer;
+}
+.shop-preset-btn:hover {
+  background: var(--gold-dim);
+  color: #fff;
+}
+
+/* Quick Buy Item Card */
+.qb-item-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+}
+.qb-item-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.qb-item-icon {
+  font-size: 1.3rem;
+}
+.qb-item-name {
+  font-weight: bold;
+  font-size: 0.88rem;
+}
+.qb-item-qty {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.qb-item-price {
+  font-weight: bold;
+  color: var(--gold);
+  font-size: 0.88rem;
+}
+
 /* ================================================================
    INVENTORY
    ================================================================ */

@@ -121,6 +121,53 @@
   </div>
 
   <!-- =============================================
+       QUICK BUY MISSING MATERIALS MODAL
+       ============================================= -->
+  <div id="quick-buy-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="qb-modal-title">
+    <div class="modal-content" style="max-width: 480px;">
+      <div class="modal-header">
+        <h2 id="qb-modal-title">🛒 Quick Buy Missing Materials</h2>
+        <button class="close-modal-btn" id="cancel-qb-x-btn" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <p id="qb-action-desc" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
+          You need additional materials to complete this action.
+        </p>
+        <div id="qb-items-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+          <!-- Itemized list rendered dynamically -->
+        </div>
+        <div id="qb-summary-box" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 12px; font-size: 0.88rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span>Materials Cost:</span>
+            <strong id="qb-mats-cost">0g</strong>
+          </div>
+          <div id="qb-fee-row" style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span id="qb-fee-label">Upgrade Fee:</span>
+            <strong id="qb-fee-cost">0g</strong>
+          </div>
+          <hr style="border: 0; border-top: 1px solid var(--border); margin: 8px 0;" />
+          <div style="display: flex; justify-content: space-between; font-size: 1rem; color: var(--gold);">
+            <span>Total Gold Required:</span>
+            <strong id="qb-total-cost">0g</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <span>Current Gold:</span>
+            <span id="qb-current-gold">0g</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 0.85rem; color: #10b981;">
+            <span>Gold Remaining After Purchase:</span>
+            <strong id="qb-remaining-gold">0g</strong>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 12px 16px;">
+        <button id="confirm-qb-btn" class="btn-action" style="flex: 1;">Buy & Proceed</button>
+        <button id="cancel-qb-btn" class="btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================
        SETTINGS MODAL
        ============================================= -->
   <div id="settings-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">

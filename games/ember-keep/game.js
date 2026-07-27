@@ -1491,12 +1491,27 @@ function startProduction(recipeId) {
   }
 
   // Check ingredients
+  const missingIngredients = [];
   for (const ing of recipe.ingredients) {
-    const pItem = playerState.inventory.find(i => i.id === ing.id);
-    if (!pItem || pItem.qty < ing.qty) {
-      showToast("Not enough materials.", "error");
-      return;
+    const currentQty = typeof getMaterialQty === "function" ? getMaterialQty(ing.id) : (playerState.inventory.find(i => i.id === ing.id)?.qty || 0);
+    if (currentQty < ing.qty) {
+      missingIngredients.push(ing);
     }
+  }
+
+  if (missingIngredients.length > 0) {
+    if (typeof promptQuickBuyForAction === "function") {
+      promptQuickBuyForAction({
+        actionTitle: recipe.name,
+        actionDesc: `Craft ${recipe.name} requiring missing materials.`,
+        requiredMaterials: recipe.ingredients,
+        baseCost: 0,
+        onConfirm: () => startProduction(recipeId)
+      });
+    } else {
+      showToast("Not enough materials.", "error");
+    }
+    return;
   }
 
   // Consume ingredients
@@ -2367,21 +2382,49 @@ function createShopItemEl(item) {
   const el = document.createElement("div");
   el.className = "shop-item";
   el.id = `item-${item.id}`;
-  el.innerHTML = `
-    <div class="item-icon">${item.icon}</div>
-    <div class="item-details">
-      <h5>${item.name}</h5>
-      <p>${statLabel} ${statValue}</p>
-      <span class="item-tier" style="color:var(--gold);font-size:0.65rem;">${tierLabels[item.tier] || ""} Tier ${item.tier}</span>
-    </div>
-    <button class="btn-buy ${isEquipped ? "equipped" : ""}"
-            data-item="${item.id}"
-            ${isEquipped ? "disabled" : ""}
-            ${(!isEquipped && isOwned) ? "disabled" : ""}
-            ${(!isOwned && playerState.gold < item.cost) ? "disabled" : ""}>
-      ${isEquipped ? "Equipped" : isOwned ? "Owned" : `Buy <span class="cost">${formatNumber(item.cost)}g</span>`}
-    </button>
-  `;
+
+  if (canBuyMultiple) {
+    el.innerHTML = `
+      <div class="item-icon">${item.icon}</div>
+      <div class="item-details">
+        <h5>${item.name}</h5>
+        <p>${statValue}</p>
+        <span class="item-tier" style="color:var(--gold);font-size:0.65rem;">${tierLabels[item.tier] || ""} Tier ${item.tier}</span>
+      </div>
+      <div class="shop-action-group">
+        <div class="shop-qty-container">
+          <button class="shop-qty-btn shop-qty-minus" data-item="${item.id}">-</button>
+          <input type="number" class="shop-qty-input" id="shop-qty-input-${item.id}" value="1" min="1" max="999" data-item="${item.id}" data-unitcost="${item.cost}">
+          <button class="shop-qty-btn shop-qty-plus" data-item="${item.id}">+</button>
+        </div>
+        <div class="shop-qty-presets">
+          <button class="shop-preset-btn" data-item="${item.id}" data-qty="1">1x</button>
+          <button class="shop-preset-btn" data-item="${item.id}" data-qty="5">5x</button>
+          <button class="shop-preset-btn" data-item="${item.id}" data-qty="10">10x</button>
+          <button class="shop-preset-btn" data-item="${item.id}" data-qty="50">50x</button>
+        </div>
+        <button class="btn-buy btn-buy-bulk" id="btn-buy-${item.id}" data-item="${item.id}" ${playerState.gold < item.cost ? "disabled" : ""}>
+          Buy 1x <span class="cost" id="btn-buy-cost-${item.id}">${formatNumber(item.cost)}g</span>
+        </button>
+      </div>
+    `;
+  } else {
+    el.innerHTML = `
+      <div class="item-icon">${item.icon}</div>
+      <div class="item-details">
+        <h5>${item.name}</h5>
+        <p>${statLabel} ${statValue}</p>
+        <span class="item-tier" style="color:var(--gold);font-size:0.65rem;">${tierLabels[item.tier] || ""} Tier ${item.tier}</span>
+      </div>
+      <button class="btn-buy ${isEquipped ? "equipped" : ""}"
+              data-item="${item.id}"
+              ${isEquipped ? "disabled" : ""}
+              ${(!isEquipped && isOwned) ? "disabled" : ""}
+              ${(!isOwned && playerState.gold < item.cost) ? "disabled" : ""}>
+        ${isEquipped ? "Equipped" : isOwned ? "Owned" : `Buy <span class="cost">${formatNumber(item.cost)}g</span>`}
+      </button>
+    `;
+  }
   return el;
 }
 
@@ -3312,27 +3355,92 @@ function initUpgradeButtons() {
 // SHOP
 // ================================================================
 function initShopButtons() {
-  const handleBuy = (e) => {
-    const btn = e.target.closest(".btn-buy");
-    if (btn && !btn.disabled) buyItem(btn.dataset.item);
+  const updateBulkButton = (itemId) => {
+    const input = document.getElementById(`shop-qty-input-${itemId}`);
+    const btn = document.getElementById(`btn-buy-${itemId}`);
+    if (!input || !btn) return;
+    
+    let qty = parseInt(input.value, 10) || 1;
+    if (qty < 1) { qty = 1; input.value = 1; }
+    const unitCost = parseInt(input.dataset.unitcost, 10) || 0;
+    const totalCost = unitCost * qty;
+    
+    btn.innerHTML = `Buy ${qty}x <span class="cost" id="btn-buy-cost-${itemId}">${formatNumber(totalCost)}g</span>`;
+    btn.disabled = playerState.gold < totalCost;
   };
+
+  const handleBuy = (e) => {
+    const plus = e.target.closest(".shop-qty-plus");
+    const minus = e.target.closest(".shop-qty-minus");
+    const preset = e.target.closest(".shop-preset-btn");
+    const btn = e.target.closest(".btn-buy");
+
+    if (plus) {
+      const itemId = plus.dataset.item;
+      const input = document.getElementById(`shop-qty-input-${itemId}`);
+      if (input) {
+        input.value = (parseInt(input.value, 10) || 1) + 1;
+        updateBulkButton(itemId);
+      }
+      return;
+    }
+    if (minus) {
+      const itemId = minus.dataset.item;
+      const input = document.getElementById(`shop-qty-input-${itemId}`);
+      if (input) {
+        const cur = parseInt(input.value, 10) || 1;
+        if (cur > 1) {
+          input.value = cur - 1;
+          updateBulkButton(itemId);
+        }
+      }
+      return;
+    }
+    if (preset) {
+      const itemId = preset.dataset.item;
+      const qty = parseInt(preset.dataset.qty, 10) || 1;
+      const input = document.getElementById(`shop-qty-input-${itemId}`);
+      if (input) {
+        input.value = qty;
+        updateBulkButton(itemId);
+      }
+      return;
+    }
+    if (btn && !btn.disabled) {
+      const itemId = btn.dataset.item;
+      const input = document.getElementById(`shop-qty-input-${itemId}`);
+      const qty = input ? (parseInt(input.value, 10) || 1) : 1;
+      buyItem(itemId, qty);
+    }
+  };
+
   ["shop-weapons-container","shop-armor-container","shop-rings-container","shop-consumables-container","shop-food-container","shop-materials-container"].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener("click", handleBuy);
+    if (el) {
+      el.removeEventListener("click", handleBuy);
+      el.addEventListener("click", handleBuy);
+      el.addEventListener("input", (e) => {
+        const input = e.target.closest(".shop-qty-input");
+        if (input) updateBulkButton(input.dataset.item);
+      });
+    }
   });
 }
 
-function buyItem(itemId) {
+function buyItem(itemId, qty = 1) {
   const item = ALL_ITEMS[itemId];
   if (!item) return;
 
+  const count = Math.max(1, parseInt(qty, 10) || 1);
+
   if (item.type === "consumable" || item.type === "material" || item.type === "food") {
-    if (playerState.gold < item.cost) { showToast("Not enough gold!", "error"); return; }
-    playerState.gold -= item.cost;
-    addToInventory(itemId, 1);
+    const totalCost = item.cost * count;
+    if (playerState.gold < totalCost) { showToast(`Not enough gold! Costs ${formatNumber(totalCost)}g`, "error"); return; }
+    playerState.gold -= totalCost;
+    addToInventory(itemId, count);
     renderStats(); renderShop(); renderInventory();
     if (typeof renderMaterials === "function") renderMaterials();
-    showToast(`✅ Purchased ${item.name}!`, "success");
+    showToast(`✅ Purchased ${count}x ${item.name}!`, "success");
     if (typeof playSound === "function") playSound("purchase");
     return;
   }
