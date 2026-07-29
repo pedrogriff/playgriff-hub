@@ -1132,6 +1132,8 @@ function loadPlayerState() {
   if (!playerState.completedSideZones) playerState.completedSideZones = [];
   if (!playerState.dungeonProgress) playerState.dungeonProgress = {};
   if (!playerState.maxMana) playerState.maxMana = CLASS_PRESETS[playerState.class]?.mana || 50;
+  if (!Array.isArray(playerState.pets)) playerState.pets = [];
+  if (!playerState.petStable) playerState.petStable = 6;
 
   if (playerState.class) {
     recoverOfflineStamina();
@@ -1188,6 +1190,10 @@ window.renderActiveCharacterUI = function() {
   playerState.maxMana = activeChar.maxMana || activeChar.mana || 50;
   playerState.inventory = Array.isArray(activeChar.inventory) ? JSON.parse(JSON.stringify(activeChar.inventory)) : [];
   playerState.equipment = activeChar.equipped ? JSON.parse(JSON.stringify(activeChar.equipped)) : { weapon: null, armor: null, ring: null };
+  playerState.pets = Array.isArray(activeChar.pets) ? JSON.parse(JSON.stringify(activeChar.pets)) : (Array.isArray(playerState.pets) ? playerState.pets : []);
+  playerState.activePet = activeChar.activePet !== undefined ? activeChar.activePet : (playerState.activePet || null);
+  playerState.hatchingEgg = activeChar.hatchingEgg !== undefined ? activeChar.hatchingEgg : (playerState.hatchingEgg || null);
+  playerState.petStable = activeChar.petStable || playerState.petStable || 6;
 
   if (activeChar.power || activeChar.defense || activeChar.maxHp || playerState.upgrades) {
     const preset = CLASS_PRESETS[playerState.class] || CLASS_PRESETS["Warrior"];

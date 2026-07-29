@@ -467,8 +467,11 @@ function renderPetSection() {
     }
   }
 
+  if (!Array.isArray(playerState.pets)) playerState.pets = [];
+  if (!playerState.petStable) playerState.petStable = 6;
+
   // Render Collection
-  if (playerState.pets.length > 0) {
+  if (playerState.pets && playerState.pets.length > 0) {
     collectionList.innerHTML = `<h4>Stable (${playerState.pets.length}/${playerState.petStable})</h4>`;
     const grid = document.createElement("div");
     grid.style.display = "grid";
