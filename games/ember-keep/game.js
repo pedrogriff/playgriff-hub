@@ -202,15 +202,30 @@ const SKILLS = {
   warrior_1: { id:"warrior_1", class:"Warrior", name:"Shield Wall",   icon:"🛡️", desc:"Block the next enemy attack completely",    manaCost:15, cooldown:3, unlockLevel:5,  effect:"shieldWall" },
   warrior_2: { id:"warrior_2", class:"Warrior", name:"Battle Cry",    icon:"⚔️", desc:"Power +60% for 3 rounds",                  manaCost:20, cooldown:5, unlockLevel:10, effect:"powerBoost" },
   warrior_3: { id:"warrior_3", class:"Warrior", name:"Whirlwind",     icon:"🌀", desc:"Deal 3× Power damage ignoring defense",     manaCost:35, cooldown:6, unlockLevel:15, effect:"whirlwind" },
+  warrior_4: { id:"warrior_4", class:"Warrior", name:"Execute",       icon:"⚔️", desc:"Strike for 4.5× Power damage",              manaCost:40, cooldown:6, unlockLevel:20, effect:"execute" },
+  warrior_5: { id:"warrior_5", class:"Warrior", name:"Iron Will",     icon:"🛡️", desc:"Heal 35% Max HP + boost Defense",           manaCost:35, cooldown:7, unlockLevel:25, effect:"ironWill" },
+  warrior_6: { id:"warrior_6", class:"Warrior", name:"Shattering Blow",icon:"💥", desc:"Deal 2.5× Power + Stun enemy 2 rounds",   manaCost:45, cooldown:8, unlockLevel:30, effect:"shatteringBlow" },
+
   ranger_1:  { id:"ranger_1",  class:"Ranger",  name:"Poison Arrow",  icon:"🏹", desc:"Poison: ~25% Power/round for 4 rounds",    manaCost:12, cooldown:4, unlockLevel:5,  effect:"poison" },
   ranger_2:  { id:"ranger_2",  class:"Ranger",  name:"Eagle Eye",     icon:"🦅", desc:"Guarantee critical hits for 2 attacks",    manaCost:20, cooldown:5, unlockLevel:10, effect:"eagleEye" },
   ranger_3:  { id:"ranger_3",  class:"Ranger",  name:"Rain of Arrows",icon:"🌧️", desc:"Strike 4 times at 70% Power each",        manaCost:30, cooldown:6, unlockLevel:15, effect:"rainOfArrows" },
+  ranger_4:  { id:"ranger_4",  class:"Ranger",  name:"Sniper Shot",   icon:"🎯", desc:"Deal 4× Power damage with high crit",      manaCost:35, cooldown:6, unlockLevel:20, effect:"sniperShot" },
+  ranger_5:  { id:"ranger_5",  class:"Ranger",  name:"Evasive Roll",  icon:"💨", desc:"Dodge all enemy attacks for 2 rounds",     manaCost:25, cooldown:7, unlockLevel:25, effect:"evasiveRoll" },
+  ranger_6:  { id:"ranger_6",  class:"Ranger",  name:"Explosive Arrow",icon:"💥", desc:"Deal 3.5× Power burst damage",             manaCost:40, cooldown:7, unlockLevel:30, effect:"explosiveArrow" },
+
   mage_1:    { id:"mage_1",    class:"Mage",    name:"Frost Nova",    icon:"❄️", desc:"Freeze enemy 1 round + 40% Power burst",  manaCost:15, cooldown:3, unlockLevel:5,  effect:"frostNova" },
   mage_2:    { id:"mage_2",    class:"Mage",    name:"Arcane Surge",  icon:"✨", desc:"Deal 2.5× Power as pure magic damage",    manaCost:25, cooldown:5, unlockLevel:10, effect:"arcaneSurge" },
   mage_3:    { id:"mage_3",    class:"Mage",    name:"Mana Shield",   icon:"💜", desc:"Absorb up to 60% Max HP over 3 rounds",   manaCost:35, cooldown:8, unlockLevel:15, effect:"manaShield" },
+  mage_4:    { id:"mage_4",    class:"Mage",    name:"Meteor Strike", icon:"☄️", desc:"Call down a meteor for 5× Power damage",  manaCost:50, cooldown:8, unlockLevel:20, effect:"meteorStrike" },
+  mage_5:    { id:"mage_5",    class:"Mage",    name:"Chain Lightning",icon:"⚡", desc:"Deal 3× Power damage + Stun 1 round",     manaCost:35, cooldown:6, unlockLevel:25, effect:"chainLightning" },
+  mage_6:    { id:"mage_6",    class:"Mage",    name:"Time Warp",     icon:"⏳", desc:"Reset skill cooldowns & restore 30 Mana", manaCost:40, cooldown:10, unlockLevel:30, effect:"timeWarp" },
+
   paladin_1: { id:"paladin_1", class:"Paladin", name:"Holy Light",    icon:"✝️", desc:"Heal yourself for 25% of Max HP",         manaCost:20, cooldown:4, unlockLevel:5,  effect:"holyLight" },
   paladin_2: { id:"paladin_2", class:"Paladin", name:"Divine Shield", icon:"🛡️", desc:"Block ALL damage for 2 rounds",           manaCost:30, cooldown:6, unlockLevel:10, effect:"divineShield" },
   paladin_3: { id:"paladin_3", class:"Paladin", name:"Consecration",  icon:"☀️", desc:"Deal 2× Power holy damage for 2 rounds", manaCost:25, cooldown:5, unlockLevel:15, effect:"consecration" },
+  paladin_4: { id:"paladin_4", class:"Paladin", name:"Judgment",      icon:"⚖️", desc:"Deal 3.5× Power damage & heal 15% HP",     manaCost:30, cooldown:5, unlockLevel:20, effect:"judgment" },
+  paladin_5: { id:"paladin_5", class:"Paladin", name:"Aura of Light", icon:"✨", desc:"Regenerate 10% HP/round for 4 rounds",   manaCost:35, cooldown:7, unlockLevel:25, effect:"auraOfLight" },
+  paladin_6: { id:"paladin_6", class:"Paladin", name:"Wrath of Heavens",icon:"⚡", desc:"Smite enemy for 4.5× Power holy damage",manaCost:45, cooldown:8, unlockLevel:30, effect:"wrathOfHeavens" },
 };
 
 // ================================================================
@@ -2083,15 +2098,25 @@ function renderStats() {
   const pwrLvl = Number(playerState.upgrades?.powerLevel ?? playerState.upgrades?.power ?? 0) || 0;
   const defLvl = Number(playerState.upgrades?.defenseLevel ?? playerState.upgrades?.defense ?? 0) || 0;
 
-  const hpCost  = 10 + hpLvl * 15;
-  const pwrCost = 10 + pwrLvl * 15;
-  const defCost = 10 + defLvl * 15;
-  _setText("cost-hp",      `${hpCost}g`);
-  _setText("cost-power",   `${pwrCost}g`);
-  _setText("cost-defense", `${defCost}g`);
-  _setDisabled("upgrade-hp-btn",      playerState.gold < hpCost);
-  _setDisabled("upgrade-power-btn",   playerState.gold < pwrCost);
-  _setDisabled("upgrade-defense-btn", playerState.gold < defCost);
+  const hpInfo  = getAttrUpgradeCostAndCount(hpLvl, currentAttrMult, playerState.gold);
+  const pwrInfo = getAttrUpgradeCostAndCount(pwrLvl, currentAttrMult, playerState.gold);
+  const defInfo = getAttrUpgradeCostAndCount(defLvl, currentAttrMult, playerState.gold);
+
+  const hpBtn = document.getElementById("upgrade-hp-btn");
+  if (hpBtn) {
+    hpBtn.innerHTML = `+${10 * hpInfo.count} HP <span class="cost" id="cost-hp">${formatNumber(hpInfo.totalCost)}g</span>`;
+    hpBtn.disabled = playerState.gold < hpInfo.totalCost;
+  }
+  const pwrBtn = document.getElementById("upgrade-power-btn");
+  if (pwrBtn) {
+    pwrBtn.innerHTML = `+${2 * pwrInfo.count} Pwr <span class="cost" id="cost-power">${formatNumber(pwrInfo.totalCost)}g</span>`;
+    pwrBtn.disabled = playerState.gold < pwrInfo.totalCost;
+  }
+  const defBtn = document.getElementById("upgrade-defense-btn");
+  if (defBtn) {
+    defBtn.innerHTML = `+${1 * defInfo.count} Def <span class="cost" id="cost-defense">${formatNumber(defInfo.totalCost)}g</span>`;
+    defBtn.disabled = playerState.gold < defInfo.totalCost;
+  }
 
   // Equipped gear display
   const getItemName = (rawRef) => {
@@ -2276,7 +2301,7 @@ async function renderShop() {
 
   // Materials
   Object.values(MATERIAL_ITEMS).forEach(item => {
-    if (item.id.includes("seed") || item.id.includes("item_") || item.tier === 1) {
+    if (item.id.includes("seed") || item.id.includes("item_") || item.tier === 1 || item.id === "mat_shard") {
       if (matsCont) matsCont.appendChild(createShopItemEl(item));
     }
   });
@@ -2491,7 +2516,60 @@ function createShopItemEl(item) {
   return el;
 }
 
-// ── SKILLS ──
+// ── SKILLS & BUILDS ──
+function getEquippedSkills() {
+  if (!playerState.equippedSkills) playerState.equippedSkills = [];
+  const classSkills = Object.values(SKILLS).filter(s => s.class === playerState.class);
+  const unlocked = classSkills.filter(s => playerState.level >= s.unlockLevel);
+  playerState.equippedSkills = playerState.equippedSkills.filter(id => SKILLS[id] && SKILLS[id].class === playerState.class);
+  if (playerState.equippedSkills.length === 0 && unlocked.length > 0) {
+    playerState.equippedSkills = unlocked.slice(0, 3).map(s => s.id);
+  }
+  return playerState.equippedSkills;
+}
+
+window.upgradeSkillLevel = function(skillId) {
+  if (!playerState.skillLevels) playerState.skillLevels = {};
+  const currentLvl = playerState.skillLevels[skillId] || 1;
+  if (currentLvl >= 5) {
+    if (typeof showToast === "function") showToast("Skill is already max level (Lvl 5)!", "info");
+    return;
+  }
+  const cost = currentLvl * 150;
+  if (playerState.gold < cost) {
+    if (typeof showToast === "function") showToast(`Need ${cost}g to upgrade this skill!`, "error");
+    return;
+  }
+  playerState.gold -= cost;
+  playerState.skillLevels[skillId] = currentLvl + 1;
+  savePlayerState();
+  renderStats();
+  renderSkills();
+  if (typeof showToast === "function") showToast(`✨ ${SKILLS[skillId].name} upgraded to Level ${currentLvl + 1}!`, "success");
+};
+
+window.toggleEquipSkill = function(skillId) {
+  const equipped = getEquippedSkills();
+  const idx = equipped.indexOf(skillId);
+  if (idx !== -1) {
+    if (equipped.length <= 1) {
+      if (typeof showToast === "function") showToast("You must keep at least 1 active skill equipped!", "error");
+      return;
+    }
+    equipped.splice(idx, 1);
+    if (typeof showToast === "function") showToast(`Unequipped ${SKILLS[skillId].name}`, "info");
+  } else {
+    if (equipped.length >= 3) {
+      equipped.shift(); // Replace oldest
+    }
+    equipped.push(skillId);
+    if (typeof showToast === "function") showToast(`Equipped ${SKILLS[skillId].name}!`, "success");
+  }
+  savePlayerState();
+  renderSkills();
+  if (typeof renderSkillBar === "function") renderSkillBar();
+};
+
 function renderSkills() {
   const list = document.getElementById("char-skills-list");
   if (!list || !playerState.class) {
@@ -2499,21 +2577,69 @@ function renderSkills() {
     return;
   }
   list.innerHTML = "";
+
+  const equipped = getEquippedSkills();
+  if (!playerState.skillLevels) playerState.skillLevels = {};
+
+  // Build loadout header
+  const loadoutContainer = document.createElement("div");
+  loadoutContainer.className = "skills-build-header";
+  loadoutContainer.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h5 style="margin:0; color:var(--ember); font-size:0.9rem;">⚡ Active Build Loadout (${equipped.length}/3)</h5>
+      <span style="font-size:0.75rem; color:var(--text-muted);">Choose 3 skills for combat</span>
+    </div>
+    <div class="skills-build-slots">
+      ${[0, 1, 2].map(slotIdx => {
+        const sId = equipped[slotIdx];
+        const s = sId ? SKILLS[sId] : null;
+        return `
+          <div class="skill-slot-card ${s ? 'filled' : ''}">
+            <div style="font-size:1.2rem;">${s ? s.icon : '➕'}</div>
+            <div style="font-weight:bold; font-size:0.75rem; margin-top:2px;">${s ? s.name : 'Empty Slot'}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+  list.appendChild(loadoutContainer);
+
   const classSkills = Object.values(SKILLS).filter(s => s.class === playerState.class);
 
   classSkills.forEach(skill => {
     const unlocked = playerState.level >= skill.unlockLevel;
+    const isEquipped = equipped.includes(skill.id);
+    const skillLvl = playerState.skillLevels[skill.id] || 1;
+    const upgradeCost = skillLvl * 150;
+    const canAffordUpgrade = playerState.gold >= upgradeCost;
+
     const el = document.createElement("div");
-    el.className = "skill-item" + (unlocked ? "" : " locked-skill");
+    el.className = "skill-item-extended" + (unlocked ? "" : " locked");
     el.innerHTML = `
-      <span class="skill-item-icon">${skill.icon}</span>
       <div class="skill-item-info">
-        <div class="skill-item-name">${skill.name}</div>
-        <div class="skill-item-desc">${skill.desc}</div>
+        <span class="skill-item-icon">${skill.icon}</span>
+        <div>
+          <div style="font-weight:bold; font-size:0.88rem; display:flex; align-items:center; gap:6px;">
+            ${skill.name}
+            ${unlocked ? `<span style="font-size:0.7rem; padding:1px 6px; background:rgba(249,115,22,0.2); color:var(--ember); border-radius:10px;">Lvl ${skillLvl}</span>` : ''}
+          </div>
+          <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">${skill.desc}</div>
+        </div>
       </div>
-      ${unlocked
-        ? `<span class="skill-item-cost">${skill.manaCost}🔮</span>`
-        : `<span class="skill-item-lock">🔒 Level ${skill.unlockLevel}</span>`}
+      <div class="skill-item-actions">
+        ${unlocked ? `
+          ${skillLvl < 5 ? `
+            <button class="btn-action" style="font-size:0.75rem; padding:4px 8px; background:var(--bg-card); border:1px solid var(--gold);"
+                    onclick="upgradeSkillLevel('${skill.id}')" ${!canAffordUpgrade ? 'disabled' : ''}>
+              ⬆️ Lvl ${skillLvl + 1} (${upgradeCost}g)
+            </button>
+          ` : `<span style="font-size:0.75rem; color:#10b981; font-weight:bold;">MAX</span>`}
+          <button class="btn-action" style="font-size:0.75rem; padding:4px 8px; ${isEquipped ? 'background:#10b981;' : 'background:var(--ember);'}"
+                  onclick="toggleEquipSkill('${skill.id}')">
+            ${isEquipped ? '✅ Equipped' : '⚡ Equip'}
+          </button>
+        ` : `<span style="font-size:0.75rem; color:var(--text-muted);">🔒 Lv ${skill.unlockLevel}</span>`}
+      </div>
     `;
     list.appendChild(el);
   });
@@ -3373,49 +3499,98 @@ function renderAvatar(containerId, imageSrc, emojiAlt) {
 // ================================================================
 // UPGRADES
 // ================================================================
+let currentAttrMult = "1";
+
+function getAttrUpgradeCostAndCount(currentLvl, mult, gold) {
+  let count = 0;
+  let totalCost = 0;
+
+  if (mult === "max") {
+    while (true) {
+      const nextStepCost = 10 + (currentLvl + count) * 15;
+      if (totalCost + nextStepCost > gold) break;
+      totalCost += nextStepCost;
+      count++;
+    }
+    if (count === 0) {
+      count = 1;
+      totalCost = 10 + currentLvl * 15;
+    }
+  } else {
+    count = Math.max(1, parseInt(mult, 10) || 1);
+    for (let k = 0; k < count; k++) {
+      totalCost += 10 + (currentLvl + k) * 15;
+    }
+  }
+  return { count, totalCost };
+}
+
 function initUpgradeButtons() {
-  document.getElementById("upgrade-hp-btn").addEventListener("click", () => {
-    const hpLvl = Number(playerState.upgrades?.hpLevel ?? playerState.upgrades?.hp ?? 0) || 0;
-    const cost = 10 + hpLvl * 15;
-    if (playerState.gold >= cost) {
-      playerState.gold -= cost;
-      playerState.stats.maxHp += 10;
-      playerState.upgrades.hpLevel = hpLvl + 1;
-      playerState.upgrades.hp = hpLvl + 1;
-      const effStats = getEffectiveStats();
-      playerState.currentHp = Math.min(effStats.maxHp, playerState.currentHp + 10);
-      savePlayerState(); renderStats(); renderShop();
-      showToast("❤️ HP upgraded!", "success");
-      if (typeof playSound === "function") playSound("purchase");
-      if (typeof renderPetSection === "function") renderPetSection();
-    }
-  });
-  document.getElementById("upgrade-power-btn").addEventListener("click", () => {
-    const pwrLvl = Number(playerState.upgrades?.powerLevel ?? playerState.upgrades?.power ?? 0) || 0;
-    const cost = 10 + pwrLvl * 15;
-    if (playerState.gold >= cost) {
-      playerState.gold -= cost;
-      playerState.stats.power += 2;
-      playerState.upgrades.powerLevel = pwrLvl + 1;
-      playerState.upgrades.power = pwrLvl + 1;
-      savePlayerState(); renderStats(); renderShop();
-      showToast("⚔️ Power upgraded!", "success");
-      if (typeof playSound === "function") playSound("purchase");
-    }
-  });
-  document.getElementById("upgrade-defense-btn").addEventListener("click", () => {
-    const defLvl = Number(playerState.upgrades?.defenseLevel ?? playerState.upgrades?.defense ?? 0) || 0;
-    const cost = 10 + defLvl * 15;
-    if (playerState.gold >= cost) {
-      playerState.gold -= cost;
-      playerState.stats.defense += 1;
-      playerState.upgrades.defenseLevel = defLvl + 1;
-      playerState.upgrades.defense = defLvl + 1;
-      savePlayerState(); renderStats(); renderShop();
-      showToast("🛡️ Defense upgraded!", "success");
-      if (typeof playSound === "function") playSound("purchase");
-    }
-  });
+  const selector = document.getElementById("attr-bulk-selector");
+  if (selector) {
+    selector.addEventListener("click", (e) => {
+      const btn = e.target.closest(".attr-bulk-btn");
+      if (!btn) return;
+      selector.querySelectorAll(".attr-bulk-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentAttrMult = btn.dataset.mult || "1";
+      renderStats();
+    });
+  }
+
+  const btnHp = document.getElementById("upgrade-hp-btn");
+  if (btnHp) {
+    btnHp.addEventListener("click", () => {
+      const hpLvl = Number(playerState.upgrades?.hpLevel ?? playerState.upgrades?.hp ?? 0) || 0;
+      const { count, totalCost } = getAttrUpgradeCostAndCount(hpLvl, currentAttrMult, playerState.gold);
+      if (playerState.gold >= totalCost && count > 0) {
+        playerState.gold -= totalCost;
+        playerState.stats.maxHp += 10 * count;
+        playerState.upgrades.hpLevel = hpLvl + count;
+        playerState.upgrades.hp = hpLvl + count;
+        const effStats = getEffectiveStats();
+        playerState.currentHp = Math.min(effStats.maxHp, playerState.currentHp + 10 * count);
+        savePlayerState(); renderStats(); renderShop();
+        showToast(`❤️ HP upgraded (+${10 * count})!`, "success");
+        if (typeof playSound === "function") playSound("purchase");
+        if (typeof renderPetSection === "function") renderPetSection();
+      }
+    });
+  }
+
+  const btnPwr = document.getElementById("upgrade-power-btn");
+  if (btnPwr) {
+    btnPwr.addEventListener("click", () => {
+      const pwrLvl = Number(playerState.upgrades?.powerLevel ?? playerState.upgrades?.power ?? 0) || 0;
+      const { count, totalCost } = getAttrUpgradeCostAndCount(pwrLvl, currentAttrMult, playerState.gold);
+      if (playerState.gold >= totalCost && count > 0) {
+        playerState.gold -= totalCost;
+        playerState.stats.power += 2 * count;
+        playerState.upgrades.powerLevel = pwrLvl + count;
+        playerState.upgrades.power = pwrLvl + count;
+        savePlayerState(); renderStats(); renderShop();
+        showToast(`⚔️ Power upgraded (+${2 * count})!`, "success");
+        if (typeof playSound === "function") playSound("purchase");
+      }
+    });
+  }
+
+  const btnDef = document.getElementById("upgrade-defense-btn");
+  if (btnDef) {
+    btnDef.addEventListener("click", () => {
+      const defLvl = Number(playerState.upgrades?.defenseLevel ?? playerState.upgrades?.defense ?? 0) || 0;
+      const { count, totalCost } = getAttrUpgradeCostAndCount(defLvl, currentAttrMult, playerState.gold);
+      if (playerState.gold >= totalCost && count > 0) {
+        playerState.gold -= totalCost;
+        playerState.stats.defense += 1 * count;
+        playerState.upgrades.defenseLevel = defLvl + count;
+        playerState.upgrades.defense = defLvl + count;
+        savePlayerState(); renderStats(); renderShop();
+        showToast(`🛡️ Defense upgraded (+${1 * count})!`, "success");
+        if (typeof playSound === "function") playSound("purchase");
+      }
+    });
+  }
 }
 
 // ================================================================
@@ -4145,13 +4320,15 @@ function renderSkillBar() {
   if (!bar || !playerState.class) return;
   bar.innerHTML = "";
 
-  const classSkills = Object.values(SKILLS).filter(s => s.class === playerState.class);
-  if (classSkills.length === 0) {
-    bar.innerHTML = `<span style="font-size:0.75rem;color:var(--text-muted);">No skills yet — level up to unlock!</span>`;
+  const equippedIds = getEquippedSkills();
+  if (equippedIds.length === 0) {
+    bar.innerHTML = `<span style="font-size:0.75rem;color:var(--text-muted);">No skills equipped — visit Character panel!</span>`;
     return;
   }
 
-  classSkills.forEach((skill, i) => {
+  equippedIds.forEach((skillId, i) => {
+    const skill = SKILLS[skillId];
+    if (!skill) return;
     const unlocked = playerState.level >= skill.unlockLevel;
     const btn = document.createElement("button");
     btn.className = "skill-btn" + (unlocked ? "" : " skill-btn--locked");
@@ -4168,8 +4345,10 @@ function renderSkillBar() {
 }
 
 function updateSkillBar() {
-  const classSkills = Object.values(SKILLS).filter(s => s.class === playerState.class);
-  classSkills.forEach((skill, i) => {
+  const equippedIds = getEquippedSkills();
+  equippedIds.forEach((skillId, i) => {
+    const skill = SKILLS[skillId];
+    if (!skill) return;
     const btn = document.getElementById(`skill-btn-${i}`);
     const cdEl = document.getElementById(`skill-cd-${i}`);
     if (!btn) return;
@@ -4253,34 +4432,81 @@ function handleSkillActivation(skillId, btnIndex) {
   skillCooldowns[skillId] = skill.cooldown;
   const effStats = getEffectiveStats();
 
+  const skillLvl = (playerState.skillLevels && playerState.skillLevels[skillId]) || 1;
+  const mult = 1 + 0.15 * (skillLvl - 1);
+
   switch(skill.effect) {
     case "shieldWall":
       battleEffects.blockNextHit = true;
       appendBattleLog(`🛡️ [${skill.name}] Shield Wall raised! Next hit blocked!`, "skill-activation"); break;
     case "powerBoost":
-      battleEffects.powerBoostMult = 1.6;
+      battleEffects.powerBoostMult = 1.6 * mult;
       battleEffects.powerBoostRounds = 3;
-      appendBattleLog(`⚔️ [${skill.name}] Power boosted by 60% for 3 rounds!`, "skill-activation"); break;
+      appendBattleLog(`⚔️ [${skill.name}] Power boosted by ${Math.round(60 * mult)}% for 3 rounds!`, "skill-activation"); break;
     case "whirlwind": {
-      const dmg = Math.round(effStats.power * 3);
+      const dmg = Math.round(effStats.power * 3 * mult);
       battleEnemyHp = Math.max(0, battleEnemyHp - dmg);
       updateEnemyHpUI();
       appendBattleLog(`🌀 [${skill.name}] ${dmg} damage ignoring defense!`, "combat-player-crit");
       if (battleEnemyHp <= 0) { handleBattleVictory(currentBattleLevel); return; }
       break;
     }
+    case "execute": {
+      const dmg = Math.round(effStats.power * 4.5 * mult);
+      battleEnemyHp = Math.max(0, battleEnemyHp - dmg);
+      updateEnemyHpUI();
+      appendBattleLog(`⚔️ [${skill.name}] Devastating Execute for ${dmg} damage!`, "combat-player-crit");
+      if (battleEnemyHp <= 0) { handleBattleVictory(currentBattleLevel); return; }
+      break;
+    }
+    case "ironWill": {
+      const healAmt = Math.round(effStats.maxHp * 0.35 * mult);
+      battlePlayerHp = Math.min(battlePlayerMaxHp, battlePlayerHp + healAmt);
+      battleEffects.powerBoostMult = 1.3 * mult;
+      battleEffects.powerBoostRounds = 3;
+      updatePlayerHpUI();
+      appendBattleLog(`🛡️ [${skill.name}] Restored ${healAmt} HP and boosted Defense!`, "combat-victory"); break;
+    }
+    case "shatteringBlow": {
+      const dmg = Math.round(effStats.power * 2.5 * mult);
+      battleEnemyHp = Math.max(0, battleEnemyHp - dmg);
+      battleEffects.stunRounds = 2;
+      updateEnemyHpUI();
+      appendBattleLog(`💥 [${skill.name}] ${dmg} damage + Stunned enemy for 2 rounds!`, "combat-player-crit");
+      if (battleEnemyHp <= 0) { handleBattleVictory(currentBattleLevel); return; }
+      break;
+    }
     case "poison":
-      battleEffects.poisonDamage = Math.round(effStats.power * 0.25);
+      battleEffects.poisonDamage = Math.round(effStats.power * 0.25 * mult);
       battleEffects.poisonRounds = 4;
       appendBattleLog(`🏹 [${skill.name}] Poisoned! ${battleEffects.poisonDamage}/round for 4 rounds!`, "skill-activation"); break;
     case "eagleEye":
-      battleEffects.eagleEyeHits = 2;
-      appendBattleLog(`🦅 [${skill.name}] Eagle Eye! Next 2 attacks guaranteed crits!`, "skill-activation"); break;
+      battleEffects.eagleEyeHits = Math.round(2 * mult);
+      appendBattleLog(`🦅 [${skill.name}] Eagle Eye! Next ${battleEffects.eagleEyeHits} attacks guaranteed crits!`, "skill-activation"); break;
     case "rainOfArrows":
       battleEffects.rainOfArrowsHits = 4;
       appendBattleLog(`🌧️ [${skill.name}] Rain of Arrows! 4 hits incoming!`, "skill-activation"); break;
+    case "sniperShot": {
+      const dmg = Math.round(effStats.power * 4 * mult * effStats.critDamage);
+      battleEnemyHp = Math.max(0, battleEnemyHp - dmg);
+      updateEnemyHpUI();
+      appendBattleLog(`🎯 [${skill.name}] Perfect Sniper Shot for ${dmg} critical damage!`, "combat-player-crit");
+      if (battleEnemyHp <= 0) { handleBattleVictory(currentBattleLevel); return; }
+      break;
+    }
+    case "evasiveRoll":
+      battleEffects.evasiveRollRounds = 2;
+      appendBattleLog(`💨 [${skill.name}] Evasive Roll! Dodging all enemy attacks for 2 rounds!`, "skill-activation"); break;
+    case "explosiveArrow": {
+      const dmg = Math.round(effStats.power * 3.5 * mult);
+      battleEnemyHp = Math.max(0, battleEnemyHp - dmg);
+      updateEnemyHpUI();
+      appendBattleLog(`💥 [${skill.name}] Explosive Arrow burst for ${dmg} damage!`, "combat-player-crit");
+      if (battleEnemyHp <= 0) { handleBattleVictory(currentBattleLevel); return; }
+      break;
+    }
     case "frostNova": {
-      const burstDmg = Math.round(effStats.power * 0.4);
+      const burstDmg = Math.round(effStats.power * 0.4 * mult);
       battleEffects.stunRounds = 1;
       battleEnemyHp = Math.max(0, battleEnemyHp - burstDmg);
       updateEnemyHpUI();
@@ -4289,7 +4515,7 @@ function handleSkillActivation(skillId, btnIndex) {
       break;
     }
     case "arcaneSurge": {
-      const surgeDmg = Math.round(effStats.power * 2.5);
+      const surgeDmg = Math.round(effStats.power * 2.5 * mult);
       battleEnemyHp = Math.max(0, battleEnemyHp - surgeDmg);
       updateEnemyHpUI();
       appendBattleLog(`✨ [${skill.name}] ${surgeDmg} pure magic damage!`, "combat-player-crit");
@@ -4297,11 +4523,33 @@ function handleSkillActivation(skillId, btnIndex) {
       break;
     }
     case "manaShield":
-      battleEffects.manaShieldAbsorb = Math.round(effStats.maxHp * 0.6);
+      battleEffects.manaShieldAbsorb = Math.round(effStats.maxHp * 0.6 * mult);
       battleEffects.manaShieldRounds = 3;
       appendBattleLog(`💜 [${skill.name}] Absorbing up to ${battleEffects.manaShieldAbsorb} damage for 3 rounds!`, "skill-activation"); break;
+    case "meteorStrike": {
+      const dmg = Math.round(effStats.power * 5 * mult);
+      battleEnemyHp = Math.max(0, battleEnemyHp - dmg);
+      updateEnemyHpUI();
+      appendBattleLog(`☄️ [${skill.name}] METEOR STRIKE hits for ${dmg} devastating fire damage!`, "combat-player-crit");
+      if (battleEnemyHp <= 0) { handleBattleVictory(currentBattleLevel); return; }
+      break;
+    }
+    case "chainLightning": {
+      const dmg = Math.round(effStats.power * 3 * mult);
+      battleEnemyHp = Math.max(0, battleEnemyHp - dmg);
+      battleEffects.stunRounds = 1;
+      updateEnemyHpUI();
+      appendBattleLog(`⚡ [${skill.name}] Chain Lightning strikes for ${dmg} damage + Stun 1 round!`, "combat-player-crit");
+      if (battleEnemyHp <= 0) { handleBattleVictory(currentBattleLevel); return; }
+      break;
+    }
+    case "timeWarp":
+      skillCooldowns = {};
+      currentBattleMana = Math.min(battleMaxMana, currentBattleMana + 30);
+      appendBattleLog(`⏳ [${skill.name}] Time Warp! Cooldowns reset and 30 Mana restored!`, "skill-activation"); break;
+
     case "holyLight": {
-      const healAmt = Math.round(effStats.maxHp * 0.25);
+      const healAmt = Math.round(effStats.maxHp * 0.25 * mult);
       battlePlayerHp = Math.min(battlePlayerMaxHp, battlePlayerHp + healAmt);
       updatePlayerHpUI();
       appendBattleLog(`✝️ [${skill.name}] Healed for ${healAmt} HP!`, "combat-victory"); break;
@@ -4310,9 +4558,32 @@ function handleSkillActivation(skillId, btnIndex) {
       battleEffects.divineShieldRounds = 2;
       appendBattleLog(`🛡️ [${skill.name}] Divine Shield! All damage blocked for 2 rounds!`, "skill-activation"); break;
     case "consecration":
-      battleEffects.consecrationDamage = Math.round(effStats.power * 2);
+      battleEffects.consecrationDamage = Math.round(effStats.power * 2 * mult);
       battleEffects.consecrationRounds = 2;
       appendBattleLog(`☀️ [${skill.name}] ${battleEffects.consecrationDamage} holy damage for 2 rounds!`, "skill-activation"); break;
+    case "judgment": {
+      const dmg = Math.round(effStats.power * 3.5 * mult);
+      const healAmt = Math.round(effStats.maxHp * 0.15 * mult);
+      battleEnemyHp = Math.max(0, battleEnemyHp - dmg);
+      battlePlayerHp = Math.min(battlePlayerMaxHp, battlePlayerHp + healAmt);
+      updateEnemyHpUI();
+      updatePlayerHpUI();
+      appendBattleLog(`⚖️ [${skill.name}] Judgment deals ${dmg} holy damage and heals for ${healAmt} HP!`, "combat-player-crit");
+      if (battleEnemyHp <= 0) { handleBattleVictory(currentBattleLevel); return; }
+      break;
+    }
+    case "auraOfLight":
+      battleEffects.auraOfLightHeal = Math.round(effStats.maxHp * 0.10 * mult);
+      battleEffects.auraOfLightRounds = 4;
+      appendBattleLog(`✨ [${skill.name}] Aura of Light! Regenerating ${battleEffects.auraOfLightHeal} HP/round for 4 rounds!`, "skill-activation"); break;
+    case "wrathOfHeavens": {
+      const dmg = Math.round(effStats.power * 4.5 * mult);
+      battleEnemyHp = Math.max(0, battleEnemyHp - dmg);
+      updateEnemyHpUI();
+      appendBattleLog(`⚡ [${skill.name}] Wrath of Heavens smites enemy for ${dmg} holy damage!`, "combat-player-crit");
+      if (battleEnemyHp <= 0) { handleBattleVictory(currentBattleLevel); return; }
+      break;
+    }
   }
 
   if (typeof playSound === "function") playSound("skill");
@@ -4394,6 +4665,15 @@ function startBattleSimulation(level) {
     // ── Cooldown tick ──
     Object.keys(skillCooldowns).forEach(sid => { if (skillCooldowns[sid] > 0) skillCooldowns[sid]--; });
 
+    // ── Aura of Light tick ──
+    if (battleEffects.auraOfLightRounds > 0) {
+      const healAmt = battleEffects.auraOfLightHeal || 10;
+      battlePlayerHp = Math.min(battlePlayerMaxHp, battlePlayerHp + healAmt);
+      appendBattleLog(`✨ Aura of Light heals you for ${healAmt} HP!`, "combat-victory");
+      battleEffects.auraOfLightRounds--;
+      updatePlayerHpUI();
+    }
+
     // ── Consecration damage ──
     if (battleEffects.consecrationRounds > 0) {
       const cDmg = battleEffects.consecrationDamage;
@@ -4470,6 +4750,9 @@ function startBattleSimulation(level) {
     if (battleEffects.stunRounds > 0) {
       appendBattleLog(`❄️ ${level.name} is frozen and cannot act!`, "system-message");
       battleEffects.stunRounds--;
+    } else if (battleEffects.evasiveRollRounds > 0) {
+      appendBattleLog(`💨 Evasive Roll! You dodged ${level.name}'s attack!`, "system-message");
+      battleEffects.evasiveRollRounds--;
     } else if (battleEffects.divineShieldRounds > 0) {
       appendBattleLog(`🛡️ Divine Shield blocks ${level.name}'s attack!`, "system-message");
       battleEffects.divineShieldRounds--;
@@ -6004,6 +6287,10 @@ async function renderWorldRiftPanel() {
   const riftPct = rift ? Math.max(0, Math.min(100, (rift.current_hp / rift.total_hp) * 100)) : 0;
   const bountyPct = bounty ? Math.max(0, Math.min(100, (bounty.current_quantity / bounty.target_quantity) * 100)) : 0;
 
+  const todayGMT = new Date().toISOString().split('T')[0];
+  const lastStrike = (playerState && playerState.lastWorldBossStrikeDate) || (activeChar && activeChar.last_world_boss_strike_date);
+  const alreadyStruck = lastStrike === todayGMT;
+
   container.innerHTML = `
     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:15px; padding:15px;">
       <!-- World Rift Card -->
@@ -6024,8 +6311,8 @@ async function renderWorldRiftPanel() {
           </div>
         </div>
 
-        <button id="btn-attack-world-rift" class="btn-action" style="width:100%; padding:10px; background:linear-gradient(135deg, #ef4444, #991b1b); font-weight:bold; font-size:1rem; cursor:pointer;">
-          ⚔️ Strike World Boss (Submit DPS Benchmark)
+        <button id="btn-attack-world-rift" class="btn-action" ${alreadyStruck ? 'disabled' : ''} style="width:100%; padding:10px; ${alreadyStruck ? 'background:#333; color:#aaa; cursor:not-allowed; border:1px solid #555;' : 'background:linear-gradient(135deg, #ef4444, #991b1b); font-weight:bold; font-size:1rem; cursor:pointer;'}">
+          ${alreadyStruck ? '✅ Struck Today (Resets 00:00 GMT)' : '⚔️ Strike World Boss (Submit DPS Benchmark)'}
         </button>
 
         <hr class="panel-divider" style="margin:15px 0;">
@@ -6073,12 +6360,19 @@ async function renderWorldRiftPanel() {
   const btnAttack = document.getElementById("btn-attack-world-rift");
   if (btnAttack) {
     btnAttack.addEventListener("click", async () => {
+      if (alreadyStruck) {
+        if (typeof showToast === "function") showToast("You have already struck the World Boss today! Resets at 00:00 GMT.", "error");
+        return;
+      }
       const pwr = activeChar.power || 100;
       const dmg = pwr * 120 + Math.floor(Math.random() * 500);
 
       try {
         const res = await WorldEngine.submitDamage(activeChar.id, rift.id, dmg);
         if (res && res.success) {
+          if (playerState) playerState.lastWorldBossStrikeDate = todayGMT;
+          if (activeChar) activeChar.last_world_boss_strike_date = todayGMT;
+          if (typeof savePlayerState === "function") savePlayerState();
           if (typeof showToast === "function") showToast(`⚔️ Struck World Boss for ${(res.damage_dealt || dmg).toLocaleString()} damage!`, "success");
           renderWorldRiftPanel();
         }

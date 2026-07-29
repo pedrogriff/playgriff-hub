@@ -3325,6 +3325,108 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   outline-offset: 2px;
 }
 
+/* Modal depth overlay fix */
+#quick-buy-modal {
+  z-index: 3000 !important;
+}
+
+/* Attribute Bulk Purchase Styling */
+.attr-bulk-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 6px 10px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+}
+.attr-bulk-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: bold;
+}
+.attr-bulk-btns {
+  display: flex;
+  gap: 4px;
+}
+.attr-bulk-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+.attr-bulk-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--gold);
+}
+.attr-bulk-btn.active {
+  background: var(--ember);
+  border-color: var(--gold);
+  color: #fff;
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.4);
+}
+
+/* Expanded Skills & Builds UI */
+.skills-build-header {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.skills-build-slots {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.skill-slot-card {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px dashed var(--border-bright);
+  border-radius: var(--r-sm);
+  padding: 8px;
+  text-align: center;
+  font-size: 0.8rem;
+}
+.skill-slot-card.filled {
+  border-style: solid;
+  border-color: var(--ember);
+  background: rgba(249, 115, 22, 0.08);
+}
+.skill-item-extended {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px;
+  margin-bottom: 8px;
+}
+.skill-item-extended.locked {
+  opacity: 0.6;
+}
+.skill-item-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.skill-item-icon {
+  font-size: 1.5rem;
+}
+.skill-item-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+
 
 
 

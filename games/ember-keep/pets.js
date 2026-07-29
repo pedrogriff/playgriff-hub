@@ -437,10 +437,14 @@ function renderPetSection() {
   // Render Hatching
   if (playerState.hatchingEgg) {
     const egg = (PET_EGGS && PET_EGGS[playerState.hatchingEgg.eggId]) || { name: "Companion Egg" };
+    const left = playerState.hatchingEgg.endTime - Date.now();
     hatchingDisplay.innerHTML = `
       <div class="hatching-card" style="padding: 10px; background: rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 8px; border: 1px solid var(--border-bright);">
         <h5 style="margin-top:0; color:var(--gold);">🥚 Incubator: ${egg.name}</h5>
         <p id="hatching-timer-text" style="font-size:0.9rem; margin:6px 0;">Calculating...</p>
+        <div id="hatch-action-container">
+          ${left <= 0 ? `<button class="btn-primary" style="width:100%; padding:8px; margin-top:6px; background:#10b981; font-weight:bold; cursor:pointer;" onclick="completeHatching()">🐣 Claim Hatched Pet!</button>` : ''}
+        </div>
       </div>
     `;
     updateHatchTimerUI();
@@ -511,17 +515,22 @@ function renderPetSection() {
 
 function updateHatchTimerUI() {
   const el = document.getElementById("hatching-timer-text");
+  const container = document.getElementById("hatch-action-container");
   if (!el || !playerState.hatchingEgg) return;
   
   const now = Date.now();
   const left = playerState.hatchingEgg.endTime - now;
   
   if (left <= 0) {
-    el.textContent = "Ready to hatch!";
+    el.innerHTML = "<strong style='color:#10b981;'>Ready to hatch!</strong>";
+    if (container && !container.querySelector("button")) {
+      container.innerHTML = `<button class="btn-primary" style="width:100%; padding:8px; margin-top:6px; background:#10b981; font-weight:bold; cursor:pointer;" onclick="completeHatching()">🐣 Claim Hatched Pet!</button>`;
+    }
   } else {
     const mins = Math.floor(left / 60000);
     const secs = Math.floor((left % 60000) / 1000);
     el.textContent = `${mins}m ${secs}s remaining`;
+    if (container) container.innerHTML = '';
   }
 }
 
