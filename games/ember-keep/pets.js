@@ -290,10 +290,11 @@ function hatchEgg(eggId) {
 function completeHatching() {
   if (!playerState.hatchingEgg) return;
   
-  const egg = PET_EGGS[playerState.hatchingEgg.eggId];
+  const egg = (PET_EGGS && PET_EGGS[playerState.hatchingEgg.eggId]) || { chances: { common: 0.8, rare: 0.2 } };
   const rarity = rollPetRarity(egg.chances);
   const pet = rollPetFromRarity(rarity);
   
+  if (!Array.isArray(playerState.pets)) playerState.pets = [];
   playerState.pets.push({
     id: `pet_${Date.now()}_${Math.floor(Math.random()*1000)}`,
     speciesId: pet.id,

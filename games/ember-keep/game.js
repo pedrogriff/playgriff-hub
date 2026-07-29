@@ -1141,6 +1141,13 @@ function loadPlayerState() {
       playerState.dungeonProgress = activeChar.dungeonProgress || activeChar.dungeon_progress || {};
       playerState.inventory = Array.isArray(activeChar.inventory) ? JSON.parse(JSON.stringify(activeChar.inventory)) : [];
       playerState.equipment = activeChar.equipped ? JSON.parse(JSON.stringify(activeChar.equipped)) : { weapon: null, armor: null, ring: null };
+      playerState.pets = Array.isArray(activeChar.pets) ? JSON.parse(JSON.stringify(activeChar.pets)) : [];
+      playerState.activePet = activeChar.activePet || null;
+      playerState.hatchingEgg = activeChar.hatchingEgg || null;
+      playerState.petStable = activeChar.petStable || 6;
+      playerState.equippedSkills = Array.isArray(activeChar.equippedSkills) ? JSON.parse(JSON.stringify(activeChar.equippedSkills)) : [];
+      playerState.skillLevels = activeChar.skillLevels || {};
+      playerState.lastWorldBossStrikeDate = activeChar.lastWorldBossStrikeDate || null;
     }
   }
 
@@ -1149,6 +1156,8 @@ function loadPlayerState() {
   if (!playerState.maxMana) playerState.maxMana = CLASS_PRESETS[playerState.class]?.mana || 50;
   if (!Array.isArray(playerState.pets)) playerState.pets = [];
   if (!playerState.petStable) playerState.petStable = 6;
+  if (!playerState.equippedSkills) playerState.equippedSkills = [];
+  if (!playerState.skillLevels) playerState.skillLevels = {};
 
   if (playerState.class) {
     recoverOfflineStamina();
@@ -1159,6 +1168,8 @@ function loadPlayerState() {
     checkDailyLogin();
   }
   checkClassSelection();
+  if (typeof renderSkills === "function") renderSkills();
+  if (typeof renderPetSection === "function") renderPetSection();
 }
 
 window.renderActiveCharacterUI = function() {
@@ -1209,6 +1220,9 @@ window.renderActiveCharacterUI = function() {
   playerState.activePet = activeChar.activePet !== undefined ? activeChar.activePet : (playerState.activePet || null);
   playerState.hatchingEgg = activeChar.hatchingEgg !== undefined ? activeChar.hatchingEgg : (playerState.hatchingEgg || null);
   playerState.petStable = activeChar.petStable || playerState.petStable || 6;
+  playerState.equippedSkills = Array.isArray(activeChar.equippedSkills) ? JSON.parse(JSON.stringify(activeChar.equippedSkills)) : (playerState.equippedSkills || []);
+  playerState.skillLevels = activeChar.skillLevels || playerState.skillLevels || {};
+  playerState.lastWorldBossStrikeDate = activeChar.lastWorldBossStrikeDate || playerState.lastWorldBossStrikeDate || null;
 
   if (activeChar.power || activeChar.defense || activeChar.maxHp || playerState.upgrades) {
     const preset = CLASS_PRESETS[playerState.class] || CLASS_PRESETS["Warrior"];
@@ -1260,6 +1274,8 @@ window.renderActiveCharacterUI = function() {
   if (typeof renderPaperdollGrid === "function") renderPaperdollGrid();
   if (typeof renderWorldMap === "function") renderWorldMap();
   if (typeof renderCampaignMap === "function") renderCampaignMap();
+  if (typeof renderSkills === "function") renderSkills();
+  if (typeof renderPetSection === "function") renderPetSection();
 };
 
 function savePlayerState() {
@@ -1299,6 +1315,13 @@ function savePlayerState() {
       activeChar.completedSideZones = playerState.completedSideZones || [];
       activeChar.inventory = playerState.inventory;
       activeChar.equipped = playerState.equipment || activeChar.equipped;
+      activeChar.pets = playerState.pets || [];
+      activeChar.activePet = playerState.activePet || null;
+      activeChar.hatchingEgg = playerState.hatchingEgg || null;
+      activeChar.petStable = playerState.petStable || 6;
+      activeChar.equippedSkills = playerState.equippedSkills || [];
+      activeChar.skillLevels = playerState.skillLevels || {};
+      activeChar.lastWorldBossStrikeDate = playerState.lastWorldBossStrikeDate || null;
       if (playerState.stats) {
         activeChar.power = playerState.stats.power;
         activeChar.defense = playerState.stats.defense;
