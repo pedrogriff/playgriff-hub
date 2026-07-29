@@ -14,7 +14,7 @@ import { GarrisonEngine, GARRISON_STATIONS } from "./garrison.js";
 import { WorldEngine } from "./world.js";
 import { SeasonsEngine } from "./seasons.js";
 import "./social.js";
-import "./pets.js";
+import "./pets.js?v=9.7";
 import "./siege.js";
 import "./audio.js";
 
@@ -2094,12 +2094,20 @@ function renderStats() {
   _setDisabled("upgrade-defense-btn", playerState.gold < defCost);
 
   // Equipped gear display
-  const wItem = ALL_ITEMS[playerState.equipment.weapon];
-  const aItem = ALL_ITEMS[playerState.equipment.armor];
-  const rItem = ALL_ITEMS[playerState.equipment.ring];
-  _setText("equipped-weapon-name", wItem ? wItem.name : "None");
-  _setText("equipped-armor-name",  aItem ? aItem.name : "None");
-  _setText("equipped-ring-name",   rItem ? rItem.name : "None");
+  const getItemName = (rawRef) => {
+    if (!rawRef) return null;
+    if (typeof rawRef === "object") return rawRef.name || rawRef.metadata?.name || rawRef.item_id || rawRef.id;
+    const def = ALL_ITEMS[rawRef] || EXPANDED_ITEMS[rawRef] || (window.PET_EGGS && window.PET_EGGS[rawRef]) || Object.values(ALL_ITEMS).find(i => i && (i.id === rawRef || i.name === rawRef));
+    return def ? def.name : rawRef;
+  };
+
+  const wName = getItemName(playerState.equipment?.main_hand || playerState.equipment?.weapon);
+  const aName = getItemName(playerState.equipment?.chest || playerState.equipment?.armor);
+  const rName = getItemName(playerState.equipment?.accessory || playerState.equipment?.ring);
+
+  _setText("equipped-weapon-name", wName || "None");
+  _setText("equipped-armor-name",  aName || "None");
+  _setText("equipped-ring-name",   rName || "None");
 
   // Skill point badge
   const spBadge = document.getElementById("sp-count-badge");
@@ -2152,13 +2160,11 @@ async function renderShop() {
     }
   };
 
-  let renderedDynamic = false;
   const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
   if (activeChar && typeof activeChar.id === "string" && activeChar.id.includes("-")) {
     try {
       const shopItems = await getShopInventoryRPC(activeChar.id);
       if (Array.isArray(shopItems) && shopItems.length > 0) {
-        renderedDynamic = true;
         shopItems.forEach(item => {
           const rarity = (item.rarity || "common").toLowerCase();
           const canAfford = playerState.gold >= item.price;
@@ -2194,42 +2200,42 @@ async function renderShop() {
     }
   }
 
-  // Local/Offline Fallback for Expanded Equipment
-  if (!renderedDynamic) {
-    Object.values(EXPANDED_ITEMS).forEach(item => {
-      if (!item.is_shop_item) return;
-      const rarity = (item.rarity || "common").toLowerCase();
-      const canAfford = playerState.gold >= item.cost;
-      const meetsLevel = playerState.level >= item.min_level;
+  // Populate local EXPANDED_ITEMS (skipping any items already rendered by dynamic RPC)
+  Object.values(EXPANDED_ITEMS).forEach(item => {
+    if (!item.is_shop_item) return;
+    if (document.getElementById(`item-${item.id}`)) return;
 
-      const el = document.createElement("div");
-      el.className = `shop-item rarity-${rarity}`;
-      el.id = `item-${item.id}`;
+    const rarity = (item.rarity || "common").toLowerCase();
+    const canAfford = playerState.gold >= item.cost;
+    const meetsLevel = playerState.level >= item.min_level;
 
-      const statsList = [];
-      if (item.power) statsList.push(`Atk: +${item.power}`);
-      if (item.defense) statsList.push(`Def: +${item.defense}`);
-      if (item.max_hp) statsList.push(`HP: +${item.max_hp}`);
-      if (item.crit_chance) statsList.push(`Crit: +${Math.round(item.crit_chance * 100)}%`);
-      if (item.dodge_chance) statsList.push(`Dodge: +${Math.round(item.dodge_chance * 100)}%`);
+    const el = document.createElement("div");
+    el.className = `shop-item rarity-${rarity}`;
+    el.id = `item-${item.id}`;
 
-      el.innerHTML = `
-        <div class="item-icon">${item.icon || "📦"}</div>
-        <div class="item-details">
-          <h5>${item.name} <span class="rarity-badge ${rarity}">${rarity.toUpperCase()}</span></h5>
-          <p>${statsList.join(" | ") || item.slot_type}</p>
-          <span class="item-tier" style="color:var(--gold);font-size:0.65rem;">Min Lv. ${item.min_level} | ${item.slot_type}</span>
-        </div>
-        <button class="btn-buy btn-buy-expansion"
-                data-item="${item.id}"
-                ${(!canAfford || !meetsLevel) ? "disabled" : ""}>
-          ${!meetsLevel ? `Lv ${item.min_level} Req` : `Buy <span class="cost">${formatNumber(item.cost)}g</span>`}
-        </button>
-      `;
+    const statsList = [];
+    if (item.power) statsList.push(`Atk: +${item.power}`);
+    if (item.defense) statsList.push(`Def: +${item.defense}`);
+    if (item.max_hp) statsList.push(`HP: +${item.max_hp}`);
+    if (item.crit_chance) statsList.push(`Crit: +${Math.round(item.crit_chance * 100)}%`);
+    if (item.dodge_chance) statsList.push(`Dodge: +${Math.round(item.dodge_chance * 100)}%`);
 
-      routeItemToContainer(item.slot_type, el);
-    });
-  }
+    el.innerHTML = `
+      <div class="item-icon">${item.icon || "📦"}</div>
+      <div class="item-details">
+        <h5>${item.name} <span class="rarity-badge ${rarity}">${rarity.toUpperCase()}</span></h5>
+        <p>${statsList.join(" | ") || item.slot_type}</p>
+        <span class="item-tier" style="color:var(--gold);font-size:0.65rem;">Min Lv. ${item.min_level} | ${item.slot_type}</span>
+      </div>
+      <button class="btn-buy btn-buy-expansion"
+              data-item="${item.id}"
+              ${(!canAfford || !meetsLevel) ? "disabled" : ""}>
+        ${!meetsLevel ? `Lv ${item.min_level} Req` : `Buy <span class="cost">${formatNumber(item.cost)}g</span>`}
+      </button>
+    `;
+
+    routeItemToContainer(item.slot_type, el);
+  });
 
   // Pet Eggs Container
   const eggsSource = typeof PET_EGGS !== 'undefined' ? PET_EGGS : (window.PET_EGGS || {});

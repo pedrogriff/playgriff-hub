@@ -394,22 +394,26 @@ function renderPetSection() {
 
   if (!activeDisplay || !hatchingDisplay || !collectionList) return;
 
+  if (typeof playerState === "undefined" || !playerState) return;
+  if (!Array.isArray(playerState.pets)) playerState.pets = [];
+  if (!playerState.petStable) playerState.petStable = 6;
+
   // Render Active Pet
   if (playerState.activePet) {
-    const pet = playerState.pets.find(p => p.id === playerState.activePet);
+    const pet = playerState.pets.find(p => p && p.id === playerState.activePet);
     if (pet) {
-      const species = PET_SPECIES[pet.speciesId];
-      const nextXp = PET_XP_TABLE[pet.level] || 'MAX';
-      const xpText = typeof nextXp === 'number' ? `${pet.xp}/${nextXp}` : 'MAX';
-      const xpPct = typeof nextXp === 'number' ? (pet.xp / nextXp) * 100 : 100;
+      const species = (PET_SPECIES && PET_SPECIES[pet.speciesId]) || { icon: "🐾", name: pet.name, rarity: "common" };
+      const nextXp = PET_XP_TABLE[pet.level || 1] || 'MAX';
+      const xpText = typeof nextXp === 'number' ? `${pet.xp || 0}/${nextXp}` : 'MAX';
+      const xpPct = typeof nextXp === 'number' ? ((pet.xp || 0) / nextXp) * 100 : 100;
       
       activeDisplay.innerHTML = `
         <div class="pet-card active-pet-card" style="border: 2px solid var(--ember); padding: 10px; border-radius: 8px; text-align: center;">
           <div class="pet-icon" style="font-size: 3rem;">${species.icon}</div>
           <div class="pet-details">
-            <h4>${pet.name} (Lvl ${pet.level})</h4>
+            <h4>${pet.name} (Lvl ${pet.level || 1})</h4>
             <p style="font-size: 0.8rem; color: #aaa;">Rarity: ${species.rarity} | Stage: ${pet.stage || 1}</p>
-            <p style="font-size: 0.8rem;">Happiness: ${pet.happiness}/100 
+            <p style="font-size: 0.8rem;">Happiness: ${pet.happiness || 100}/100 
                <button class="btn-secondary" style="padding: 2px 5px; font-size: 0.7rem;" onclick="feedPetUI('${pet.id}')">🍖 Feed</button>
             </p>
             <div class="xp-bar-container" style="margin-top: 5px;">
@@ -419,7 +423,7 @@ function renderPetSection() {
           </div>
           <div style="margin-top: 10px; display: flex; gap: 5px; justify-content: center;">
             <button class="btn-secondary" onclick="setPetActive(null)">Unequip</button>
-            ${(pet.stage || 1) < 3 && pet.level >= ((pet.stage || 1) * 10) ? `<button class="btn-primary" onclick="evolvePet('${pet.id}')">✨ Evolve</button>` : ''}
+            ${(pet.stage || 1) < 3 && (pet.level || 1) >= ((pet.stage || 1) * 10) ? `<button class="btn-primary" onclick="evolvePet('${pet.id}')">✨ Evolve</button>` : ''}
           </div>
         </div>
       `;
@@ -432,7 +436,7 @@ function renderPetSection() {
 
   // Render Hatching
   if (playerState.hatchingEgg) {
-    const egg = PET_EGGS[playerState.hatchingEgg.eggId] || { name: "Companion Egg" };
+    const egg = (PET_EGGS && PET_EGGS[playerState.hatchingEgg.eggId]) || { name: "Companion Egg" };
     hatchingDisplay.innerHTML = `
       <div class="hatching-card" style="padding: 10px; background: rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 8px; border: 1px solid var(--border-bright);">
         <h5 style="margin-top:0; color:var(--gold);">🥚 Incubator: ${egg.name}</h5>
@@ -441,7 +445,7 @@ function renderPetSection() {
     `;
     updateHatchTimerUI();
   } else {
-    const invEggs = (playerState.inventory || []).filter(i => (i.id && i.id.startsWith("egg_")) || (PET_EGGS && PET_EGGS[i.id]));
+    const invEggs = (playerState.inventory || []).filter(i => i && ((i.id && String(i.id).startsWith("egg_")) || (PET_EGGS && PET_EGGS[i.id])));
     if (invEggs.length > 0) {
       hatchingDisplay.innerHTML = `
         <div class="hatching-card" style="padding: 10px; background: rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 8px; border: 1px solid var(--border);">
@@ -449,7 +453,7 @@ function renderPetSection() {
           <div style="display:flex; gap:6px; align-items:center; margin-top:8px;">
             <select id="select-egg-to-hatch" style="flex:1; padding:5px 8px; background:#1e1e2d; color:#fff; border:1px solid #444; border-radius:4px; font-size:0.8rem;">
               ${invEggs.map(e => {
-                const eggDef = PET_EGGS[e.id] || e;
+                const eggDef = (PET_EGGS && PET_EGGS[e.id]) || e;
                 return `<option value="${e.id}">${eggDef.name || e.name} (x${e.qty || 1})</option>`;
               }).join('')}
             </select>
@@ -467,19 +471,18 @@ function renderPetSection() {
     }
   }
 
-  if (!Array.isArray(playerState.pets)) playerState.pets = [];
-  if (!playerState.petStable) playerState.petStable = 6;
-
+  const petsList = Array.isArray(playerState.pets) ? playerState.pets : [];
   // Render Collection
-  if (playerState.pets && playerState.pets.length > 0) {
-    collectionList.innerHTML = `<h4>Stable (${playerState.pets.length}/${playerState.petStable})</h4>`;
+  if (petsList.length > 0) {
+    collectionList.innerHTML = `<h4>Stable (${petsList.length}/${playerState.petStable || 6})</h4>`;
     const grid = document.createElement("div");
     grid.style.display = "grid";
     grid.style.gridTemplateColumns = "1fr 1fr";
     grid.style.gap = "10px";
     
-    playerState.pets.forEach(pet => {
-      const species = PET_SPECIES[pet.speciesId];
+    petsList.forEach(pet => {
+      if (!pet) return;
+      const species = (PET_SPECIES && PET_SPECIES[pet.speciesId]) || { icon: "🐾", name: pet.name, rarity: "common" };
       const isEquipped = pet.id === playerState.activePet;
       
       const card = document.createElement("div");
@@ -493,8 +496,8 @@ function renderPetSection() {
       card.innerHTML = `
         <div style="font-size: 2rem;">${species.icon}</div>
         <div style="font-weight: bold; margin: 5px 0;">${pet.name}</div>
-        <div style="font-size: 0.8rem; color: #aaa;">Lvl ${pet.level} | ${species.rarity}</div>
-        <div style="font-size: 0.8rem;">❤️ ${pet.happiness}/100</div>
+        <div style="font-size: 0.8rem; color: #aaa;">Lvl ${pet.level || 1} | ${species.rarity}</div>
+        <div style="font-size: 0.8rem;">❤️ ${pet.happiness || 100}/100</div>
         ${!isEquipped ? `<button class="btn-primary" style="margin-top: 5px; width: 100%;" onclick="setPetActive('${pet.id}')">Equip</button>` : ''}
       `;
       grid.appendChild(card);
