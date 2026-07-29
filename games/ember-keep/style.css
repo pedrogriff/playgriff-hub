@@ -717,8 +717,8 @@ select option {
 }
 
 .shop-tab-btn {
-  flex: 1;
-  min-width: 0;
+  flex: 1 1 auto;
+  min-width: 100px;
   display: inline-flex;
   align-items: center;
   justify-content: center;

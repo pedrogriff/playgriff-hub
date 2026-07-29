@@ -521,7 +521,7 @@ const PRODUCTION_RECIPES = [
   { id:"prod_tan_hide", skill:"tanning", tier:1, name:"Tan Monster Hide", resultId:"mat_leather", resultQty:2, ingredients:[{ id:"item_monster_hide", qty:2 }], timeMs:20000, xpGain:5 },
 ];
 
-const ALL_ITEMS = { ...EXPANDED_ITEMS, ...CLASS_ITEMS, ...CRAFTED_GEAR, ...RING_ITEMS, ...CONSUMABLE_ITEMS, ...FOOD_ITEMS, ...MATERIAL_ITEMS };
+const ALL_ITEMS = { ...EXPANDED_ITEMS, ...CLASS_ITEMS, ...CRAFTED_GEAR, ...RING_ITEMS, ...CONSUMABLE_ITEMS, ...FOOD_ITEMS, ...MATERIAL_ITEMS, ...(typeof PET_EGGS !== 'undefined' ? PET_EGGS : (window.PET_EGGS || {})) };
 
 // Skill point upgrade options
 const SP_OPTIONS = [
@@ -962,6 +962,8 @@ function initInventoryControls() {
       const idx = parseInt(btn.dataset.index, 10);
       if (btn.classList.contains("btn-equip")) {
         equipItemFromInventory(itemId, idx);
+      } else if (btn.classList.contains("btn-incubate")) {
+        if (typeof window.hatchEgg === "function") window.hatchEgg(itemId);
       } else if (btn.classList.contains("btn-sell-all")) {
         sellAllStackFromInventory(itemId, idx);
       } else if (btn.classList.contains("btn-sell")) {
@@ -1650,7 +1652,7 @@ function getClanTerritoryBonuses() {
 function getEffectiveStats() {
   let extraPower = 0, extraDefense = 0, extraCrit = 0, extraDodge = 0, extraMaxHp = 0;
 
-  const slots = ['head', 'chest', 'legs', 'gloves', 'boots', 'trinket', 'main_hand', 'off_hand', 'accessory', 'weapon', 'armor', 'ring'];
+  const slots = ['head', 'chest', 'legs', 'gloves', 'boots', 'trinket', 'amulet', 'main_hand', 'off_hand', 'accessory', 'weapon', 'armor', 'ring'];
   slots.forEach(slotKey => {
     const raw = playerState.equipment ? playerState.equipment[slotKey] : null;
     if (!raw) return;
@@ -2106,20 +2108,43 @@ function renderStats() {
 async function renderShop() {
   if (!playerState.class) return;
 
-  const weaponsCont = document.getElementById("shop-weapons-container");
-  const armorCont   = document.getElementById("shop-armor-container");
-  const ringsCont   = document.getElementById("shop-rings-container");
-  const consCont    = document.getElementById("shop-consumables-container");
-  const foodCont    = document.getElementById("shop-food-container");
-  const matsCont    = document.getElementById("shop-materials-container");
-  if (!weaponsCont || !armorCont || !ringsCont) return;
+  const weaponsCont     = document.getElementById("shop-weapons-container");
+  const armorCont       = document.getElementById("shop-armor-container");
+  const glovesBootsCont = document.getElementById("shop-gloves-boots-container");
+  const jewelryCont     = document.getElementById("shop-jewelry-container");
+  const trinketsCont    = document.getElementById("shop-trinkets-container");
+  const petsCont        = document.getElementById("shop-pets-container");
+  const consCont        = document.getElementById("shop-consumables-container");
+  const foodCont        = document.getElementById("shop-food-container");
+  const matsCont        = document.getElementById("shop-materials-container");
+  if (!weaponsCont || !armorCont) return;
 
-  weaponsCont.innerHTML = "";
-  armorCont.innerHTML   = "";
-  ringsCont.innerHTML   = "";
+  if (weaponsCont) weaponsCont.innerHTML = "";
+  if (armorCont) armorCont.innerHTML = "";
+  if (glovesBootsCont) glovesBootsCont.innerHTML = "";
+  if (jewelryCont) jewelryCont.innerHTML = "";
+  if (trinketsCont) trinketsCont.innerHTML = "";
+  if (petsCont) petsCont.innerHTML = "";
   if (consCont) consCont.innerHTML = "";
   if (foodCont) foodCont.innerHTML = "";
   if (matsCont) matsCont.innerHTML = "";
+
+  const routeItemToContainer = (slotType, el) => {
+    const s = String(slotType || "").toLowerCase();
+    if (s === "main_hand" || s === "off_hand" || s === "weapon") {
+      if (weaponsCont) weaponsCont.appendChild(el);
+    } else if (s === "gloves" || s === "boots") {
+      if (glovesBootsCont) glovesBootsCont.appendChild(el);
+      else if (armorCont) armorCont.appendChild(el);
+    } else if (s === "accessory" || s === "ring" || s === "amulet" || s === "necklace") {
+      if (jewelryCont) jewelryCont.appendChild(el);
+    } else if (s === "trinket" || s === "relic") {
+      if (trinketsCont) trinketsCont.appendChild(el);
+      else if (armorCont) armorCont.appendChild(el);
+    } else {
+      if (armorCont) armorCont.appendChild(el);
+    }
+  };
 
   let renderedDynamic = false;
   const activeChar = typeof AccountStore !== "undefined" ? AccountStore.getActiveCharacter() : null;
@@ -2155,13 +2180,7 @@ async function renderShop() {
             </button>
           `;
 
-          if (item.slot_type === "main_hand" || item.slot_type === "off_hand") {
-            weaponsCont.appendChild(el);
-          } else if (item.slot_type === "accessory") {
-            ringsCont.appendChild(el);
-          } else {
-            armorCont.appendChild(el);
-          }
+          routeItemToContainer(item.slot_type, el);
         });
       }
     } catch (err) {
@@ -2186,6 +2205,7 @@ async function renderShop() {
       if (item.defense) statsList.push(`Def: +${item.defense}`);
       if (item.max_hp) statsList.push(`HP: +${item.max_hp}`);
       if (item.crit_chance) statsList.push(`Crit: +${Math.round(item.crit_chance * 100)}%`);
+      if (item.dodge_chance) statsList.push(`Dodge: +${Math.round(item.dodge_chance * 100)}%`);
 
       el.innerHTML = `
         <div class="item-icon">${item.icon || "📦"}</div>
@@ -2201,13 +2221,34 @@ async function renderShop() {
         </button>
       `;
 
-      if (item.slot_type === "main_hand" || item.slot_type === "off_hand") {
-        weaponsCont.appendChild(el);
-      } else if (item.slot_type === "accessory") {
-        ringsCont.appendChild(el);
-      } else {
-        armorCont.appendChild(el);
-      }
+      routeItemToContainer(item.slot_type, el);
+    });
+  }
+
+  // Pet Eggs Container
+  const eggsSource = typeof PET_EGGS !== 'undefined' ? PET_EGGS : (window.PET_EGGS || {});
+  if (petsCont && Object.keys(eggsSource).length > 0) {
+    Object.values(eggsSource).forEach(egg => {
+      const el = document.createElement("div");
+      el.className = "shop-item rarity-uncommon";
+      el.id = `item-${egg.id}`;
+
+      const canAfford = egg.premium ? (playerState.gems >= (egg.premiumCost || 100)) : (playerState.gold >= egg.cost);
+
+      el.innerHTML = `
+        <div class="item-icon">${egg.icon || "🥚"}</div>
+        <div class="item-details">
+          <h5>${egg.name} <span class="rarity-badge ${egg.premium ? 'legendary' : 'rare'}">${egg.premium ? 'PREMIUM' : 'COMPANION'}</span></h5>
+          <p>${egg.desc || "Hatches into a pet companion."}</p>
+          <span class="item-tier" style="color:var(--gold);font-size:0.65rem;">Hatch Time: ${Math.round(egg.hatchTimeMs / 60000)}m</span>
+        </div>
+        <button class="btn-buy btn-buy-egg"
+                data-item="${egg.id}"
+                ${!canAfford ? "disabled" : ""}>
+          Buy <span class="cost">${egg.premium ? `${egg.premiumCost} 💎` : `${formatNumber(egg.cost)}g`}</span>
+        </button>
+      `;
+      petsCont.appendChild(el);
     });
   }
 
@@ -3274,7 +3315,11 @@ function renderInventory() {
       actionsHtml = `<button class="btn-sell" data-item="${item.id}" data-index="${realIdx}">Sell ${singlePrice}g</button>`;
     }
 
-    if (isConsumable) {
+    const isEgg = (item.id && String(item.id).startsWith("egg_")) || (typeof PET_EGGS !== 'undefined' && PET_EGGS[item.id]) || (window.PET_EGGS && window.PET_EGGS[item.id]);
+
+    if (isEgg) {
+      actionsHtml = `<button class="btn-primary btn-incubate" data-item="${item.id}" data-index="${realIdx}" style="padding:2px 8px; font-size:0.75rem; background:var(--ember); border-color:var(--gold);">🔥 Hatch</button>` + actionsHtml;
+    } else if (isConsumable) {
       actionsHtml = `<button class="btn-upgrade btn-use" data-item="${item.id}" data-index="${realIdx}">Use</button>` + actionsHtml;
     } else if (isEquippable) {
       actionsHtml = `<button class="btn-upgrade btn-equip" data-item="${item.id}" data-inv-db-id="${inv.dbId || inv.id || ''}" data-index="${realIdx}">Equip</button>` + actionsHtml;
@@ -3424,7 +3469,7 @@ function initShopButtons() {
     }
   };
 
-  ["shop-weapons-container","shop-armor-container","shop-rings-container","shop-consumables-container","shop-food-container","shop-materials-container"].forEach(id => {
+  ["shop-weapons-container","shop-armor-container","shop-gloves-boots-container","shop-jewelry-container","shop-trinkets-container","shop-pets-container","shop-consumables-container","shop-food-container","shop-materials-container"].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
       el.removeEventListener("click", handleBuy);
@@ -3438,17 +3483,24 @@ function initShopButtons() {
 }
 
 function buyItem(itemId, qty = 1) {
-  const item = ALL_ITEMS[itemId];
+  const item = ALL_ITEMS[itemId] || (typeof PET_EGGS !== 'undefined' ? PET_EGGS[itemId] : null) || (window.PET_EGGS ? window.PET_EGGS[itemId] : null);
   if (!item) return;
 
   const count = Math.max(1, parseInt(qty, 10) || 1);
 
-  if (item.type === "consumable" || item.type === "material" || item.type === "food") {
-    const totalCost = item.cost * count;
-    if (playerState.gold < totalCost) { showToast(`Not enough gold! Costs ${formatNumber(totalCost)}g`, "error"); return; }
-    playerState.gold -= totalCost;
+  if (item.type === "consumable" || item.type === "material" || item.type === "food" || (item.id && item.id.startsWith("egg_"))) {
+    if (item.premium) {
+      const totalGems = (item.premiumCost || 100) * count;
+      if ((playerState.gems || 0) < totalGems) { showToast(`Not enough Gems! Costs ${totalGems} 💎`, "error"); return; }
+      playerState.gems -= totalGems;
+    } else {
+      const totalCost = item.cost * count;
+      if (playerState.gold < totalCost) { showToast(`Not enough gold! Costs ${formatNumber(totalCost)}g`, "error"); return; }
+      playerState.gold -= totalCost;
+    }
     addToInventory(itemId, count);
     renderStats(); renderShop(); renderInventory();
+    if (typeof renderPetSection === "function") renderPetSection();
     if (typeof renderMaterials === "function") renderMaterials();
     showToast(`✅ Purchased ${count}x ${item.name}!`, "success");
     if (typeof playSound === "function") playSound("purchase");
@@ -3490,11 +3542,15 @@ function getEquipmentSlot(itemOrId, invItem) {
   if (!slotType) return null;
   const s = String(slotType).toLowerCase();
   if (s === "head" || s === "helmet" || s === "hat") return "head";
+  if (s === "amulet" || s === "necklace" || s === "pendant" || s === "talisman") return "amulet";
   if (s === "chest" || s === "armor" || s === "body" || s === "vest") return "chest";
   if (s === "legs" || s === "pants" || s === "leggings") return "legs";
   if (s === "main_hand" || s === "weapon" || s === "sword" || s === "dagger" || s === "bow" || s === "wand" || s === "staff" || s === "mace" || s === "hammer") return "main_hand";
   if (s === "off_hand" || s === "shield") return "off_hand";
-  if (s === "accessory" || s === "ring" || s === "amulet") return "accessory";
+  if (s === "gloves" || s === "gauntlets" || s === "wraps") return "gloves";
+  if (s === "boots" || s === "sabatons" || s === "striders") return "boots";
+  if (s === "trinket" || s === "relic" || s === "charm") return "trinket";
+  if (s === "accessory" || s === "ring") return "accessory";
   return null;
 }
 

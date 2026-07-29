@@ -432,16 +432,39 @@ function renderPetSection() {
 
   // Render Hatching
   if (playerState.hatchingEgg) {
-    const egg = PET_EGGS[playerState.hatchingEgg.eggId];
+    const egg = PET_EGGS[playerState.hatchingEgg.eggId] || { name: "Companion Egg" };
     hatchingDisplay.innerHTML = `
-      <div class="hatching-card" style="padding: 10px; background: rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 8px;">
-        <h5>🥚 Incubator: ${egg.name}</h5>
-        <p id="hatching-timer-text">Calculating...</p>
+      <div class="hatching-card" style="padding: 10px; background: rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 8px; border: 1px solid var(--border-bright);">
+        <h5 style="margin-top:0; color:var(--gold);">🥚 Incubator: ${egg.name}</h5>
+        <p id="hatching-timer-text" style="font-size:0.9rem; margin:6px 0;">Calculating...</p>
       </div>
     `;
     updateHatchTimerUI();
   } else {
-    hatchingDisplay.innerHTML = "";
+    const invEggs = (playerState.inventory || []).filter(i => (i.id && i.id.startsWith("egg_")) || (PET_EGGS && PET_EGGS[i.id]));
+    if (invEggs.length > 0) {
+      hatchingDisplay.innerHTML = `
+        <div class="hatching-card" style="padding: 10px; background: rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 8px; border: 1px solid var(--border);">
+          <h5 style="margin-top:0; color:var(--gold); font-size:0.9rem;">🥚 Incubate an Egg</h5>
+          <div style="display:flex; gap:6px; align-items:center; margin-top:8px;">
+            <select id="select-egg-to-hatch" style="flex:1; padding:5px 8px; background:#1e1e2d; color:#fff; border:1px solid #444; border-radius:4px; font-size:0.8rem;">
+              ${invEggs.map(e => {
+                const eggDef = PET_EGGS[e.id] || e;
+                return `<option value="${e.id}">${eggDef.name || e.name} (x${e.qty || 1})</option>`;
+              }).join('')}
+            </select>
+            <button class="btn-primary" style="padding:5px 12px; font-size:0.8rem; background:var(--ember); border-color:var(--gold);" onclick="hatchSelectedEgg()">🔥 Hatch</button>
+          </div>
+        </div>
+      `;
+    } else {
+      hatchingDisplay.innerHTML = `
+        <div class="hatching-card" style="padding: 8px 10px; background: rgba(255,255,255,0.03); margin-bottom: 10px; border-radius: 8px; text-align:center;">
+          <p style="font-size:0.8rem; color:#aaa; margin:0 0 6px 0;">No egg currently in incubator.</p>
+          <button class="btn-secondary" style="font-size:0.75rem; padding:4px 10px;" onclick="openPetShopTab()">🏪 Get Companion Eggs in Shop</button>
+        </div>
+      `;
+    }
   }
 
   // Render Collection
@@ -589,9 +612,32 @@ function evolvePet(petId) {
   if (typeof renderStats === 'function') renderStats();
 }
 
-// Expose Pet UI Click Handlers to Global Window Scope
+function hatchSelectedEgg() {
+  const select = document.getElementById("select-egg-to-hatch");
+  if (!select || !select.value) return;
+  hatchEgg(select.value);
+}
+
+function openPetShopTab() {
+  const shopTabBtn = document.getElementById("tab-shop") || document.querySelector('[data-tab="shop"]');
+  if (shopTabBtn) shopTabBtn.click();
+  const petSubTabBtn = document.getElementById("shop-tab-pets");
+  if (petSubTabBtn) petSubTabBtn.click();
+}
+
+// Expose Pet UI Click Handlers & System Functions to Global Window Scope
 if (typeof window !== "undefined") {
+  window.PET_EGGS = PET_EGGS;
+  window.PET_SPECIES = PET_SPECIES;
+  window.hatchEgg = hatchEgg;
+  window.completeHatching = completeHatching;
+  window.checkHatchingTimer = checkHatchingTimer;
+  window.feedPet = feedPet;
   window.feedPetUI = function(...args) { if (typeof feedPetUI === "function") return feedPetUI(...args); };
   window.setPetActive = function(...args) { if (typeof setPetActive === "function") return setPetActive(...args); };
   window.evolvePet = function(...args) { if (typeof evolvePet === "function") return evolvePet(...args); };
+  window.renderPetSection = renderPetSection;
+  window.executePetAction = executePetAction;
+  window.hatchSelectedEgg = hatchSelectedEgg;
+  window.openPetShopTab = openPetShopTab;
 }
