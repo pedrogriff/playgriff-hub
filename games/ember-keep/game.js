@@ -2517,11 +2517,28 @@ function createShopItemEl(item) {
 }
 
 // ── SKILLS & BUILDS ──
+function getCharClass() {
+  let c = playerState.class;
+  if (!c && typeof AccountStore !== "undefined") {
+    const ac = AccountStore.getActiveCharacter();
+    if (ac && ac.class) c = ac.class;
+  }
+  if (!c && typeof window !== "undefined" && window.activeCharacter && window.activeCharacter.class) {
+    c = window.activeCharacter.class;
+  }
+  if (!c) return null;
+  return c.charAt(0).toUpperCase() + c.slice(1).toLowerCase();
+}
+
 function getEquippedSkills() {
   if (!playerState.equippedSkills) playerState.equippedSkills = [];
-  const classSkills = Object.values(SKILLS).filter(s => s.class === playerState.class);
+  const charClass = getCharClass();
+  if (!charClass) return [];
+  playerState.class = charClass;
+
+  const classSkills = Object.values(SKILLS).filter(s => s.class.toLowerCase() === charClass.toLowerCase());
   const unlocked = classSkills.filter(s => playerState.level >= s.unlockLevel);
-  playerState.equippedSkills = playerState.equippedSkills.filter(id => SKILLS[id] && SKILLS[id].class === playerState.class);
+  playerState.equippedSkills = playerState.equippedSkills.filter(id => SKILLS[id] && SKILLS[id].class.toLowerCase() === charClass.toLowerCase());
   if (playerState.equippedSkills.length === 0 && unlocked.length > 0) {
     playerState.equippedSkills = unlocked.slice(0, 3).map(s => s.id);
   }
@@ -2572,10 +2589,14 @@ window.toggleEquipSkill = function(skillId) {
 
 function renderSkills() {
   const list = document.getElementById("char-skills-list");
-  if (!list || !playerState.class) {
-    if (list) list.innerHTML = `<p class="empty-message">Select a class to see skills.</p>`;
+  if (!list) return;
+
+  const charClass = getCharClass();
+  if (!charClass) {
+    list.innerHTML = `<p class="empty-message">Select a class to see skills.</p>`;
     return;
   }
+  playerState.class = charClass;
   list.innerHTML = "";
 
   const equipped = getEquippedSkills();
@@ -2604,7 +2625,7 @@ function renderSkills() {
   `;
   list.appendChild(loadoutContainer);
 
-  const classSkills = Object.values(SKILLS).filter(s => s.class === playerState.class);
+  const classSkills = Object.values(SKILLS).filter(s => s.class.toLowerCase() === charClass.toLowerCase());
 
   classSkills.forEach(skill => {
     const unlocked = playerState.level >= skill.unlockLevel;
