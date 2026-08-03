@@ -3,22 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ember Keep // Retention Strategy & SLA Governance</title>
+  <title>Retention Strategy Radar — Ember Keep Edition</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- UMD Libraries for zero-failure browser support -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 </head>
 <body>
 
   <header style="max-width: 1200px; margin: 0 auto 32px auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
     <div>
       <h1 style="font-family: 'Cinzel', serif; color: #ff7b00; margin: 0; font-size: 1.8rem; letter-spacing: 0.5px;">Retention Strategy Radar</h1>
-      <p style="color: #94a3b8; margin: 4px 0 0 0; font-size: 0.9rem;">Design Thinking Assignment: Proactive Attrition Risk & Governance Prototypes</p>
+      <p style="color: #94a3b8; margin: 4px 0 0 0; font-size: 0.9rem;">Design Thinking Assignment: Proactive Attrition Risk &amp; Governance Prototypes</p>
     </div>
     <nav style="display: flex; gap: 12px;">
       <button id="tab-proto1" class="glass-btn" style="padding: 10px 18px; border-radius: 8px; background: rgba(255,123,0,0.2); border: 1px solid #ff7b00; color: #fff; cursor: pointer;">
-        Prototype 1: 60-Day Radar & Modeler
+        Prototype 1: 60-Day Radar &amp; Modeler
       </button>
       <button id="tab-proto2" class="glass-btn" style="padding: 10px 18px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; cursor: pointer;">
         Prototype 2: Governance SLA Workflow
@@ -62,11 +66,11 @@
           </div>
         </div>
 
-        <!-- Right: Interactive Chart & Analysis -->
+        <!-- Right: Interactive Stacked Bar Chart & Analysis -->
         <div style="display: flex; flex-direction: column; gap: 24px;">
           <div class="glass-card" style="flex: 1;">
-            <h3 style="font-family: 'Cinzel', serif; margin-top: 0; color: #38bdf8;">Interactive Cash-Flow Modeler (4-Year Projection)</h3>
-            <div style="height: 280px; position: relative;">
+            <h3 style="font-family: 'Cinzel', serif; margin-top: 0; color: #38bdf8;">Interactive Cash-Flow Modeler (Salary + Bonus + Equity Stack)</h3>
+            <div style="height: 300px; position: relative;">
               <canvas id="retention-bar-chart"></canvas>
             </div>
           </div>
@@ -75,7 +79,7 @@
 
       <!-- Policy & Telemetry Panel -->
       <div class="glass-card">
-        <h3 style="font-family: 'Cinzel', serif; margin-top: 0; color: #ff7b00;">Automated Policy Analysis & Market Attrition Telemetry</h3>
+        <h3 style="font-family: 'Cinzel', serif; margin-top: 0; color: #ff7b00;">Automated Policy Analysis &amp; Market Attrition Telemetry</h3>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
           <div>
             <h4 style="color: #eab308; margin: 0 0 8px 0;">Governance Recommendation</h4>
@@ -109,94 +113,6 @@
     </section>
   </main>
 
-  <!-- Zero-Build Native ES Module Entry Point -->
-  <script type="module">
-    import { fetchAnonymizedProfiles, submitRetentionAward } from './js/retention/db.js';
-    import { RetentionCliffVisualizer } from './js/retention/chart.js';
-    import { GovernanceSLAWorkflow } from './js/governance/workflow.js';
-    import { analyzeRetention, calculateGrant } from './js/retention/logic.js';
-
-    let currentProfile = null;
-    let activeAward = null;
-    const chartVisualizer = new RetentionCliffVisualizer('retention-bar-chart', 'cliff-visualizer-banner');
-    const slaWorkflow = new GovernanceSLAWorkflow();
-
-    // Vanilla DOM View Switcher attached immediately
-    const tabProto1 = document.getElementById('tab-proto1');
-    const tabProto2 = document.getElementById('tab-proto2');
-    const viewProto1 = document.getElementById('view-proto1');
-    const viewProto2 = document.getElementById('view-proto2');
-
-    tabProto1.addEventListener('click', () => {
-      viewProto1.style.display = 'block';
-      viewProto2.style.display = 'none';
-      tabProto1.style.background = 'rgba(255,123,0,0.2)';
-      tabProto1.style.border = '1px solid #ff7b00';
-      tabProto2.style.background = 'rgba(255,255,255,0.05)';
-      tabProto2.style.border = '1px solid rgba(255,255,255,0.15)';
-    });
-
-    tabProto2.addEventListener('click', async () => {
-      viewProto1.style.display = 'none';
-      viewProto2.style.display = 'block';
-      tabProto2.style.background = 'rgba(255,123,0,0.2)';
-      tabProto2.style.border = '1px solid #ff7b00';
-      tabProto1.style.background = 'rgba(255,255,255,0.05)';
-      tabProto1.style.border = '1px solid rgba(255,255,255,0.15)';
-      await slaWorkflow.renderSwimlane('retention-sla-svg', activeAward);
-    });
-
-    function updateDashboard() {
-      if (!currentProfile) return;
-      const sliderVal = Number(document.getElementById('grant-slider').value);
-      chartVisualizer.render(currentProfile, sliderVal, true);
-
-      const analysis = analyzeRetention(currentProfile);
-      document.getElementById('policy-recommendation').innerHTML = `<strong>${analysis.recommendation}</strong> (Risk Level: <span style="color:#ef4444">${analysis.riskLevel}</span>)`;
-      document.getElementById('policy-justification').innerText = analysis.justification;
-
-      const exitHtml = `
-        <p style="margin:0 0 8px 0;">Total Exits (60-day window): <strong>${analysis.exitStats.totalExits}</strong></p>
-        <ul style="margin:0; padding-left:20px; line-height:1.6;">
-          ${analysis.exitStats.topDestinations.map(d => `<li><strong>${d.company}</strong>: ${d.count} exits</li>`).join('')}
-        </ul>
-      `;
-      document.getElementById('exit-telemetry').innerHTML = exitHtml;
-    }
-
-    // Initialize Profile Data & Initial Render
-    try {
-      const profiles = await fetchAnonymizedProfiles('Cloud Infrastructure');
-      if (profiles && profiles.length > 0) {
-        currentProfile = profiles[0];
-      }
-      updateDashboard();
-      await slaWorkflow.renderSwimlane('retention-sla-svg', activeAward);
-    } catch (err) {
-      console.error('Initialization error:', err);
-    }
-
-    // Grant Slider Live Binding
-    document.getElementById('grant-slider').addEventListener('input', (e) => {
-      const val = Number(e.target.value);
-      document.getElementById('grant-display').innerText = `$${val.toLocaleString()}`;
-      updateDashboard();
-    });
-
-    // Submit Award to Supabase -> Triggers Live Bridge to Prototype 2
-    document.getElementById('submit-award-btn').addEventListener('click', async () => {
-      const grantAmount = Number(document.getElementById('grant-slider').value);
-      activeAward = await submitRetentionAward({
-        employee_handle: currentProfile ? currentProfile.employeeHandle : 'a.mercer@emberkeep.io',
-        grant_amount: grantAmount,
-        target_percentile: "75th",
-        status: "Pending Division Lead Approval",
-        justification: "Proactive off-cycle refresh to close cash-flow cliff."
-      });
-      document.getElementById('current-stage-pill').innerText = `Active Stage: ${activeAward.status}`;
-      alert(`Award of $${grantAmount.toLocaleString()} submitted! Navigating to Prototype 2 Governance Swimlane...`);
-      tabProto2.click();
-    });
-  </script>
+  <script src="app-bundle.js"></script>
 </body>
 </html>
