@@ -1,0 +1,69 @@
+/* style.css - Ember Keep Glassmorphic Design System */
+
+:root {
+  --bg-dark: #090a0f;
+  --bg-glass: rgba(18, 20, 28, 0.65);
+  --border-glass: rgba(255, 255, 255, 0.12);
+  --glow-accent: #ff7b00;
+  --glow-gold: #eab308;
+  --risk-high: #ef4444;
+  --risk-medium: #f97316;
+  --text-main: #e2e8f0;
+  --font-heading: 'Cinzel', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  margin: 0;
+  padding: 24px;
+  min-height: 100vh;
+}
+
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(255, 123, 0, 0.4);
+}
+
+.cliff-warning-pulse {
+  animation: pulseGlow 2s infinite alternate;
+  border: 1px solid rgba(239, 68, 68, 0.65);
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.3); }
+  100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.85); }
+}
+
+.glass-btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.glass-btn:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 12px rgba(255, 123, 0, 0.3);
+}
+
+/* Range Input Styling */
+input[type=range] {
+  accent-color: var(--glow-accent);
+  cursor: pointer;
+}

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ember Keep // Retention Strategy & SLA Governance</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header style="max-width: 1200px; margin: 0 auto 32px auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 style="font-family: 'Cinzel', serif; color: #ff7b00; margin: 0; font-size: 1.8rem; letter-spacing: 0.5px;">Ember Keep // Retention Strategy Radar</h1>
+      <p style="color: #94a3b8; margin: 4px 0 0 0; font-size: 0.9rem;">Design Thinking Assignment: Proactive Attrition Risk & Governance Prototypes</p>
+    </div>
+    <nav style="display: flex; gap: 12px;">
+      <button id="tab-proto1" class="glass-btn" style="padding: 10px 18px; border-radius: 8px; background: rgba(255,123,0,0.2); border: 1px solid #ff7b00; color: #fff; cursor: pointer;">
+        Prototype 1: 60-Day Radar & Modeler
+      </button>
+      <button id="tab-proto2" class="glass-btn" style="padding: 10px 18px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; cursor: pointer;">
+        Prototype 2: Governance SLA Workflow
+      </button>
+    </nav>
+  </header>
+
+  <main style="max-width: 1200px; margin: 0 auto;">
+    <!-- Prototype 1 View -->
+    <section id="view-proto1">
+      <div id="cliff-visualizer-banner"></div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px; margin-bottom: 24px;">
+        <!-- Left: Talent Profile & Modeler Controls -->
+        <div class="glass-card" id="profile-summary">
+          <h3 style="font-family: 'Cinzel', serif; margin-top: 0; color: #eab308;">Talent Profile: Alex Mercer</h3>
+          <div style="color: #cbd5e1; font-size: 0.92rem; line-height: 1.7;">
+            <div><strong>Handle:</strong> <span style="font-family: monospace; color: #38bdf8;">a.mercer@emberkeep.io</span></div>
+            <div><strong>Role:</strong> Principal Distributed Systems Engineer (L6)</div>
+            <div><strong>Division Lead:</strong> Cloud Infrastructure</div>
+            <div><strong>Talent Designation:</strong> <span style="color:#ef4444; font-weight:600;">Strategic Key Talent - P0</span></div>
+            <div><strong>Market Positioning:</strong> <span style="color:#f97316; font-weight:600;">42nd Percentile (Below Median)</span></div>
+            <div><strong>Recent Ratings:</strong> Exceptional Impact, Exceeds Expectations</div>
+          </div>
+          <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 16px 0;">
+          
+          <div>
+            <label style="font-weight: 600; font-size: 0.9rem; display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span>Model Proactive 2-Yr Refresh:</span>
+              <span id="grant-display" style="color: #ff7b00; font-family: monospace; font-size: 1.05rem; font-weight: 700;">$200,000</span>
+            </label>
+            <input type="range" id="grant-slider" min="0" max="300000" step="10000" value="200000" style="width: 100%;">
+            
+            <div id="grant-math-summary" style="margin-top: 12px; font-size: 0.85rem; color: #94a3b8; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px;">
+              Target 75th Percentile: <strong>$420,000/yr</strong> | Gap vs Current: <strong>$100,000/yr</strong>
+            </div>
+
+            <button id="submit-award-btn" class="glass-btn" style="width: 100%; margin-top: 16px; background: #ff7b00; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">
+              Submit Award to Governance SLA
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Interactive Chart & Analysis -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <div class="glass-card" style="flex: 1;">
+            <h3 style="font-family: 'Cinzel', serif; margin-top: 0; color: #38bdf8;">Interactive Cash-Flow Modeler (4-Year Projection)</h3>
+            <div style="height: 280px; position: relative;">
+              <canvas id="retention-bar-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Policy & Telemetry Panel -->
+      <div class="glass-card">
+        <h3 style="font-family: 'Cinzel', serif; margin-top: 0; color: #ff7b00;">Automated Policy Analysis & Market Attrition Telemetry</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <div>
+            <h4 style="color: #eab308; margin: 0 0 8px 0;">Governance Recommendation</h4>
+            <div id="policy-recommendation" style="font-size: 0.95rem; line-height: 1.6; color: #e2e8f0;"></div>
+            <p id="policy-justification" style="font-size: 0.88rem; color: #94a3b8; margin-top: 8px; line-height: 1.5;"></p>
+          </div>
+          <div>
+            <h4 style="color: #ef4444; margin: 0 0 8px 0;">Division Attrition Telemetry (Exits to Competitors)</h4>
+            <div id="exit-telemetry" style="font-size: 0.9rem; color: #cbd5e1;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prototype 2 View -->
+    <section id="view-proto2" style="display: none;">
+      <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h3 style="font-family: 'Cinzel', serif; margin-top: 0; color: #ff7b00;">Proactive Governance SLA Swimlane Workflow</h3>
+            <p style="color: #94a3b8; font-size: 0.9rem; margin: 4px 0 0 0;">
+              Click any swimlane decision node to inspect SLA thresholds, stage owners, and real-time countdown timers.
+            </p>
+          </div>
+          <span id="current-stage-pill" style="background: rgba(234,179,8,0.2); border: 1px solid #eab308; color: #facc15; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+            Active Stage: Pending Division Lead Approval
+          </span>
+        </div>
+        <div id="retention-sla-svg" style="margin-top: 24px; overflow-x: auto; min-height: 380px; display: flex; justify-content: center; align-items: center;"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Zero-Build Native ES Module Entry Point -->
+  <script type="module">
+    import { fetchAnonymizedProfiles, submitRetentionAward } from './js/retention/db.js';
+    import { RetentionCliffVisualizer } from './js/retention/chart.js';
+    import { GovernanceSLAWorkflow } from './js/governance/workflow.js';
+    import { analyzeRetention, calculateGrant } from './js/retention/logic.js';
+
+    let currentProfile = null;
+    let activeAward = null;
+
+    const profiles = await fetchAnonymizedProfiles('Cloud Infrastructure');
+    if (profiles && profiles.length > 0) {
+      currentProfile = profiles[0];
+    }
+
+    const chartVisualizer = new RetentionCliffVisualizer('retention-bar-chart', 'cliff-visualizer-banner');
+    
+    function updateDashboard() {
+      if (!currentProfile) return;
+      const sliderVal = Number(document.getElementById('grant-slider').value);
+      chartVisualizer.render(currentProfile, sliderVal, true);
+
+      const analysis = analyzeRetention(currentProfile);
+      document.getElementById('policy-recommendation').innerHTML = `<strong>${analysis.recommendation}</strong> (Risk Level: <span style="color:#ef4444">${analysis.riskLevel}</span>)`;
+      document.getElementById('policy-justification').innerText = analysis.justification;
+
+      const exitHtml = `
+        <p style="margin:0 0 8px 0;">Total Exits (60-day window): <strong>${analysis.exitStats.totalExits}</strong></p>
+        <ul style="margin:0; padding-left:20px; line-height:1.6;">
+          ${analysis.exitStats.topDestinations.map(d => `<li><strong>${d.company}</strong>: ${d.count} exits</li>`).join('')}
+        </ul>
+      `;
+      document.getElementById('exit-telemetry').innerHTML = exitHtml;
+    }
+
+    updateDashboard();
+
+    const slaWorkflow = new GovernanceSLAWorkflow();
+    await slaWorkflow.renderSwimlane('retention-sla-svg', activeAward);
+
+    // Grant Slider Live Binding
+    document.getElementById('grant-slider').addEventListener('input', (e) => {
+      const val = Number(e.target.value);
+      document.getElementById('grant-display').innerText = `$${val.toLocaleString()}`;
+      updateDashboard();
+    });
+
+    // Submit Award to Supabase -> Triggers Live Bridge to Prototype 2
+    document.getElementById('submit-award-btn').addEventListener('click', async () => {
+      const grantAmount = Number(document.getElementById('grant-slider').value);
+      activeAward = await submitRetentionAward({
+        employee_handle: currentProfile.employeeHandle,
+        grant_amount: grantAmount,
+        target_percentile: "75th",
+        status: "Pending Division Lead Approval",
+        justification: "Proactive off-cycle refresh to close cash-flow cliff."
+      });
+      document.getElementById('current-stage-pill').innerText = `Active Stage: ${activeAward.status}`;
+      alert(`Award of $${grantAmount.toLocaleString()} submitted! Navigating to Prototype 2 Governance Swimlane...`);
+      document.getElementById('tab-proto2').click();
+    });
+
+    // Vanilla DOM View Switcher
+    document.getElementById('tab-proto1').addEventListener('click', () => {
+      document.getElementById('view-proto1').style.display = 'block';
+      document.getElementById('view-proto2').style.display = 'none';
+      document.getElementById('tab-proto1').style.background = 'rgba(255,123,0,0.2)';
+      document.getElementById('tab-proto1').style.border = '1px solid #ff7b00';
+      document.getElementById('tab-proto2').style.background = 'rgba(255,255,255,0.05)';
+      document.getElementById('tab-proto2').style.border = '1px solid rgba(255,255,255,0.15)';
+    });
+
+    document.getElementById('tab-proto2').addEventListener('click', () => {
+      document.getElementById('view-proto1').style.display = 'none';
+      document.getElementById('view-proto2').style.display = 'block';
+      document.getElementById('tab-proto2').style.background = 'rgba(255,123,0,0.2)';
+      document.getElementById('tab-proto2').style.border = '1px solid #ff7b00';
+      document.getElementById('tab-proto1').style.background = 'rgba(255,255,255,0.05)';
+      document.getElementById('tab-proto1').style.border = '1px solid rgba(255,255,255,0.15)';
+      slaWorkflow.renderSwimlane('retention-sla-svg', activeAward);
+    });
+  </script>
+</body>
+</html>

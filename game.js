@@ -44,6 +44,11 @@ const GAMES = {
     src:         'games/profita/index.html',
     themeColor:  '#10b981',   // emerald green — matches in-game primary
   },
+  'design-thinking-compensation': {
+    title:       'Retention Radar',
+    src:         'games/design-thinking-compensation/index.html',
+    themeColor:  '#ff7b00',   // amber/orange glassmorphic theme
+  },
 };
 
 /* ══════════════════════════════════════════════
