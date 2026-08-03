@@ -1,5 +1,5 @@
 // js/retention/chart.js - Zero-Build ES Module
-import Chart from 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/+esm';
+import Chart from 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/auto/+esm';
 
 let chartInstance = null;
 
@@ -15,10 +15,12 @@ export class RetentionCliffVisualizer {
     const ctx = canvasEl.getContext('2d');
     const cf = profile.intendedCashFlows || {};
 
-    const baseYear0 = cf.year0Total || 330000;
-    const baseYear1 = cf.year1Total || 350000;
-    const baseYear2 = cf.year2Total || 280000; // Demonstrates $70k cash-flow cliff
-    const baseYear3 = cf.year3Total || 290000;
+    const salaryData = cf.salary || [180000, 180000, 180000, 180000];
+    const bonusData  = cf.bonus  || [50000,  50000,  50000,  50000];
+    const equityData = cf.equity || [100000, 120000, 50000,  60000];
+
+    const baseYear1 = cf.year1Total || (salaryData[1] + bonusData[1] + equityData[1]);
+    const baseYear2 = cf.year2Total || (salaryData[2] + bonusData[2] + equityData[2]);
 
     const grantAnnualImpact = showGrantImpact ? (customGrantAmount / 2) : 0;
 
@@ -26,17 +28,33 @@ export class RetentionCliffVisualizer {
       labels: ['Prior Year', 'Current Year (Y1)', 'Year + 1 (Y2)', 'Year + 2 (Y3)'],
       datasets: [
         {
-          label: 'Base Compensation ($)',
-          data: [baseYear0, baseYear1, baseYear2, baseYear3],
-          backgroundColor: 'rgba(56, 189, 248, 0.65)',
-          borderColor: 'rgba(56, 189, 248, 1)',
+          label: 'Base Salary',
+          data: salaryData,
+          backgroundColor: 'rgba(56, 189, 248, 0.75)',
+          borderColor: '#38bdf8',
           borderWidth: 1,
           stack: 'total'
         },
         {
-          label: 'Proposed Award Impact ($)',
+          label: 'Annual Bonus',
+          data: bonusData,
+          backgroundColor: 'rgba(168, 85, 247, 0.75)',
+          borderColor: '#a855f7',
+          borderWidth: 1,
+          stack: 'total'
+        },
+        {
+          label: 'Vesting Equity',
+          data: equityData,
+          backgroundColor: 'rgba(239, 68, 68, 0.75)',
+          borderColor: '#ef4444',
+          borderWidth: 1,
+          stack: 'total'
+        },
+        {
+          label: 'Proposed Refresh Award',
           data: [0, grantAnnualImpact, grantAnnualImpact, 0],
-          backgroundColor: 'rgba(234, 179, 8, 0.85)',
+          backgroundColor: 'rgba(234, 179, 8, 0.9)',
           borderColor: '#facc15',
           borderWidth: 2,
           stack: 'total'
@@ -55,9 +73,14 @@ export class RetentionCliffVisualizer {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { labels: { color: '#e2e8f0', font: { family: 'Inter' } } },
+            legend: { 
+              position: 'top',
+              labels: { color: '#e2e8f0', font: { family: 'Inter', size: 12 } } 
+            },
             tooltip: {
-              callbacks: { label: ctx => `${ctx.dataset.label}: $${ctx.raw.toLocaleString()}` }
+              callbacks: { 
+                label: ctx => `${ctx.dataset.label}: $${ctx.raw.toLocaleString()}`
+              }
             }
           },
           scales: {

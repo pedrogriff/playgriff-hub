@@ -13,7 +13,7 @@
 
   <header style="max-width: 1200px; margin: 0 auto 32px auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
     <div>
-      <h1 style="font-family: 'Cinzel', serif; color: #ff7b00; margin: 0; font-size: 1.8rem; letter-spacing: 0.5px;">Ember Keep // Retention Strategy Radar</h1>
+      <h1 style="font-family: 'Cinzel', serif; color: #ff7b00; margin: 0; font-size: 1.8rem; letter-spacing: 0.5px;">Retention Strategy Radar</h1>
       <p style="color: #94a3b8; margin: 4px 0 0 0; font-size: 0.9rem;">Design Thinking Assignment: Proactive Attrition Risk & Governance Prototypes</p>
     </div>
     <nav style="display: flex; gap: 12px;">
@@ -118,14 +118,34 @@
 
     let currentProfile = null;
     let activeAward = null;
-
-    const profiles = await fetchAnonymizedProfiles('Cloud Infrastructure');
-    if (profiles && profiles.length > 0) {
-      currentProfile = profiles[0];
-    }
-
     const chartVisualizer = new RetentionCliffVisualizer('retention-bar-chart', 'cliff-visualizer-banner');
-    
+    const slaWorkflow = new GovernanceSLAWorkflow();
+
+    // Vanilla DOM View Switcher attached immediately
+    const tabProto1 = document.getElementById('tab-proto1');
+    const tabProto2 = document.getElementById('tab-proto2');
+    const viewProto1 = document.getElementById('view-proto1');
+    const viewProto2 = document.getElementById('view-proto2');
+
+    tabProto1.addEventListener('click', () => {
+      viewProto1.style.display = 'block';
+      viewProto2.style.display = 'none';
+      tabProto1.style.background = 'rgba(255,123,0,0.2)';
+      tabProto1.style.border = '1px solid #ff7b00';
+      tabProto2.style.background = 'rgba(255,255,255,0.05)';
+      tabProto2.style.border = '1px solid rgba(255,255,255,0.15)';
+    });
+
+    tabProto2.addEventListener('click', async () => {
+      viewProto1.style.display = 'none';
+      viewProto2.style.display = 'block';
+      tabProto2.style.background = 'rgba(255,123,0,0.2)';
+      tabProto2.style.border = '1px solid #ff7b00';
+      tabProto1.style.background = 'rgba(255,255,255,0.05)';
+      tabProto1.style.border = '1px solid rgba(255,255,255,0.15)';
+      await slaWorkflow.renderSwimlane('retention-sla-svg', activeAward);
+    });
+
     function updateDashboard() {
       if (!currentProfile) return;
       const sliderVal = Number(document.getElementById('grant-slider').value);
@@ -144,10 +164,17 @@
       document.getElementById('exit-telemetry').innerHTML = exitHtml;
     }
 
-    updateDashboard();
-
-    const slaWorkflow = new GovernanceSLAWorkflow();
-    await slaWorkflow.renderSwimlane('retention-sla-svg', activeAward);
+    // Initialize Profile Data & Initial Render
+    try {
+      const profiles = await fetchAnonymizedProfiles('Cloud Infrastructure');
+      if (profiles && profiles.length > 0) {
+        currentProfile = profiles[0];
+      }
+      updateDashboard();
+      await slaWorkflow.renderSwimlane('retention-sla-svg', activeAward);
+    } catch (err) {
+      console.error('Initialization error:', err);
+    }
 
     // Grant Slider Live Binding
     document.getElementById('grant-slider').addEventListener('input', (e) => {
@@ -160,7 +187,7 @@
     document.getElementById('submit-award-btn').addEventListener('click', async () => {
       const grantAmount = Number(document.getElementById('grant-slider').value);
       activeAward = await submitRetentionAward({
-        employee_handle: currentProfile.employeeHandle,
+        employee_handle: currentProfile ? currentProfile.employeeHandle : 'a.mercer@emberkeep.io',
         grant_amount: grantAmount,
         target_percentile: "75th",
         status: "Pending Division Lead Approval",
@@ -168,27 +195,7 @@
       });
       document.getElementById('current-stage-pill').innerText = `Active Stage: ${activeAward.status}`;
       alert(`Award of $${grantAmount.toLocaleString()} submitted! Navigating to Prototype 2 Governance Swimlane...`);
-      document.getElementById('tab-proto2').click();
-    });
-
-    // Vanilla DOM View Switcher
-    document.getElementById('tab-proto1').addEventListener('click', () => {
-      document.getElementById('view-proto1').style.display = 'block';
-      document.getElementById('view-proto2').style.display = 'none';
-      document.getElementById('tab-proto1').style.background = 'rgba(255,123,0,0.2)';
-      document.getElementById('tab-proto1').style.border = '1px solid #ff7b00';
-      document.getElementById('tab-proto2').style.background = 'rgba(255,255,255,0.05)';
-      document.getElementById('tab-proto2').style.border = '1px solid rgba(255,255,255,0.15)';
-    });
-
-    document.getElementById('tab-proto2').addEventListener('click', () => {
-      document.getElementById('view-proto1').style.display = 'none';
-      document.getElementById('view-proto2').style.display = 'block';
-      document.getElementById('tab-proto2').style.background = 'rgba(255,123,0,0.2)';
-      document.getElementById('tab-proto2').style.border = '1px solid #ff7b00';
-      document.getElementById('tab-proto1').style.background = 'rgba(255,255,255,0.05)';
-      document.getElementById('tab-proto1').style.border = '1px solid rgba(255,255,255,0.15)';
-      slaWorkflow.renderSwimlane('retention-sla-svg', activeAward);
+      tabProto2.click();
     });
   </script>
 </body>

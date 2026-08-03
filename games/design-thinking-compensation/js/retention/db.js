@@ -54,9 +54,12 @@ function getFallbackDemoProfiles() {
     lastRatings: ["Exceptional Impact", "Exceeds Expectations"],
     hasPriorOffCycleAward: false,
     intendedCashFlows: {
+      salary: [180000, 180000, 180000, 180000],
+      bonus:  [50000,  50000,  50000,  50000],
+      equity: [100000, 120000, 50000,  60000], // $70k equity cliff in Y2
       year0Total: 330000,
       year1Total: 350000,
-      year2Total: 280000, // $70k cash-flow cliff
+      year2Total: 280000,
       year3Total: 290000
     },
     benchmarks: { "50th": 370000, "75th": 420000, "90th": 480000 }
