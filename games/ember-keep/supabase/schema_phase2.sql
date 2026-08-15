@@ -7,7 +7,7 @@
 CREATE OR REPLACE FUNCTION public.get_server_time()
 RETURNS TIMESTAMPTZ AS $$
   SELECT NOW();
-$$ LANGUAGE sql STABLE SECURITY DEFINER;
+$$ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- 2. Create active_tasks table
 CREATE TABLE IF NOT EXISTS public.active_tasks (

@@ -17,6 +17,7 @@ CREATE OR REPLACE FUNCTION public.run_dungeon_encounter(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
     v_account_id UUID;

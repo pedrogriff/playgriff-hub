@@ -47,6 +47,7 @@ CREATE OR REPLACE FUNCTION public.visit_housing_hearth(p_host_account_id UUID)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
   v_visitor_account_id UUID;
@@ -97,6 +98,7 @@ CREATE OR REPLACE FUNCTION public.update_webhook_settings(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
   v_account_id UUID;

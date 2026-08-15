@@ -98,6 +98,7 @@ CREATE OR REPLACE FUNCTION public.enqueue_task(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
   v_account_id UUID;
@@ -130,6 +131,7 @@ CREATE OR REPLACE FUNCTION public.clear_task_queue(p_character_id UUID)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
   v_account_id UUID;

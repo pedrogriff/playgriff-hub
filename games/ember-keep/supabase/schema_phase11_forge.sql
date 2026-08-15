@@ -17,6 +17,7 @@ CREATE OR REPLACE FUNCTION public.reforge_item(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
     v_account_id UUID;
@@ -89,6 +90,7 @@ CREATE OR REPLACE FUNCTION public.enhance_item(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
     v_account_id UUID;
@@ -164,6 +166,7 @@ CREATE OR REPLACE FUNCTION public.transmute_items(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
     v_account_id UUID;

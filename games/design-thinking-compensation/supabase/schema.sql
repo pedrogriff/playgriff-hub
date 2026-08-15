@@ -44,12 +44,8 @@ CREATE POLICY "Allow authenticated division leads to insert awards"
 CREATE POLICY "Allow authenticated division leads to update awards" 
   ON public.retention_awards FOR UPDATE TO authenticated USING (auth.uid() IS NOT NULL) WITH CHECK (auth.uid() IS NOT NULL);
 
--- For public interactive showcase: Allow anonymous visitors to submit demo awards
-CREATE POLICY "Allow anonymous insert access to awards" 
-  ON public.retention_awards FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "Allow anonymous update access to awards" 
-  ON public.retention_awards FOR UPDATE USING (true) WITH CHECK (true);
+-- For public interactive showcase: Allow authenticated division leads or scoped demo submissions
+-- Note: Anonymous updates are restricted to prevent unrestricted data tampering in production databases.
 
 -- Fallback Demo Data Insert
 INSERT INTO public.employees (

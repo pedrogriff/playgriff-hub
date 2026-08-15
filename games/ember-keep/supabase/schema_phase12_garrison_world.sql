@@ -146,7 +146,8 @@ CREATE POLICY "Users can insert clans"
 DROP POLICY IF EXISTS "Leaders/officers can update clans" ON public.clans;
 CREATE POLICY "Leaders/officers can update clans"
   ON public.clans FOR UPDATE
-  USING (true);
+  USING (leader_account_id = auth.uid())
+  WITH CHECK (leader_account_id = auth.uid());
 
 -- 7. Add Hearth Visit Tracking to accounts_profile
 ALTER TABLE public.accounts_profile
@@ -165,6 +166,7 @@ CREATE OR REPLACE FUNCTION public.submit_rift_damage(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
   v_account_id UUID;
@@ -223,6 +225,7 @@ CREATE OR REPLACE FUNCTION public.donate_to_bounty(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
   v_account_id UUID;

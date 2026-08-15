@@ -45,7 +45,7 @@ BEGIN
   ORDER BY rc.level DESC, rc.power DESC
   LIMIT 20;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- Grant permissions for RPC call
 GRANT EXECUTE ON FUNCTION public.get_suggested_players(UUID) TO anon, authenticated;
@@ -260,4 +260,4 @@ BEGIN
     'food_exhausted', v_food_exhausted
   );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;

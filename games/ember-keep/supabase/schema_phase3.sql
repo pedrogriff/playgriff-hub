@@ -271,4 +271,4 @@ BEGIN
     'food_exhausted', v_food_exhausted
   );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;

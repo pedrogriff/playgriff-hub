@@ -23,6 +23,7 @@ CREATE OR REPLACE FUNCTION public.equip_item(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
     v_account_id UUID;
@@ -135,6 +136,7 @@ CREATE OR REPLACE FUNCTION public.unequip_item(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
     v_account_id UUID;

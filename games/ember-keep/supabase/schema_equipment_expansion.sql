@@ -85,6 +85,7 @@ CREATE OR REPLACE FUNCTION public.roll_loot_drop(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
     v_roll FLOAT := random();
@@ -184,6 +185,7 @@ CREATE OR REPLACE FUNCTION public.get_shop_inventory(p_character_id UUID)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
     v_account_id UUID;
@@ -239,6 +241,7 @@ CREATE OR REPLACE FUNCTION public.buy_shop_item(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 DECLARE
     v_account_id UUID;
