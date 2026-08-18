@@ -3,300 +3,558 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="playgriff.io — Mobile Game Lab & Prototypes. Indie mobile games crafted with passion. Play instantly in your browser." />
-  <meta name="theme-color" content="#0c0d14" />
+  <meta name="description" content="playgriff.me — Total Rewards Technology, Scalable Compensation Engines, Agentic AI Workflows & Cloud Infrastructure by Pedro." />
+  <meta name="theme-color" content="#0b0f19" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="playgriff.io — Mobile Game Lab" />
-  <meta property="og:description" content="Indie mobile games & prototypes. Play instantly." />
+  <meta property="og:title" content="playgriff.me — Total Rewards & Systems Engineering Hub" />
+  <meta property="og:description" content="Engineering Scalable Compensation Engines, Modern Agentic AI Workflows & Cloud Infrastructure." />
   <meta property="og:type" content="website" />
 
-  <title>playgriff.io — Mobile Game Lab & Prototypes</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>playgriff.me — Total Rewards Technology & Systems Engineering Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ─── BACKGROUND CANVAS ───────────────────────────────── -->
-  <canvas id="bg-canvas" aria-hidden="true"></canvas>
-
   <!-- ─── HEADER ───────────────────────────────────────────── -->
-  <header class="site-header" role="banner">
-    <div class="header-inner">
-      <div class="logo-group">
-        <span class="logo-icon" aria-hidden="true">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="2" width="32" height="32" rx="8" fill="url(#logo-grad)" />
-            <path d="M11 18 L18 10 L25 18 L18 26 Z" fill="white" opacity="0.9"/>
-            <circle cx="18" cy="18" r="3" fill="#0c0d14"/>
-            <defs>
-              <linearGradient id="logo-grad" x1="2" y1="2" x2="34" y2="34" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#7c3aed"/>
-                <stop offset="1" stop-color="#06b6d4"/>
-              </linearGradient>
-            </defs>
-          </svg>
-        </span>
-        <h1 class="site-title">playgriff<span class="dot-io">.io</span></h1>
+  <header class="app-header" role="banner">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-badge">PROD</div>
+        <div>
+          <h1 class="brand-title">playgriff<span class="dot-me">.me</span></h1>
+          <p class="brand-subtitle">Total Rewards Technology, Agentic Systems &amp; Infrastructure</p>
+        </div>
       </div>
-      <p class="site-tagline">Mobile Game Lab &amp; Prototypes</p>
-      <div class="header-pills" aria-label="Stats">
-        <span class="pill pill--games" id="game-count-pill">6 games</span>
-        <span class="pill pill--status">🟢 Active Dev</span>
-      </div>
+      <nav class="nav-tabs" role="tablist" aria-label="System Navigation">
+        <button class="nav-btn active" data-tab="tab-all" id="btn-tab-all" role="tab">⭐ Overview</button>
+        <button class="nav-btn" data-tab="tab-compflow" id="btn-tab-compflow" role="tab">🤖 CompFlow Agent</button>
+        <button class="nav-btn" data-tab="tab-vestingsim" id="btn-tab-vestingsim" role="tab">📈 VestingSim</button>
+        <button class="nav-btn" data-tab="tab-algocore" id="btn-tab-algocore" role="tab">🧠 AlgoCore Lab</button>
+        <button class="nav-btn" data-tab="tab-k8s" id="btn-tab-k8s" role="tab">☸️ Homelab K8s</button>
+        <button class="nav-btn" data-tab="tab-labs" id="btn-tab-labs" role="tab">🎮 Lab Prototypes</button>
+      </nav>
     </div>
   </header>
 
-  <!-- ─── MAIN ─────────────────────────────────────────────── -->
-  <main id="main-content" role="main">
+  <main class="main-content">
+    
+    <!-- ─── TAB: OVERVIEW (ALL SYSTEMS) ──────────────────────── -->
+    <section class="tab-pane active" id="tab-all">
+      <div class="hero-section">
+        <div class="hero-tag">Engineering Showcase</div>
+        <h2 class="hero-title">High-Performance Compensation Systems &amp; Agentic AI</h2>
+        <p class="hero-desc">
+          Combining deep domain expertise in total rewards with software craftsmanship: building high-throughput financial simulation engines, autonomous calibration copilots, and cloud-native infrastructure.
+        </p>
 
-    <!-- Filter bar -->
-    <section class="filter-bar" aria-label="Filter games">
-      <div class="filter-inner">
-        <button class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
-        <button class="filter-btn" data-filter="alpha" aria-pressed="false">Alpha</button>
-        <button class="filter-btn" data-filter="poc" aria-pressed="false">Proof of Concept</button>
-        <button class="filter-btn" data-filter="live" aria-pressed="false">Live</button>
+        <div class="hero-stats">
+          <div class="stat-pill">⚡ 64k+ Proposals / Sec</div>
+          <div class="stat-pill">📈 19M+ Monte Carlo Paths</div>
+          <div class="stat-pill">🤖 ReAct Tool Calling</div>
+          <div class="stat-pill">☸️ Talos Linux K8s</div>
+        </div>
+      </div>
+
+      <div class="systems-grid">
+        <!-- Card 1: CompFlow Platform -->
+        <div class="system-card">
+          <div class="sys-header">
+            <span class="sys-icon">🤖</span>
+            <div>
+              <h3 class="sys-title">CompFlow Agentic Platform</h3>
+              <p class="sys-meta">Agentic ReAct • State Machine • Tool Calling</p>
+            </div>
+          </div>
+          <p class="sys-desc">
+            Autonomous compensation calibration copilot that validates manager review proposals against benchmark salary bands, equity guidelines, and velocity caps via deterministic tools.
+          </p>
+          <div class="sys-tags">
+            <span class="tag">Python 3.13</span>
+            <span class="tag">State Machines</span>
+            <span class="tag">97% Test Coverage</span>
+          </div>
+          <div class="sys-actions">
+            <button class="btn btn-sm btn-primary jump-tab-btn" data-target="tab-compflow">⚡ Try Live Interactive Copilot</button>
+            <a href="https://github.com/pedrogriff/comp-flow-platform" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
+          </div>
+        </div>
+
+        <!-- Card 2: VestingSim Engine -->
+        <div class="system-card">
+          <div class="sys-header">
+            <span class="sys-icon">📈</span>
+            <div>
+              <h3 class="sys-title">VestingSim Engine</h3>
+              <p class="sys-meta">Quantitative Finance • Monte Carlo • Concurrency</p>
+            </div>
+          </div>
+          <p class="sys-desc">
+            High-throughput equity valuation engine modeling 48-month Google front-loaded schedules with exact share conservation (Largest Remainder Method) and parallelized Brownian Motion price path simulations.
+          </p>
+          <div class="sys-tags">
+            <span class="tag">GBM Stochastic Modeling</span>
+            <span class="tag">ProcessPool Parallelism</span>
+            <span class="tag">Hypothesis Verified</span>
+          </div>
+          <div class="sys-actions">
+            <button class="btn btn-sm btn-primary jump-tab-btn" data-target="tab-vestingsim">🎲 Run Live Monte Carlo Sim</button>
+            <a href="https://github.com/pedrogriff/vesting-sim-engine" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
+          </div>
+        </div>
+
+        <!-- Card 3: AlgoCore CS Lab -->
+        <div class="system-card">
+          <div class="sys-header">
+            <span class="sys-icon">🧠</span>
+            <div>
+              <h3 class="sys-title">AlgoCore CS Lab</h3>
+              <p class="sys-meta">Data Structures • Hardware Locality • Benchmarks</p>
+            </div>
+          </div>
+          <p class="sys-desc">
+            Computer science laboratory implementing contiguous memory dynamic arrays, ring buffers, open-addressing HashMaps with Tombstone recycling, and augmented AVL trees for sub-millisecond percentiles.
+          </p>
+          <div class="sys-tags">
+            <span class="tag">ArrayDeque Ring Buffer</span>
+            <span class="tag">AVL Tree Order Statistics</span>
+            <span class="tag">O(1) Streaming Heaps</span>
+          </div>
+          <div class="sys-actions">
+            <button class="btn btn-sm btn-primary jump-tab-btn" data-target="tab-algocore">🏁 Open Benchmark Arena</button>
+            <a href="https://github.com/pedrogriff/algocore-ds" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
+          </div>
+        </div>
+
+        <!-- Card 4: Homelab K8s -->
+        <div class="system-card">
+          <div class="sys-header">
+            <span class="sys-icon">☸️</span>
+            <div>
+              <h3 class="sys-title">Homelab Kubernetes Cluster</h3>
+              <p class="sys-meta">Cloud Infrastructure • Talos Linux • GitOps</p>
+            </div>
+          </div>
+          <p class="sys-desc">
+            Declarative, immutable bare-metal Kubernetes cluster infrastructure powered by Talos Linux. Automated certificate renewals, resilient container orchestration, and GitOps-driven delivery.
+          </p>
+          <div class="sys-tags">
+            <span class="tag">Talos Linux</span>
+            <span class="tag">GitOps</span>
+            <span class="tag">Container Orchestration</span>
+          </div>
+          <div class="sys-actions">
+            <button class="btn btn-sm btn-primary jump-tab-btn" data-target="tab-k8s">☸️ View Architecture</button>
+            <a href="https://github.com/pedrogriff/homelab-k8s-talos" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Games grid -->
-    <section class="games-section" aria-label="Game portfolio">
-      <div class="games-grid" id="games-grid" role="list">
+    <!-- ─── TAB: COMPFLOW AGENT (INTERACTIVE CARD) ──────────── -->
+    <section class="tab-pane" id="tab-compflow">
+      <div class="section-intro">
+        <div class="intro-tag">Agentic AI &amp; Total Rewards</div>
+        <h2>CompFlow: Autonomous Compensation Calibration Copilot</h2>
+        <p>An autonomous agent that audits manager review proposals against benchmark salary bands, equity guidelines, and corporate merit policies via deterministic tool calling.</p>
+      </div>
 
-        <!-- ── Card 1 ── -->
-        <article class="game-card" role="listitem" data-category="alpha">
-          <div class="card-thumb-wrap">
-            <img
-              class="card-thumb"
-              src="assets/game_thumb_neon_drift.png"
-              alt="Neon Drift — cyberpunk endless runner screenshot"
-              loading="lazy"
-              width="600"
-              height="338"
-            />
-            <span class="card-badge badge--alpha">Alpha</span>
-            <div class="card-thumb-overlay" aria-hidden="true"></div>
+      <div class="grid-2col">
+        <!-- Proposal Input Form -->
+        <div class="card card-form">
+          <div class="card-header">
+            <h3>📝 Submit Compensation Proposal</h3>
+            <span class="badge badge-neutral">Input Controls</span>
           </div>
-          <div class="card-body">
-            <div class="card-meta">
-              <span class="card-genre">Endless Runner</span>
-              <span class="card-platform" title="Mobile">📱</span>
-            </div>
-            <h2 class="card-title">Neon Drift</h2>
-            <p class="card-desc">Survive the neon-lit hypercity at breakneck speed. Swipe to dodge, chain boosts, and top the global leaderboard.</p>
-            <div class="card-tags">
-              <span class="tag">Cyberpunk</span>
-              <span class="tag">One-Touch</span>
-              <span class="tag">High Score</span>
-            </div>
-          </div>
-          <div class="card-footer">
-            <a class="play-btn" href="game.html?id=neon-drift" id="play-neon-drift" aria-label="Play Neon Drift instantly">
-              <span class="play-icon" aria-hidden="true">▶</span>
-              Play Instantly
-            </a>
-          </div>
-        </article>
 
-        <!-- ── Card 2 ── -->
-        <article class="game-card" role="listitem" data-category="poc">
-          <div class="card-thumb-wrap">
-            <img
-              class="card-thumb"
-              src="assets/game_thumb_ember_keep.png"
-              alt="Ember Keep — dark fantasy dungeon roguelike screenshot"
-              loading="lazy"
-              width="600"
-              height="338"
-            />
-            <span class="card-badge badge--poc">Proof of Concept</span>
-            <div class="card-thumb-overlay" aria-hidden="true"></div>
-          </div>
-          <div class="card-body">
-            <div class="card-meta">
-              <span class="card-genre">Roguelike RPG</span>
-              <span class="card-platform" title="Mobile">📱</span>
+          <form id="compflow-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="input-level">Job Level</label>
+                <select id="input-level" class="form-control">
+                  <option value="L3">L3 (Software Engineer II)</option>
+                  <option value="L4">L4 (Software Engineer III)</option>
+                  <option value="L5" selected>L5 (Senior Software Engineer)</option>
+                  <option value="L6">L6 (Staff Software Engineer)</option>
+                  <option value="L7">L7 (Senior Staff SWE)</option>
+                  <option value="L8">L8 (Principal SWE)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="input-rating">Performance Rating</label>
+                <select id="input-rating" class="form-control">
+                  <option value="NEEDS_IMPROVEMENT">Needs Improvement</option>
+                  <option value="CONSISTENTLY_MEETS" selected>Consistently Meets</option>
+                  <option value="EXCEEDS">Exceeds Expectations</option>
+                  <option value="STRONGLY_OUTPERFORMS">Strongly Outperforms</option>
+                  <option value="SUPERB">Superb (Top Tier)</option>
+                </select>
+              </div>
             </div>
-            <h2 class="card-title">Ember Keep</h2>
-            <p class="card-desc">Descend into a procedurally generated dungeon. Every run is different — loot, fight, and escape before the torches die out.</p>
-            <div class="card-tags">
-              <span class="tag">Fantasy</span>
-              <span class="tag">Procedural</span>
-              <span class="tag">Roguelike</span>
-            </div>
-          </div>
-          <div class="card-footer">
-            <a class="play-btn" href="game.html?id=ember-keep" id="play-ember-keep" aria-label="Play Ember Keep instantly">
-              <span class="play-icon" aria-hidden="true">▶</span>
-              Play Instantly
-            </a>
-          </div>
-        </article>
 
-        <!-- ── Card 3 ── -->
-        <article class="game-card" role="listitem" data-category="live">
-          <div class="card-thumb-wrap">
-            <img
-              class="card-thumb"
-              src="assets/game_thumb_voidshift.png"
-              alt="VoidShift — minimalist geometric puzzle screenshot"
-              loading="lazy"
-              width="600"
-              height="338"
-            />
-            <span class="card-badge badge--live">Live</span>
-            <div class="card-thumb-overlay" aria-hidden="true"></div>
-          </div>
-          <div class="card-body">
-            <div class="card-meta">
-              <span class="card-genre">Puzzle</span>
-              <span class="card-platform" title="Mobile">📱</span>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="input-current-base">Current Base Salary ($)</label>
+                <input type="number" id="input-current-base" class="form-control" value="230000" step="5000">
+              </div>
+              <div class="form-group">
+                <label for="input-proposed-base">Proposed Base Salary ($)</label>
+                <input type="number" id="input-proposed-base" class="form-control" value="250000" step="5000">
+              </div>
             </div>
-            <h2 class="card-title">VoidShift</h2>
-            <p class="card-desc">Shift geometric forms across a warping void. 80 hand-crafted levels of spatial reasoning, no timers, pure flow state.</p>
-            <div class="card-tags">
-              <span class="tag">Minimalist</span>
-              <span class="tag">Puzzle</span>
-              <span class="tag">Zen</span>
-            </div>
-          </div>
-          <div class="card-footer">
-            <a class="play-btn play-btn--live" href="game.html?id=voidshift" id="play-voidshift" aria-label="Play VoidShift instantly">
-              <span class="play-icon" aria-hidden="true">▶</span>
-              Play Instantly
-            </a>
-          </div>
-        </article>
 
-        <!-- ── Card 4: Aegis Core ── -->
-        <article class="game-card" role="listitem" data-category="alpha">
-          <div class="card-thumb-wrap">
-            <img
-              class="card-thumb"
-              src="assets/game_thumb_aegis_core.png"
-              alt="Aegis Core — neon arcade shield game screenshot"
-              loading="lazy"
-              width="600"
-              height="338"
-            />
-            <span class="card-badge badge--alpha">Alpha</span>
-            <div class="card-thumb-overlay" aria-hidden="true"></div>
-          </div>
-          <div class="card-body">
-            <div class="card-meta">
-              <span class="card-genre">Arcade Reflex</span>
-              <span class="card-platform" title="Mobile">📱</span>
+            <div class="form-group">
+              <label for="input-proposed-gsus">Proposed Equity Refresh (GSUs)</label>
+              <input type="number" id="input-proposed-gsus" class="form-control" value="950" step="50">
+              <span class="field-hint" id="hint-equity-target">L5 Target Baseline: 900 GSUs</span>
             </div>
-            <h2 class="card-title">Aegis Core</h2>
-            <p class="card-desc">Your core is under siege. Orbit a neon shield with a single tap to deflect the onslaught — block hazards, collect gems, survive as long as you can.</p>
-            <div class="card-tags">
-              <span class="tag">One-Tap</span>
-              <span class="tag">Arcade</span>
-              <span class="tag">High Score</span>
-            </div>
-          </div>
-          <div class="card-footer">
-            <a class="play-btn" href="game.html?id=aegis-core" id="play-aegis-core" aria-label="Play Aegis Core instantly">
-              <span class="play-icon" aria-hidden="true">▶</span>
-              Play Instantly
-            </a>
-          </div>
-        </article>
 
-        <!-- ── Card 5: Profita ── -->
-        <article class="game-card" role="listitem" data-category="alpha">
-          <div class="card-thumb-wrap">
-            <img
-              class="card-thumb"
-              src="assets/game_thumb_profita.png"
-              alt="Profita — personal finance wealth simulator screenshot"
-              loading="lazy"
-              width="600"
-              height="338"
-            />
-            <span class="card-badge badge--alpha">Alpha</span>
-            <div class="card-thumb-overlay" aria-hidden="true"></div>
-          </div>
-          <div class="card-body">
-            <div class="card-meta">
-              <span class="card-genre">Finance Sim</span>
-              <span class="card-platform" title="Mobile">📱</span>
-            </div>
-            <h2 class="card-title">Profita</h2>
-            <p class="card-desc">Build your empire from $10k to $2M. Pick a career, invest in stocks, crypto &amp; real estate, and out-earn AI rivals before retirement hits.</p>
-            <div class="card-tags">
-              <span class="tag">Strategy</span>
-              <span class="tag">Investing</span>
-              <span class="tag">Idle</span>
-            </div>
-          </div>
-          <div class="card-footer">
-            <a class="play-btn" href="game.html?id=profita" id="play-profita" aria-label="Play Profita instantly">
-              <span class="play-icon" aria-hidden="true">▶</span>
-              Play Instantly
-            </a>
-          </div>
-        </article>
+            <button type="submit" id="btn-audit-proposal" class="btn btn-primary btn-block">
+              🚀 Run Autonomous Agentic Audit
+            </button>
+          </form>
+        </div>
 
-        <!-- ── Card 6: Retention Radar ── -->
-        <article class="game-card" role="listitem" data-category="poc">
-          <div class="card-thumb-wrap">
-            <img
-              class="card-thumb"
-              src="assets/game_thumb_design_thinking_compensation.png"
-              alt="Retention Radar — proactive compensation risk & SLA governance dashboard screenshot"
-              loading="lazy"
-              width="600"
-              height="338"
-            />
-            <span class="card-badge badge--poc">Proof of Concept</span>
-            <div class="card-thumb-overlay" aria-hidden="true"></div>
+        <!-- Agent Decision & Execution Stream -->
+        <div class="card card-audit">
+          <div class="card-header">
+            <h3>⚡ Agentic Decision &amp; Tool-Calling Stream</h3>
+            <span class="badge" id="badge-decision-state">READY</span>
           </div>
-          <div class="card-body">
-            <div class="card-meta">
-              <span class="card-genre">HR Tech / FinSim</span>
-              <span class="card-platform" title="Mobile">📱</span>
-            </div>
-            <h2 class="card-title">Retention Radar</h2>
-            <p class="card-desc">Proactive retention risk modeler &amp; 24-72h SLA governance workflow. Detect cash-flow cliffs 60+ days early and eliminate reactive counter-offers.</p>
-            <div class="card-tags">
-              <span class="tag">Design Thinking</span>
-              <span class="tag">Compensation</span>
-              <span class="tag">Glassmorphism</span>
-            </div>
-          </div>
-          <div class="card-footer">
-            <a class="play-btn" href="game.html?id=design-thinking-compensation" id="play-design-thinking-compensation" aria-label="Play Retention Radar instantly">
-              <span class="play-icon" aria-hidden="true">▶</span>
-              Play Instantly
-            </a>
-          </div>
-        </article>
 
-      </div><!-- /games-grid -->
+          <!-- State Machine Progress Indicator -->
+          <div class="state-progress">
+            <div class="state-step active" id="step-draft">1. Draft</div>
+            <div class="state-step" id="step-submitted">2. Submitted</div>
+            <div class="state-step" id="step-auditing">3. Agent Audit</div>
+            <div class="state-step" id="step-decision">4. Outcome</div>
+          </div>
+
+          <!-- Decision Output Banner -->
+          <div class="decision-banner" id="decision-banner">
+            <div class="decision-title" id="decision-title">Awaiting Proposal Submission</div>
+            <p class="decision-text" id="decision-text">Click "Run Autonomous Agentic Audit" to trigger multi-tool compliance verification.</p>
+          </div>
+
+          <!-- Key Metrics Badges -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-label">Compa-Ratio</div>
+              <div class="metric-val" id="metric-compa-ratio">1.000</div>
+              <div class="metric-sub" id="metric-compa-status">Band Midpoint: $250k</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Equity Multiple</div>
+              <div class="metric-val" id="metric-equity-mult">1.06x</div>
+              <div class="metric-sub" id="metric-equity-status">Target: 900 GSUs</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Merit Velocity</div>
+              <div class="metric-val" id="metric-velocity">+8.7%</div>
+              <div class="metric-sub">Cap: +20.0%</div>
+            </div>
+          </div>
+
+          <!-- Live Tool Inspection Feed -->
+          <div class="tool-log-container">
+            <div class="tool-log-header">Deterministic Tool Invocation Feed</div>
+            <div class="tool-log-feed" id="tool-log-feed">
+              <div class="log-entry log-dim">[System Ready] Agentic tool registry initialized with enterprise salary benchmark bands.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── TAB: VESTINGSIM (INTERACTIVE CARD) ───────────────── -->
+    <section class="tab-pane" id="tab-vestingsim">
+      <div class="section-intro">
+        <div class="intro-tag">Quantitative Finance &amp; Simulation</div>
+        <h2>VestingSim: Equity Valuation &amp; Monte Carlo Simulation</h2>
+        <p>Calculates 48-month deterministic vesting schedules using the <strong>Largest Remainder Method</strong> and runs real-time Geometric Brownian Motion (GBM) Monte Carlo path simulations.</p>
+      </div>
+
+      <div class="grid-2col">
+        <!-- Vesting Parameters & Monthly Schedule -->
+        <div class="card">
+          <div class="card-header">
+            <h3>📊 Grant Parameters &amp; Tranche Distribution</h3>
+            <span class="badge badge-neutral">Deterministic Math</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="input-grant-shares">Total Grant Shares (GSUs)</label>
+              <input type="number" id="input-grant-shares" class="form-control" value="1000" step="10">
+            </div>
+            <div class="form-group">
+              <label for="input-stock-price">Initial Stock Price ($)</label>
+              <input type="number" id="input-stock-price" class="form-control" value="175" step="5">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="input-schedule-type">Vesting Schedule Strategy</label>
+            <select id="input-schedule-type" class="form-control">
+              <option value="FRONT_LOADED">Google Front-Loaded (33% / 33% / 22% / 12% Monthly)</option>
+              <option value="CLIFF_4YR">Standard 4-Year (25% 1-Yr Cliff + Monthly)</option>
+              <option value="EVEN_MONTHLY">Even Monthly (1/48th per month)</option>
+              <option value="EVEN_QUARTERLY">Even Quarterly (1/16th per quarter)</option>
+            </select>
+          </div>
+
+          <!-- Schedule Bar Chart -->
+          <div class="chart-section">
+            <div class="chart-header">
+              <span>48-Month Share Distribution (Exact Conservation Invariant)</span>
+              <span id="chart-total-shares-check" class="badge badge-success">Sum = 1,000 GSUs</span>
+            </div>
+            <div class="bar-chart-container" id="vesting-bar-chart">
+              <!-- Rendered via JS -->
+            </div>
+            <div class="chart-legend">
+              <span class="legend-item"><span class="legend-dot dot-y1"></span> Year 1 (33%)</span>
+              <span class="legend-item"><span class="legend-dot dot-y2"></span> Year 2 (33%)</span>
+              <span class="legend-item"><span class="legend-dot dot-y3"></span> Year 3 (22%)</span>
+              <span class="legend-item"><span class="legend-dot dot-y4"></span> Year 4 (12%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monte Carlo Real-Time Simulation -->
+        <div class="card">
+          <div class="card-header">
+            <h3>🎲 Real-Time Monte Carlo Risk Engine</h3>
+            <button id="btn-run-simulation" class="btn btn-sm btn-primary">⚡ Re-run 500 Paths</button>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="slider-volatility">Annual Volatility (&sigma;): <span id="val-volatility">25%</span></label>
+              <input type="range" id="slider-volatility" min="10" max="60" value="25" class="form-range">
+            </div>
+            <div class="form-group">
+              <label for="slider-drift">Annual Drift (&mu;): <span id="val-drift">8%</span></label>
+              <input type="range" id="slider-drift" min="-10" max="30" value="8" class="form-range">
+            </div>
+          </div>
+
+          <!-- Canvas Simulation Plot -->
+          <div class="canvas-container">
+            <canvas id="mc-canvas" width="560" height="240"></canvas>
+          </div>
+
+          <!-- Realized Valuation Percentiles -->
+          <div class="valuation-results-grid">
+            <div class="val-box val-bearish">
+              <div class="val-title">P10 (Bearish Case)</div>
+              <div class="val-number" id="val-p10">$128,450</div>
+            </div>
+            <div class="val-box val-expected">
+              <div class="val-title">P50 (Median Realized)</div>
+              <div class="val-number" id="val-p50">$204,120</div>
+            </div>
+            <div class="val-box val-bullish">
+              <div class="val-title">P90 (Bullish Case)</div>
+              <div class="val-number" id="val-p90">$318,890</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── TAB: ALGOCORE (INTERACTIVE CARD) ─────────────────── -->
+    <section class="tab-pane" id="tab-algocore">
+      <div class="section-intro">
+        <div class="intro-tag">Computer Science Foundations</div>
+        <h2>AlgoCore: Interactive Algorithmic Arena</h2>
+        <p>Empirical proof of hardware cache lines, modulo wrap-around ring buffers, and balanced tree order statistics.</p>
+      </div>
+
+      <div class="grid-2col">
+        <!-- Live Queue Benchmark Arena -->
+        <div class="card">
+          <div class="card-header">
+            <h3>⚡ FIFO Queue Race: O(N²) Array vs O(1) RingBuffer</h3>
+            <span class="badge badge-neutral">Microseconds Matter</span>
+          </div>
+
+          <p class="card-desc">Simulate processing 15,000 compensation review approval queues in FIFO order.</p>
+
+          <div class="race-box">
+            <div class="race-header">
+              <span>DynamicArray (Left Shifting — O(N²))</span>
+              <span id="timer-array" class="race-time">0.00 ms</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill fill-red" id="prog-array" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="race-box">
+            <div class="race-header">
+              <span>Circular RingBuffer (Modulo Pointer — O(1))</span>
+              <span id="timer-ring" class="race-time">0.00 ms</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill fill-green" id="prog-ring" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <button id="btn-start-race" class="btn btn-primary btn-block" style="margin-top: 20px;">
+            🏁 Start Live Benchmark Race
+          </button>
+        </div>
+
+        <!-- AVL Tree Percentile Finder -->
+        <div class="card">
+          <div class="card-header">
+            <h3>🌳 Order-Statistic AVL Tree: O(log N) Percentiles</h3>
+            <span class="badge badge-neutral">50,000 Salaries</span>
+          </div>
+
+          <p class="card-desc">Move the slider to find exact salary percentiles in sub-millisecond O(log N) time without sorting.</p>
+
+          <div class="form-group" style="margin-top: 15px;">
+            <label for="slider-percentile">Target Percentile: <strong id="val-target-p">50th (Median)</strong></label>
+            <input type="range" id="slider-percentile" min="1" max="99" value="50" class="form-range">
+          </div>
+
+          <div class="tree-result-card">
+            <div class="tree-res-label">Resulting Salary at Percentile:</div>
+            <div class="tree-res-val" id="tree-salary-result">$248,500</div>
+            <div class="tree-res-meta" id="tree-salary-meta">Rank: #25,000 of 50,000 | Lookup Time: 0.02 ms</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── TAB: HOMELAB K8S (CARD) ─────────────────────────── -->
+    <section class="tab-pane" id="tab-k8s">
+      <div class="section-intro">
+        <div class="intro-tag">Cloud Infrastructure</div>
+        <h2>Homelab Kubernetes: Declarative Bare-Metal Cluster</h2>
+        <p>Immutable infrastructure-as-code powered by Talos Linux, GitOps workflows, and automated container orchestration.</p>
+      </div>
+
+      <div class="grid-2col">
+        <div class="card">
+          <div class="card-header">
+            <h3>☸️ Cluster Topology &amp; Architecture</h3>
+            <span class="badge badge-success">HEALTHY</span>
+          </div>
+          <div class="k8s-topology">
+            <div class="k8s-node">
+              <div class="node-icon">🖥️</div>
+              <div class="node-info">
+                <strong>Control Plane (Talos OS)</strong>
+                <span>API Server • etcd • Controller Manager</span>
+              </div>
+            </div>
+            <div class="k8s-node">
+              <div class="node-icon">⚙️</div>
+              <div class="node-info">
+                <strong>Worker Node 01</strong>
+                <span>Ingress Controller • Cert-Manager • Workloads</span>
+              </div>
+            </div>
+            <div class="k8s-node">
+              <div class="node-icon">⚙️</div>
+              <div class="node-info">
+                <strong>Worker Node 02</strong>
+                <span>Prometheus • Grafana • Persistent Storage</span>
+              </div>
+            </div>
+          </div>
+          <div class="sys-actions" style="margin-top: 20px;">
+            <a href="https://github.com/pedrogriff/homelab-k8s-talos" target="_blank" rel="noopener" class="btn btn-primary btn-block">Inspect GitOps Repository ↗</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>🛡️ Security &amp; GitOps Invariants</h3>
+            <span class="badge badge-neutral">Declarative IaC</span>
+          </div>
+          <ul class="k8s-features">
+            <li><strong>Immutable OS:</strong> Talos Linux provides no SSH, zero shell access, and API-driven declarative configuration.</li>
+            <li><strong>GitOps Sync:</strong> Cluster state continuously reconciled against Git commits.</li>
+            <li><strong>Automated TLS:</strong> Automated Let's Encrypt SSL certificate provisioning.</li>
+            <li><strong>Observability:</strong> Prometheus &amp; OpenTelemetry metric exporters.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── TAB: LAB PROTOTYPES ─────────────────────────────── -->
+    <section class="tab-pane" id="tab-labs">
+      <div class="section-intro">
+        <div class="intro-tag">Experimental Lab</div>
+        <h2>Interactive Prototypes &amp; Simulations</h2>
+        <p>Experimental browser-based game prototypes and interactive tools created in the lab.</p>
+      </div>
+
+      <div class="systems-grid">
+        <div class="system-card">
+          <div class="sys-header">
+            <span class="sys-icon">🎯</span>
+            <div>
+              <h3 class="sys-title">Design Thinking for Compensation</h3>
+              <p class="sys-meta">Interactive Learning Prototype</p>
+            </div>
+          </div>
+          <p class="sys-desc">An interactive simulation demonstrating human-centered design thinking methodologies applied to organizational total rewards.</p>
+          <div class="sys-actions">
+            <a href="games/design-thinking-compensation/" class="btn btn-sm btn-primary">Launch Prototype ↗</a>
+          </div>
+        </div>
+
+        <div class="system-card">
+          <div class="sys-header">
+            <span class="sys-icon">🎮</span>
+            <div>
+              <h3 class="sys-title">Aegis Core</h3>
+              <p class="sys-meta">Arcade Lab Prototype</p>
+            </div>
+          </div>
+          <p class="sys-desc">Fast-paced defensive arcade prototype testing HTML5 Canvas physics and spatial collision detection.</p>
+          <div class="sys-actions">
+            <a href="games/aegis_core/" class="btn btn-sm btn-outline">Launch Arcade ↗</a>
+          </div>
+        </div>
+
+        <div class="system-card">
+          <div class="sys-header">
+            <span class="sys-icon">🕹️</span>
+            <div>
+              <h3 class="sys-title">Neon Drift</h3>
+              <p class="sys-meta">Canvas Game Prototype</p>
+            </div>
+          </div>
+          <p class="sys-desc">Retro-futuristic responsive driving mechanic experimenting with game loops and input handling.</p>
+          <div class="sys-actions">
+            <a href="games/neon_drift/" class="btn btn-sm btn-outline">Launch Drift ↗</a>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main>
 
-  <!-- ─── FOOTER ────────────────────────────────────────────── -->
-  <footer class="site-footer" role="contentinfo">
-    <div class="footer-inner">
-      <p class="footer-copy">
-        &copy; <span id="year"></span> playgriff.io &mdash; crafted with 🎮 by a solo dev
-      </p>
-      <nav class="footer-links" aria-label="Social links">
-        <a href="#" class="footer-link" id="link-twitter" aria-label="Twitter">𝕏</a>
-        <a href="#" class="footer-link" id="link-itch" aria-label="itch.io">itch.io</a>
-        <a href="#" class="footer-link" id="link-github" aria-label="GitHub">GitHub</a>
-      </nav>
+  <!-- ─── FOOTER ───────────────────────────────────────────── -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div><strong>playgriff.me</strong> • Total Rewards Technology &amp; Systems Engineering by Pedro</div>
+      <div class="footer-links">
+        <a href="https://github.com/pedrogriff" target="_blank" rel="noopener">GitHub Profile</a> • 
+        <a href="https://github.com/pedrogriff/comp-flow-platform" target="_blank" rel="noopener">CompFlow Repo</a> • 
+        <a href="https://github.com/pedrogriff/vesting-sim-engine" target="_blank" rel="noopener">VestingSim Repo</a>
+      </div>
     </div>
   </footer>
-
-  <!-- Page-exit curtain: app.js expands this on Play click -->
-  <div class="page-exit-curtain" id="page-exit-curtain" aria-hidden="true"></div>
 
   <script src="app.js"></script>
 </body>
