@@ -23,7 +23,9 @@ function getCurrentSiegePhase() {
     const newStart = Date.now();
     localStorage.setItem("siege_cycle_start", newStart);
     // Reinicia todas as sieges
-    REGIONS.forEach(r => initSiegeData(r.id, true));
+    if (typeof REGIONS !== "undefined" && Array.isArray(REGIONS)) {
+      REGIONS.forEach(r => initSiegeData(r.id, true));
+    }
     elapsed = 0;
   }
 
@@ -127,23 +129,25 @@ function simulateWeeklySiege() {
   
   const phase = getCurrentSiegePhase();
   
-  REGIONS.forEach(region => {
-    const siege = getSiegeData(region.id);
-    
-    if (phase.phase === "preparation" || phase.phase === "inscription") {
-      // Bots gain points
-      Object.keys(siege.scores).forEach(clanId => {
-        if (clanId.startsWith("clan_bot_")) {
-          siege.scores[clanId].points += Math.floor(Math.random() * 50) + 10;
-        }
-      });
-      saveSiegeData(region.id, siege);
-    }
-    
-    if (phase.phase === "siege" && !siege.resolved) {
-      resolveSiege(region.id);
-    }
-  });
+  if (typeof REGIONS !== "undefined" && Array.isArray(REGIONS)) {
+    REGIONS.forEach(region => {
+      const siege = getSiegeData(region.id);
+      
+      if (phase.phase === "preparation" || phase.phase === "inscription") {
+        // Bots gain points
+        Object.keys(siege.scores).forEach(clanId => {
+          if (clanId.startsWith("clan_bot_")) {
+            siege.scores[clanId].points += Math.floor(Math.random() * 50) + 10;
+          }
+        });
+        saveSiegeData(region.id, siege);
+      }
+      
+      if (phase.phase === "siege" && !siege.resolved) {
+        resolveSiege(region.id);
+      }
+    });
+  }
   
   localStorage.setItem("last_siege_sim", now);
 }
@@ -211,11 +215,13 @@ function initializeFortresses() {
   const allClans = getAvailableClans();
   const bots = allClans.filter(c => c.id.startsWith("clan_bot_"));
   
-  REGIONS.forEach((region, i) => {
-    if (bots[i]) {
-      transferFortressControl(region.id, bots[i].id);
-    }
-  });
+  if (typeof REGIONS !== "undefined" && Array.isArray(REGIONS)) {
+    REGIONS.forEach((region, i) => {
+      if (bots[i]) {
+        transferFortressControl(region.id, bots[i].id);
+      }
+    });
+  }
   
   localStorage.setItem("fortresses_initialized", "true");
 }
