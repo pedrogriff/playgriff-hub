@@ -61,19 +61,63 @@ function initNavigation() {
 }
 
 /* =========================================================================
-   2. COMPFLOW AGENTIC ENGINE
+   2. COMPFLOW TOTAL REWARDS & OFFER PLATFORM ENGINE
    ========================================================================= */
-const SALARY_BANDS = {
-  L3: { min: 140000, mid: 165000, max: 190000, targetEquity: 400 },
-  L4: { min: 170000, mid: 200000, max: 230000, targetEquity: 650 },
-  L5: { min: 210000, mid: 250000, max: 290000, targetEquity: 900 },
-  L6: { min: 260000, mid: 310000, max: 360000, targetEquity: 1400 },
-  L7: { min: 320000, mid: 380000, max: 440000, targetEquity: 2200 },
-  L8: { min: 400000, mid: 480000, max: 560000, targetEquity: 3500 },
+const GEO_FACTORS = {
+  US_ZONE_1: 1.0,
+  US_ZONE_2: 0.90,
+  US_ZONE_3: 0.80,
 };
 
+const BASE_BANDS = {
+  L3: { min: 140000, mid: 165000, max: 190000, targetEquity: 400, targetBonusPct: 10 },
+  L4: { min: 170000, mid: 200000, max: 230000, targetEquity: 650, targetBonusPct: 15 },
+  L5: { min: 210000, mid: 250000, max: 290000, targetEquity: 900, targetBonusPct: 15 },
+  L6: { min: 260000, mid: 310000, max: 360000, targetEquity: 1400, targetBonusPct: 20 },
+  L7: { min: 320000, mid: 380000, max: 440000, targetEquity: 2200, targetBonusPct: 25 },
+  L8: { min: 400000, mid: 480000, max: 560000, targetEquity: 3500, targetBonusPct: 30 },
+};
+
+function getAdjustedBand(level, geo) {
+  const base = BASE_BANDS[level] || BASE_BANDS.L5;
+  const factor = GEO_FACTORS[geo] || 1.0;
+  return {
+    min: Math.round(base.min * factor),
+    mid: Math.round(base.mid * factor),
+    max: Math.round(base.max * factor),
+    targetEquity: base.targetEquity,
+    targetBonusPct: base.targetBonusPct,
+  };
+}
+
+let currentOfferState = 'OFFER_DRAFT';
+
 function initCompFlow() {
+  initSubNavigation();
+  initEmployeePlanning();
+  initOfferStudio();
+}
+
+function initSubNavigation() {
+  const subnavBtns = document.querySelectorAll('.subnav-btn');
+  const subpanes = document.querySelectorAll('.subpane');
+
+  subnavBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetSubpane = btn.getAttribute('data-subpane');
+      subnavBtns.forEach(b => b.classList.remove('active'));
+      subpanes.forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      const pane = document.getElementById(targetSubpane);
+      if (pane) pane.classList.add('active');
+    });
+  });
+}
+
+function initEmployeePlanning() {
   const levelSelect = document.getElementById('input-level');
+  const geoSelect = document.getElementById('input-geo');
   const equityHint = document.getElementById('hint-equity-target');
   const form = document.getElementById('compflow-form');
 
@@ -81,13 +125,15 @@ function initCompFlow() {
 
   const updateHint = () => {
     const lvl = levelSelect.value;
-    const band = SALARY_BANDS[lvl];
-    if (band && equityHint) {
-      equityHint.textContent = `${lvl} Target Baseline: ${band.targetEquity.toLocaleString()} GSUs (Midpoint: $${(band.mid / 1000).toFixed(0)}k)`;
+    const geo = geoSelect ? geoSelect.value : 'US_ZONE_1';
+    const band = getAdjustedBand(lvl, geo);
+    if (equityHint) {
+      equityHint.textContent = `${lvl} ${geo.replace('_', ' ')} Target: ${band.targetEquity.toLocaleString()} GSUs (Bonus Target: ${band.targetBonusPct}%, Midpoint: $${(band.mid / 1000).toFixed(0)}k)`;
     }
   };
 
   levelSelect.addEventListener('change', updateHint);
+  if (geoSelect) geoSelect.addEventListener('change', updateHint);
   updateHint();
 
   form.addEventListener('submit', async (e) => {
@@ -98,15 +144,22 @@ function initCompFlow() {
 
 async function runAgenticAudit() {
   const level = document.getElementById('input-level').value;
+  const geo = document.getElementById('input-geo').value;
   const rating = document.getElementById('input-rating').value;
   const currentBase = parseFloat(document.getElementById('input-current-base').value) || 0;
   const proposedBase = parseFloat(document.getElementById('input-proposed-base').value) || 0;
+  const ipf = parseFloat(document.getElementById('input-ipf').value) || 1.0;
+  const cpf = parseFloat(document.getElementById('input-cpf').value) || 1.0;
   const proposedGSUs = parseInt(document.getElementById('input-proposed-gsus').value, 10) || 0;
 
-  const band = SALARY_BANDS[level];
+  const band = getAdjustedBand(level, geo);
   const compaRatio = (proposedBase / band.mid).toFixed(3);
   const equityRatio = (proposedGSUs / band.targetEquity).toFixed(2);
   const velocityPct = currentBase > 0 ? (((proposedBase - currentBase) / currentBase) * 100).toFixed(1) : '0.0';
+
+  // Bonus Formula: Base * TargetBonusPct * IPF * CPF
+  const targetBonusAmount = proposedBase * (band.targetBonusPct / 100);
+  const calculatedBonus = Math.round(targetBonusAmount * ipf * cpf);
 
   const feed = document.getElementById('tool-log-feed');
   const badgeState = document.getElementById('badge-decision-state');
@@ -116,37 +169,42 @@ async function runAgenticAudit() {
 
   const metricCompa = document.getElementById('metric-compa-ratio');
   const metricCompaStatus = document.getElementById('metric-compa-status');
-  const metricEquity = document.getElementById('metric-equity-mult');
-  const metricEquityStatus = document.getElementById('metric-equity-status');
+  const metricBonus = document.getElementById('metric-bonus-amt');
+  const metricBonusSub = document.getElementById('metric-bonus-sub');
   const metricVelocity = document.getElementById('metric-velocity');
 
   // Step 1: Submitted
   setStepActive('step-submitted');
   feed.innerHTML = '';
-  addLog(feed, `[Workflow] Review submitted for Employee (${level}, ${rating.replace('_', ' ')}).`, 'log-dim');
+  addLog(feed, `[Workflow] Employee Review submitted (${level}, ${geo}, ${rating.replace('_', ' ')}).`, 'log-dim');
 
-  await sleep(250);
+  await sleep(220);
   setStepActive('step-auditing');
   badgeState.textContent = 'AGENT AUDITING';
   badgeState.className = 'badge badge-warning';
 
   // Step 2: Tool 1 - Compa-Ratio & Salary Band
   addLog(feed, `[Tool Invocation] calculate_compa_ratio(proposed=$${proposedBase.toLocaleString()}, mid=$${band.mid.toLocaleString()}) -> ${compaRatio}`, 'log-tool');
-  await sleep(250);
+  await sleep(220);
 
   let bandPass = true;
   if (proposedBase < band.min) {
     bandPass = false;
-    addLog(feed, `[Tool Finding: FAIL] verify_salary_band_compliance: Base is BELOW min ($${band.min.toLocaleString()})`, 'log-warn');
+    addLog(feed, `[Tool Finding: FAIL] verify_salary_band_compliance: Base below band floor ($${band.min.toLocaleString()})`, 'log-warn');
   } else if (proposedBase > band.max) {
     bandPass = false;
-    addLog(feed, `[Tool Finding: FAIL] verify_salary_band_compliance: Base EXCEEDS max ($${band.max.toLocaleString()})`, 'log-error');
+    addLog(feed, `[Tool Finding: FAIL] verify_salary_band_compliance: Base exceeds band ceiling ($${band.max.toLocaleString()})`, 'log-error');
   } else {
-    addLog(feed, `[Tool Finding: PASS] verify_salary_band_compliance: Base in [$${band.min.toLocaleString()}, $${band.max.toLocaleString()}]`, 'log-success');
+    addLog(feed, `[Tool Finding: PASS] verify_salary_band_compliance: Base in range [$${band.min.toLocaleString()}, $${band.max.toLocaleString()}]`, 'log-success');
   }
 
-  // Step 3: Tool 2 - Equity Guidelines
-  await sleep(250);
+  // Step 3: Tool 2 - Performance Bonus Formula
+  await sleep(220);
+  addLog(feed, `[Tool Invocation] calculate_target_bonus(base=$${proposedBase.toLocaleString()}, target=${band.targetBonusPct}%, IPF=${ipf}x, CPF=${cpf}x) -> $${calculatedBonus.toLocaleString()}`, 'log-tool');
+  addLog(feed, `[Tool Finding: PASS] evaluate_bonus_compliance: Bonus fully funded within 105% CPF guideline`, 'log-success');
+
+  // Step 4: Tool 3 - Equity Guidelines
+  await sleep(220);
   addLog(feed, `[Tool Invocation] evaluate_equity_guidelines(gsus=${proposedGSUs.toLocaleString()}, target=${band.targetEquity}, rating=${rating})`, 'log-tool');
 
   let equityPass = true;
@@ -157,13 +215,13 @@ async function runAgenticAudit() {
     STRONGLY_OUTPERFORMS: [1.35, 1.8],
     SUPERB: [1.7, 2.3],
   };
-  const [minM, maxM] = ratingMults[rating];
+  const [minM, maxM] = ratingMults[rating] || [0.8, 1.2];
   const minG = Math.floor(band.targetEquity * minM);
   const maxG = Math.floor(band.targetEquity * maxM);
 
   if (proposedGSUs < minG) {
     equityPass = false;
-    addLog(feed, `[Tool Finding: WARN] evaluate_equity_guidelines: ${proposedGSUs} GSUs below min expectation (${minG} GSUs)`, 'log-warn');
+    addLog(feed, `[Tool Finding: WARN] evaluate_equity_guidelines: ${proposedGSUs} GSUs below guideline (${minG} GSUs)`, 'log-warn');
   } else if (proposedGSUs > maxG) {
     equityPass = false;
     addLog(feed, `[Tool Finding: FAIL] evaluate_equity_guidelines: ${proposedGSUs} GSUs exceeds max allowable (${maxG} GSUs)`, 'log-error');
@@ -171,28 +229,28 @@ async function runAgenticAudit() {
     addLog(feed, `[Tool Finding: PASS] evaluate_equity_guidelines: ${proposedGSUs} GSUs within [${minG}, ${maxG}] (${equityRatio}x)`, 'log-success');
   }
 
-  // Step 4: Tool 3 - Velocity
-  await sleep(250);
+  // Step 5: Tool 4 - Velocity & Rating Compliance
+  await sleep(220);
   let velocityPass = true;
   if (rating === 'NEEDS_IMPROVEMENT' && proposedBase > currentBase) {
     velocityPass = false;
-    addLog(feed, `[Tool Finding: FAIL] evaluate_base_increase_velocity: Pay raise blocked for Needs Improvement`, 'log-error');
+    addLog(feed, `[Tool Finding: FAIL] evaluate_base_increase_velocity: Base raise strictly blocked for Needs Improvement`, 'log-error');
   } else if (parseFloat(velocityPct) > 20.0) {
     velocityPass = false;
-    addLog(feed, `[Tool Finding: FAIL] evaluate_base_increase_velocity: +${velocityPct}% exceeds +20.0% merit cap`, 'log-error');
+    addLog(feed, `[Tool Finding: FAIL] evaluate_base_increase_velocity: +${velocityPct}% exceeds +20.0% merit velocity cap`, 'log-error');
   } else {
-    addLog(feed, `[Tool Finding: PASS] evaluate_base_increase_velocity: +${velocityPct}% is within policy bounds`, 'log-success');
+    addLog(feed, `[Tool Finding: PASS] evaluate_base_increase_velocity: +${velocityPct}% merit increase within policy`, 'log-success');
   }
 
-  // Step 5: Synthesize Decision
-  await sleep(300);
+  // Step 6: Synthesize Decision
+  await sleep(250);
   setStepActive('step-decision');
 
   metricCompa.textContent = compaRatio;
   metricCompaStatus.textContent = `Mid: $${(band.mid / 1000).toFixed(0)}k | Band: [${(band.min / 1000).toFixed(0)}k-${(band.max / 1000).toFixed(0)}k]`;
 
-  metricEquity.textContent = `${equityRatio}x`;
-  metricEquityStatus.textContent = `Target: ${band.targetEquity} | Allowable: [${minG}-${maxG}]`;
+  metricBonus.textContent = `$${calculatedBonus.toLocaleString()}`;
+  metricBonusSub.textContent = `${band.targetBonusPct}% Target × ${(ipf * cpf).toFixed(2)}x Multiplier`;
 
   metricVelocity.textContent = `+${velocityPct}%`;
 
@@ -203,14 +261,14 @@ async function runAgenticAudit() {
     badgeState.className = 'badge badge-danger';
     banner.classList.add('rejected');
     title.textContent = '❌ REJECTED BY GOVERNANCE POLICY';
-    desc.textContent = `Employee with rating '${rating}' is strictly ineligible for base salary increases under enterprise total rewards governance.`;
+    desc.textContent = `Employees with rating '${rating}' are strictly ineligible for base salary increases under enterprise total rewards governance.`;
     addLog(feed, `[Agent Synthesis: REJECT] State Machine Transition: SUBMITTED -> REJECTED`, 'log-error');
   } else if (!bandPass || !equityPass || !velocityPass) {
     badgeState.textContent = 'VP EXCEPTION REQUIRED';
     badgeState.className = 'badge badge-warning';
     banner.classList.add('escalated');
     title.textContent = '⚠️ ESCALATED TO VP CALIBRATION COMMITTEE';
-    desc.textContent = `Proposal contains non-standard deviations (Compa-Ratio: ${compaRatio}, Equity: ${equityRatio}x). Detailed exception brief synthesized for executive review.`;
+    desc.textContent = `Proposal contains non-standard policy deviations (Compa-Ratio: ${compaRatio}, Equity: ${equityRatio}x). Detailed exception brief synthesized for executive review.`;
     addLog(feed, `[Agent Synthesis: ESCALATE] State Machine Transition: SUBMITTED -> VP_EXCEPTION_REQUIRED`, 'log-warn');
   } else {
     badgeState.textContent = 'AUTO-APPROVED';
@@ -220,6 +278,208 @@ async function runAgenticAudit() {
     desc.textContent = `Proposal satisfies all salary band limits (Compa-Ratio: ${compaRatio}), performance equity multipliers (${equityRatio}x of target), and merit velocity caps.`;
     addLog(feed, `[Agent Synthesis: APPROVED] State Machine Transition: SUBMITTED -> AUTO_APPROVED`, 'log-success');
   }
+}
+
+/* =========================================================================
+   2.1. NEW HIRE OFFER STUDIO LOGIC
+   ========================================================================= */
+function initOfferStudio() {
+  const form = document.getElementById('offer-form');
+  const levelSelect = document.getElementById('offer-level');
+  const geoSelect = document.getElementById('offer-geo');
+  const equityHint = document.getElementById('offer-equity-hint');
+
+  const btnVpApprove = document.getElementById('btn-offer-vp-approve');
+  const btnExtend = document.getElementById('btn-offer-extend');
+  const btnAccept = document.getElementById('btn-offer-accept');
+
+  if (!form || !levelSelect) return;
+
+  const updateOfferHint = () => {
+    const lvl = levelSelect.value;
+    const geo = geoSelect ? geoSelect.value : 'US_ZONE_1';
+    const band = getAdjustedBand(lvl, geo);
+    if (equityHint) {
+      equityHint.textContent = `${lvl} ${geo.replace('_', ' ')} Guideline: ${band.targetEquity.toLocaleString()} GSUs (Max: ${Math.round(band.targetEquity * 1.5).toLocaleString()} GSUs)`;
+    }
+  };
+
+  levelSelect.addEventListener('change', updateOfferHint);
+  if (geoSelect) geoSelect.addEventListener('change', updateOfferHint);
+  updateOfferHint();
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await runOfferAudit();
+  });
+
+  if (btnVpApprove) {
+    btnVpApprove.addEventListener('click', () => {
+      transitionOfferState('OFFER_APPROVED', 'VP Exception Approved by Executive Committee');
+    });
+  }
+
+  if (btnExtend) {
+    btnExtend.addEventListener('click', () => {
+      transitionOfferState('OFFER_EXTENDED', 'Offer Letter Extended to Candidate');
+    });
+  }
+
+  if (btnAccept) {
+    btnAccept.addEventListener('click', () => {
+      transitionOfferState('OFFER_ACCEPTED', 'Candidate Formally Accepted Offer');
+    });
+  }
+}
+
+async function runOfferAudit() {
+  const candidateName = document.getElementById('offer-candidate-name').value;
+  const level = document.getElementById('offer-level').value;
+  const geo = document.getElementById('offer-geo').value;
+  const base = parseFloat(document.getElementById('offer-base').value) || 0;
+  const signon = parseFloat(document.getElementById('offer-signon').value) || 0;
+  const equity = parseInt(document.getElementById('offer-equity').value, 10) || 0;
+
+  const band = getAdjustedBand(level, geo);
+  const compa = (base / band.mid).toFixed(3);
+  const targetBonus = Math.round(base * (band.targetBonusPct / 100));
+  const ttc = base + targetBonus;
+  const y1tc = ttc + signon;
+
+  // Update pills
+  document.getElementById('pill-base').textContent = `$${base.toLocaleString()}`;
+  document.getElementById('pill-bonus').textContent = `$${targetBonus.toLocaleString()}`;
+  document.getElementById('pill-signon').textContent = `$${signon.toLocaleString()}`;
+  document.getElementById('pill-ttc').textContent = `$${ttc.toLocaleString()}`;
+  document.getElementById('pill-y1tc').textContent = `$${y1tc.toLocaleString()}`;
+
+  const feed = document.getElementById('offer-log-feed');
+  feed.innerHTML = '';
+  addLog(feed, `[Offer Workflow] Candidate offer created for ${candidateName} (${level}, ${geo}).`, 'log-dim');
+
+  setOfferStepActive('ostep-audit');
+  await sleep(200);
+
+  addLog(feed, `[Tool Invocation] calculate_compa_ratio(base=$${base.toLocaleString()}, mid=$${band.mid.toLocaleString()}) -> ${compa}`, 'log-tool');
+
+  let bandOk = true;
+  if (base > band.max) {
+    bandOk = false;
+    addLog(feed, `[Tool Finding: FAIL] verify_salary_band: Base exceeds max ($${band.max.toLocaleString()})`, 'log-error');
+  } else {
+    addLog(feed, `[Tool Finding: PASS] verify_salary_band: Base within band range [$${band.min.toLocaleString()}, $${band.max.toLocaleString()}]`, 'log-success');
+  }
+
+  await sleep(200);
+  let signonOk = true;
+  if (signon > 50000) {
+    signonOk = false;
+    addLog(feed, `[Tool Finding: ESCALATE] evaluate_sign_on_bonus: Sign-on $${signon.toLocaleString()} exceeds standard $50,000 threshold (VP Approval Required)`, 'log-warn');
+  } else {
+    addLog(feed, `[Tool Finding: PASS] evaluate_sign_on_bonus: Sign-on $${signon.toLocaleString()} <= $50,000 policy ceiling`, 'log-success');
+  }
+
+  await sleep(200);
+  let equityOk = true;
+  const maxEq = Math.round(band.targetEquity * 1.5);
+  if (equity > maxEq) {
+    equityOk = false;
+    addLog(feed, `[Tool Finding: FAIL] evaluate_equity_caps: ${equity} GSUs exceeds 1.5x new hire cap (${maxEq} GSUs)`, 'log-error');
+  } else {
+    addLog(feed, `[Tool Finding: PASS] evaluate_equity_caps: ${equity} GSUs compliant with new hire baseline`, 'log-success');
+  }
+
+  await sleep(250);
+  const banner = document.getElementById('offer-decision-banner');
+  const title = document.getElementById('offer-decision-title');
+  const desc = document.getElementById('offer-decision-text');
+  const badge = document.getElementById('offer-badge-state');
+
+  const btnVpApprove = document.getElementById('btn-offer-vp-approve');
+  const btnExtend = document.getElementById('btn-offer-extend');
+  const btnAccept = document.getElementById('btn-offer-accept');
+
+  banner.className = 'decision-banner';
+  btnVpApprove.style.display = 'none';
+  btnExtend.style.display = 'none';
+  btnAccept.style.display = 'none';
+
+  if (!signonOk || !bandOk || !equityOk) {
+    currentOfferState = 'VP_EXCEPTION_REQUIRED';
+    badge.textContent = 'VP EXCEPTION REQUIRED';
+    badge.className = 'badge badge-warning';
+    banner.classList.add('escalated');
+    title.textContent = '⚠️ VP EXCEPTION APPROVAL REQUIRED';
+    desc.textContent = `Offer exceeds standard policy guidelines ($${signon.toLocaleString()} sign-on or compa ${compa}). Requires VP Engineering / Compensation Committee approval.`;
+    addLog(feed, `[Offer State Machine] OFFER_DRAFT -> VP_EXCEPTION_REQUIRED`, 'log-warn');
+    btnVpApprove.style.display = 'inline-flex';
+  } else {
+    currentOfferState = 'OFFER_APPROVED';
+    badge.textContent = 'OFFER APPROVED';
+    badge.className = 'badge badge-success';
+    banner.classList.add('approved');
+    title.textContent = '✅ OFFER APPROVED';
+    desc.textContent = `Offer package conforms to all location salary bands, standard sign-on limits, and equity allocations. Ready to extend to candidate.`;
+    addLog(feed, `[Offer State Machine] OFFER_DRAFT -> OFFER_APPROVED`, 'log-success');
+    setOfferStepActive('ostep-approved');
+    btnExtend.style.display = 'inline-flex';
+  }
+}
+
+function transitionOfferState(newState, message) {
+  currentOfferState = newState;
+  const feed = document.getElementById('offer-log-feed');
+  const badge = document.getElementById('offer-badge-state');
+  const banner = document.getElementById('offer-decision-banner');
+  const title = document.getElementById('offer-decision-title');
+  const desc = document.getElementById('offer-decision-text');
+
+  const btnVpApprove = document.getElementById('btn-offer-vp-approve');
+  const btnExtend = document.getElementById('btn-offer-extend');
+  const btnAccept = document.getElementById('btn-offer-accept');
+
+  btnVpApprove.style.display = 'none';
+  btnExtend.style.display = 'none';
+  btnAccept.style.display = 'none';
+
+  addLog(feed, `[State Transition] ${message} (New State: ${newState})`, 'log-success');
+
+  if (newState === 'OFFER_APPROVED') {
+    badge.textContent = 'OFFER APPROVED';
+    badge.className = 'badge badge-success';
+    setOfferStepActive('ostep-approved');
+    banner.className = 'decision-banner approved';
+    title.textContent = '✅ VP EXCEPTION SIGNED & APPROVED';
+    desc.textContent = 'Executive approval recorded with full immutable audit logging. Ready to generate offer letter.';
+    btnExtend.style.display = 'inline-flex';
+  } else if (newState === 'OFFER_EXTENDED') {
+    badge.textContent = 'OFFER EXTENDED';
+    badge.className = 'badge badge-warning';
+    setOfferStepActive('ostep-extended');
+    banner.className = 'decision-banner';
+    title.textContent = '📨 OFFER LETTER EXTENDED TO CANDIDATE';
+    desc.textContent = 'Formal offer package delivered via DocuSign with 7-day expiration window.';
+    btnAccept.style.display = 'inline-flex';
+  } else if (newState === 'OFFER_ACCEPTED') {
+    badge.textContent = 'OFFER ACCEPTED';
+    badge.className = 'badge badge-success';
+    setOfferStepActive('ostep-accepted');
+    banner.className = 'decision-banner approved';
+    title.textContent = '🎉 CANDIDATE ACCEPTED OFFER';
+    desc.textContent = 'Candidate signature verified. Pre-boarding workflow and headcount budget reservation completed.';
+  }
+}
+
+function setOfferStepActive(stepId) {
+  const steps = ['ostep-draft', 'ostep-audit', 'ostep-approved', 'ostep-extended', 'ostep-accepted'];
+  const activeIdx = steps.indexOf(stepId);
+  steps.forEach((id, idx) => {
+    const el = document.getElementById(id);
+    if (el) {
+      if (idx <= activeIdx) el.classList.add('active');
+      else el.classList.remove('active');
+    }
+  });
 }
 
 function addLog(container, text, className) {
@@ -243,9 +503,6 @@ function setStepActive(stepId) {
 }
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 /* =========================================================================
    3. VESTINGSIM & MONTE CARLO ENGINE
    ========================================================================= */

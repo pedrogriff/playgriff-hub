@@ -52,9 +52,9 @@
         </p>
 
         <div class="hero-stats">
-          <div class="stat-pill">⚡ 64k+ Proposals / Sec</div>
+          <div class="stat-pill">⚡ 20k+ Audits / Sec</div>
           <div class="stat-pill">📈 19M+ Monte Carlo Paths</div>
-          <div class="stat-pill">🤖 ReAct Tool Calling</div>
+          <div class="stat-pill">🤖 Total Rewards Microservice</div>
           <div class="stat-pill">☸️ Talos Linux K8s</div>
         </div>
       </div>
@@ -65,20 +65,21 @@
           <div class="sys-header">
             <span class="sys-icon">🤖</span>
             <div>
-              <h3 class="sys-title">CompFlow Agentic Platform</h3>
-              <p class="sys-meta">Agentic ReAct • State Machine • Tool Calling</p>
+              <h3 class="sys-title">CompFlow Total Rewards Platform</h3>
+              <p class="sys-meta">Distributed Microservice • PostgreSQL 16 • Redis 7 • Dual State Machines</p>
             </div>
           </div>
           <p class="sys-desc">
-            Autonomous compensation calibration copilot that validates manager review proposals against benchmark salary bands, equity guidelines, and velocity caps via deterministic tools.
+            Enterprise compensation calibration microservice automating employee review planning (merit %, formula bonuses, equity refreshes, department budget burn) and new hire offer approvals with location tiers and VP exception escalation.
           </p>
           <div class="sys-tags">
-            <span class="tag">Python 3.13</span>
-            <span class="tag">State Machines</span>
-            <span class="tag">97% Test Coverage</span>
+            <span class="tag">FastAPI Async</span>
+            <span class="tag">PostgreSQL + Alembic</span>
+            <span class="tag">Redis Cache</span>
+            <span class="tag">ArgoCD GitOps</span>
           </div>
           <div class="sys-actions">
-            <button class="btn btn-sm btn-primary jump-tab-btn" data-target="tab-compflow">⚡ Try Live Interactive Copilot</button>
+            <button class="btn btn-sm btn-primary jump-tab-btn" data-target="tab-compflow">⚡ Try Live Planning &amp; Offer Studio</button>
             <a href="https://github.com/pedrogriff/comp-flow-platform" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
           </div>
         </div>
@@ -154,35 +155,55 @@
       </div>
     </section>
 
-    <!-- ─── TAB: COMPFLOW AGENT (INTERACTIVE CARD) ──────────── -->
+    <!-- ─── TAB: COMPFLOW AGENT (TOTAL REWARDS PLATFORM) ───── -->
     <section class="tab-pane" id="tab-compflow">
       <div class="section-intro">
-        <div class="intro-tag">Agentic AI &amp; Total Rewards</div>
-        <h2>CompFlow: Autonomous Compensation Calibration Copilot</h2>
-        <p>An autonomous agent that audits manager review proposals against benchmark salary bands, equity guidelines, and corporate merit policies via deterministic tool calling.</p>
+        <div class="intro-tag">Distributed Microservice &amp; Agentic AI</div>
+        <h2>CompFlow: Total Rewards Planning &amp; Offer Orchestration Platform</h2>
+        <p>Enterprise compensation calibration engine managing both <strong>Current Employee Annual Review Planning</strong> (Merit %, Formula Bonus, Equity Refreshes &amp; Department Budgets) and <strong>New Hire Candidate Offers</strong> with location-tiered salary bands and automated VP exception escalation.</p>
       </div>
 
-      <div class="grid-2col">
-        <!-- Proposal Input Form -->
-        <div class="card card-form">
-          <div class="card-header">
-            <h3>📝 Submit Compensation Proposal</h3>
-            <span class="badge badge-neutral">Input Controls</span>
-          </div>
+      <!-- Sub-Navigation Bar -->
+      <div class="subnav-bar">
+        <button class="subnav-btn active" data-subpane="subpane-employee">👔 Employee Annual Planning</button>
+        <button class="subnav-btn" data-subpane="subpane-offer">🤝 New Hire Offer Studio</button>
+        <button class="subnav-btn" data-subpane="subpane-budget">📊 Department Budget Pools</button>
+        <button class="subnav-btn" data-subpane="subpane-api">🔌 Microservice API Explorer</button>
+      </div>
 
-          <form id="compflow-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="input-level">Job Level</label>
-                <select id="input-level" class="form-control">
-                  <option value="L3">L3 (Software Engineer II)</option>
-                  <option value="L4">L4 (Software Engineer III)</option>
-                  <option value="L5" selected>L5 (Senior Software Engineer)</option>
-                  <option value="L6">L6 (Staff Software Engineer)</option>
-                  <option value="L7">L7 (Senior Staff SWE)</option>
-                  <option value="L8">L8 (Principal SWE)</option>
-                </select>
+      <!-- 1. SUBPANE: EMPLOYEE ANNUAL PLANNING -->
+      <div class="subpane active" id="subpane-employee">
+        <div class="grid-2col">
+          <!-- Proposal Input Form -->
+          <div class="card card-form">
+            <div class="card-header">
+              <h3>📝 Employee Merit &amp; Bonus Proposal</h3>
+              <span class="badge badge-neutral">Cycle: FY2026</span>
+            </div>
+
+            <form id="compflow-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="input-level">Job Level</label>
+                  <select id="input-level" class="form-control">
+                    <option value="L3">L3 (Software Engineer II)</option>
+                    <option value="L4">L4 (Software Engineer III)</option>
+                    <option value="L5" selected>L5 (Senior Software Engineer)</option>
+                    <option value="L6">L6 (Staff Software Engineer)</option>
+                    <option value="L7">L7 (Senior Staff SWE)</option>
+                    <option value="L8">L8 (Principal SWE)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="input-geo">Location Tier</label>
+                  <select id="input-geo" class="form-control">
+                    <option value="US_ZONE_1" selected>US Zone 1 (SF Bay Area, NYC - 100%)</option>
+                    <option value="US_ZONE_2">US Zone 2 (Seattle, Austin - 90%)</option>
+                    <option value="US_ZONE_3">US Zone 3 (Remote, National - 80%)</option>
+                  </select>
+                </div>
               </div>
+
               <div class="form-group">
                 <label for="input-rating">Performance Rating</label>
                 <select id="input-rating" class="form-control">
@@ -190,79 +211,334 @@
                   <option value="CONSISTENTLY_MEETS" selected>Consistently Meets</option>
                   <option value="EXCEEDS">Exceeds Expectations</option>
                   <option value="STRONGLY_OUTPERFORMS">Strongly Outperforms</option>
-                  <option value="SUPERB">Superb (Top Tier)</option>
+                  <option value="SUPERB">Superb (Top 5%)</option>
                 </select>
               </div>
-            </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label for="input-current-base">Current Base Salary ($)</label>
-                <input type="number" id="input-current-base" class="form-control" value="230000" step="5000">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="input-current-base">Current Base Salary ($)</label>
+                  <input type="number" id="input-current-base" class="form-control" value="230000" step="5000">
+                </div>
+                <div class="form-group">
+                  <label for="input-proposed-base">Proposed Base Salary ($)</label>
+                  <input type="number" id="input-proposed-base" class="form-control" value="245000" step="5000">
+                </div>
               </div>
+
+              <!-- Performance Bonus Formula Controls -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="input-ipf">Individual Perf Factor (IPF)</label>
+                  <input type="number" id="input-ipf" class="form-control" value="1.10" step="0.05" min="0.0" max="2.0">
+                </div>
+                <div class="form-group">
+                  <label for="input-cpf">Company Perf Factor (CPF)</label>
+                  <input type="number" id="input-cpf" class="form-control" value="1.05" step="0.05" min="0.5" max="1.5">
+                </div>
+              </div>
+
               <div class="form-group">
-                <label for="input-proposed-base">Proposed Base Salary ($)</label>
-                <input type="number" id="input-proposed-base" class="form-control" value="250000" step="5000">
+                <label for="input-proposed-gsus">Proposed Equity Refresh (GSUs)</label>
+                <input type="number" id="input-proposed-gsus" class="form-control" value="950" step="50">
+                <span class="field-hint" id="hint-equity-target">L5 Zone 1 Target: 900 GSUs (Bonus Target: 15%)</span>
+              </div>
+
+              <button type="submit" id="btn-audit-proposal" class="btn btn-primary btn-block">
+                🚀 Run Autonomous Agentic Audit
+              </button>
+            </form>
+          </div>
+
+          <!-- Agent Decision & Execution Stream -->
+          <div class="card card-audit">
+            <div class="card-header">
+              <h3>⚡ Agentic Calibration Stream</h3>
+              <span class="badge" id="badge-decision-state">READY</span>
+            </div>
+
+            <!-- State Machine Progress Indicator -->
+            <div class="state-progress">
+              <div class="state-step active" id="step-draft">1. Draft</div>
+              <div class="state-step" id="step-submitted">2. Submitted</div>
+              <div class="state-step" id="step-auditing">3. Agent Audit</div>
+              <div class="state-step" id="step-decision">4. Outcome</div>
+            </div>
+
+            <!-- Decision Output Banner -->
+            <div class="decision-banner" id="decision-banner">
+              <div class="decision-title" id="decision-title">Awaiting Proposal Submission</div>
+              <p class="decision-text" id="decision-text">Click "Run Autonomous Agentic Audit" to trigger multi-tool compliance verification.</p>
+            </div>
+
+            <!-- Key Metrics Badges -->
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <div class="metric-label">Compa-Ratio</div>
+                <div class="metric-val" id="metric-compa-ratio">0.980</div>
+                <div class="metric-sub" id="metric-compa-status">Mid: $250,000</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-label">Calculated Bonus</div>
+                <div class="metric-val" id="metric-bonus-amt">$42,446</div>
+                <div class="metric-sub" id="metric-bonus-sub">15% Target × 1.155x</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-label">Merit Velocity</div>
+                <div class="metric-val" id="metric-velocity">+6.5%</div>
+                <div class="metric-sub">Cap: +20.0%</div>
               </div>
             </div>
 
-            <div class="form-group">
-              <label for="input-proposed-gsus">Proposed Equity Refresh (GSUs)</label>
-              <input type="number" id="input-proposed-gsus" class="form-control" value="950" step="50">
-              <span class="field-hint" id="hint-equity-target">L5 Target Baseline: 900 GSUs</span>
+            <!-- Live Tool Inspection Feed -->
+            <div class="tool-log-container">
+              <div class="tool-log-header">Deterministic Tool Invocation Feed</div>
+              <div class="tool-log-feed" id="tool-log-feed">
+                <div class="log-entry log-dim">[System Ready] Connected to deterministic calibration tools.</div>
+              </div>
             </div>
-
-            <button type="submit" id="btn-audit-proposal" class="btn btn-primary btn-block">
-              🚀 Run Autonomous Agentic Audit
-            </button>
-          </form>
+          </div>
         </div>
+      </div>
 
-        <!-- Agent Decision & Execution Stream -->
-        <div class="card card-audit">
+      <!-- 2. SUBPANE: NEW HIRE CANDIDATE OFFER STUDIO -->
+      <div class="subpane" id="subpane-offer">
+        <div class="grid-2col">
+          <!-- Offer Form -->
+          <div class="card card-form">
+            <div class="card-header">
+              <h3>🤝 Candidate Offer Package Builder</h3>
+              <span class="badge badge-neutral">Recruiting Workflow</span>
+            </div>
+
+            <form id="offer-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="offer-candidate-name">Candidate Name</label>
+                  <input type="text" id="offer-candidate-name" class="form-control" value="Cassandra Vance">
+                </div>
+                <div class="form-group">
+                  <label for="offer-dept">Target Department</label>
+                  <select id="offer-dept" class="form-control">
+                    <option value="INFRA">Core Systems &amp; Infrastructure</option>
+                    <option value="ML">Machine Learning &amp; AI Platform</option>
+                    <option value="HRTECH">Total Rewards &amp; People Tech</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="offer-level">Job Level</label>
+                  <select id="offer-level" class="form-control">
+                    <option value="L3">L3 (Software Engineer II)</option>
+                    <option value="L4">L4 (Software Engineer III)</option>
+                    <option value="L5" selected>L5 (Senior Software Engineer)</option>
+                    <option value="L6">L6 (Staff Software Engineer)</option>
+                    <option value="L7">L7 (Senior Staff SWE)</option>
+                    <option value="L8">L8 (Principal SWE)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="offer-geo">Candidate Location Tier</label>
+                  <select id="offer-geo" class="form-control">
+                    <option value="US_ZONE_1" selected>US Zone 1 (SF/NYC - 100%)</option>
+                    <option value="US_ZONE_2">US Zone 2 (Seattle/Austin - 90%)</option>
+                    <option value="US_ZONE_3">US Zone 3 (Remote/National - 80%)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="offer-base">Proposed Base Salary ($)</label>
+                  <input type="number" id="offer-base" class="form-control" value="240000" step="5000">
+                </div>
+                <div class="form-group">
+                  <label for="offer-signon">Sign-on Bonus ($)</label>
+                  <input type="number" id="offer-signon" class="form-control" value="35000" step="5000">
+                  <span class="field-hint" id="offer-signon-hint">Threshold: &gt;$50k triggers VP Exception</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="offer-equity">New Hire Equity Grant (GSUs)</label>
+                <input type="number" id="offer-equity" class="form-control" value="1000" step="50">
+                <span class="field-hint" id="offer-equity-hint">L5 Zone 1 Guideline: 900 GSUs (Max: 1,350 GSUs)</span>
+              </div>
+
+              <button type="submit" id="btn-audit-offer" class="btn btn-primary btn-block">
+                ⚡ Audit Candidate Offer Package
+              </button>
+            </form>
+          </div>
+
+          <!-- Offer Decision Stream & Compensation Breakdown -->
+          <div class="card card-audit">
+            <div class="card-header">
+              <h3>📄 Offer Approval Lifecycle</h3>
+              <span class="badge" id="offer-badge-state">OFFER DRAFT</span>
+            </div>
+
+            <!-- Offer Lifecycle Steps -->
+            <div class="state-progress">
+              <div class="state-step active" id="ostep-draft">1. Draft</div>
+              <div class="state-step" id="ostep-audit">2. Audited</div>
+              <div class="state-step" id="ostep-approved">3. Approved</div>
+              <div class="state-step" id="ostep-extended">4. Extended</div>
+              <div class="state-step" id="ostep-accepted">5. Accepted</div>
+            </div>
+
+            <div class="decision-banner" id="offer-decision-banner">
+              <div class="decision-title" id="offer-decision-title">Ready for Policy Audit</div>
+              <p class="decision-text" id="offer-decision-text">Audit offer terms against salary bands, sign-on thresholds, and equity guidelines.</p>
+            </div>
+
+            <!-- Total Comp Breakdown -->
+            <div class="comp-pill-group">
+              <div class="comp-pill">Base: <strong id="pill-base">$240,000</strong></div>
+              <div class="comp-pill">Target Bonus (15%): <strong id="pill-bonus">$36,000</strong></div>
+              <div class="comp-pill">Sign-on: <strong id="pill-signon">$35,000</strong></div>
+              <div class="comp-pill">Total Target Cash: <strong id="pill-ttc">$276,000</strong></div>
+              <div class="comp-pill">First-Year Direct Comp: <strong id="pill-y1tc">$311,000</strong></div>
+            </div>
+
+            <div class="sys-actions" style="margin-top: 14px; gap: 8px;">
+              <button type="button" class="btn btn-sm btn-outline" id="btn-offer-vp-approve" style="display: none;">✍️ Sign VP Exception</button>
+              <button type="button" class="btn btn-sm btn-primary" id="btn-offer-extend" style="display: none;">📨 Extend Offer Letter</button>
+              <button type="button" class="btn btn-sm btn-outline" id="btn-offer-accept" style="display: none;">🎉 Record Acceptance</button>
+            </div>
+
+            <div class="tool-log-container" style="margin-top: 14px;">
+              <div class="tool-log-header">Offer Policy Verification Log</div>
+              <div class="tool-log-feed" id="offer-log-feed">
+                <div class="log-entry log-dim">[System Ready] Configured with location tier factors (Zone 1: 1.0, Zone 2: 0.9, Zone 3: 0.8).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. SUBPANE: DEPARTMENT BUDGET POOLS -->
+      <div class="subpane" id="subpane-budget">
+        <div class="card">
           <div class="card-header">
-            <h3>⚡ Agentic Decision &amp; Tool-Calling Stream</h3>
-            <span class="badge" id="badge-decision-state">READY</span>
+            <h3>📊 FY2026 Departmental Budget Depletion Gauges</h3>
+            <span class="badge badge-success">Atomic Redis Counters</span>
           </div>
+          <p class="card-desc">Real-time budget pool governance tracking merit salary burn, performance bonus reserves, and equity allocation ceilings across engineering departments.</p>
 
-          <!-- State Machine Progress Indicator -->
-          <div class="state-progress">
-            <div class="state-step active" id="step-draft">1. Draft</div>
-            <div class="state-step" id="step-submitted">2. Submitted</div>
-            <div class="state-step" id="step-auditing">3. Agent Audit</div>
-            <div class="state-step" id="step-decision">4. Outcome</div>
-          </div>
-
-          <!-- Decision Output Banner -->
-          <div class="decision-banner" id="decision-banner">
-            <div class="decision-title" id="decision-title">Awaiting Proposal Submission</div>
-            <p class="decision-text" id="decision-text">Click "Run Autonomous Agentic Audit" to trigger multi-tool compliance verification.</p>
-          </div>
-
-          <!-- Key Metrics Badges -->
-          <div class="metrics-grid">
-            <div class="metric-card">
-              <div class="metric-label">Compa-Ratio</div>
-              <div class="metric-val" id="metric-compa-ratio">1.000</div>
-              <div class="metric-sub" id="metric-compa-status">Band Midpoint: $250k</div>
+          <div class="budget-meter-container">
+            <!-- Metric 1: Merit Budget -->
+            <div class="budget-meter-item">
+              <div class="budget-meter-header">
+                <div><strong>Platform Engineering — Merit Increase Budget</strong></div>
+                <div><span id="budget-merit-spent">$184,500</span> / <span id="budget-merit-allocated">$320,000</span> (<strong id="budget-merit-pct">57.7%</strong>)</div>
+              </div>
+              <div class="budget-meter-bar">
+                <div class="budget-meter-fill fill-emerald" id="bar-merit-fill" style="width: 57.7%;"></div>
+              </div>
             </div>
-            <div class="metric-card">
-              <div class="metric-label">Equity Multiple</div>
-              <div class="metric-val" id="metric-equity-mult">1.06x</div>
-              <div class="metric-sub" id="metric-equity-status">Target: 900 GSUs</div>
+
+            <!-- Metric 2: Bonus Pool -->
+            <div class="budget-meter-item">
+              <div class="budget-meter-header">
+                <div><strong>Global Engineering Performance Bonus Pool Funding (105% CPF)</strong></div>
+                <div><span id="budget-bonus-spent">$252,000</span> / <span id="budget-bonus-allocated">$240,000</span> (<strong id="budget-bonus-pct">105.0%</strong>)</div>
+              </div>
+              <div class="budget-meter-bar">
+                <div class="budget-meter-fill fill-blue" id="bar-bonus-fill" style="width: 85%;"></div>
+              </div>
             </div>
-            <div class="metric-card">
-              <div class="metric-label">Merit Velocity</div>
-              <div class="metric-val" id="metric-velocity">+8.7%</div>
-              <div class="metric-sub">Cap: +20.0%</div>
+
+            <!-- Metric 3: Equity Pool -->
+            <div class="budget-meter-item">
+              <div class="budget-meter-header">
+                <div><strong>Equity Share Allocation Pool (GSUs)</strong></div>
+                <div><span id="budget-equity-spent">24,600 GSUs</span> / <span id="budget-equity-allocated">36,000 GSUs</span> (<strong id="budget-equity-pct">68.3%</strong>)</div>
+              </div>
+              <div class="budget-meter-bar">
+                <div class="budget-meter-fill fill-amber" id="bar-equity-fill" style="width: 68.3%;"></div>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Live Tool Inspection Feed -->
-          <div class="tool-log-container">
-            <div class="tool-log-header">Deterministic Tool Invocation Feed</div>
-            <div class="tool-log-feed" id="tool-log-feed">
-              <div class="log-entry log-dim">[System Ready] Agentic tool registry initialized with enterprise salary benchmark bands.</div>
+      <!-- 4. SUBPANE: MICROSERVICE API EXPLORER -->
+      <div class="subpane" id="subpane-api">
+        <div class="card">
+          <div class="card-header">
+            <h3>🔌 CompFlow Microservice REST API Surface (`/api/v1`)</h3>
+            <span class="badge badge-success" id="api-status-badge">⚡ K8s Service Online</span>
+          </div>
+          <p class="card-desc">Explore the live asynchronous FastAPI microservice endpoints backed by PostgreSQL 16, Redis 7 caching, and ArgoCD GitOps on Talos Kubernetes.</p>
+
+          <div class="api-grid">
+            <div class="api-card">
+              <div class="api-left">
+                <span class="method-tag method-post">POST</span>
+                <div>
+                  <div class="api-path">/api/v1/auth/login</div>
+                  <div class="api-desc">Authenticate HR Admins, Managers, and Recruiters with JWT</div>
+                </div>
+              </div>
+              <span class="badge badge-neutral">Auth RBAC</span>
+            </div>
+
+            <div class="api-card">
+              <div class="api-left">
+                <span class="method-tag method-get">GET</span>
+                <div>
+                  <div class="api-path">/api/v1/bands?geo=US_ZONE_1</div>
+                  <div class="api-desc">Retrieve Redis-cached salary bands &amp; equity targets</div>
+                </div>
+              </div>
+              <span class="badge badge-neutral">&lt; 1ms Cache</span>
+            </div>
+
+            <div class="api-card">
+              <div class="api-left">
+                <span class="method-tag method-post">POST</span>
+                <div>
+                  <div class="api-path">/api/v1/cycles/{id}/proposals</div>
+                  <div class="api-desc">Submit manager merit &amp; bonus proposal for employee review</div>
+                </div>
+              </div>
+              <span class="badge badge-neutral">Planning</span>
+            </div>
+
+            <div class="api-card">
+              <div class="api-left">
+                <span class="method-tag method-post">POST</span>
+                <div>
+                  <div class="api-path">/api/v1/proposals/{id}/audit</div>
+                  <div class="api-desc">Execute deterministic agentic policy verification loop</div>
+                </div>
+              </div>
+              <span class="badge badge-neutral">ReAct Agent</span>
+            </div>
+
+            <div class="api-card">
+              <div class="api-left">
+                <span class="method-tag method-post">POST</span>
+                <div>
+                  <div class="api-path">/api/v1/offers</div>
+                  <div class="api-desc">Generate candidate offer with sign-on &amp; equity caps</div>
+                </div>
+              </div>
+              <span class="badge badge-neutral">Recruiting</span>
+            </div>
+
+            <div class="api-card">
+              <div class="api-left">
+                <span class="method-tag method-get">GET</span>
+                <div>
+                  <div class="api-path">/metrics</div>
+                  <div class="api-desc">Prometheus telemetry counters &amp; audit latency histograms</div>
+                </div>
+              </div>
+              <span class="badge badge-neutral">Observability</span>
             </div>
           </div>
         </div>
@@ -480,10 +756,11 @@
             <span class="badge badge-neutral">Declarative IaC</span>
           </div>
           <ul class="k8s-features">
+            <li><strong>CompFlow Platform:</strong> Distributed FastAPI microservice with dedicated PostgreSQL 16 StatefulSet (`local-path-storage`) and Redis 7 cache.</li>
             <li><strong>Immutable OS:</strong> Talos Linux provides no SSH, zero shell access, and API-driven declarative configuration.</li>
-            <li><strong>GitOps Sync:</strong> Cluster state continuously reconciled against Git commits.</li>
-            <li><strong>Automated TLS:</strong> Automated Let's Encrypt SSL certificate provisioning.</li>
-            <li><strong>Observability:</strong> Prometheus &amp; OpenTelemetry metric exporters.</li>
+            <li><strong>GitOps Sync:</strong> ArgoCD operator continuously reconciling declarative Kustomize applications (`apps/comp-flow-platform/`).</li>
+            <li><strong>Automated TLS:</strong> Ingress-NGINX with cert-manager cluster issuer certificates.</li>
+            <li><strong>Observability:</strong> Prometheus metric scrapers on `/metrics`.</li>
           </ul>
         </div>
       </div>
