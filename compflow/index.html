@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CompFlow Platform — Enterprise Total Rewards & Calibration Suite</title>
+  <meta name="description" content="Enterprise Total Rewards Calibration & Offer Orchestration Platform with deterministic AI audits, multi-tier salary bands, and real-time budget depletion tracking.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="enterprise-app">
+
+  <!-- ─── TOP GLOBAL APPLICATION BAR ────────────────────────── -->
+  <header class="app-topbar">
+    <div class="topbar-left">
+      <a href="../" class="back-hub-btn" title="Return to playgriff.me Overview">
+        <span class="back-arrow">←</span>
+        <span class="back-text">playgriff.me</span>
+      </a>
+      <div class="brand-divider"></div>
+      <div class="app-brand">
+        <div class="brand-icon-box">⚡</div>
+        <div class="brand-text">
+          <span class="brand-name">CompFlow <span class="brand-suite">Platform</span></span>
+          <span class="brand-env-pill">PROD • FY2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cycle Status & Global Search -->
+    <div class="topbar-center">
+      <div class="cycle-status-badge">
+        <span class="status-dot pulse"></span>
+        <span class="cycle-title">FY2026 Annual Planning Cycle</span>
+        <span class="badge badge-active">ACTIVE</span>
+      </div>
+    </div>
+
+    <!-- Topbar Right Controls -->
+    <div class="topbar-right">
+      <!-- Persona Switcher -->
+      <div class="persona-selector-container">
+        <label for="persona-select" class="persona-label">Persona:</label>
+        <select id="persona-select" class="persona-select">
+          <option value="HR_ADMIN">👩‍💼 Elena Rostova (HR VP / Admin)</option>
+          <option value="PEOPLE_MANAGER" selected>👨‍💻 Sarah Chen (Infra Director / Mgr)</option>
+          <option value="RECRUITER">👩‍💼 Jordan Taylor (Lead Recruiter)</option>
+          <option value="EXECUTIVE">👨‍💼 David Sterling (VP Engineering)</option>
+        </select>
+      </div>
+
+      <div class="api-health-pill" id="global-api-status" title="Connected to Talos K8s Backend">
+        <span class="health-indicator online"></span>
+        <span class="health-text">K8s API Ready</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── PERSISTENT STICKY BUDGET DEPLETION HEADER ─────────── -->
+  <section class="budget-burn-header">
+    <div class="budget-envelope-summary">
+      <div class="dept-badge">
+        <span class="dept-icon">🏢</span>
+        <div>
+          <strong id="active-dept-name">Platform Engineering Department</strong>
+          <span class="dept-meta">Cost Center: CC-1010-INFRA • 15 Team Members</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="budget-metrics-strip">
+      <!-- Metric 1: Merit Budget -->
+      <div class="budget-gauge-card">
+        <div class="gauge-meta">
+          <span class="gauge-label">Merit Salary Budget (4.5% Pool)</span>
+          <span class="gauge-numbers"><strong id="hdr-merit-spent">$184,500</strong> / <span id="hdr-merit-alloc">$320,000</span></span>
+        </div>
+        <div class="gauge-bar-bg">
+          <div class="gauge-bar-fill fill-emerald" id="hdr-bar-merit" style="width: 57.7%;"></div>
+        </div>
+        <div class="gauge-footer">
+          <span class="gauge-pct" id="hdr-merit-pct">57.7% Depleted</span>
+          <span class="gauge-rem" id="hdr-merit-rem">$135,500 Remaining</span>
+        </div>
+      </div>
+
+      <!-- Metric 2: Bonus Pool -->
+      <div class="budget-gauge-card">
+        <div class="gauge-meta">
+          <span class="gauge-label">Performance Bonus Pool (105% CPF)</span>
+          <span class="gauge-numbers"><strong id="hdr-bonus-spent">$252,000</strong> / <span id="hdr-bonus-alloc">$240,000</span></span>
+        </div>
+        <div class="gauge-bar-bg">
+          <div class="gauge-bar-fill fill-blue" id="hdr-bar-bonus" style="width: 100%;"></div>
+        </div>
+        <div class="gauge-footer">
+          <span class="gauge-pct" id="hdr-bonus-pct">105.0% Funded</span>
+          <span class="gauge-rem">Target: 15% Base Payroll</span>
+        </div>
+      </div>
+
+      <!-- Metric 3: Equity Share Ceiling -->
+      <div class="budget-gauge-card">
+        <div class="gauge-meta">
+          <span class="gauge-label">Equity Allocation Pool (GSUs)</span>
+          <span class="gauge-numbers"><strong id="hdr-equity-spent">24,600</strong> / <span id="hdr-equity-alloc">36,000 GSUs</span></span>
+        </div>
+        <div class="gauge-bar-bg">
+          <div class="gauge-bar-fill fill-amber" id="hdr-bar-equity" style="width: 68.3%;"></div>
+        </div>
+        <div class="gauge-footer">
+          <span class="gauge-pct" id="hdr-equity-pct">68.3% Allocated</span>
+          <span class="gauge-rem" id="hdr-equity-rem">11,400 GSUs Left</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── APP BODY LAYOUT: SIDEBAR + MAIN WORKSPACE ─────────── -->
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">PLANNING & CALIBRATION</div>
+        <a href="#/planning" class="sidebar-link active" data-route="planning" id="nav-link-planning">
+          <svg class="nav-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          <span class="nav-title">Team Calibration Grid</span>
+          <span class="nav-badge" id="badge-team-count">15</span>
+        </a>
+        <a href="#/exceptions" class="sidebar-link" data-route="exceptions" id="nav-link-exceptions">
+          <svg class="nav-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <span class="nav-title">VP Exception Queue</span>
+          <span class="nav-badge badge-warn-count" id="badge-exception-count">3</span>
+        </a>
+
+        <div class="nav-section-title">TALENT ACQUISITION</div>
+        <a href="#/offers" class="sidebar-link" data-route="offers" id="nav-link-offers">
+          <svg class="nav-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <span class="nav-title">Candidate Offer Studio</span>
+          <span class="nav-badge" id="badge-offers-count">5</span>
+        </a>
+
+        <div class="nav-section-title">GOVERNANCE & ANALYTICS</div>
+        <a href="#/matrix" class="sidebar-link" data-route="matrix" id="nav-link-matrix">
+          <svg class="nav-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+          <span class="nav-title">Salary Bands Matrix</span>
+        </a>
+        <a href="#/analytics" class="sidebar-link" data-route="analytics" id="nav-link-analytics">
+          <svg class="nav-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          <span class="nav-title">Executive Analytics</span>
+        </a>
+        <a href="#/api" class="sidebar-link" data-route="api" id="nav-link-api">
+          <svg class="nav-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+          <span class="nav-title">Microservice API & K8s</span>
+          <span class="nav-badge badge-green">LIVE</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer System Info -->
+      <div class="sidebar-footer">
+        <div class="infra-pill">
+          <span class="infra-dot"></span>
+          <div class="infra-text">
+            <strong>Talos K8s + Redis 7</strong>
+            <span>PostgreSQL 16 • ArgoCD</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace Container -->
+    <main class="workspace-main" id="workspace-container">
+
+      <!-- ================================================================= -->
+      <!-- VIEW 1: TEAM CALIBRATION SPREADSHEET GRID (#/planning)          -->
+      <!-- ================================================================= -->
+      <section class="workspace-view active" id="view-planning">
+        <div class="view-header">
+          <div>
+            <h1 class="view-title">Team Compensation Calibration Grid</h1>
+            <p class="view-subtitle">Calibrate merit salary increases, performance bonuses (Base × Target Bonus % × IPF × CPF), and equity refreshes with deterministic AI policy governance.</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-secondary" id="btn-batch-audit">⚡ Batch Run AI Audits</button>
+            <button class="btn btn-secondary" id="btn-apply-baseline">📊 Auto-Fill 4.5% Merit</button>
+            <button class="btn btn-primary" id="btn-submit-calibration">🚀 Submit Cycle</button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="table-toolbar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="roster-search" class="search-input" placeholder="Search employees by name, level, email...">
+          </div>
+          <div class="toolbar-filters">
+            <select id="filter-level" class="filter-select">
+              <option value="ALL">All Levels (L3 - L8)</option>
+              <option value="L3">L3 (SWE II)</option>
+              <option value="L4">L4 (SWE III)</option>
+              <option value="L5">L5 (Senior SWE)</option>
+              <option value="L6">L6 (Staff SWE)</option>
+              <option value="L7">L7 (Principal)</option>
+            </select>
+            <select id="filter-status" class="filter-select">
+              <option value="ALL">All Governance Statuses</option>
+              <option value="DRAFT">Draft</option>
+              <option value="AUTO_APPROVED">Auto-Approved</option>
+              <option value="VP_EXCEPTION_REQUIRED">VP Exception Required</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+            <select id="filter-rating" class="filter-select">
+              <option value="ALL">All Ratings</option>
+              <option value="SUPERB">Superb (Top 5%)</option>
+              <option value="STRONGLY_OUTPERFORMS">Strongly Outperforms</option>
+              <option value="EXCEEDS">Exceeds Expectations</option>
+              <option value="CONSISTENTLY_MEETS">Consistently Meets</option>
+              <option value="NEEDS_IMPROVEMENT">Needs Improvement</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- High-Density Calibration Table -->
+        <div class="table-container">
+          <table class="calibration-table" id="calibration-table">
+            <thead>
+              <tr>
+                <th class="th-chk"><input type="checkbox" id="chk-select-all" checked></th>
+                <th>Employee</th>
+                <th>Level & Geo</th>
+                <th>Performance</th>
+                <th>Current Base</th>
+                <th>Compa-Ratio</th>
+                <th>Proposed Base ($) / Raise</th>
+                <th>Bonus (IPF/CPF)</th>
+                <th>Equity Refresh</th>
+                <th>Governance Status</th>
+                <th>Audit Action</th>
+              </tr>
+            </thead>
+            <tbody id="calibration-tbody">
+              <!-- Dynamically populated by app.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 2: CANDIDATE OFFER STUDIO & PIPELINE (#/offers)            -->
+      <!-- ================================================================= -->
+      <section class="workspace-view" id="view-offers">
+        <div class="view-header">
+          <div>
+            <h1 class="view-title">Candidate Offer Studio & Pipeline</h1>
+            <p class="view-subtitle">Model compensation packages for candidate new hires, enforce salary band ceilings & sign-on caps ($50,000 threshold), and execute offer approval lifecycles.</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-primary" id="btn-open-offer-builder">➕ New Candidate Offer</button>
+          </div>
+        </div>
+
+        <!-- Kanban / Table Dual Mode View -->
+        <div class="offer-pipeline-board" id="offer-pipeline-board">
+          <!-- Column 1: Drafts -->
+          <div class="pipeline-col" id="col-offer-draft">
+            <div class="col-header">
+              <span class="col-title">Draft Proposals</span>
+              <span class="col-count" id="count-offer-draft">1</span>
+            </div>
+            <div class="card-list" id="list-offer-draft"></div>
+          </div>
+
+          <!-- Column 2: Audit Pending -->
+          <div class="pipeline-col" id="col-offer-audit">
+            <div class="col-header">
+              <span class="col-title">AI Policy Audited</span>
+              <span class="col-count" id="count-offer-audit">1</span>
+            </div>
+            <div class="card-list" id="list-offer-audit"></div>
+          </div>
+
+          <!-- Column 3: VP Exception Required -->
+          <div class="pipeline-col col-warning" id="col-offer-vp">
+            <div class="col-header">
+              <span class="col-title">VP Exception Required</span>
+              <span class="col-count" id="count-offer-vp">1</span>
+            </div>
+            <div class="card-list" id="list-offer-vp"></div>
+          </div>
+
+          <!-- Column 4: Approved / Extended -->
+          <div class="pipeline-col col-success" id="col-offer-approved">
+            <div class="col-header">
+              <span class="col-title">Approved & Extended</span>
+              <span class="col-count" id="count-offer-approved">1</span>
+            </div>
+            <div class="card-list" id="list-offer-approved"></div>
+          </div>
+
+          <!-- Column 5: Accepted -->
+          <div class="pipeline-col col-emerald" id="col-offer-accepted">
+            <div class="col-header">
+              <span class="col-title">Accepted Offers</span>
+              <span class="col-count" id="count-offer-accepted">1</span>
+            </div>
+            <div class="card-list" id="list-offer-accepted"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 3: VP CALIBRATION COMMITTEE EXCEPTION QUEUE (#/exceptions) -->
+      <!-- ================================================================= -->
+      <section class="workspace-view" id="view-exceptions">
+        <div class="view-header">
+          <div>
+            <h1 class="view-title">VP Calibration Committee Exception Triage</h1>
+            <p class="view-subtitle">Executive decision queue for compensation reviews and candidate offers that breach standard guidelines (e.g. Compa-Ratio &gt; 1.20, Sign-on &gt; $50k, Equity &gt; 1.5x cap).</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-success" id="btn-batch-approve-vp">✍️ Approve All Exceptions (3)</button>
+          </div>
+        </div>
+
+        <div class="exceptions-grid" id="exceptions-grid">
+          <!-- Dynamically populated exception cards -->
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 4: SALARY BAND & BENCHMARK MATRIX (#/matrix)               -->
+      <!-- ================================================================= -->
+      <section class="workspace-view" id="view-matrix">
+        <div class="view-header">
+          <div>
+            <h1 class="view-title">Enterprise Salary Bands & Benchmark Matrix</h1>
+            <p class="view-subtitle">Explore verified compensation bands across job levels (L3 to L8) and geographic location tiers (Zone 1: 100% SF/NYC, Zone 2: 90% Seattle/Austin, Zone 3: 80% Remote).</p>
+          </div>
+          <div class="view-actions">
+            <div class="geo-tab-group">
+              <button class="geo-tab-btn active" data-geo="US_ZONE_1">Zone 1 (SF / NYC - 100%)</button>
+              <button class="geo-tab-btn" data-geo="US_ZONE_2">Zone 2 (Seattle / Austin - 90%)</button>
+              <button class="geo-tab-btn" data-geo="US_ZONE_3">Zone 3 (Remote / National - 80%)</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="matrix-cards-grid" id="matrix-cards-grid">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 5: EXECUTIVE ANALYTICS & PAY PARITY (#/analytics)          -->
+      <!-- ================================================================= -->
+      <section class="workspace-view" id="view-analytics">
+        <div class="view-header">
+          <div>
+            <h1 class="view-title">Executive Analytics & Pay Parity Visualizer</h1>
+            <p class="view-subtitle">Live distribution curves, compa-ratio alignment against benchmark midpoints, and merit increase velocity by performance rating.</p>
+          </div>
+        </div>
+
+        <div class="analytics-dashboard-grid">
+          <!-- Chart 1: Compa-Ratio Distribution -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>📈 Compa-Ratio Distribution Curve (Team Parity)</h3>
+              <span class="badge badge-neutral">Benchmark Midpoint = 1.000</span>
+            </div>
+            <div class="chart-body">
+              <canvas id="compa-dist-canvas" width="560" height="240"></canvas>
+            </div>
+            <div class="chart-footer">
+              <div class="stat-item"><span>Target Midpoint:</span> <strong>1.000</strong></div>
+              <div class="stat-item"><span>Team Average:</span> <strong id="val-avg-compa">0.992</strong></div>
+              <div class="stat-item"><span>Spread:</span> <strong>0.880 – 1.140</strong></div>
+            </div>
+          </div>
+
+          <!-- Chart 2: Merit Raise by Rating -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>🎯 Merit Raise % by Performance Rating</h3>
+              <span class="badge badge-neutral">Pay-for-Performance Calibration</span>
+            </div>
+            <div class="rating-dist-bars">
+              <div class="rating-bar-row">
+                <div class="rating-name">Superb (Top 5%)</div>
+                <div class="rating-meter"><div class="rating-fill fill-emerald" style="width: 85%;"></div></div>
+                <div class="rating-val">+12.5% avg</div>
+              </div>
+              <div class="rating-bar-row">
+                <div class="rating-name">Strongly Outperforms</div>
+                <div class="rating-meter"><div class="rating-fill fill-blue" style="width: 65%;"></div></div>
+                <div class="rating-val">+9.0% avg</div>
+              </div>
+              <div class="rating-bar-row">
+                <div class="rating-name">Exceeds Expectations</div>
+                <div class="rating-meter"><div class="rating-fill fill-blue" style="width: 48%;"></div></div>
+                <div class="rating-val">+6.5% avg</div>
+              </div>
+              <div class="rating-bar-row">
+                <div class="rating-name">Consistently Meets</div>
+                <div class="rating-meter"><div class="rating-fill fill-amber" style="width: 32%;"></div></div>
+                <div class="rating-val">+4.0% avg</div>
+              </div>
+              <div class="rating-bar-row">
+                <div class="rating-name">Needs Improvement</div>
+                <div class="rating-meter"><div class="rating-fill fill-rose" style="width: 0%;"></div></div>
+                <div class="rating-val">+0.0% (Cap)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 6: MICROSERVICE API & OBSERVABILITY (#/api)                 -->
+      <!-- ================================================================= -->
+      <section class="workspace-view" id="view-api">
+        <div class="view-header">
+          <div>
+            <h1 class="view-title">CompFlow Microservice Architecture & REST API Explorer</h1>
+            <p class="view-subtitle">Live asynchronous FastAPI 0.115 service on Talos Kubernetes, PostgreSQL 16 state storage, Redis 7 LRU caching, and Prometheus telemetry metrics.</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-secondary" id="btn-ping-api">⚡ Run Health Ping</button>
+          </div>
+        </div>
+
+        <div class="api-architecture-grid">
+          <!-- Architecture Diagram Card -->
+          <div class="card arch-card">
+            <div class="card-header">
+              <h3>🏛️ Distributed Microservice Architecture</h3>
+              <span class="badge badge-success">Bare-Metal Talos K8s</span>
+            </div>
+            <div class="arch-flow">
+              <div class="arch-node">
+                <span class="arch-icon">🌐</span>
+                <strong>playgriff.me / UI</strong>
+                <span>TypeScript / JS SPA</span>
+              </div>
+              <div class="arch-connector">→</div>
+              <div class="arch-node">
+                <span class="arch-icon">🛡️</span>
+                <strong>Ingress-NGINX</strong>
+                <span>TLS Cert-Manager</span>
+              </div>
+              <div class="arch-connector">→</div>
+              <div class="arch-node arch-highlight">
+                <span class="arch-icon">⚡</span>
+                <strong>CompFlow FastAPI</strong>
+                <span>ReAct Calibration Core</span>
+              </div>
+              <div class="arch-connector">→</div>
+              <div class="arch-dual-node">
+                <div class="arch-subnode">
+                  <span class="arch-icon">🐘</span>
+                  <strong>PostgreSQL 16</strong>
+                  <span>StatefulSet + Alembic</span>
+                </div>
+                <div class="arch-subnode">
+                  <span class="arch-icon">⚡</span>
+                  <strong>Redis 7</strong>
+                  <span>Atomic Burn Counters</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live REST Endpoints -->
+          <div class="card">
+            <div class="card-header">
+              <h3>📡 Interactive REST Endpoints (`/api/v1`)</h3>
+              <span class="badge badge-neutral">JWT Bearer &amp; RBAC</span>
+            </div>
+            <div class="endpoint-list">
+              <div class="endpoint-row">
+                <div class="ep-left">
+                  <span class="method-badge post">POST</span>
+                  <code>/api/v1/auth/login</code>
+                </div>
+                <button class="btn btn-xs btn-outline test-ep-btn" data-ep="login">Test Token</button>
+              </div>
+              <div class="endpoint-row">
+                <div class="ep-left">
+                  <span class="method-badge get">GET</span>
+                  <code>/api/v1/bands?geo=US_ZONE_1</code>
+                </div>
+                <button class="btn btn-xs btn-outline test-ep-btn" data-ep="bands">Fetch Bands</button>
+              </div>
+              <div class="endpoint-row">
+                <div class="ep-left">
+                  <span class="method-badge post">POST</span>
+                  <code>/api/v1/cycles/{id}/proposals</code>
+                </div>
+                <button class="btn btn-xs btn-outline test-ep-btn" data-ep="proposals">Inspect Schema</button>
+              </div>
+              <div class="endpoint-row">
+                <div class="ep-left">
+                  <span class="method-badge post">POST</span>
+                  <code>/api/v1/proposals/{id}/audit</code>
+                </div>
+                <button class="btn btn-xs btn-outline test-ep-btn" data-ep="audit">Run Agent Audit</button>
+              </div>
+              <div class="endpoint-row">
+                <div class="ep-left">
+                  <span class="method-badge get">GET</span>
+                  <code>/metrics</code>
+                </div>
+                <button class="btn btn-xs btn-outline test-ep-btn" data-ep="metrics">View Prometheus</button>
+              </div>
+            </div>
+            <div class="ep-response-box" id="ep-response-box">
+              <div class="ep-res-header">API Output Log</div>
+              <pre id="ep-res-code">// Click a test button above to execute endpoint query</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ─── SLIDE-OUT CALIBRATION DETAIL DRAWER ────────────────── -->
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+  <aside class="calibration-drawer" id="calibration-drawer">
+    <div class="drawer-header">
+      <div>
+        <h2 class="drawer-title" id="drawer-emp-name">Employee Profile</h2>
+        <span class="drawer-subtitle" id="drawer-emp-role">L5 Senior SWE • Infrastructure</span>
+      </div>
+      <button class="drawer-close-btn" id="btn-close-drawer">✕</button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Compensation Positioning Bar -->
+      <div class="drawer-section">
+        <label class="section-label">SALARY BAND POSITIONING</label>
+        <div class="band-range-box">
+          <div class="range-labels">
+            <span id="drw-band-min">$210k (Min)</span>
+            <span id="drw-band-mid">$250k (Midpoint)</span>
+            <span id="drw-band-max">$290k (Max)</span>
+          </div>
+          <div class="band-track">
+            <div class="band-marker" id="drw-band-marker" style="left: 60%;"></div>
+          </div>
+          <div class="range-footer">
+            <span>Compa-Ratio: <strong id="drw-compa-val">0.980</strong></span>
+            <span id="drw-compa-tag" class="badge badge-success">In Band</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Edit Controls -->
+      <div class="drawer-section">
+        <label class="section-label">PROPOSED ADJUSTMENTS</label>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="drw-input-base">Proposed Base Salary ($)</label>
+            <input type="number" id="drw-input-base" class="form-control" step="2500">
+          </div>
+          <div class="form-group">
+            <label for="drw-input-rating">Performance Rating</label>
+            <select id="drw-input-rating" class="form-control">
+              <option value="SUPERB">Superb</option>
+              <option value="STRONGLY_OUTPERFORMS">Strongly Outperforms</option>
+              <option value="EXCEEDS">Exceeds</option>
+              <option value="CONSISTENTLY_MEETS">Consistently Meets</option>
+              <option value="NEEDS_IMPROVEMENT">Needs Improvement</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="drw-input-ipf">Individual Perf Factor (IPF)</label>
+            <input type="number" id="drw-input-ipf" class="form-control" step="0.05" min="0.0" max="2.0">
+          </div>
+          <div class="form-group">
+            <label for="drw-input-equity">Equity Refresh (GSUs)</label>
+            <input type="number" id="drw-input-equity" class="form-control" step="50">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="drw-input-notes">Manager Justification Notes</label>
+          <textarea id="drw-input-notes" class="form-control" rows="3" placeholder="Explain rationale for raises above baseline or promotions..."></textarea>
+        </div>
+      </div>
+
+      <!-- Live ReAct Audit Log in Drawer -->
+      <div class="drawer-section">
+        <label class="section-label">AGENTIC COMPLIANCE AUDIT TRACE</label>
+        <div class="drawer-audit-log" id="drw-audit-log">
+          <!-- Filled by app.js -->
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" id="drw-btn-audit">⚡ Run Agent Audit</button>
+      <button class="btn btn-primary" id="drw-btn-save">💾 Save Proposal</button>
+    </div>
+  </aside>
+
+  <!-- ─── CANDIDATE OFFER MODAL ─────────────────────────────── -->
+  <div class="modal-overlay" id="offer-modal-overlay"></div>
+  <div class="offer-modal" id="offer-modal">
+    <div class="modal-header">
+      <h3>🤝 Model Candidate Offer Package</h3>
+      <button class="modal-close-btn" id="btn-close-offer-modal">✕</button>
+    </div>
+    <form id="modal-offer-form">
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="m-candidate-name">Candidate Full Name</label>
+            <input type="text" id="m-candidate-name" class="form-control" value="Alex Rivera" required>
+          </div>
+          <div class="form-group">
+            <label for="m-candidate-email">Candidate Email</label>
+            <input type="email" id="m-candidate-email" class="form-control" value="alex.rivera@gmail.com" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="m-job-level">Job Level</label>
+            <select id="m-job-level" class="form-control">
+              <option value="L3">L3 (Software Engineer II)</option>
+              <option value="L4">L4 (Software Engineer III)</option>
+              <option value="L5" selected>L5 (Senior Software Engineer)</option>
+              <option value="L6">L6 (Staff Software Engineer)</option>
+              <option value="L7">L7 (Senior Staff SWE)</option>
+              <option value="L8">L8 (Principal SWE)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="m-geo-tier">Location Tier</label>
+            <select id="m-geo-tier" class="form-control">
+              <option value="US_ZONE_1" selected>US Zone 1 (SF/NYC - 100%)</option>
+              <option value="US_ZONE_2">US Zone 2 (Seattle/Austin - 90%)</option>
+              <option value="US_ZONE_3">US Zone 3 (Remote/National - 80%)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="m-proposed-base">Proposed Base Salary ($)</label>
+            <input type="number" id="m-proposed-base" class="form-control" value="240000" step="5000">
+          </div>
+          <div class="form-group">
+            <label for="m-signon-bonus">Sign-on Bonus ($)</label>
+            <input type="number" id="m-signon-bonus" class="form-control" value="35000" step="5000">
+            <span class="field-hint">&gt;$50k requires Executive VP Approval</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="m-equity-gsus">New Hire Equity Grant (GSUs)</label>
+          <input type="number" id="m-equity-gsus" class="form-control" value="1000" step="50">
+        </div>
+
+        <!-- Real-time compensation summary pills -->
+        <div class="modal-comp-summary">
+          <div class="summary-pill">Target Bonus (15%): <strong id="m-calc-bonus">$36,000</strong></div>
+          <div class="summary-pill">Total Target Cash: <strong id="m-calc-ttc">$276,000</strong></div>
+          <div class="summary-pill">First-Year Direct Comp: <strong id="m-calc-y1tc">$311,000</strong></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn-cancel-modal">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="btn-save-modal-offer">⚡ Audit & Create Offer</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
