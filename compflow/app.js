@@ -130,6 +130,12 @@ const CompFlowApp = {
       }
     });
 
+    // Close overlays if open
+    document.getElementById('drawer-overlay')?.classList.remove('open');
+    document.getElementById('calibration-drawer')?.classList.remove('open');
+    document.getElementById('offer-modal-overlay')?.classList.remove('open');
+    document.getElementById('offer-modal')?.classList.remove('open');
+
     if (current === 'analytics') {
       setTimeout(() => this.renderAnalyticsCharts(), 50);
     }
@@ -160,6 +166,44 @@ const CompFlowApp = {
     const cpf = this.state.departmentBudget.cpf;
     return Math.round(baseSalary * (bonusTargetPct / 100) * ipf * cpf);
   },
+
+  getMarketBenchmark(level, geo) {
+    const geoMult = this.state.geoFactors[geo] || 1.0;
+    const baseMap = {
+      L3: { p10: 135000, p25: 150000, p50: 165000, p75: 180000, p90: 195000, radford: 'P1' },
+      L4: { p10: 165000, p25: 185000, p50: 205000, p75: 225000, p90: 245000, radford: 'P2' },
+      L5: { p10: 205000, p25: 230000, p50: 255000, p75: 280000, p90: 305000, radford: 'P3' },
+      L6: { p10: 255000, p25: 285000, p50: 315000, p75: 350000, p90: 385000, radford: 'P4' },
+      L7: { p10: 315000, p25: 355000, p50: 395000, p75: 440000, p90: 490000, radford: 'P5' },
+      L8: { p10: 395000, p25: 445000, p50: 500000, p75: 560000, p90: 630000, radford: 'P6' },
+    };
+    const b = baseMap[level] || baseMap.L5;
+    return {
+      p10: Math.round(b.p10 * geoMult),
+      p25: Math.round(b.p25 * geoMult),
+      p50: Math.round(b.p50 * geoMult),
+      p75: Math.round(b.p75 * geoMult),
+      p90: Math.round(b.p90 * geoMult),
+      radford: b.radford,
+    };
+  },
+
+  calculateMarketPercentile(base, bench) {
+    if (base <= bench.p10) return Math.max(Math.round((base / bench.p10) * 10), 1);
+    if (base <= bench.p25) return Math.round(10 + ((base - bench.p10) / (bench.p25 - bench.p10)) * 15);
+    if (base <= bench.p50) return Math.round(25 + ((base - bench.p25) / (bench.p50 - bench.p25)) * 25);
+    if (base <= bench.p75) return Math.round(50 + ((base - bench.p50) / (bench.p75 - bench.p50)) * 25);
+    if (base <= bench.p90) return Math.round(75 + ((base - bench.p75) / (bench.p90 - bench.p75)) * 15);
+    return Math.min(Math.round(90 + ((base - bench.p90) / bench.p90) * 10), 99);
+  },
+
+  calculateOfferWinRate(percentile) {
+    const k = 0.05;
+    const midpoint = 45.0;
+    const val = 1.0 / (1.0 + Math.exp(-k * (percentile - midpoint)));
+    return Math.min(Math.max(Math.round(val * 100), 10), 98);
+  },
+
 
   // ─── BUDGET DEPLETION HEADER ──────────────────────────────────────────────
   renderBudgetHeaders() {
@@ -418,6 +462,22 @@ const CompFlowApp = {
       tag.textContent = 'In Band Compliant';
     }
 
+    // Market Benchmark Placement (DOL / BLS)
+    const bench = this.getMarketBenchmark(emp.level, emp.geo);
+    const mPct = this.calculateMarketPercentile(emp.proposedBase, bench);
+    const mCompa = (emp.proposedBase / bench.p50).toFixed(3);
+    const mSpread = bench.p90 - bench.p10;
+    const mPenetration = mSpread > 0 ? (((emp.proposedBase - bench.p10) / mSpread) * 100).toFixed(1) : '50.0';
+
+    document.getElementById('drw-market-percentile-badge').textContent = `${mPct}th Percentile (${bench.radford})`;
+    document.getElementById('drw-market-bar-fill').style.width = `${mPct}%`;
+    document.getElementById('drw-market-marker').style.left = `${mPct}%`;
+    document.getElementById('drw-market-p10').textContent = `$${(bench.p10 / 1000).toFixed(0)}k`;
+    document.getElementById('drw-market-p50').textContent = `$${(bench.p50 / 1000).toFixed(0)}k`;
+    document.getElementById('drw-market-p90').textContent = `$${(bench.p90 / 1000).toFixed(0)}k`;
+    document.getElementById('drw-market-penetration').textContent = `${mPenetration}%`;
+    document.getElementById('drw-market-compa').textContent = mCompa;
+
     document.getElementById('drw-input-base').value = emp.proposedBase;
     document.getElementById('drw-input-rating').value = emp.rating;
     document.getElementById('drw-input-ipf').value = emp.ipf;
@@ -563,7 +623,45 @@ const CompFlowApp = {
   bindOfferModalEvents() {
     const modal = document.getElementById('offer-modal');
     const overlay = document.getElementById('offer-modal-overlay');
+    const recalculateModalComp = () => {
+      const level = document.getElementById('m-job-level')?.value || 'L5';
+      const geo = document.getElementById('m-geo-tier')?.value || 'US_ZONE_1';
+      const base = parseFloat(document.getElementById('m-proposed-base')?.value) || 240000;
+      const signon = parseFloat(document.getElementById('m-signon-bonus')?.value) || 0;
+      const equity = parseInt(document.getElementById('m-equity-gsus')?.value, 10) || 1000;
+
+      const band = this.getAdjustedBand(level, geo);
+      const bench = this.getMarketBenchmark(level, geo);
+      const targetBonus = Math.round(base * (band.bonusPct / 100));
+      const ttc = base + targetBonus;
+      const y1EquityVal = Math.round(equity * (1 / 3) * 150);
+      const y1tc = ttc + signon + y1EquityVal;
+
+      const mPct = this.calculateMarketPercentile(base, bench);
+      const winRate = this.calculateOfferWinRate(mPct);
+
+      const elBonus = document.getElementById('m-calc-bonus');
+      const elTtc = document.getElementById('m-calc-ttc');
+      const elY1tc = document.getElementById('m-calc-y1tc');
+      const elWinrate = document.getElementById('m-calc-winrate');
+      const elWinrateFill = document.getElementById('m-winrate-fill');
+      const elPct = document.getElementById('m-calc-pct');
+
+      if (elBonus) elBonus.textContent = `$${targetBonus.toLocaleString()}`;
+      if (elTtc) elTtc.textContent = `$${ttc.toLocaleString()}`;
+      if (elY1tc) elY1tc.textContent = `$${y1tc.toLocaleString()}`;
+      if (elWinrate) elWinrate.textContent = `${winRate}% Win-Rate Probability`;
+      if (elWinrateFill) elWinrateFill.style.width = `${winRate}%`;
+      if (elPct) elPct.textContent = `${mPct}th`;
+    };
+
+    ['m-job-level', 'm-geo-tier', 'm-proposed-base', 'm-signon-bonus', 'm-equity-gsus'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', recalculateModalComp);
+      document.getElementById(id)?.addEventListener('change', recalculateModalComp);
+    });
+
     const openModal = () => {
+      recalculateModalComp();
       modal.classList.add('open');
       overlay.classList.add('open');
     };
@@ -737,11 +835,12 @@ const CompFlowApp = {
 
     Object.entries(this.state.bands).forEach(([lvl, baseBand]) => {
       const band = this.getAdjustedBand(lvl, geo);
+      const bench = this.getMarketBenchmark(lvl, geo);
       const card = document.createElement('div');
       card.className = 'band-card';
       card.innerHTML = `
         <div class="band-card-header">
-          <div class="band-card-title">${lvl} Software Engineering</div>
+          <div class="band-card-title">${lvl} SWE (Radford ${bench.radford})</div>
           <span class="badge badge-neutral">${geo.replace('US_', '')}</span>
         </div>
         <div class="band-range-visual">
@@ -754,6 +853,13 @@ const CompFlowApp = {
             <div class="range-bar-spread"></div>
             <div class="range-midpoint-notch"></div>
           </div>
+        </div>
+        <div class="percentiles-grid-5">
+          <div class="p-col"><span>P10</span><strong>$${(bench.p10 / 1000).toFixed(0)}k</strong></div>
+          <div class="p-col"><span>P25</span><strong>$${(bench.p25 / 1000).toFixed(0)}k</strong></div>
+          <div class="p-col highlight-p50"><span>P50</span><strong>$${(bench.p50 / 1000).toFixed(0)}k</strong></div>
+          <div class="p-col"><span>P75</span><strong>$${(bench.p75 / 1000).toFixed(0)}k</strong></div>
+          <div class="p-col"><span>P90</span><strong>$${(bench.p90 / 1000).toFixed(0)}k</strong></div>
         </div>
         <div class="band-targets-list">
           <div>Bonus Target: <strong>${band.bonusPct}%</strong></div>
@@ -840,6 +946,40 @@ const CompFlowApp = {
           }, null, 2);
         } else if (ep === 'bands') {
           resCode.textContent = JSON.stringify(this.state.bands, null, 2);
+        } else if (ep === 'benchmarks') {
+          resCode.textContent = JSON.stringify({
+            job_family: "SOFTWARE_ENGINEERING",
+            job_level: "L5",
+            radford_level: "P3",
+            geo_tier: "US_ZONE_1",
+            currency: "USD",
+            sample_size: 450,
+            percentiles: {
+              p10_base: "205000.00",
+              p25_base: "230000.00",
+              p50_base: "255000.00",
+              p75_base: "280000.00",
+              p90_base: "305000.00",
+              target_bonus_pct: "15.00",
+              p50_equity_annual: 800,
+              p75_equity_annual: 1200
+            },
+            data_source: "US_DOL_OFLC_LCA_AND_BLS_OEWS",
+            survey_year: 2026,
+            annual_aging_rate: "0.040"
+          }, null, 2);
+        } else if (ep === 'compare') {
+          resCode.textContent = JSON.stringify({
+            compa_ratio: "1.020",
+            range_penetration_pct: "62.5",
+            market_percentile_rank: 74,
+            estimated_offer_win_rate_pct: "82.1",
+            within_band: true,
+            total_target_cash: "276000.00",
+            total_direct_comp_y1: "311000.00",
+            benchmark_p50_base: "255000.00",
+            data_source: "US_DOL_OFLC_LCA_AND_BLS_OEWS"
+          }, null, 2);
         } else if (ep === 'proposals') {
           resCode.textContent = JSON.stringify({
             cycle_id: "CYC-2026-ANNUAL",

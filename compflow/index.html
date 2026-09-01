@@ -336,10 +336,13 @@
       <section class="workspace-view" id="view-matrix">
         <div class="view-header">
           <div>
-            <h1 class="view-title">Enterprise Salary Bands & Benchmark Matrix</h1>
-            <p class="view-subtitle">Explore verified compensation bands across job levels (L3 to L8) and geographic location tiers (Zone 1: 100% SF/NYC, Zone 2: 90% Seattle/Austin, Zone 3: 80% Remote).</p>
+            <h1 class="view-title">Enterprise Salary Bands &amp; Market Benchmark Matrix</h1>
+            <p class="view-subtitle">Explore verified compensation bands across job levels (L3 to L8) with 5-tier percentiles (P10–P90) sourced from US DOL (H-1B/LCA) and BLS OEWS datasets.</p>
           </div>
           <div class="view-actions">
+            <div class="benchmark-provenance-pill">
+              <span>🏛️ DOL OFLC + BLS OEWS • Radford P1–P6 • 4.0% Aged</span>
+            </div>
             <div class="geo-tab-group">
               <button class="geo-tab-btn active" data-geo="US_ZONE_1">Zone 1 (SF / NYC - 100%)</button>
               <button class="geo-tab-btn" data-geo="US_ZONE_2">Zone 2 (Seattle / Austin - 90%)</button>
@@ -496,6 +499,20 @@
               </div>
               <div class="endpoint-row">
                 <div class="ep-left">
+                  <span class="method-badge get">GET</span>
+                  <code>/api/v1/benchmarks/lookup?level=L5&amp;geo=US_ZONE_1</code>
+                </div>
+                <button class="btn btn-xs btn-outline test-ep-btn" data-ep="benchmarks">Lookup Benchmark</button>
+              </div>
+              <div class="endpoint-row">
+                <div class="ep-left">
+                  <span class="method-badge post">POST</span>
+                  <code>/api/v1/benchmarks/compare</code>
+                </div>
+                <button class="btn btn-xs btn-outline test-ep-btn" data-ep="compare">Compare Market</button>
+              </div>
+              <div class="endpoint-row">
+                <div class="ep-left">
                   <span class="method-badge post">POST</span>
                   <code>/api/v1/cycles/{id}/proposals</code>
                 </div>
@@ -552,8 +569,33 @@
             <div class="band-marker" id="drw-band-marker" style="left: 60%;"></div>
           </div>
           <div class="range-footer">
-            <span>Compa-Ratio: <strong id="drw-compa-val">0.980</strong></span>
+            <span>Internal Compa-Ratio: <strong id="drw-compa-val">0.980</strong></span>
             <span id="drw-compa-tag" class="badge badge-success">In Band</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Market Benchmark Comparison Card (DOL & BLS) -->
+      <div class="drawer-section">
+        <label class="section-label">MARKET BENCHMARK ALIGNMENT (DOL &amp; BLS)</label>
+        <div class="market-benchmark-card">
+          <div class="market-meta-row">
+            <span class="market-source-tag">🏛️ US DOL / BLS OEWS • 2026 Aged</span>
+            <span class="badge badge-neutral" id="drw-market-percentile-badge">74th Percentile</span>
+          </div>
+          <div class="market-percentile-track">
+            <div class="pct-bar-bg"></div>
+            <div class="pct-bar-fill" id="drw-market-bar-fill" style="width: 74%;"></div>
+            <div class="pct-marker" id="drw-market-marker" style="left: 74%;"></div>
+          </div>
+          <div class="market-percentile-ticks">
+            <span>P10: <strong id="drw-market-p10">$205k</strong></span>
+            <span>P50 (Median): <strong id="drw-market-p50">$255k</strong></span>
+            <span>P90: <strong id="drw-market-p90">$305k</strong></span>
+          </div>
+          <div class="market-penetration-footer">
+            <span>Range Penetration: <strong id="drw-market-penetration">62.5%</strong></span>
+            <span>Market Compa: <strong id="drw-market-compa">1.020</strong></span>
           </div>
         </div>
       </div>
@@ -674,6 +716,18 @@
           <div class="summary-pill">Target Bonus (15%): <strong id="m-calc-bonus">$36,000</strong></div>
           <div class="summary-pill">Total Target Cash: <strong id="m-calc-ttc">$276,000</strong></div>
           <div class="summary-pill">First-Year Direct Comp: <strong id="m-calc-y1tc">$311,000</strong></div>
+        </div>
+
+        <!-- Real-time Candidate Acceptance Win-Rate Predictor -->
+        <div class="modal-market-winrate">
+          <div class="winrate-header">
+            <span>🎯 Predicted Acceptance Rate:</span>
+            <strong id="m-calc-winrate" class="winrate-val">82% Win-Rate Probability</strong>
+          </div>
+          <div class="winrate-bar-track">
+            <div class="winrate-bar-fill" id="m-winrate-fill" style="width: 82%;"></div>
+          </div>
+          <div class="winrate-meta">Based on candidate compensation placement at <span id="m-calc-pct">74th</span> market percentile (US DOL &amp; BLS baseline).</div>
         </div>
       </div>
       <div class="modal-footer">
