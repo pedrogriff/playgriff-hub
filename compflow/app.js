@@ -40,7 +40,7 @@ const CompFlowApp = {
       totalPayroll: 3750000,
       allocatedMerit: 320000,  // ~8.5% total envelope
       allocatedBonus: 750000,  // Baseline 20% target across 15 engineers
-      allocatedEquity: 36000,  // GSUs
+      allocatedEquity: 36000,  // RSUs
       cpf: 1.05,               // Company Performance Factor
     },
 
@@ -77,6 +77,7 @@ const CompFlowApp = {
   init() {
     this.bindRouter();
     this.bindPersonaSwitcher();
+    this.bindGatewayControls();
     this.bindToolbarAndFilters();
     this.bindDrawerEvents();
     this.bindOfferModalEvents();
@@ -244,9 +245,9 @@ const CompFlowApp = {
     document.getElementById('hdr-bonus-pct').textContent = `${bonusPct}% Funded`;
 
     document.getElementById('hdr-equity-spent').textContent = `${totalEquitySpent.toLocaleString()}`;
-    document.getElementById('hdr-equity-alloc').textContent = `${allocEquity.toLocaleString()} GSUs`;
+    document.getElementById('hdr-equity-alloc').textContent = `${allocEquity.toLocaleString()} RSUs`;
     document.getElementById('hdr-equity-pct').textContent = `${equityPct}% Allocated`;
-    document.getElementById('hdr-equity-rem').textContent = `${Math.max(0, allocEquity - totalEquitySpent).toLocaleString()} GSUs Left`;
+    document.getElementById('hdr-equity-rem').textContent = `${Math.max(0, allocEquity - totalEquitySpent).toLocaleString()} RSUs Left`;
     document.getElementById('hdr-bar-equity').style.width = `${Math.min(parseFloat(equityPct), 100)}%`;
 
     // Exception Badge Count in Sidebar
@@ -322,7 +323,7 @@ const CompFlowApp = {
           <span class="inline-raise-tag ${parseFloat(raisePct) > 15 ? 'warn' : ''}">+${raisePct}%</span>
         </td>
         <td style="font-family:var(--font-mono);">$${bonusAmt.toLocaleString()} <span style="font-size:0.65rem; color:var(--text-muted);">(${emp.ipf}x)</span></td>
-        <td style="font-family:var(--font-mono);">${emp.equity.toLocaleString()} GSUs</td>
+        <td style="font-family:var(--font-mono);">${emp.equity.toLocaleString()} RSUs</td>
         <td>${statusBadge}</td>
         <td onclick="event.stopPropagation()">
           <button class="btn btn-xs btn-outline btn-audit-single" data-id="${emp.id}">⚡ Audit</button>
@@ -491,7 +492,7 @@ const CompFlowApp = {
       <div class="log-entry log-tool">[Tool] calculate_compa_ratio(proposed=$${emp.proposedBase.toLocaleString()}, mid=$${band.mid.toLocaleString()}) -> ${compa}</div>
       <div class="log-entry ${emp.proposedBase <= band.max ? 'log-pass' : 'log-fail'}">[Finding] verify_salary_band: ${emp.proposedBase <= band.max ? 'PASS' : 'FAIL'} (Band Ceiling: $${band.max.toLocaleString()})</div>
       <div class="log-entry log-tool">[Tool] calculate_bonus(base=$${emp.proposedBase.toLocaleString()}, target=${band.bonusPct}%, IPF=${emp.ipf}x, CPF=1.05x) -> $${this.calculateBonus(emp.proposedBase, band.bonusPct, emp.ipf).toLocaleString()}</div>
-      <div class="log-entry log-tool">[Tool] evaluate_equity_guidelines(gsus=${emp.equity.toLocaleString()}, target=${band.targetEquity}) -> ${(emp.equity / band.targetEquity).toFixed(2)}x</div>
+      <div class="log-entry log-tool">[Tool] evaluate_equity_guidelines(rsus=${emp.equity.toLocaleString()}, target=${band.targetEquity}) -> ${(emp.equity / band.targetEquity).toFixed(2)}x</div>
       <div class="log-entry ${emp.status === 'AUTO_APPROVED' ? 'log-pass' : 'log-warn'}">[Agent Synthesis] Outcome: ${emp.status}</div>
     `;
 
@@ -628,7 +629,8 @@ const CompFlowApp = {
       const geo = document.getElementById('m-geo-tier')?.value || 'US_ZONE_1';
       const base = parseFloat(document.getElementById('m-proposed-base')?.value) || 240000;
       const signon = parseFloat(document.getElementById('m-signon-bonus')?.value) || 0;
-      const equity = parseInt(document.getElementById('m-equity-gsus')?.value, 10) || 1000;
+      const equityEl = document.getElementById('m-equity-rsus') || document.getElementById('m-equity-gsus');
+      const equity = parseInt(equityEl ? equityEl.value : '0', 10) || 1000;
 
       const band = this.getAdjustedBand(level, geo);
       const bench = this.getMarketBenchmark(level, geo);
@@ -655,7 +657,7 @@ const CompFlowApp = {
       if (elPct) elPct.textContent = `${mPct}th`;
     };
 
-    ['m-job-level', 'm-geo-tier', 'm-proposed-base', 'm-signon-bonus', 'm-equity-gsus'].forEach(id => {
+    ['m-job-level', 'm-geo-tier', 'm-proposed-base', 'm-signon-bonus', 'm-equity-rsus', 'm-equity-gsus'].forEach(id => {
       document.getElementById(id)?.addEventListener('input', recalculateModalComp);
       document.getElementById(id)?.addEventListener('change', recalculateModalComp);
     });
@@ -682,7 +684,8 @@ const CompFlowApp = {
       const geo = document.getElementById('m-geo-tier').value;
       const base = parseFloat(document.getElementById('m-proposed-base').value) || 200000;
       const signon = parseFloat(document.getElementById('m-signon-bonus').value) || 0;
-      const equity = parseInt(document.getElementById('m-equity-gsus').value, 10) || 1000;
+      const eqEl = document.getElementById('m-equity-rsus') || document.getElementById('m-equity-gsus');
+      const equity = parseInt(eqEl ? eqEl.value : '0', 10) || 1000;
 
       const band = this.getAdjustedBand(level, geo);
       const newOffer = {
@@ -747,7 +750,7 @@ const CompFlowApp = {
           <div class="violation-chips">
             ${parseFloat(compa) > 1.15 ? `<span class="chip-warn">Compa-Ratio: ${compa} (&gt;1.15 limit)</span>` : ''}
             ${parseFloat(raisePct) > 10.0 ? `<span class="chip-warn">Merit Velocity: +${raisePct}% (&gt;10% target)</span>` : ''}
-            ${emp.equity > band.targetEquity * 1.5 ? `<span class="chip-warn">Equity Grant: ${emp.equity} GSUs (&gt;1.5x guideline)</span>` : ''}
+            ${emp.equity > band.targetEquity * 1.5 ? `<span class="chip-warn">Equity Grant: ${emp.equity} RSUs (&gt;1.5x guideline)</span>` : ''}
           </div>
           <div class="exception-rationale">
             <strong>Manager Justification:</strong> "${emp.notes || 'High performance and specialized technical leadership across strategic infrastructure deliverables.'}"
@@ -863,7 +866,7 @@ const CompFlowApp = {
         </div>
         <div class="band-targets-list">
           <div>Bonus Target: <strong>${band.bonusPct}%</strong></div>
-          <div>Equity Guideline: <strong>${band.targetEquity.toLocaleString()} GSUs</strong></div>
+          <div>Equity Guideline: <strong>${band.targetEquity.toLocaleString()} RSUs</strong></div>
         </div>
       `;
       grid.appendChild(card);
@@ -961,8 +964,8 @@ const CompFlowApp = {
               p75_base: "280000.00",
               p90_base: "305000.00",
               target_bonus_pct: "15.00",
-              p50_equity_annual: 800,
-              p75_equity_annual: 1200
+              p50_equity_rsus: 800,
+              p75_equity_rsus: 1200
             },
             data_source: "US_DOL_OFLC_LCA_AND_BLS_OEWS",
             survey_year: 2026,
@@ -987,7 +990,7 @@ const CompFlowApp = {
             proposed_base: 335000,
             proposed_bonus: 78500,
             individual_perf_factor: 1.30,
-            proposed_equity_gsus: 1800,
+            proposed_equity_rsus: 1800,
             performance_rating: "SUPERB"
           }, null, 2);
         } else if (ep === 'audit') {
@@ -1005,8 +1008,128 @@ const CompFlowApp = {
       });
     });
 
-    document.getElementById('btn-ping-api')?.addEventListener('click', () => {
-      resCode.textContent = `Pinging https://compflow.10.0.0.170.nip.io/healthz...\nResponse Status: 200 OK\n{"status": "HEALTHY", "service": "comp-flow-platform", "version": "1.0.0", "postgres": "UP", "redis": "UP"}`;
+    document.getElementById('btn-ping-api')?.addEventListener('click', async () => {
+      resCode.textContent = `Pinging ${this.apiGateway.baseUrl}/healthz...`;
+      const res = await this.apiGateway.ping();
+      if (res.ok) {
+        resCode.textContent = `[Live K8s Microservice Response]\nGET ${this.apiGateway.baseUrl}/healthz\nStatus: 200 OK (${res.latencyMs}ms latency)\n\n` + JSON.stringify(res.data, null, 2);
+      } else {
+        resCode.textContent = `[Gateway Notice: Offline or LAN required]\nGET ${this.apiGateway.baseUrl}/healthz\nResult: ${res.error || 'HTTP ' + res.status}\n\nNote: The Talos bare-metal cluster ingress operates on the private homelab network (10.0.0.170). If browsing externally without Tailscale/VPN, CompFlow operates seamlessly in high-fidelity In-Browser Simulation mode.`;
+      }
     });
+  },
+
+  // ─── HYBRID API GATEWAY ───────────────────────────────────────────────────
+  apiGateway: {
+    mode: 'SIMULATION', // 'SIMULATION' | 'LIVE_API'
+    baseUrl: 'https://compflow.10.0.0.170.nip.io',
+    isOnline: false,
+    latencyMs: null,
+
+    async ping() {
+      const t0 = performance.now();
+      try {
+        const ctrl = new AbortController();
+        const timeout = setTimeout(() => ctrl.abort(), 3500);
+        const res = await fetch(`${this.baseUrl}/healthz`, {
+          signal: ctrl.signal,
+          mode: 'cors'
+        });
+        clearTimeout(timeout);
+        const elapsed = Math.round(performance.now() - t0);
+        if (res.ok) {
+          const data = await res.json();
+          this.isOnline = true;
+          this.latencyMs = elapsed;
+          return { ok: true, data, latencyMs: elapsed };
+        }
+        this.isOnline = false;
+        return { ok: false, status: res.status, latencyMs: elapsed };
+      } catch (err) {
+        this.isOnline = false;
+        return { ok: false, error: err.message };
+      }
+    },
+
+    async fetchBenchmark(family, level, geo) {
+      if (this.mode !== 'LIVE_API') return null;
+      try {
+        const ctrl = new AbortController();
+        const timeout = setTimeout(() => ctrl.abort(), 3000);
+        const res = await fetch(`${this.baseUrl}/api/v1/benchmarks/lookup?job_family=${family}&job_level=${level}&geo_tier=${geo}`, {
+          signal: ctrl.signal,
+          mode: 'cors'
+        });
+        clearTimeout(timeout);
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn('[CompFlow Gateway] Live benchmark lookup failed; using local simulation:', e);
+      }
+      return null;
+    },
+
+    async compareOffer(payload) {
+      if (this.mode !== 'LIVE_API') return null;
+      try {
+        const ctrl = new AbortController();
+        const timeout = setTimeout(() => ctrl.abort(), 3000);
+        const res = await fetch(`${this.baseUrl}/api/v1/benchmarks/compare`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: ctrl.signal,
+          mode: 'cors'
+        });
+        clearTimeout(timeout);
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn('[CompFlow Gateway] Live offer compare failed; using local simulation:', e);
+      }
+      return null;
+    }
+  },
+
+  bindGatewayControls() {
+    const modeSelect = document.getElementById('gateway-mode-select');
+    const statusPill = document.getElementById('global-api-status');
+    const statusIndicator = document.getElementById('global-api-indicator');
+    const statusText = document.getElementById('global-api-text');
+
+    const updatePill = async (userInitiated = false) => {
+      if (this.apiGateway.mode === 'SIMULATION') {
+        if (statusIndicator) statusIndicator.className = 'health-indicator online';
+        if (statusText) statusText.textContent = 'Sim Active';
+        if (statusPill) statusPill.title = 'In-Browser Deterministic Engine Active (Click to ping K8s)';
+      } else {
+        if (statusText) statusText.textContent = 'Probing K8s...';
+        if (statusIndicator) statusIndicator.className = 'health-indicator warn';
+        const health = await this.apiGateway.ping();
+        if (health.ok) {
+          if (statusIndicator) statusIndicator.className = 'health-indicator online';
+          if (statusText) statusText.textContent = `K8s Online (${health.latencyMs}ms)`;
+          if (statusPill) statusPill.title = `Connected to ${this.apiGateway.baseUrl} (${health.latencyMs}ms)`;
+        } else {
+          if (statusIndicator) statusIndicator.className = 'health-indicator offline';
+          if (statusText) statusText.textContent = 'K8s Offline (Sim Fallback)';
+          if (statusPill) statusPill.title = `Cannot reach ${this.apiGateway.baseUrl} - homelab network/VPN required. Local simulator will handle requests seamlessly.`;
+        }
+      }
+    };
+
+    modeSelect?.addEventListener('change', (e) => {
+      this.apiGateway.mode = e.target.value;
+      updatePill(true);
+    });
+
+    statusPill?.addEventListener('click', () => {
+      if (this.apiGateway.mode === 'SIMULATION') {
+        if (modeSelect) modeSelect.value = 'LIVE_API';
+        this.apiGateway.mode = 'LIVE_API';
+      }
+      updatePill(true);
+    });
+
+    // Run initial health check in background
+    setTimeout(() => updatePill(false), 500);
   }
 };

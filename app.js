@@ -128,7 +128,7 @@ function initEmployeePlanning() {
     const geo = geoSelect ? geoSelect.value : 'US_ZONE_1';
     const band = getAdjustedBand(lvl, geo);
     if (equityHint) {
-      equityHint.textContent = `${lvl} ${geo.replace('_', ' ')} Target: ${band.targetEquity.toLocaleString()} GSUs (Bonus Target: ${band.targetBonusPct}%, Midpoint: $${(band.mid / 1000).toFixed(0)}k)`;
+      equityHint.textContent = `${lvl} ${geo.replace('_', ' ')} Target: ${band.targetEquity.toLocaleString()} RSUs (Bonus Target: ${band.targetBonusPct}%, Midpoint: $${(band.mid / 1000).toFixed(0)}k)`;
     }
   };
 
@@ -205,7 +205,7 @@ async function runAgenticAudit() {
 
   // Step 4: Tool 3 - Equity Guidelines
   await sleep(220);
-  addLog(feed, `[Tool Invocation] evaluate_equity_guidelines(gsus=${proposedGSUs.toLocaleString()}, target=${band.targetEquity}, rating=${rating})`, 'log-tool');
+  addLog(feed, `[Tool Invocation] evaluate_equity_guidelines(rsus=${proposedGSUs.toLocaleString()}, target=${band.targetEquity}, rating=${rating})`, 'log-tool');
 
   let equityPass = true;
   const ratingMults = {
@@ -221,12 +221,12 @@ async function runAgenticAudit() {
 
   if (proposedGSUs < minG) {
     equityPass = false;
-    addLog(feed, `[Tool Finding: WARN] evaluate_equity_guidelines: ${proposedGSUs} GSUs below guideline (${minG} GSUs)`, 'log-warn');
+    addLog(feed, `[Tool Finding: WARN] evaluate_equity_guidelines: ${proposedGSUs} RSUs below guideline (${minG} RSUs)`, 'log-warn');
   } else if (proposedGSUs > maxG) {
     equityPass = false;
-    addLog(feed, `[Tool Finding: FAIL] evaluate_equity_guidelines: ${proposedGSUs} GSUs exceeds max allowable (${maxG} GSUs)`, 'log-error');
+    addLog(feed, `[Tool Finding: FAIL] evaluate_equity_guidelines: ${proposedGSUs} RSUs exceeds max allowable (${maxG} RSUs)`, 'log-error');
   } else {
-    addLog(feed, `[Tool Finding: PASS] evaluate_equity_guidelines: ${proposedGSUs} GSUs within [${minG}, ${maxG}] (${equityRatio}x)`, 'log-success');
+    addLog(feed, `[Tool Finding: PASS] evaluate_equity_guidelines: ${proposedGSUs} RSUs within [${minG}, ${maxG}] (${equityRatio}x)`, 'log-success');
   }
 
   // Step 5: Tool 4 - Velocity & Rating Compliance
@@ -300,7 +300,7 @@ function initOfferStudio() {
     const geo = geoSelect ? geoSelect.value : 'US_ZONE_1';
     const band = getAdjustedBand(lvl, geo);
     if (equityHint) {
-      equityHint.textContent = `${lvl} ${geo.replace('_', ' ')} Guideline: ${band.targetEquity.toLocaleString()} GSUs (Max: ${Math.round(band.targetEquity * 1.5).toLocaleString()} GSUs)`;
+      equityHint.textContent = `${lvl} ${geo.replace('_', ' ')} Guideline: ${band.targetEquity.toLocaleString()} RSUs (Max: ${Math.round(band.targetEquity * 1.5).toLocaleString()} RSUs)`;
     }
   };
 
@@ -384,9 +384,9 @@ async function runOfferAudit() {
   const maxEq = Math.round(band.targetEquity * 1.5);
   if (equity > maxEq) {
     equityOk = false;
-    addLog(feed, `[Tool Finding: FAIL] evaluate_equity_caps: ${equity} GSUs exceeds 1.5x new hire cap (${maxEq} GSUs)`, 'log-error');
+    addLog(feed, `[Tool Finding: FAIL] evaluate_equity_caps: ${equity} RSUs exceeds 1.5x new hire cap (${maxEq} RSUs)`, 'log-error');
   } else {
-    addLog(feed, `[Tool Finding: PASS] evaluate_equity_caps: ${equity} GSUs compliant with new hire baseline`, 'log-success');
+    addLog(feed, `[Tool Finding: PASS] evaluate_equity_caps: ${equity} RSUs compliant with new hire baseline`, 'log-success');
   }
 
   await sleep(250);
@@ -503,6 +503,9 @@ function setStepActive(stepId) {
 }
 
 function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 /* =========================================================================
    3. VESTINGSIM & MONTE CARLO ENGINE
    ========================================================================= */
@@ -621,12 +624,12 @@ function renderVestingBarChart() {
     bar.className = `bar-col col-y${t.year}`;
     const heightPct = (t.shares / maxShares) * 100;
     bar.style.height = `${Math.max(heightPct, 6)}%`;
-    bar.title = `Month ${t.month} (Year ${t.year}): ${t.shares} GSUs`;
+    bar.title = `Month ${t.month} (Year ${t.year}): ${t.shares} RSUs`;
     container.appendChild(bar);
   });
 
   if (sumBadge) {
-    sumBadge.textContent = `Sum = ${totalSum.toLocaleString()} GSUs`;
+    sumBadge.textContent = `Sum = ${totalSum.toLocaleString()} RSUs`;
   }
 }
 

@@ -51,9 +51,18 @@
         </select>
       </div>
 
-      <div class="api-health-pill" id="global-api-status" title="Connected to Talos K8s Backend">
-        <span class="health-indicator online"></span>
-        <span class="health-text">K8s API Ready</span>
+      <!-- Live API Gateway Hybrid Mode Switcher -->
+      <div class="persona-selector-container">
+        <label for="gateway-mode-select" class="persona-label">Gateway:</label>
+        <select id="gateway-mode-select" class="persona-select" style="min-width: 140px; font-weight: 600;" title="Switch between In-Browser Simulation and Live Kubernetes Microservice">
+          <option value="SIMULATION" selected>🟢 In-Browser Sim</option>
+          <option value="LIVE_API">⚡ Live K8s Cluster</option>
+        </select>
+      </div>
+
+      <div class="api-health-pill" id="global-api-status" role="button" title="Click to test live K8s backend connection" style="cursor: pointer;">
+        <span class="health-indicator online" id="global-api-indicator"></span>
+        <span class="health-text" id="global-api-text">Sim Active</span>
       </div>
     </div>
   </header>
@@ -104,15 +113,15 @@
       <!-- Metric 3: Equity Share Ceiling -->
       <div class="budget-gauge-card">
         <div class="gauge-meta">
-          <span class="gauge-label">Equity Allocation Pool (GSUs)</span>
-          <span class="gauge-numbers"><strong id="hdr-equity-spent">24,600</strong> / <span id="hdr-equity-alloc">36,000 GSUs</span></span>
+          <span class="gauge-label">Equity Allocation Pool (RSUs)</span>
+          <span class="gauge-numbers"><strong id="hdr-equity-spent">24,600</strong> / <span id="hdr-equity-alloc">36,000 RSUs</span></span>
         </div>
         <div class="gauge-bar-bg">
           <div class="gauge-bar-fill fill-amber" id="hdr-bar-equity" style="width: 68.3%;"></div>
         </div>
         <div class="gauge-footer">
           <span class="gauge-pct" id="hdr-equity-pct">68.3% Allocated</span>
-          <span class="gauge-rem" id="hdr-equity-rem">11,400 GSUs Left</span>
+          <span class="gauge-rem" id="hdr-equity-rem">11,400 RSUs Left</span>
         </div>
       </div>
     </div>
@@ -626,7 +635,7 @@
             <input type="number" id="drw-input-ipf" class="form-control" step="0.05" min="0.0" max="2.0">
           </div>
           <div class="form-group">
-            <label for="drw-input-equity">Equity Refresh (GSUs)</label>
+            <label for="drw-input-equity">Equity Refresh (RSUs)</label>
             <input type="number" id="drw-input-equity" class="form-control" step="50">
           </div>
         </div>
@@ -707,8 +716,8 @@
         </div>
 
         <div class="form-group">
-          <label for="m-equity-gsus">New Hire Equity Grant (GSUs)</label>
-          <input type="number" id="m-equity-gsus" class="form-control" value="1000" step="50">
+          <label for="m-equity-rsus">New Hire Equity Grant (RSUs)</label>
+          <input type="number" id="m-equity-rsus" class="form-control" value="1000" step="50">
         </div>
 
         <!-- Real-time compensation summary pills -->
@@ -737,6 +746,6 @@
     </form>
   </div>
 
-  <script src="app.js?v=20260831v3"></script>
+  <script src="app.js?v=20260902v1"></script>
 </body>
 </html>

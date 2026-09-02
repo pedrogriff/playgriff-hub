@@ -95,7 +95,7 @@
             </div>
           </div>
           <p class="sys-desc">
-            High-throughput equity valuation engine modeling 48-month Google front-loaded schedules with exact share conservation (Largest Remainder Method) and parallelized Brownian Motion price path simulations.
+            High-throughput equity valuation engine modeling 48-month front-loaded enterprise schedules with exact share conservation (Largest Remainder Method) and parallelized Brownian Motion price path simulations.
           </p>
           <div class="sys-tags">
             <span class="tag">GBM Stochastic Modeling</span>
@@ -244,9 +244,9 @@
               </div>
 
               <div class="form-group">
-                <label for="input-proposed-gsus">Proposed Equity Refresh (GSUs)</label>
-                <input type="number" id="input-proposed-gsus" class="form-control" value="950" step="50">
-                <span class="field-hint" id="hint-equity-target">L5 Zone 1 Target: 900 GSUs (Bonus Target: 15%)</span>
+                <label for="input-proposed-rsus">Proposed Equity Refresh (RSUs)</label>
+                <input type="number" id="input-proposed-rsus" class="form-control" value="950" step="50">
+                <span class="field-hint" id="hint-equity-target">L5 Zone 1 Target: 900 RSUs (Bonus Target: 15%)</span>
               </div>
 
               <button type="submit" id="btn-audit-proposal" class="btn btn-primary btn-block">
@@ -367,9 +367,9 @@
               </div>
 
               <div class="form-group">
-                <label for="offer-equity">New Hire Equity Grant (GSUs)</label>
+                <label for="offer-equity">New Hire Equity Grant (RSUs)</label>
                 <input type="number" id="offer-equity" class="form-control" value="1000" step="50">
-                <span class="field-hint" id="offer-equity-hint">L5 Zone 1 Guideline: 900 GSUs (Max: 1,350 GSUs)</span>
+                <span class="field-hint" id="offer-equity-hint">L5 Zone 1 Guideline: 900 RSUs (Max: 1,350 RSUs)</span>
               </div>
 
               <button type="submit" id="btn-audit-offer" class="btn btn-primary btn-block">
@@ -459,8 +459,8 @@
             <!-- Metric 3: Equity Pool -->
             <div class="budget-meter-item">
               <div class="budget-meter-header">
-                <div><strong>Equity Share Allocation Pool (GSUs)</strong></div>
-                <div><span id="budget-equity-spent">24,600 GSUs</span> / <span id="budget-equity-allocated">36,000 GSUs</span> (<strong id="budget-equity-pct">68.3%</strong>)</div>
+                <div><strong>Equity Share Allocation Pool (RSUs)</strong></div>
+                <div><span id="budget-equity-spent">24,600 RSUs</span> / <span id="budget-equity-allocated">36,000 RSUs</span> (<strong id="budget-equity-pct">68.3%</strong>)</div>
               </div>
               <div class="budget-meter-bar">
                 <div class="budget-meter-fill fill-amber" id="bar-equity-fill" style="width: 68.3%;"></div>
@@ -568,7 +568,7 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="input-grant-shares">Total Grant Shares (GSUs)</label>
+              <label for="input-grant-shares">Total Grant Shares (RSUs)</label>
               <input type="number" id="input-grant-shares" class="form-control" value="1000" step="10">
             </div>
             <div class="form-group">
@@ -580,7 +580,7 @@
           <div class="form-group">
             <label for="input-schedule-type">Vesting Schedule Strategy</label>
             <select id="input-schedule-type" class="form-control">
-              <option value="FRONT_LOADED">Google Front-Loaded (33% / 33% / 22% / 12% Monthly)</option>
+              <option value="FRONT_LOADED">Front-Loaded Enterprise (33% / 33% / 22% / 12% Monthly)</option>
               <option value="CLIFF_4YR">Standard 4-Year (25% 1-Yr Cliff + Monthly)</option>
               <option value="EVEN_MONTHLY">Even Monthly (1/48th per month)</option>
               <option value="EVEN_QUARTERLY">Even Quarterly (1/16th per quarter)</option>
@@ -591,7 +591,7 @@
           <div class="chart-section">
             <div class="chart-header">
               <span>48-Month Share Distribution (Exact Conservation Invariant)</span>
-              <span id="chart-total-shares-check" class="badge badge-success">Sum = 1,000 GSUs</span>
+              <span id="chart-total-shares-check" class="badge badge-success">Sum = 1,000 RSUs</span>
             </div>
             <div class="bar-chart-container" id="vesting-bar-chart">
               <!-- Rendered via JS -->
@@ -838,6 +838,6 @@
     </div>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=20260902v1"></script>
 </body>
 </html>
