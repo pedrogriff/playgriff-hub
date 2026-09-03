@@ -150,11 +150,12 @@ async function runAgenticAudit() {
   const proposedBase = parseFloat(document.getElementById('input-proposed-base').value) || 0;
   const ipf = parseFloat(document.getElementById('input-ipf').value) || 1.0;
   const cpf = parseFloat(document.getElementById('input-cpf').value) || 1.0;
-  const proposedGSUs = parseInt(document.getElementById('input-proposed-gsus').value, 10) || 0;
+  const proposedEquityEl = document.getElementById('input-proposed-rsus') || document.getElementById('input-proposed-gsus');
+  const proposedRSUs = parseInt(proposedEquityEl ? proposedEquityEl.value : '0', 10) || 0;
 
   const band = getAdjustedBand(level, geo);
   const compaRatio = (proposedBase / band.mid).toFixed(3);
-  const equityRatio = (proposedGSUs / band.targetEquity).toFixed(2);
+  const equityRatio = (proposedRSUs / band.targetEquity).toFixed(2);
   const velocityPct = currentBase > 0 ? (((proposedBase - currentBase) / currentBase) * 100).toFixed(1) : '0.0';
 
   // Bonus Formula: Base * TargetBonusPct * IPF * CPF
@@ -205,7 +206,7 @@ async function runAgenticAudit() {
 
   // Step 4: Tool 3 - Equity Guidelines
   await sleep(220);
-  addLog(feed, `[Tool Invocation] evaluate_equity_guidelines(rsus=${proposedGSUs.toLocaleString()}, target=${band.targetEquity}, rating=${rating})`, 'log-tool');
+  addLog(feed, `[Tool Invocation] evaluate_equity_guidelines(rsus=${proposedRSUs.toLocaleString()}, target=${band.targetEquity}, rating=${rating})`, 'log-tool');
 
   let equityPass = true;
   const ratingMults = {
@@ -219,14 +220,14 @@ async function runAgenticAudit() {
   const minG = Math.floor(band.targetEquity * minM);
   const maxG = Math.floor(band.targetEquity * maxM);
 
-  if (proposedGSUs < minG) {
+  if (proposedRSUs < minG) {
     equityPass = false;
-    addLog(feed, `[Tool Finding: WARN] evaluate_equity_guidelines: ${proposedGSUs} RSUs below guideline (${minG} RSUs)`, 'log-warn');
-  } else if (proposedGSUs > maxG) {
+    addLog(feed, `[Tool Finding: WARN] evaluate_equity_guidelines: ${proposedRSUs} RSUs below guideline (${minG} RSUs)`, 'log-warn');
+  } else if (proposedRSUs > maxG) {
     equityPass = false;
-    addLog(feed, `[Tool Finding: FAIL] evaluate_equity_guidelines: ${proposedGSUs} RSUs exceeds max allowable (${maxG} RSUs)`, 'log-error');
+    addLog(feed, `[Tool Finding: FAIL] evaluate_equity_guidelines: ${proposedRSUs} RSUs exceeds max allowable (${maxG} RSUs)`, 'log-error');
   } else {
-    addLog(feed, `[Tool Finding: PASS] evaluate_equity_guidelines: ${proposedGSUs} RSUs within [${minG}, ${maxG}] (${equityRatio}x)`, 'log-success');
+    addLog(feed, `[Tool Finding: PASS] evaluate_equity_guidelines: ${proposedRSUs} RSUs within [${minG}, ${maxG}] (${equityRatio}x)`, 'log-success');
   }
 
   // Step 5: Tool 4 - Velocity & Rating Compliance
