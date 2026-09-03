@@ -1777,3 +1777,116 @@ body.enterprise-app {
   font-weight: 700;
 }
 
+/* Big Data ETL Pipeline Control Panel */
+.etl-pipeline-panel {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.7) 100%);
+  border: 1px solid rgba(96, 165, 250, 0.25);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.etl-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.etl-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.etl-title-group h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.etl-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.etl-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 16px;
+  max-width: 950px;
+}
+
+.etl-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.etl-stat-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.etl-stat-card .stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.etl-stat-card .stat-val {
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.etl-stat-card .stat-sub {
+  font-size: 0.675rem;
+  color: var(--text-muted);
+}
+
+.etl-terminal {
+  background-color: #090d16;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xs);
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  max-height: 130px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.etl-terminal .terminal-line {
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.etl-terminal .terminal-success {
+  color: #34d399;
+}
+
+.etl-terminal .terminal-warn {
+  color: #fbbf24;
+}
+
+.etl-terminal .terminal-highlight {
+  color: #60a5fa;
+  font-weight: 600;
+}
+

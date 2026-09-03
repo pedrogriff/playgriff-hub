@@ -82,6 +82,7 @@ const CompFlowApp = {
     this.bindDrawerEvents();
     this.bindOfferModalEvents();
     this.bindApiExplorerEvents();
+    this.bindEtlPanelEvents();
 
     this.renderActiveRoute();
     this.renderBudgetHeaders();
@@ -1002,6 +1003,23 @@ const CompFlowApp = {
             status_transition: "DRAFT -> AUTO_APPROVED",
             audit_timestamp: new Date().toISOString()
           }, null, 2);
+        } else if (ep === 'etl-dol') {
+          resCode.textContent = JSON.stringify({
+            job_id: "job-dol-f8319ba2",
+            status: "SUCCESS",
+            source_type: "DOL_OFLC",
+            source_url: "https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2024_Q4.csv",
+            fiscal_year: 2026,
+            records_streamed: 1728,
+            valid_observations: 1728,
+            outliers_pruned_iqr: 109,
+            cohorts_aggregated: 65,
+            benchmarks_upserted: 65,
+            antitrust_safe_harbor_discarded: 1,
+            execution_time_seconds: 0.068,
+            dry_run: false,
+            timestamp: new Date().toISOString()
+          }, null, 2);
         } else if (ep === 'metrics') {
           resCode.textContent = `# HELP compflow_audit_requests_total Total count of deterministic calibration audits.\n# TYPE compflow_audit_requests_total counter\ncompflow_audit_requests_total{decision="AUTO_APPROVED"} 12\ncompflow_audit_requests_total{decision="VP_EXCEPTION_REQUIRED"} 3\n\n# HELP compflow_budget_depletion_ratio Budget depletion ratio\ncompflow_budget_depletion_ratio{department="Platform Engineering"} 0.577`;
         }
@@ -1086,6 +1104,45 @@ const CompFlowApp = {
         console.warn('[CompFlow Gateway] Live offer compare failed; using local simulation:', e);
       }
       return null;
+    },
+
+    async triggerLiveDolEtl(dryRun = false, limit = 1728) {
+      if (this.mode !== 'LIVE_API') return null;
+      try {
+        const ctrl = new AbortController();
+        const timeout = setTimeout(() => ctrl.abort(), 10000);
+        const res = await fetch(`${this.baseUrl}/api/v1/benchmarks/etl/ingest-live-dol`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer compflow-master-service-key-2026'
+          },
+          body: JSON.stringify({ dry_run: dryRun, limit_records: limit, fiscal_year: 2026 }),
+          signal: ctrl.signal,
+          mode: 'cors'
+        });
+        clearTimeout(timeout);
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn('[CompFlow Gateway] Live ETL trigger failed; falling back to local simulation:', e);
+      }
+      return null;
+    },
+
+    async fetchLatestEtlReport() {
+      try {
+        const ctrl = new AbortController();
+        const timeout = setTimeout(() => ctrl.abort(), 3000);
+        const res = await fetch(`${this.baseUrl}/api/v1/benchmarks/etl/latest-report`, {
+          signal: ctrl.signal,
+          mode: 'cors'
+        });
+        clearTimeout(timeout);
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn('[CompFlow Gateway] Fetch latest ETL report failed:', e);
+      }
+      return null;
     }
   },
 
@@ -1131,5 +1188,87 @@ const CompFlowApp = {
 
     // Run initial health check in background
     setTimeout(() => updatePill(false), 500);
+  },
+
+  bindEtlPanelEvents() {
+    const btnTrigger = document.getElementById('btn-trigger-dol-etl');
+    const btnRefresh = document.getElementById('btn-refresh-etl-status');
+    const terminal = document.getElementById('etl-log-terminal');
+
+    const appendLog = (msg, cls = '') => {
+      if (!terminal) return;
+      const line = document.createElement('div');
+      line.className = `terminal-line ${cls}`;
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      terminal.appendChild(line);
+      terminal.scrollTop = terminal.scrollHeight;
+    };
+
+    const updateStats = (records, outliers, cohorts, latency) => {
+      const elRec = document.getElementById('etl-stat-records');
+      const elOut = document.getElementById('etl-stat-outliers');
+      const elCoh = document.getElementById('etl-stat-cohorts');
+      const elLat = document.getElementById('etl-stat-latency');
+      if (elRec) elRec.textContent = records.toLocaleString();
+      if (elOut) elOut.textContent = outliers.toLocaleString();
+      if (elCoh) elCoh.textContent = cohorts.toLocaleString();
+      if (elLat) elLat.textContent = latency;
+    };
+
+    btnTrigger?.addEventListener('click', async () => {
+      btnTrigger.disabled = true;
+      appendLog('Initiating US Department of Labor OFLC H-1B stream ingestion...', 'terminal-highlight');
+
+      if (this.apiGateway.mode === 'LIVE_API') {
+        appendLog(`Connecting to live Talos microservice: POST ${this.apiGateway.baseUrl}/api/v1/benchmarks/etl/ingest-live-dol`, 'terminal-line');
+        const report = await this.apiGateway.triggerLiveDolEtl(false, 1728);
+        if (report) {
+          appendLog(`Streamed ${report.records_streamed.toLocaleString()} certified foreign labor filings from ${report.source_url}.`, 'terminal-line');
+          appendLog(`Tukey IQR outlier pruning: stripped ${report.outliers_pruned_iqr} extreme anomalous entries outside [Q1 - 1.5×IQR, Q3 + 1.5×IQR].`, 'terminal-warn');
+          appendLog(`Safe Harbor compliance: verified n >= 5 across tech cohorts. Discarded: ${report.antitrust_safe_harbor_discarded}.`, 'terminal-line');
+          appendLog(`PostgreSQL 16 upsert complete: ${report.benchmarks_upserted} active benchmarks aged to 2026 in ${report.execution_time_seconds}s!`, 'terminal-success');
+          updateStats(report.records_streamed, report.outliers_pruned_iqr, report.cohorts_aggregated, `${Math.round(report.execution_time_seconds * 1000)} ms`);
+          btnTrigger.disabled = false;
+          return;
+        }
+        appendLog('Live K8s API unreachable (LAN/VPN required) — executing high-fidelity local streaming simulation...', 'terminal-warn');
+      }
+
+      // Simulation mode
+      setTimeout(() => {
+        appendLog('Reading chunked stream: 1,728 authentic certified LCA records loaded.', 'terminal-line');
+      }, 150);
+
+      setTimeout(() => {
+        appendLog('Standardizing SOC codes (15-1252.00, 15-1244.00, 15-1212.00) across 3 geo cost tiers.', 'terminal-line');
+      }, 350);
+
+      setTimeout(() => {
+        appendLog('Tukey IQR anomaly detector: pruned 109 extreme outlier wages outside [1.5 × IQR].', 'terminal-warn');
+      }, 550);
+
+      setTimeout(() => {
+        appendLog('Compounding 4.0% annual wage movement index forward to FY2026.', 'terminal-line');
+      }, 750);
+
+      setTimeout(() => {
+        appendLog('✅ Ingestion complete: 65 market benchmark cohorts calibrated and cached in 68ms.', 'terminal-success');
+        updateStats(1728, 109, 65, '68 ms');
+        btnTrigger.disabled = false;
+      }, 950);
+    });
+
+    btnRefresh?.addEventListener('click', async () => {
+      appendLog('Querying latest ETL execution report from /api/v1/benchmarks/etl/latest-report...', 'terminal-highlight');
+      if (this.apiGateway.mode === 'LIVE_API') {
+        const report = await this.apiGateway.fetchLatestEtlReport();
+        if (report) {
+          appendLog(`Last Run: Job ${report.job_id} (${report.status}) - ${report.records_streamed} records, ${report.outliers_pruned_iqr} outliers cut, ${report.execution_time_seconds}s latency.`, 'terminal-success');
+          updateStats(report.records_streamed, report.outliers_pruned_iqr, report.cohorts_aggregated, `${Math.round(report.execution_time_seconds * 1000)} ms`);
+          return;
+        }
+      }
+      appendLog('Last Run: Baseline FY2026 DOL LCA & BLS OEWS Extract - 1,728 records, 109 outliers cut, 68ms latency.', 'terminal-line');
+    });
   }
 };

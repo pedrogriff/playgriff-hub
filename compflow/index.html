@@ -360,6 +360,48 @@
           </div>
         </div>
 
+        <!-- US DOL OFLC Big Data ETL Ingestion Panel -->
+        <div class="etl-pipeline-panel">
+          <div class="etl-header">
+            <div class="etl-title-group">
+              <span class="badge badge-primary">Big Data ETL</span>
+              <h3>US Department of Labor (DOL) OFLC H-1B Ingestion Pipeline</h3>
+            </div>
+            <div class="etl-actions">
+              <button class="btn btn-sm btn-outline" id="btn-refresh-etl-status">🔄 Check Latest Report</button>
+              <button class="btn btn-sm btn-primary" id="btn-trigger-dol-etl">⚡ Trigger Live Ingestion Job</button>
+            </div>
+          </div>
+          <p class="etl-desc">
+            Streams certified foreign labor wage filings directly from the US Department of Labor OFLC disclosure repository. Standardizes occupational codes (SOC), groups into location cost-of-living tiers, filters anomalies via Tukey’s Interquartile Range (1.5 × IQR), and applies compound annual wage growth indexing forward to 2026.
+          </p>
+          <div class="etl-stats-grid">
+            <div class="etl-stat-card">
+              <span class="stat-label">Source Records Streamed</span>
+              <strong class="stat-val" id="etl-stat-records">1,728</strong>
+              <span class="stat-sub">Tech Filings (LCA / H-1B)</span>
+            </div>
+            <div class="etl-stat-card">
+              <span class="stat-label">Tukey IQR Outliers Stripped</span>
+              <strong class="stat-val text-amber" id="etl-stat-outliers">109</strong>
+              <span class="stat-sub">1.5 × IQR Threshold</span>
+            </div>
+            <div class="etl-stat-card">
+              <span class="stat-label">Active Cohorts Aggregated</span>
+              <strong class="stat-val text-emerald" id="etl-stat-cohorts">65</strong>
+              <span class="stat-sub">Safe Harbor (n ≥ 5)</span>
+            </div>
+            <div class="etl-stat-card">
+              <span class="stat-label">ETL Processing Latency</span>
+              <strong class="stat-val" id="etl-stat-latency">65 ms</strong>
+              <span class="stat-sub">Constant Memory Stream</span>
+            </div>
+          </div>
+          <div class="etl-terminal" id="etl-log-terminal">
+            <div class="terminal-line">[System Standby] Ready to stream live Department of Labor OFLC disclosure datasets.</div>
+          </div>
+        </div>
+
         <div class="matrix-cards-grid" id="matrix-cards-grid">
           <!-- Rendered dynamically -->
         </div>
@@ -519,6 +561,13 @@
                   <code>/api/v1/benchmarks/compare</code>
                 </div>
                 <button class="btn btn-xs btn-outline test-ep-btn" data-ep="compare">Compare Market</button>
+              </div>
+              <div class="endpoint-row">
+                <div class="ep-left">
+                  <span class="method-badge post">POST</span>
+                  <code>/api/v1/benchmarks/etl/ingest-live-dol</code>
+                </div>
+                <button class="btn btn-xs btn-outline test-ep-btn" data-ep="etl-dol">Trigger ETL</button>
               </div>
               <div class="endpoint-row">
                 <div class="ep-left">
@@ -746,6 +795,6 @@
     </form>
   </div>
 
-  <script src="app.js?v=20260902v1"></script>
+  <script src="app.js?v=20260903v1"></script>
 </body>
 </html>
