@@ -83,6 +83,7 @@ const CompFlowApp = {
     this.bindOfferModalEvents();
     this.bindApiExplorerEvents();
     this.bindEtlPanelEvents();
+    this.bindCounterSimulatorEvents();
 
     this.renderActiveRoute();
     this.renderBudgetHeaders();
@@ -1020,6 +1021,37 @@ const CompFlowApp = {
             dry_run: false,
             timestamp: new Date().toISOString()
           }, null, 2);
+        } else if (ep === 'sim-counter') {
+          resCode.textContent = JSON.stringify({
+            first_year_our_tdc: "367000.00",
+            first_year_comp_tdc: "313750.00",
+            first_year_tdc_delta: "+53250.00",
+            four_year_our_tdc: "1280000.00",
+            four_year_comp_tdc: "1215000.00",
+            four_year_tdc_delta: "+65000.00",
+            forfeiture_coverage_pct: "115.00",
+            predicted_win_rate_pct: "84.5",
+            win_rate_tier: "HIGHLY_COMPETITIVE",
+            year_by_year: [
+              { year: 1, our_cash: "307500.00", our_equity_value: "59400.00", our_tdc: "366900.00", comp_tdc: "313750.00", delta_tdc: "+53150.00" },
+              { year: 2, our_cash: "270250.00", our_equity_value: "59400.00", our_tdc: "329650.00", comp_tdc: "298750.00", delta_tdc: "+30900.00" },
+              { year: 3, our_cash: "270250.00", our_equity_value: "39600.00", our_tdc: "309850.00", comp_tdc: "298750.00", delta_tdc: "+11100.00" },
+              { year: 4, our_cash: "270250.00", our_equity_value: "21600.00", our_tdc: "291850.00", comp_tdc: "298750.00", delta_tdc: "-6900.00" }
+            ],
+            recommended_counter: {
+              recommended_base: "235000.00",
+              recommended_signon: "45000.00",
+              recommended_equity_rsus: 1800,
+              target_win_rate_pct: "85.00",
+              rationale: "Elevate sign-on bonus to $45,000 to neutralize near-term cash deficit, and expand equity grant to 1,800 RSUs to ensure long-term TDC superiority."
+            },
+            recruiter_talking_points: [
+              "Front-Loaded Equity Advantage: Our enterprise 33/33/22/12 schedule vests 66% within the first 24 months, accelerating liquidity compared to competitor's linear schedule.",
+              "Superior 4-Year Cumulative TDC: Our package delivers $65,000 more in total direct compensation over 4 years.",
+              "Immediate Year 1 Outperformance: You realize $53,250 higher take-home compensation in your first 12 months between base, target bonus, and initial vesting tranches.",
+              "Full Equity Forfeiture Protection: Our upfront buyout package fully covers (100%+) the $75,000 of unvested equity you leave behind."
+            ]
+          }, null, 2);
         } else if (ep === 'metrics') {
           resCode.textContent = `# HELP compflow_audit_requests_total Total count of deterministic calibration audits.\n# TYPE compflow_audit_requests_total counter\ncompflow_audit_requests_total{decision="AUTO_APPROVED"} 12\ncompflow_audit_requests_total{decision="VP_EXCEPTION_REQUIRED"} 3\n\n# HELP compflow_budget_depletion_ratio Budget depletion ratio\ncompflow_budget_depletion_ratio{department="Platform Engineering"} 0.577`;
         }
@@ -1141,6 +1173,26 @@ const CompFlowApp = {
         if (res.ok) return await res.json();
       } catch (e) {
         console.warn('[CompFlow Gateway] Fetch latest ETL report failed:', e);
+      }
+      return null;
+    },
+
+    async simulateCounterOffer(payload) {
+      if (this.mode !== 'LIVE_API') return null;
+      try {
+        const ctrl = new AbortController();
+        const timeout = setTimeout(() => ctrl.abort(), 3500);
+        const res = await fetch(`${this.baseUrl}/api/v1/offers/negotiation/simulate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: ctrl.signal,
+          mode: 'cors'
+        });
+        clearTimeout(timeout);
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn('[CompFlow Gateway] Live counter simulation failed; using local simulation:', e);
       }
       return null;
     }
@@ -1269,6 +1321,362 @@ const CompFlowApp = {
         }
       }
       appendLog('Last Run: Baseline FY2026 DOL LCA & BLS OEWS Extract - 1,728 records, 109 outliers cut, 68ms latency.', 'terminal-line');
+    });
+  },
+
+  bindCounterSimulatorEvents() {
+    const btnOpen = document.getElementById('btn-open-counter-simulator');
+    const modal = document.getElementById('counter-simulator-modal');
+    const overlay = document.getElementById('counter-simulator-overlay');
+    const btnClose = document.getElementById('btn-close-sim-modal');
+    const btnCloseFooter = document.getElementById('btn-close-sim-footer');
+    const btnOptimize = document.getElementById('btn-apply-rec-counter');
+    const btnApplyOffer = document.getElementById('btn-apply-to-offer-builder');
+    const btnCopyTP = document.getElementById('btn-copy-talking-points');
+
+    const presetSelect = document.getElementById('sim-competitor-preset');
+    const compNameInput = document.getElementById('sim-comp-name');
+    const compBaseInput = document.getElementById('sim-comp-base');
+    const compBonusInput = document.getElementById('sim-comp-bonus');
+    const compSignonInput = document.getElementById('sim-comp-signon');
+    const compEquityInput = document.getElementById('sim-comp-equity');
+    const compSchedInput = document.getElementById('sim-comp-schedule');
+    const compForfeitInput = document.getElementById('sim-comp-forfeit');
+
+    const ourBaseSlider = document.getElementById('sim-our-base-slider');
+    const ourBaseVal = document.getElementById('sim-our-base-val');
+    const ourSignonSlider = document.getElementById('sim-our-signon-slider');
+    const ourSignonVal = document.getElementById('sim-our-signon-val');
+    const ourEquitySlider = document.getElementById('sim-our-equity-slider');
+    const ourEquityVal = document.getElementById('sim-our-equity-val');
+
+    const winratePct = document.getElementById('sim-winrate-pct');
+    const winrateFill = document.getElementById('sim-winrate-fill');
+    const winrateBadge = document.getElementById('sim-winrate-badge');
+    const coverageVal = document.getElementById('sim-coverage-val');
+    const tdcAdvantage = document.getElementById('sim-tdc-advantage');
+    const tdcTbody = document.getElementById('sim-tdc-tbody');
+    const talkingPointsList = document.getElementById('sim-talking-points-list');
+
+    const presets = {
+      stripe: { name: 'Stripe', base: 225000, bonus: 15, signon: 25000, equity: 1600, sched: 'STANDARD_FOUR_YEAR_EQUAL_25', forfeit: 75000 },
+      datadog: { name: 'Datadog', base: 230000, bonus: 15, signon: 30000, equity: 1700, sched: 'STANDARD_FOUR_YEAR_EQUAL_25', forfeit: 50000 },
+      snowflake: { name: 'Snowflake', base: 235000, bonus: 15, signon: 20000, equity: 1500, sched: 'STANDARD_FOUR_YEAR_EQUAL_25', forfeit: 60000 },
+      openai: { name: 'OpenAI', base: 265000, bonus: 0, signon: 50000, equity: 2200, sched: 'STANDARD_FOUR_YEAR_EQUAL_25', forfeit: 100000 },
+      backloaded: { name: 'Enterprise Cloud Co', base: 220000, bonus: 10, signon: 20000, equity: 2400, sched: 'BACK_LOADED_5_15_40_40', forfeit: 40000 }
+    };
+
+    let latestSimulationResult = null;
+
+    const openModal = () => {
+      if (modal) modal.style.display = 'block';
+      if (overlay) overlay.style.display = 'block';
+      recalculate();
+    };
+
+    const closeModal = () => {
+      if (modal) modal.style.display = 'none';
+      if (overlay) overlay.style.display = 'none';
+    };
+
+    btnOpen?.addEventListener('click', openModal);
+    btnClose?.addEventListener('click', closeModal);
+    btnCloseFooter?.addEventListener('click', closeModal);
+    overlay?.addEventListener('click', closeModal);
+
+    presetSelect?.addEventListener('change', (e) => {
+      const p = presets[e.target.value];
+      if (p) {
+        if (compNameInput) compNameInput.value = p.name;
+        if (compBaseInput) compBaseInput.value = p.base;
+        if (compBonusInput) compBonusInput.value = p.bonus;
+        if (compSignonInput) compSignonInput.value = p.signon;
+        if (compEquityInput) compEquityInput.value = p.equity;
+        if (compSchedInput) compSchedInput.value = p.sched;
+        if (compForfeitInput) compForfeitInput.value = p.forfeit;
+        recalculate();
+      }
+    });
+
+    const updateSliderLabels = () => {
+      if (ourBaseVal && ourBaseSlider) ourBaseVal.textContent = `$${parseInt(ourBaseSlider.value, 10).toLocaleString()}`;
+      if (ourSignonVal && ourSignonSlider) ourSignonVal.textContent = `$${parseInt(ourSignonSlider.value, 10).toLocaleString()}`;
+      if (ourEquityVal && ourEquitySlider) ourEquityVal.textContent = `${parseInt(ourEquitySlider.value, 10).toLocaleString()} RSUs`;
+    };
+
+    [ourBaseSlider, ourSignonSlider, ourEquitySlider].forEach(slider => {
+      slider?.addEventListener('input', () => {
+        updateSliderLabels();
+        recalculate();
+      });
+    });
+
+    [compNameInput, compBaseInput, compBonusInput, compSignonInput, compEquityInput, compSchedInput, compForfeitInput].forEach(inp => {
+      inp?.addEventListener('input', () => recalculate());
+      inp?.addEventListener('change', () => recalculate());
+    });
+
+    const recalculate = async () => {
+      updateSliderLabels();
+      const ourBase = parseFloat(ourBaseSlider?.value || '235000');
+      const ourSignon = parseFloat(ourSignonSlider?.value || '45000');
+      const ourEquity = parseInt(ourEquitySlider?.value || '1800', 10);
+
+      const compName = compNameInput?.value || 'Competitor';
+      const compBase = parseFloat(compBaseInput?.value || '225000');
+      const compBonusPct = parseFloat(compBonusInput?.value || '15');
+      const compSignon = parseFloat(compSignonInput?.value || '25000');
+      const compEquity = parseInt(compEquityInput?.value || '1600', 10);
+      const compSched = compSchedInput?.value || 'STANDARD_FOUR_YEAR_EQUAL_25';
+      const compForfeit = parseFloat(compForfeitInput?.value || '75000');
+
+      const payload = {
+        our_offer: {
+          base_salary: ourBase.toString(),
+          target_bonus_pct: '15.00',
+          signon_bonus: ourSignon.toString(),
+          equity_rsus_4yr: ourEquity,
+          share_price_estimate: '100.00',
+          vesting_schedule: 'ENTERPRISE_FRONT_LOADED_33_33_22_12'
+        },
+        competing_offer: {
+          competitor_name: compName,
+          base_salary: compBase.toString(),
+          target_bonus_pct: compBonusPct.toString(),
+          signon_bonus: compSignon.toString(),
+          equity_rsus_4yr: compEquity,
+          share_price_estimate: '100.00',
+          vesting_schedule: compSched,
+          forfeited_unvested_equity: compForfeit.toString()
+        }
+      };
+
+      if (this.apiGateway.mode === 'LIVE_API') {
+        const liveRes = await this.apiGateway.simulateCounterOffer(payload);
+        if (liveRes) {
+          renderSimulationResult(liveRes);
+          return;
+        }
+      }
+
+      // Local In-Browser Simulation
+      const ourSchedPct = [0.33, 0.33, 0.22, 0.12];
+      const compSchedPct = compSched === 'BACK_LOADED_5_15_40_40' ? [0.05, 0.15, 0.40, 0.40] : [0.25, 0.25, 0.25, 0.25];
+
+      const ourBonus = ourBase * 0.15;
+      const compBonus = compBase * (compBonusPct / 100);
+
+      const ourTotalEq = ourEquity * 100;
+      const compTotalEq = compEquity * 100;
+
+      let ourSum = 0;
+      let compSum = 0;
+      const yby = [];
+
+      for (let i = 0; i < 4; i++) {
+        const ourCash = ourBase + ourBonus + (i === 0 ? ourSignon : 0);
+        const compCash = compBase + compBonus + (i === 0 ? compSignon : 0);
+        const ourEq = ourTotalEq * ourSchedPct[i];
+        const compEq = compTotalEq * compSchedPct[i];
+
+        const ourTdc = ourCash + ourEq;
+        const compTdc = compCash + compEq;
+        const delta = ourTdc - compTdc;
+
+        ourSum += ourTdc;
+        compSum += compTdc;
+
+        yby.push({
+          year: i + 1,
+          our_cash: ourCash.toFixed(2),
+          our_equity_value: ourEq.toFixed(2),
+          our_tdc: ourTdc.toFixed(2),
+          comp_tdc: compTdc.toFixed(2),
+          delta_tdc: delta.toFixed(2)
+        });
+      }
+
+      const yr1Our = parseFloat(yby[0].our_tdc);
+      const yr1Comp = parseFloat(yby[0].comp_tdc);
+      const yr1Delta = yr1Our - yr1Comp;
+      const fourYrDelta = ourSum - compSum;
+
+      // Forfeiture Buyout Coverage
+      let coveragePct = 100.0;
+      if (compForfeit > 0) {
+        const eqPrem = Math.max(0, parseFloat(yby[0].our_equity_value) - (compTotalEq * compSchedPct[0]));
+        const buyout = ourSignon + eqPrem;
+        coveragePct = Math.min(200.0, Math.round((buyout / compForfeit) * 100));
+      }
+
+      // Win rate sigmoid
+      const rYr1 = yr1Our / yr1Comp;
+      const r4Yr = ourSum / compSum;
+      const rForfeit = Math.min(1.0, coveragePct / 100.0);
+
+      let z = 5.5 * (rYr1 - 1.0) + 3.5 * (r4Yr - 1.0) + 1.5 * (rForfeit - 1.0);
+      if (compSched !== 'ENTERPRISE_FRONT_LOADED_33_33_22_12') z += 0.35;
+
+      const prob = 1.0 / (1.0 + Math.exp(-z));
+      const winPct = Math.max(5.0, Math.min(98.0, Math.round(prob * 1000) / 10));
+
+      let tier = 'HIGHLY_COMPETITIVE';
+      if (winPct < 50.0) tier = 'AT_RISK';
+      else if (winPct < 65.0) tier = 'MARGINAL';
+      else if (winPct < 80.0) tier = 'COMPETITIVE';
+
+      const talkingPoints = [
+        `Front-Loaded Equity Advantage: Our enterprise 33/33/22/12 schedule vests 66% within the first 24 months, accelerating liquidity compared to ${compName}'s linear schedule.`,
+        fourYrDelta >= 0
+          ? `Superior 4-Year Cumulative TDC: Our package delivers $${Math.round(fourYrDelta).toLocaleString()} more in total direct compensation over 4 years.`
+          : `Near-Term Cash Flow Priority: While 4-year figures are competitive, our Year 1 cash flow guarantees immediate financial upside with less reliance on backend vesting.`,
+        yr1Delta >= 0
+          ? `Immediate Year 1 Outperformance: You realize $${Math.round(yr1Delta).toLocaleString()} higher take-home compensation in your first 12 months.`
+          : `Guaranteed Base Salary Stability: High cash proportion provides predictable monthly earnings independent of equity market cycles.`
+      ];
+
+      if (compForfeit > 0) {
+        talkingPoints.push(
+          coveragePct >= 100
+            ? `Full Equity Forfeiture Protection: Our upfront buyout package fully covers (100%+) the $${Math.round(compForfeit).toLocaleString()} of unvested equity you leave behind.`
+            : `Substantial Equity Forfeiture Offset: Our Year 1 package bridges ${coveragePct}% of your forfeited unvested equity immediately, eliminating transition risk.`
+        );
+      }
+
+      const simResult = {
+        first_year_our_tdc: yr1Our.toFixed(2),
+        first_year_comp_tdc: yr1Comp.toFixed(2),
+        first_year_tdc_delta: yr1Delta.toFixed(2),
+        four_year_our_tdc: ourSum.toFixed(2),
+        four_year_comp_tdc: compSum.toFixed(2),
+        four_year_tdc_delta: fourYrDelta.toFixed(2),
+        forfeiture_coverage_pct: coveragePct.toString(),
+        predicted_win_rate_pct: winPct.toString(),
+        win_rate_tier: tier,
+        year_by_year: yby,
+        recommended_counter: {
+          recommended_base: (compBase > ourBase ? compBase : ourBase).toString(),
+          recommended_signon: (yr1Delta < 0 ? Math.round(ourSignon + Math.abs(yr1Delta) + 10000) : ourSignon).toString(),
+          recommended_equity_rsus: (fourYrDelta < 0 ? Math.round(ourEquity + Math.abs(fourYrDelta) / 100 * 1.15) : ourEquity)
+        },
+        recruiter_talking_points: talkingPoints
+      };
+
+      renderSimulationResult(simResult);
+    };
+
+    const renderSimulationResult = (res) => {
+      latestSimulationResult = res;
+      const winPct = parseFloat(res.predicted_win_rate_pct);
+      if (winratePct) winratePct.textContent = `${winPct.toFixed(1)}%`;
+      if (winrateFill) winrateFill.style.width = `${winPct}%`;
+
+      if (winrateBadge) {
+        winrateBadge.className = 'badge';
+        if (winPct >= 80.0) {
+          winrateBadge.classList.add('badge-success');
+          winrateBadge.textContent = '🟢 Highly Competitive';
+        } else if (winPct >= 65.0) {
+          winrateBadge.classList.add('badge-primary');
+          winrateBadge.textContent = '🔵 Competitive';
+        } else if (winPct >= 50.0) {
+          winrateBadge.classList.add('badge-warning');
+          winrateBadge.textContent = '🟡 Marginal Parity';
+        } else {
+          winrateBadge.classList.add('badge-danger');
+          winrateBadge.textContent = '🔴 At Risk';
+        }
+      }
+
+      const cov = parseFloat(res.forfeiture_coverage_pct);
+      if (coverageVal) {
+        coverageVal.textContent = `${Math.round(cov)}% (${cov >= 100 ? 'Full Offset' : 'Partial Offset'})`;
+        coverageVal.className = cov >= 100 ? 'text-emerald' : 'text-amber';
+      }
+
+      const fourYrDelta = parseFloat(res.four_year_tdc_delta);
+      if (tdcAdvantage) {
+        if (fourYrDelta >= 0) {
+          tdcAdvantage.textContent = `+$${Math.round(fourYrDelta).toLocaleString()} 4-Year TDC Lead`;
+          tdcAdvantage.style.color = '#10b981';
+          tdcAdvantage.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+        } else {
+          tdcAdvantage.textContent = `-$${Math.round(Math.abs(fourYrDelta)).toLocaleString()} 4-Year Deficit`;
+          tdcAdvantage.style.color = '#ef4444';
+          tdcAdvantage.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+        }
+      }
+
+      if (tdcTbody && res.year_by_year) {
+        let rowsHtml = '';
+        res.year_by_year.forEach(row => {
+          const delta = parseFloat(row.delta_tdc);
+          const deltaFormatted = delta >= 0 ? `+$${Math.round(delta).toLocaleString()}` : `-$${Math.round(Math.abs(delta)).toLocaleString()}`;
+          const deltaClass = delta >= 0 ? 'text-emerald' : 'text-rose';
+          rowsHtml += `
+            <tr>
+              <td><strong>Year ${row.year}</strong></td>
+              <td>$${Math.round(parseFloat(row.our_cash)).toLocaleString()}</td>
+              <td>$${Math.round(parseFloat(row.our_equity_value)).toLocaleString()}</td>
+              <td><strong>$${Math.round(parseFloat(row.our_tdc)).toLocaleString()}</strong></td>
+              <td>$${Math.round(parseFloat(row.comp_tdc)).toLocaleString()}</td>
+              <td class="${deltaClass}"><strong>${deltaFormatted}</strong></td>
+            </tr>
+          `;
+        });
+        tdcTbody.innerHTML = rowsHtml;
+      }
+
+      if (talkingPointsList && res.recruiter_talking_points) {
+        talkingPointsList.innerHTML = res.recruiter_talking_points.map(pt => `<div class="tp-item">${pt}</div>`).join('');
+      }
+    };
+
+    btnOptimize?.addEventListener('click', () => {
+      if (latestSimulationResult && latestSimulationResult.recommended_counter) {
+        const rc = latestSimulationResult.recommended_counter;
+        if (ourBaseSlider && rc.recommended_base) ourBaseSlider.value = Math.round(parseFloat(rc.recommended_base));
+        if (ourSignonSlider && rc.recommended_signon) ourSignonSlider.value = Math.round(parseFloat(rc.recommended_signon));
+        if (ourEquitySlider && rc.recommended_equity_rsus) ourEquitySlider.value = parseInt(rc.recommended_equity_rsus, 10);
+        recalculate();
+      }
+    });
+
+    btnApplyOffer?.addEventListener('click', () => {
+      const ourBase = ourBaseSlider?.value || '235000';
+      const ourSignon = ourSignonSlider?.value || '45000';
+      const ourEquity = ourEquitySlider?.value || '1800';
+
+      const mBase = document.getElementById('m-proposed-base');
+      const mSignon = document.getElementById('m-signon-bonus');
+      const mEquity = document.getElementById('m-equity-rsus');
+
+      if (mBase) {
+        mBase.value = ourBase;
+        mBase.dispatchEvent(new Event('input'));
+      }
+      if (mSignon) {
+        mSignon.value = ourSignon;
+        mSignon.dispatchEvent(new Event('input'));
+      }
+      if (mEquity) {
+        mEquity.value = ourEquity;
+        mEquity.dispatchEvent(new Event('input'));
+      }
+
+      closeModal();
+      document.getElementById('btn-open-offer-builder')?.click();
+    });
+
+    btnCopyTP?.addEventListener('click', () => {
+      if (latestSimulationResult && latestSimulationResult.recruiter_talking_points) {
+        const text = latestSimulationResult.recruiter_talking_points.join('\n\n');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).catch(() => {});
+        }
+        btnCopyTP.textContent = '✅ Copied!';
+        setTimeout(() => { btnCopyTP.textContent = '📋 Copy Talking Points'; }, 2000);
+      }
     });
   }
 };

@@ -267,6 +267,7 @@
             <p class="view-subtitle">Model compensation packages for candidate new hires, enforce salary band ceilings & sign-on caps ($50,000 threshold), and execute offer approval lifecycles.</p>
           </div>
           <div class="view-actions">
+            <button class="btn btn-secondary" id="btn-open-counter-simulator">🤝 Counter Simulator</button>
             <button class="btn btn-primary" id="btn-open-offer-builder">➕ New Candidate Offer</button>
           </div>
         </div>
@@ -572,6 +573,13 @@
               <div class="endpoint-row">
                 <div class="ep-left">
                   <span class="method-badge post">POST</span>
+                  <code>/api/v1/offers/negotiation/simulate</code>
+                </div>
+                <button class="btn btn-xs btn-outline test-ep-btn" data-ep="sim-counter">Simulate Counter</button>
+              </div>
+              <div class="endpoint-row">
+                <div class="ep-left">
+                  <span class="method-badge post">POST</span>
                   <code>/api/v1/cycles/{id}/proposals</code>
                 </div>
                 <button class="btn btn-xs btn-outline test-ep-btn" data-ep="proposals">Inspect Schema</button>
@@ -795,6 +803,179 @@
     </form>
   </div>
 
-  <script src="app.js?v=20260903v1"></script>
+  <!-- ─── COMPETING OFFER & COUNTER NEGOTIATION SIMULATOR MODAL ─── -->
+  <div class="modal-overlay" id="counter-simulator-overlay"></div>
+  <div class="modal-dialog modal-lg" id="counter-simulator-modal" style="display: none;">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">🤝 Candidate Counter-Offer &amp; Negotiation Simulator</h2>
+        <span class="modal-subtitle">Model competing offers, calculate unvested equity forfeiture buyouts, and optimize candidate acceptance win-rate elasticity (Pave / Compa methodology).</span>
+      </div>
+      <button class="drawer-close-btn" id="btn-close-sim-modal">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- 2-Column Comparison Grid -->
+      <div class="sim-columns-grid">
+        <!-- Column 1: Competing External Offer -->
+        <div class="sim-card sim-competing-card">
+          <div class="sim-card-header">
+            <div class="sim-card-title">
+              <span class="badge badge-amber">External Offer</span>
+              <h4>Competing Offer Details</h4>
+            </div>
+            <select id="sim-competitor-preset" class="form-control form-control-sm">
+              <option value="custom">Preset: Custom Employer</option>
+              <option value="stripe" selected>Preset: Stripe (Standard 25%)</option>
+              <option value="datadog">Preset: Datadog (Standard 25%)</option>
+              <option value="snowflake">Preset: Snowflake (Standard 25%)</option>
+              <option value="openai">Preset: OpenAI (High Cash, Flat)</option>
+              <option value="backloaded">Preset: Back-Loaded (5/15/40/40)</option>
+            </select>
+          </div>
+
+          <div class="sim-form-grid">
+            <div class="form-group">
+              <label for="sim-comp-name">Competitor Name</label>
+              <input type="text" id="sim-comp-name" class="form-control" value="Stripe">
+            </div>
+            <div class="form-group">
+              <label for="sim-comp-base">Competing Base ($/yr)</label>
+              <input type="number" id="sim-comp-base" class="form-control" value="225000" step="5000">
+            </div>
+            <div class="form-group">
+              <label for="sim-comp-bonus">Target Bonus (%)</label>
+              <input type="number" id="sim-comp-bonus" class="form-control" value="15" step="1">
+            </div>
+            <div class="form-group">
+              <label for="sim-comp-signon">Competing Sign-on ($)</label>
+              <input type="number" id="sim-comp-signon" class="form-control" value="25000" step="5000">
+            </div>
+            <div class="form-group">
+              <label for="sim-comp-equity">4-Year Equity (RSUs)</label>
+              <input type="number" id="sim-comp-equity" class="form-control" value="1600" step="50">
+            </div>
+            <div class="form-group">
+              <label for="sim-comp-schedule">Vesting Schedule</label>
+              <select id="sim-comp-schedule" class="form-control">
+                <option value="STANDARD_FOUR_YEAR_EQUAL_25" selected>Standard (25% / 25% / 25% / 25%)</option>
+                <option value="BACK_LOADED_5_15_40_40">Back-Loaded (5% / 15% / 40% / 40%)</option>
+                <option value="ENTERPRISE_FRONT_LOADED_33_33_22_12">Front-Loaded (33% / 33% / 22% / 12%)</option>
+              </select>
+            </div>
+            <div class="form-group col-span-2">
+              <label for="sim-comp-forfeit">Unvested Equity Forfeited ($) <span class="field-hint">Candidate forfeits at current employer</span></label>
+              <input type="number" id="sim-comp-forfeit" class="form-control" value="75000" step="5000">
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Our Counter Strategy Levers -->
+        <div class="sim-card sim-our-card">
+          <div class="sim-card-header">
+            <div class="sim-card-title">
+              <span class="badge badge-primary">Our Company</span>
+              <h4>Proposed Counter Levers</h4>
+            </div>
+            <span class="badge badge-success">Enterprise 33/33/22/12 Vesting</span>
+          </div>
+
+          <div class="sim-levers-container">
+            <div class="sim-lever-row">
+              <div class="lever-header">
+                <label for="sim-our-base-slider">Base Salary ($/yr):</label>
+                <strong id="sim-our-base-val" class="lever-val">$235,000</strong>
+              </div>
+              <input type="range" id="sim-our-base-slider" class="range-slider" min="160000" max="420000" step="5000" value="235000">
+            </div>
+
+            <div class="sim-lever-row">
+              <div class="lever-header">
+                <label for="sim-our-signon-slider">Sign-on Buyout Bridge ($):</label>
+                <strong id="sim-our-signon-val" class="lever-val text-amber">$45,000</strong>
+              </div>
+              <input type="range" id="sim-our-signon-slider" class="range-slider" min="0" max="150000" step="5000" value="45000">
+            </div>
+
+            <div class="sim-lever-row">
+              <div class="lever-header">
+                <label for="sim-our-equity-slider">Equity Grant (4-Yr RSUs):</label>
+                <strong id="sim-our-equity-val" class="lever-val text-emerald">1,800 RSUs</strong>
+              </div>
+              <input type="range" id="sim-our-equity-slider" class="range-slider" min="400" max="4500" step="50" value="1800">
+            </div>
+          </div>
+
+          <!-- Dynamic Win-Rate Elasticity Gauge -->
+          <div class="sim-winrate-box">
+            <div class="sim-winrate-header">
+              <span>🎯 Predicted Acceptance Probability</span>
+              <span class="badge badge-success" id="sim-winrate-badge">🟢 Highly Competitive</span>
+            </div>
+            <div class="sim-winrate-display">
+              <div class="sim-winrate-pct" id="sim-winrate-pct">84.5%</div>
+              <div class="sim-winrate-meter">
+                <div class="meter-track">
+                  <div class="meter-fill" id="sim-winrate-fill" style="width: 84.5%;"></div>
+                </div>
+                <div class="meter-labels">
+                  <span>50% (Parity)</span>
+                  <span>75% (Target)</span>
+                  <span>90%+ (Decisive)</span>
+                </div>
+              </div>
+            </div>
+            <div class="sim-coverage-pill">
+              Forfeiture Buyout Coverage: <strong id="sim-coverage-val" class="text-emerald">112% (Full Offset)</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Year-by-Year Comparison Table -->
+      <div class="sim-table-card">
+        <div class="sim-table-header">
+          <h4>4-Year Total Direct Compensation (TDC) Trajectory</h4>
+          <span class="stat-pill" id="sim-tdc-advantage">+$68,500 4-Year TDC Lead</span>
+        </div>
+        <div class="table-container">
+          <table class="calibration-table sim-tdc-table">
+            <thead>
+              <tr>
+                <th>Timeline</th>
+                <th>Our Cash</th>
+                <th>Our Vested RSUs</th>
+                <th>Our Total TDC</th>
+                <th>Comp Total TDC</th>
+                <th>Net Delta (Advantage)</th>
+              </tr>
+            </thead>
+            <tbody id="sim-tdc-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recruiter Talking Points -->
+      <div class="sim-talking-points-card">
+        <div class="tp-header">
+          <h4>💡 AI Recruiter Negotiation Talking Points</h4>
+          <button type="button" class="btn btn-xs btn-outline" id="btn-copy-talking-points">📋 Copy Talking Points</button>
+        </div>
+        <div class="tp-list" id="sim-talking-points-list">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="btn-close-sim-footer">Close</button>
+      <button type="button" class="btn btn-outline" id="btn-apply-rec-counter">✨ Auto-Optimize Counter</button>
+      <button type="button" class="btn btn-primary" id="btn-apply-to-offer-builder">⚡ Apply to Offer Builder</button>
+    </div>
+  </div>
+
+  <script src="app.js?v=20260904v1"></script>
 </body>
 </html>
