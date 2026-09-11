@@ -10,10 +10,11 @@
 
 ## 🌟 Interactive Systems Featured
 
-1. **🤖 CompFlow Agent**: Autonomous compensation review calibration copilot with live tool-calling inspection and state machine governance.
-2. **📈 VestingSim Engine**: Exact share conservation 48-month bar chart (Largest Remainder Method) + Real-Time Monte Carlo price trajectory canvas simulation.
-3. **🧠 AlgoCore CS Lab**: Live queue race comparing $O(N^2)$ array front shifts vs $O(1)$ ring buffer execution, plus $O(\log N)$ AVL tree salary percentile slider.
-4. **☸️ Homelab Kubernetes**: Immutable Talos Linux bare-metal cluster architecture and GitOps pipeline.
+1. **💎 NextComp Workbench**: Interactive salary range modeling engine with real-time midpoint & spread % recalculation, Incumbent Impact Summary telemetry (Green-Circle correction budget, Red-Circle governance, and Department Compa-Ratios), and full roster drilldown.
+2. **🤖 CompFlow Agent**: Autonomous compensation review calibration copilot with live tool-calling inspection and state machine governance.
+3. **📈 VestingSim Engine**: Exact share conservation 48-month bar chart (Largest Remainder Method) + Real-Time Monte Carlo price trajectory canvas simulation.
+4. **🧠 AlgoCore CS Lab**: Live queue race comparing $O(N^2)$ array front shifts vs $O(1)$ ring buffer execution, plus $O(\log N)$ AVL tree salary percentile slider.
+5. **☸️ Homelab Kubernetes**: Immutable Talos Linux bare-metal cluster architecture and GitOps pipeline.
 
 ---
 

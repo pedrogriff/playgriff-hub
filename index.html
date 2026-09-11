@@ -31,6 +31,7 @@
       </div>
       <nav class="nav-tabs" role="tablist" aria-label="System Navigation">
         <button class="nav-btn active" data-tab="tab-all" id="btn-tab-all" role="tab">⭐ Overview</button>
+        <button class="nav-btn" data-tab="tab-nextcomp" id="btn-tab-nextcomp" role="tab">💎 NextComp Workbench</button>
         <button class="nav-btn" data-tab="tab-compflow" id="btn-tab-compflow" role="tab">🤖 CompFlow Agent</button>
         <button class="nav-btn" data-tab="tab-vestingsim" id="btn-tab-vestingsim" role="tab">📈 VestingSim</button>
         <button class="nav-btn" data-tab="tab-algocore" id="btn-tab-algocore" role="tab">🧠 AlgoCore Lab</button>
@@ -60,6 +61,31 @@
       </div>
 
       <div class="systems-grid">
+        <!-- Card: NextComp Salary Range Workbench -->
+        <div class="system-card">
+          <div class="sys-header">
+            <span class="sys-icon">💎</span>
+            <div>
+              <h3 class="sys-title">NextComp Salary Range Workbench</h3>
+              <p class="sys-meta">Next.js 15 App Router • PostgreSQL + pgvector • Prisma ORM • Trigger.dev v3</p>
+            </div>
+          </div>
+          <p class="sys-desc">
+            Algorithmic salary band modeling engine enabling interactive midpoint and spread % adjustments with real-time recalculation of range minimums, maximums, and Incumbent Impact Summary telemetry (Green-Circle correction budget, Red-Circle governance, and Department Compa-Ratios).
+          </p>
+          <div class="sys-tags">
+            <span class="tag">Deterministic Math</span>
+            <span class="tag">PostgreSQL pgvector</span>
+            <span class="tag">Dynamic Recalc</span>
+            <span class="tag">Incumbent Telemetry</span>
+          </div>
+          <div class="sys-actions">
+            <a href="nextcomp/" class="btn btn-sm btn-primary">🚀 Launch Salary Range Workbench ↗</a>
+            <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-nextcomp">⚡ Quick Preview</button>
+            <a href="https://github.com/pedrogriff/nextcomp" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
+          </div>
+        </div>
+
         <!-- Card 1: CompFlow Platform -->
         <div class="system-card">
           <div class="sys-header">
@@ -152,6 +178,64 @@
             <button class="btn btn-sm btn-primary jump-tab-btn" data-target="tab-k8s">☸️ View Architecture</button>
             <a href="https://github.com/pedrogriff/homelab-k8s-talos" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── TAB: NEXTCOMP SALARY RANGE WORKBENCH ─────────────── -->
+    <section class="tab-pane" id="tab-nextcomp">
+      <div class="section-intro">
+        <div class="intro-tag">Algorithmic Total Rewards Engine &amp; Modeling</div>
+        <h2>NextComp: Salary Range Workbench &amp; Incumbent Impact Telemetry</h2>
+        <p>Interactive compensation modeling workbench engineered with <strong>Next.js 15 App Router</strong>, <strong>PostgreSQL + pgvector</strong>, and <strong>Deterministic Mathematical Formulas</strong>. Allows compensation leaders to adjust midpoints and spreads with immediate recalculation of band bounds and real-time incumbent circle telemetry.</p>
+        <div style="margin-top: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <a href="nextcomp/" class="btn btn-primary">🚀 Launch Dedicated Salary Range Workbench ↗</a>
+          <a href="https://github.com/pedrogriff/nextcomp" target="_blank" rel="noopener" class="btn btn-outline">GitHub Repository ↗</a>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Includes Real-Time Recalculations, Green-Circle Correction Budgets, and Roster Drilldown</span>
+        </div>
+      </div>
+
+      <div class="systems-grid" style="margin-top: 20px;">
+        <div class="system-card">
+          <div class="sys-header">
+            <span class="sys-icon">⚡</span>
+            <div>
+              <h3 class="sys-title">Mathematical Rigor &amp; Formula Identities</h3>
+              <p class="sys-meta">Strict PRD Mathematical Conformance</p>
+            </div>
+          </div>
+          <p class="sys-desc">
+            Exact formula reciprocal invariants verified via Vitest:
+            <br>• $\text{Min} = \text{Mid} / (1 + \text{Spread} / 2)$
+            <br>• $\text{Max} = \text{Min} \times (1 + \text{Spread})$
+            <br>• $\text{Green Circle Budget} = \sum_{\text{Base} < \text{Min}} (\text{Min} - \text{Base})$
+          </p>
+        </div>
+
+        <div class="system-card">
+          <div class="sys-header">
+            <span class="sys-icon">🟢</span>
+            <div>
+              <h3 class="sys-title">Incumbent Circle Impact Summary</h3>
+              <p class="sys-meta">Real-Time Equity Gap Auditing</p>
+            </div>
+          </div>
+          <p class="sys-desc">
+            Instantly flags underpaid incumbents below range minimum (Green Circle) and overpaid incumbents exceeding range maximum (Red Circle), quantifying the exact dollar budget required to restore internal equity.
+          </p>
+        </div>
+
+        <div class="system-card">
+          <div class="sys-header">
+            <span class="sys-icon">📊</span>
+            <div>
+              <h3 class="sys-title">Live Interactive Simulation</h3>
+              <p class="sys-meta">Instant Client Re-Evaluation</p>
+            </div>
+          </div>
+          <p class="sys-desc">
+            Test market inflation bumps (+3%, +5%) or normalize spreads across 18 career bands across Engineering, Product, and Design without page reloads.
+          </p>
         </div>
       </div>
     </section>
