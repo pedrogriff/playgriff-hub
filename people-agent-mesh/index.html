@@ -31,6 +31,7 @@
   <nav class="tab-nav">
     <button class="tab-btn active" data-tab="tab-orchestrator">🤖 Multi-Agent Orchestrator & HITL</button>
     <button class="tab-btn" data-tab="tab-privacy">🔒 Zero-Retention Privacy Gateway</button>
+    <button class="tab-btn" data-tab="tab-security">🛡️ Adversarial Defense & Red-Teaming</button>
     <button class="tab-btn" data-tab="tab-mcp">🔌 Model Context Protocol (MCP)</button>
     <button class="tab-btn" data-tab="tab-evals">📊 CI Golden Benchmark Evals</button>
     <button class="tab-btn" data-tab="tab-docs">📚 Architecture & ADRs</button>
@@ -241,6 +242,92 @@
       </div>
     </section>
 
+    <!-- Tab: Adversarial Defense & Red-Teaming (ADR-003) -->
+    <section id="tab-security" class="tab-content">
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-header">
+          <div class="card-title">🛡️ Adversarial Defense & Prompt Injection Playground (ADR-003)</div>
+          <span class="badge badge-amber">Heuristic Scoring • Delimiter Sandboxing • Canary Tripwires</span>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+          Simulate Tier 3 red-teaming attacks against the agent mesh perimeter. Freeform untrusted inputs (e.g. manager calibration justifications, free-text override requests) are inspected for prompt injections, system delimiter tampering, and canary token exfiltration before entering agent context.
+        </p>
+
+        <div class="grid-2">
+          <!-- Left: Attack Presets and Payload Input -->
+          <div>
+            <div class="form-group">
+              <label>Select Attack Preset / Test Vector:</label>
+              <select id="security-select-preset" class="form-control" style="width: 100%; padding: 0.5rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px;">
+                <option value="adv_001_jailbreak">🚨 [ADV-001] Role-Playing Jailbreak (DAN / System Override)</option>
+                <option value="adv_002_delimiter">⚠️ [ADV-002] Delimiter Sandboxing Escape (&lt;/untrusted_people_notes&gt;)</option>
+                <option value="adv_003_hitl_bypass">🛑 [ADV-003] Human-in-the-Loop Approval Bypass Attempt</option>
+                <option value="adv_004_canary">🕵️ [ADV-004] Cryptographic Canary Token Exfiltration Probe</option>
+                <option value="adv_005_clt_override">⚖️ [ADV-005] Statutory Compliance Policy Tampering (CLT Art. 468)</option>
+                <option value="adv_006_vault_dump">🔓 [ADV-006] Token Vault Exfiltration & Direct Data Dump</option>
+                <option value="benign_note">✅ [BENIGN] Clean Calibration Note (Legitimate IC5 Justification)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Untrusted Ingress Text (Manager Note / Freeform Justification):</label>
+              <textarea id="security-input-text" class="form-control" rows="8" style="width: 100%; font-family: monospace; font-size: 0.82rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.5rem;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+              <button id="btn-scan-security" class="btn-primary">🛡️ Scan Threat Boundary & Guardrails</button>
+            </div>
+          </div>
+
+          <!-- Right: Security Telemetry & Inspection Details -->
+          <div>
+            <!-- Metric Badges -->
+            <div class="metric-row" style="margin-bottom: 1rem;">
+              <div class="metric-pill">
+                <div class="metric-val" id="sec-threat-score">0.00</div>
+                <div class="metric-lbl">Threat Score</div>
+              </div>
+              <div class="metric-pill">
+                <div class="metric-val" id="sec-verdict" style="color: var(--accent-green);">GREEN</div>
+                <div class="metric-lbl">Security Verdict</div>
+              </div>
+              <div class="metric-pill">
+                <div class="metric-val" id="sec-canary" style="color: var(--accent-green);">INTACT</div>
+                <div class="metric-lbl">Canary Tripwire</div>
+              </div>
+              <div class="metric-pill">
+                <div class="metric-val" id="sec-action" style="color: var(--accent-cyan);">CLEAN</div>
+                <div class="metric-lbl">Perimeter Action</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.35rem; display: block;">
+                Detected Threat Signatures:
+              </label>
+              <div id="sec-detected-badges" style="display: flex; gap: 0.4rem; flex-wrap: wrap; min-height: 28px; margin-bottom: 0.75rem;">
+                <span class="badge badge-green">None (Clean Input)</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.35rem; display: block;">
+                Escaped Delimiter Sandbox Envelope:
+              </label>
+              <pre class="code-box" id="sec-sandboxed-box" style="max-height: 120px; overflow-y: auto; font-size: 0.78rem;">// Delimiter sandboxing output will appear here...</pre>
+            </div>
+
+            <div class="form-group">
+              <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.35rem; display: block;">
+                Security Assessment Audit Record (JSON):
+              </label>
+              <pre class="code-box" id="sec-audit-log" style="max-height: 120px; overflow-y: auto; font-size: 0.78rem;">// Security assessment snapshot...</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Tab 3: Model Context Protocol (MCP) Server -->
     <section id="tab-mcp" class="tab-content">
       <div class="card" style="margin-bottom: 1.5rem;">
@@ -348,6 +435,9 @@
 
             <p><strong><a href="https://github.com/pedrogriff/people-agent-mesh/blob/main/docs/ADR-002-zero-retention-privacy-gateway.md" target="_blank" style="color: var(--accent-cyan);">ADR-002: Zero-Retention Privacy Gateway & PII Tokenization</a></strong></p>
             <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 1rem;">Perimeter ingress surrogate tokenization for Brazil LGPD, US FLSA, and Canadian PIPEDA with cryptographic shredding.</p>
+
+            <p><strong><a href="https://github.com/pedrogriff/people-agent-mesh/blob/main/docs/ADR-003-adversarial-prompt-injection-defense.md" target="_blank" style="color: var(--accent-cyan);">ADR-003: Adversarial Prompt Injection Defense & Canary Tripwires</a></strong></p>
+            <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 1rem;">Multi-vector heuristic threat scoring, XML delimiter sandboxing, Canary tripwire assertion gates, and CI regression blocking (Tier 3 evals).</p>
 
             <p><strong><a href="https://github.com/pedrogriff/people-agent-mesh/blob/main/docs/ADR-004-model-context-protocol-standard.md" target="_blank" style="color: var(--accent-cyan);">ADR-004: Standardizing on Model Context Protocol (MCP)</a></strong></p>
             <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 1rem;">Exposing deterministic People operations tools as standardized MCP JSON-RPC 2.0 endpoints over stdio and HTTP/SSE. See <a href="https://github.com/pedrogriff/people-agent-mesh/blob/main/docs/MCP-SERVER-GUIDE.md" target="_blank" style="color: var(--accent-cyan);">MCP Server Integration Guide</a>.</p>
