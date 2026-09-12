@@ -399,18 +399,30 @@
           <button id="btn-run-evals" class="btn-primary" style="width: auto;">▶️ Execute CI Golden Benchmarks</button>
         </div>
 
-        <div class="metric-row">
+        <div class="metric-row" style="margin-bottom: 1.25rem;">
           <div class="metric-pill">
             <div class="metric-val" id="eval-acc">100.0%</div>
-            <div class="metric-lbl">Accuracy Rate</div>
+            <div class="metric-lbl">Accuracy Rate (18/18)</div>
           </div>
           <div class="metric-pill">
             <div class="metric-val" id="eval-comp">100.0%</div>
             <div class="metric-lbl">Labor Compliance</div>
           </div>
           <div class="metric-pill">
-            <div class="metric-val" id="eval-hitl">100.0%</div>
-            <div class="metric-lbl">HITL Routing Precision</div>
+            <div class="metric-val" id="eval-adv">100.0%</div>
+            <div class="metric-lbl">Adversarial Defense</div>
+          </div>
+          <div class="metric-pill">
+            <div class="metric-val" id="eval-faith">96.2%</div>
+            <div class="metric-lbl">Faithfulness Rubric</div>
+          </div>
+          <div class="metric-pill">
+            <div class="metric-val" id="eval-tone">100.0%</div>
+            <div class="metric-lbl">Constructive Tone</div>
+          </div>
+          <div class="metric-pill">
+            <div class="metric-val" id="eval-parity">100.0%</div>
+            <div class="metric-lbl">Demographic Parity</div>
           </div>
           <div class="metric-pill">
             <div class="metric-val" id="eval-gate" style="color: var(--accent-green);">🟢 PASS</div>
@@ -441,6 +453,9 @@
 
             <p><strong><a href="https://github.com/pedrogriff/people-agent-mesh/blob/main/docs/ADR-004-model-context-protocol-standard.md" target="_blank" style="color: var(--accent-cyan);">ADR-004: Standardizing on Model Context Protocol (MCP)</a></strong></p>
             <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 1rem;">Exposing deterministic People operations tools as standardized MCP JSON-RPC 2.0 endpoints over stdio and HTTP/SSE. See <a href="https://github.com/pedrogriff/people-agent-mesh/blob/main/docs/MCP-SERVER-GUIDE.md" target="_blank" style="color: var(--accent-cyan);">MCP Server Integration Guide</a>.</p>
+
+            <p><strong><a href="https://github.com/pedrogriff/people-agent-mesh/blob/main/docs/ADR-005-llm-as-a-judge-evals.md" target="_blank" style="color: var(--accent-cyan);">ADR-005: LLM-as-a-Judge Semantic Rubrics & Demographic Parity Auditing</a></strong></p>
+            <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 1rem;">Semantic evaluation framework for Faithfulness, Constructive Executive Tone, and Counterfactual Statistical Parity (&Delta; &le; 0.0001).</p>
           </div>
         </div>
 
