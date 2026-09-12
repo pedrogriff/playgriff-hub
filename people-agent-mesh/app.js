@@ -463,3 +463,306 @@ if (btnRunEvals) {
     }
   });
 }
+
+// --- Model Context Protocol (MCP) Explorer ---
+const MCP_PRESETS = {
+  validate_clt_ok: {
+    jsonrpc: "2.0",
+    id: 1,
+    method: "tools/call",
+    params: {
+      name: "validate_clt_compliance",
+      arguments: {
+        current_base: 240000,
+        proposed_base: 260000,
+        is_on_parental_leave: false
+      }
+    }
+  },
+  validate_clt_fail: {
+    jsonrpc: "2.0",
+    id: 2,
+    method: "tools/call",
+    params: {
+      name: "validate_clt_compliance",
+      arguments: {
+        current_base: 300000,
+        proposed_base: 250000,
+        is_on_parental_leave: false
+      }
+    }
+  },
+  resolve_band: {
+    jsonrpc: "2.0",
+    id: 3,
+    method: "tools/call",
+    params: {
+      name: "resolve_salary_band",
+      arguments: {
+        job_family: "SOFTWARE_ENGINEERING",
+        level: "IC5",
+        location_tier: "BR_SP"
+      }
+    }
+  },
+  calc_compa: {
+    jsonrpc: "2.0",
+    id: 4,
+    method: "tools/call",
+    params: {
+      name: "calculate_compa_ratio",
+      arguments: {
+        base_salary: 285000,
+        band_midpoint: 300000,
+        band_min: 240000,
+        band_max: 360000
+      }
+    }
+  },
+  eval_merit: {
+    jsonrpc: "2.0",
+    id: 5,
+    method: "tools/call",
+    params: {
+      name: "evaluate_merit_proposal",
+      arguments: {
+        current_base: 250000,
+        performance_rating: "EXCEEDS",
+        level: "IC5",
+        jurisdiction: "BRAZIL",
+        compa_ratio: 0.83
+      }
+    }
+  },
+  tools_list: {
+    jsonrpc: "2.0",
+    id: 6,
+    method: "tools/list"
+  },
+  resources_list: {
+    jsonrpc: "2.0",
+    id: 7,
+    method: "resources/list"
+  },
+  prompts_list: {
+    jsonrpc: "2.0",
+    id: 8,
+    method: "prompts/list"
+  }
+};
+
+const mcpPresetSelect = document.getElementById("mcp-select-preset");
+const mcpRequestFrame = document.getElementById("mcp-request-frame");
+const btnDispatchMcp = document.getElementById("btn-dispatch-mcp");
+const mcpResponseFrame = document.getElementById("mcp-response-frame");
+const mcpLatency = document.getElementById("mcp-latency");
+
+if (mcpPresetSelect && mcpRequestFrame) {
+  mcpRequestFrame.value = JSON.stringify(MCP_PRESETS["validate_clt_ok"], null, 2);
+
+  mcpPresetSelect.addEventListener("change", (e) => {
+    const selected = MCP_PRESETS[e.target.value];
+    if (selected) {
+      mcpRequestFrame.value = JSON.stringify(selected, null, 2);
+    }
+  });
+}
+
+function simulateMCP(req) {
+  const id = req.id || 1;
+  const method = req.method;
+  const params = req.params || {};
+
+  if (method === "tools/list") {
+    return {
+      jsonrpc: "2.0",
+      id,
+      result: {
+        tools: [
+          { name: "validate_clt_compliance", description: "Verifies CLT Article 468 & CF Art. 7 compliance." },
+          { name: "resolve_salary_band", description: "Resolves benchmark compensation bands." },
+          { name: "calculate_compa_ratio", description: "Calculates compa-ratio and range penetration." },
+          { name: "evaluate_merit_proposal", description: "Computes deterministic merit and bonus." },
+          { name: "tokenize_pii", description: "Replaces sensitive identifiers with surrogate tokens." },
+          { name: "detokenize_pii", description: "Restores surrogate tokens inside trusted perimeter." },
+          { name: "shred_pii_vault", description: "Cryptographically shreds token mappings." }
+        ]
+      }
+    };
+  }
+
+  if (method === "resources/list") {
+    return {
+      jsonrpc: "2.0",
+      id,
+      result: {
+        resources: [
+          { uri: "policy://brazil/clt-article-468", name: "Brazil CLT Article 468 Labor Invariants", mimeType: "text/markdown" },
+          { uri: "policy://us/flsa-exemption", name: "United States FLSA Exemption Thresholds", mimeType: "text/markdown" },
+          { uri: "policy://canada/pay-equity", name: "Canada Pay Equity Act", mimeType: "text/markdown" },
+          { uri: "bands://software-engineering", name: "Global Software Engineering Benchmark Bands", mimeType: "application/json" }
+        ]
+      }
+    };
+  }
+
+  if (method === "prompts/list") {
+    return {
+      jsonrpc: "2.0",
+      id,
+      result: {
+        prompts: [
+          { name: "audit_compensation_proposal", description: "Multi-jurisdiction compliance and financial audit." },
+          { name: "pii_scrub_and_evaluate", description: "Perimeter privacy sanitization and synthesis." }
+        ]
+      }
+    };
+  }
+
+  if (method === "tools/call") {
+    const tool = params.name;
+    const args = params.arguments || {};
+
+    if (tool === "validate_clt_compliance") {
+      const c = Number(args.current_base || 0);
+      const p = Number(args.proposed_base || 0);
+      const passed = p >= c;
+      const violations = passed ? [] : ["CLT Article 468 / CF Art. 7 Violation: Unilateral reduction of base salary is strictly prohibited under Brazilian labor law."];
+      return {
+        jsonrpc: "2.0",
+        id,
+        result: {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              passed,
+              jurisdiction: "BRAZIL",
+              violations,
+              warnings: [],
+              statutory_citations: passed ? ["CLT Compliant"] : ["CLT Art. 468 (Prohibition of unilateral adverse alterations)", "CF/88 Art. 7, VI (Irreducibility of compensation)"]
+            }, null, 2)
+          }],
+          isError: !passed
+        }
+      };
+    }
+
+    if (tool === "resolve_salary_band") {
+      return {
+        jsonrpc: "2.0",
+        id,
+        result: {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              job_family: args.job_family || "SOFTWARE_ENGINEERING",
+              level: args.level || "IC5",
+              location_tier: args.location_tier || "BR_SP",
+              currency: "BRL",
+              band_min: 240000.0,
+              band_mid: 300000.0,
+              band_max: 360000.0,
+              spread_percentage: 50.0
+            }, null, 2)
+          }],
+          isError: false
+        }
+      };
+    }
+
+    if (tool === "calculate_compa_ratio") {
+      const b = Number(args.base_salary || 0);
+      const m = Number(args.band_midpoint || 1);
+      const compa = (b / m);
+      return {
+        jsonrpc: "2.0",
+        id,
+        result: {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              base_salary: b,
+              band_midpoint: m,
+              compa_ratio: Number(compa.toFixed(4)),
+              range_penetration: 0.375,
+              classification: compa < 0.8 ? "GREEN_CIRCLE_LOW" : (compa > 1.2 ? "RED_CIRCLE_HIGH" : "WITHIN_TARGET_BAND"),
+              guidance: "Compensation is within healthy market competitive boundaries (0.80 - 1.20)."
+            }, null, 2)
+          }],
+          isError: false
+        }
+      };
+    }
+
+    if (tool === "evaluate_merit_proposal") {
+      return {
+        jsonrpc: "2.0",
+        id,
+        result: {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              current_base: Number(args.current_base || 250000),
+              merit_increase_pct: 12.0,
+              proposed_base: 280000.0,
+              currency: "BRL",
+              target_bonus_pct: 15.0,
+              calculated_bonus: 55125.0,
+              equity_grant_shares: 500,
+              compa_ratio_after: 0.9333,
+              requires_hitl: true
+            }, null, 2)
+          }],
+          isError: false
+        }
+      };
+    }
+  }
+
+  return {
+    jsonrpc: "2.0",
+    id,
+    result: { status: "success", executed: true }
+  };
+}
+
+if (btnDispatchMcp && mcpRequestFrame && mcpResponseFrame) {
+  btnDispatchMcp.addEventListener("click", async () => {
+    const t0 = performance.now();
+    btnDispatchMcp.disabled = true;
+    btnDispatchMcp.innerText = "⏳ Dispatching...";
+
+    let parsedReq;
+    try {
+      parsedReq = JSON.parse(mcpRequestFrame.value);
+    } catch (err) {
+      mcpResponseFrame.innerText = `// Invalid JSON: ${err.message}`;
+      btnDispatchMcp.disabled = false;
+      btnDispatchMcp.innerText = "⚡ Dispatch JSON-RPC Frame";
+      return;
+    }
+
+    try {
+      const res = await fetch("/mcp/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsedReq)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const t1 = performance.now();
+      if (mcpLatency) mcpLatency.innerText = `${(t1 - t0).toFixed(1)} ms`;
+      mcpResponseFrame.innerText = JSON.stringify(data, null, 2);
+    } catch (e) {
+      // In-browser deterministic fallback simulation
+      await new Promise((r) => setTimeout(r, 60));
+      const simulated = simulateMCP(parsedReq);
+      const t1 = performance.now();
+      if (mcpLatency) mcpLatency.innerText = `${(t1 - t0).toFixed(1)} ms (simulated)`;
+      mcpResponseFrame.innerText = JSON.stringify(simulated, null, 2);
+    } finally {
+      btnDispatchMcp.disabled = false;
+      btnDispatchMcp.innerText = "⚡ Dispatch JSON-RPC Frame";
+    }
+  });
+}
