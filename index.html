@@ -32,6 +32,7 @@
       <nav class="nav-tabs" role="tablist" aria-label="System Navigation">
         <button class="nav-btn active" data-tab="tab-all" id="btn-tab-all" role="tab">👤 About &amp; Portfolio</button>
         <button class="nav-btn" data-tab="tab-peoplemesh" id="btn-tab-peoplemesh" role="tab">⚡ PeopleAgentMesh</button>
+        <button class="nav-btn" data-tab="tab-relata" id="btn-tab-relata" role="tab">⚖️ Relata RegTech</button>
         <button class="nav-btn" data-tab="tab-nextcomp" id="btn-tab-nextcomp" role="tab">💎 NextComp Workbench</button>
         <button class="nav-btn" data-tab="tab-compflow" id="btn-tab-compflow" role="tab">🤖 CompFlow Agent</button>
         <button class="nav-btn" data-tab="tab-vestingsim" id="btn-tab-vestingsim" role="tab">📈 VestingSim</button>
@@ -126,6 +127,39 @@
             <a href="people-agent-mesh/" class="btn btn-sm btn-primary">🚀 Launch PeopleAgentMesh UI ↗</a>
             <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-peoplemesh">⚡ Quick Preview</button>
             <a href="https://github.com/pedrogriff/people-agent-mesh" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
+          </div>
+        </div>
+
+        <!-- Card: Relata CVM Regulatory Platform & CPC 10 Accounting Engine -->
+        <div class="system-card" style="border: 1px solid var(--accent-purple); background: linear-gradient(180deg, rgba(139, 92, 246, 0.06) 0%, var(--bg-card) 100%);">
+          <div class="sys-header">
+            <span class="sys-icon">⚖️</span>
+            <div>
+              <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 4px;">
+                <span class="tag" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; font-weight: 700; border-color: rgba(139, 92, 246, 0.4);">NEW REGTECH ENGINE</span>
+                <span class="tag" style="background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); font-weight: 700; border-color: rgba(16, 185, 129, 0.4);">CVM RES. 80 / CPC 10</span>
+              </div>
+              <h3 class="sys-title">Relata: CVM Regulatory Reporting &amp; CPC 10 Accounting</h3>
+              <p class="sys-meta">CVM Resolution 80/2022 FRE Section 8 • CPC 10 (R1) / IFRS 2 Black-Scholes • LGPD Zero-Retention • MCP Protocol</p>
+            </div>
+          </div>
+          <p class="sys-desc">
+            Deterministic open-source regulatory compliance platform for Brazilian public companies (<em>Companhias Abertas</em>). Features mathematical invariant auditing across FRE Items 8.1–8.7, continuous dividend Black-Scholes option pricing with monthly accrual schedules, Hamilton-Hare largest remainder share distribution (&sum; s_i &equiv; S), LGPD Art. 18 surrogate tokenization, CVM Sistema Empresas.NET XML generation, and Model Context Protocol (MCP) server for Claude Desktop &amp; Cursor.
+          </p>
+          <div class="sys-tags">
+            <span class="tag" style="border-color: #8a2be2; color: #b779ff; font-weight: 600;">Model Context Protocol (MCP)</span>
+            <span class="tag">CVM Res. 80/2022</span>
+            <span class="tag">CPC 10 (R1) / IFRS 2</span>
+            <span class="tag">Black-Scholes Call Engine</span>
+            <span class="tag">Hamilton-Hare &Sigma; s_i &equiv; S</span>
+            <span class="tag">Zero-Retention LGPD</span>
+            <span class="tag">Sistema Empresas.NET XML</span>
+            <span class="tag">Python 3.13 / Pydantic v2</span>
+          </div>
+          <div class="sys-actions">
+            <a href="relata/" class="btn btn-sm btn-primary">🚀 Launch Relata Live UI ↗</a>
+            <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-relata">⚡ Quick Preview</button>
+            <a href="https://github.com/pedrogriff/relata" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
           </div>
         </div>
 
@@ -271,6 +305,32 @@
           height="880px" 
           frameborder="0"
           title="PeopleAgentMesh Live Platform"
+          style="display: block; border: none;">
+        </iframe>
+      </div>
+    </section>
+
+    <!-- ─── TAB: RELATA REGTECH & ACCOUNTING ENGINE ────────────── -->
+    <section class="tab-pane" id="tab-relata">
+      <div class="section-intro">
+        <div class="intro-tag">RegTech &amp; Statutory Compensation Engine</div>
+        <h2>Relata: CVM Regulatory Reporting &amp; CPC 10 Accounting Platform</h2>
+        <p>Deterministic open-source regulatory compliance platform for Brazilian public companies (<em>Companhias Abertas</em>) under <strong>CVM Resolução nº 80/2022 Seção 8</strong> and <strong>CPC 10 (R1) / IFRS 2</strong>. Integrates continuous dividend Black-Scholes option pricing, exact integer share conservation (Hamilton-Hare &sum; s_i &equiv; S), zero-retention LGPD Art. 18 surrogate tokenization, and an official <strong>Model Context Protocol (MCP)</strong> server for Claude Desktop and Cursor.</p>
+        <div style="margin-top: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <a href="relata/" class="btn btn-primary">🚀 Launch Full-Screen Relata Workbench ↗</a>
+          <a href="https://github.com/pedrogriff/relata" target="_blank" rel="noopener" class="btn btn-outline">GitHub Repository ↗</a>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Includes Live CPC 10 Valuator, Invariant Reconciler, Empresas.NET XML &amp; MCP Console</span>
+        </div>
+      </div>
+
+      <!-- Embedded Showcase for Instant Live Interaction -->
+      <div style="margin-top: 24px; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-surface); box-shadow: var(--shadow-lg);">
+        <iframe 
+          src="relata/index.html" 
+          width="100%" 
+          height="920px" 
+          frameborder="0"
+          title="Relata Live Regulatory Workbench"
           style="display: block; border: none;">
         </iframe>
       </div>

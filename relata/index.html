@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relata — CVM Regulatory Reporting & CPC 10 Accounting Platform | playgriff.me</title>
+  <meta name="description" content="Open-source deterministic regulatory compliance engine for CVM Resolution 80/2022 FRE Section 8, CPC 10 (R1) / IFRS 2 option pricing, and LGPD Article 18 zero-retention privacy boundary.">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Relata — CVM Regulatory Reporting & CPC 10 Accounting Platform">
+  <meta property="og:description" content="Deterministic statutory reconciler, Black-Scholes continuous dividend valuation, and Model Context Protocol (MCP) server for Brazilian capital markets.">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-container">
+      <div class="topbar-left">
+        <a href="../" class="back-btn" title="Return to playgriff.me master portal">
+          <span>&larr;</span>
+          <span>playgriff.me</span>
+        </a>
+        <div class="brand-box">
+          <div class="brand-icon">§</div>
+          <div class="brand-title">Relata<span>.regtech</span></div>
+          <span class="version-pill">v0.1.0-beta</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="topbar-badge badge-mcp">
+          <span class="badge-pulse"></span>
+          <span>MCP Protocol 2024-11-05</span>
+        </div>
+        <a href="https://github.com/pedrogriff/relata" target="_blank" rel="noopener" class="btn btn-outline btn-sm">
+          <span>GitHub Repo ↗</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tab-bar">
+    <div class="tab-container">
+      <button class="tab-btn active" data-tab="tab-cpc10">📈 CPC 10 / IFRS 2 Valuator</button>
+      <button class="tab-btn" data-tab="tab-reconciler">⚖️ CVM FRE Section 8 Reconciler</button>
+      <button class="tab-btn" data-tab="tab-distributor">🔢 Share Distributor (Hamilton-Hare)</button>
+      <button class="tab-btn" data-tab="tab-lgpd">🔒 LGPD Art. 18 Zero-Retention Vault</button>
+      <button class="tab-btn" data-tab="tab-xml">📄 Sistema Empresas.NET XML</button>
+      <button class="tab-btn" data-tab="tab-mcp">🔌 Model Context Protocol (MCP)</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-wrapper">
+
+    <!-- ─── TAB 1: CPC 10 VALUATOR ────────────────────────────────────── -->
+    <section class="tab-pane active" id="tab-cpc10">
+      <div class="pane-header">
+        <h1 class="pane-title">
+          <span>Black-Scholes Continuous Dividend Valuator</span>
+          <span class="version-pill" style="font-size:0.75rem;">CPC 10 (R1) Item 16 / IFRS 2</span>
+        </h1>
+        <p class="pane-desc">
+          Calculates statutory option fair value on grant date using continuous dividend Black-Scholes formula, projecting straight-line monthly P&amp;L accruals with annual employee forfeiture decay.
+        </p>
+      </div>
+
+      <!-- Telemetry Grid -->
+      <div class="telemetry-grid">
+        <div class="metric-pill highlight">
+          <div class="metric-label">Unit Call Fair Value</div>
+          <div class="metric-value cyan" id="cpc10-unit-fv">R$ 13.91</div>
+        </div>
+        <div class="metric-pill highlight">
+          <div class="metric-label">Total Grant Fair Value</div>
+          <div class="metric-value emerald" id="cpc10-total-fv">R$ 1.391.240,00</div>
+        </div>
+        <div class="metric-pill">
+          <div class="metric-label">Projected Net P&amp;L Accrual</div>
+          <div class="metric-value" id="cpc10-projected-pl">R$ 1.289.412,00</div>
+        </div>
+        <div class="metric-pill">
+          <div class="metric-label">Normal Probabilities</div>
+          <div class="metric-value" style="font-size:0.95rem;">
+            N(d₁) = <span id="cpc10-nd1" style="color:var(--accent-cyan);">0.6842</span> | N(d₂) = <span id="cpc10-nd2" style="color:var(--accent-emerald);">0.5211</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-split">
+        <!-- Input Form -->
+        <div class="surface-card">
+          <div class="card-title">
+            <span>Market &amp; Option Grant Parameters</span>
+            <span class="version-pill">Inputs</span>
+          </div>
+
+          <div class="input-row">
+            <div class="form-group">
+              <label class="form-label">
+                <span>Spot Price (S)</span>
+                <span class="badge-stat">BRL</span>
+              </label>
+              <input type="number" step="0.5" id="cpc-spot" class="input-box" value="35.00">
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <span>Strike Price (K)</span>
+                <span class="badge-stat">BRL</span>
+              </label>
+              <input type="number" step="0.5" id="cpc-strike" class="input-box" value="30.00">
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="form-group">
+              <label class="form-label">
+                <span>Risk-Free Rate (r_f)</span>
+                <span class="badge-stat">% p.a. (CDI/Selic)</span>
+              </label>
+              <input type="number" step="0.25" id="cpc-rf" class="input-box" value="10.75">
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <span>Annual Volatility (σ)</span>
+                <span class="badge-stat">%</span>
+              </label>
+              <input type="number" step="1.0" id="cpc-vol" class="input-box" value="32.0">
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="form-group">
+              <label class="form-label">
+                <span>Continuous Dividend Yield (q)</span>
+                <span class="badge-stat">%</span>
+              </label>
+              <input type="number" step="0.25" id="cpc-div" class="input-box" value="2.50">
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <span>Time to Maturity (T)</span>
+                <span class="badge-stat">Years</span>
+              </label>
+              <input type="number" step="0.5" id="cpc-mat" class="input-box" value="4.0">
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="form-group">
+              <label class="form-label">
+                <span>Total Granted Options (N)</span>
+                <span class="badge-stat">Shares</span>
+              </label>
+              <input type="number" step="10000" id="cpc-shares" class="input-box" value="100000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <span>Vesting Period (V)</span>
+                <span class="badge-stat">Months</span>
+              </label>
+              <input type="number" step="6" id="cpc-vesting" class="input-box" value="36">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>Annual Forfeiture Rate (f)</span>
+              <span class="badge-stat">% p.a. (Historical Turnover)</span>
+            </label>
+            <input type="number" step="0.5" id="cpc-forfeit" class="input-box" value="5.0">
+          </div>
+        </div>
+
+        <!-- Accrual Schedule Table -->
+        <div class="surface-card">
+          <div class="card-title">
+            <span>P&amp;L Accrual Schedule with Forfeiture Decay</span>
+            <span class="version-pill" style="color:#6ee7b7;">Straight-Line Amortization</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:12px;">
+            Recognizes compensation expense on a straight-line basis over vesting period (CPC 10 Item 19), adjusted dynamically by the expected vesting retention factor <code>(1 - f)^(m/12)</code>.
+          </p>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Milestone</th>
+                  <th>Retention</th>
+                  <th>Monthly Expense</th>
+                  <th>Cumulative P&amp;L</th>
+                  <th style="width:120px;">Vesting Progress</th>
+                </tr>
+              </thead>
+              <tbody id="cpc10-accrual-tbody">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top:14px; font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted);">
+            d₁ = <span id="cpc10-d1">1.0452</span> | d₂ = <span id="cpc10-d2">0.4052</span> (Variance = σ²T = 0.4096)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── TAB 2: CVM FRE SECTION 8 RECONCILER ─────────────────────── -->
+    <section class="tab-pane" id="tab-reconciler">
+      <div class="pane-header">
+        <h1 class="pane-title">
+          <span>CVM FRE Section 8 Deterministic Reconciler</span>
+          <span class="version-pill">Resolução CVM nº 80/2022</span>
+        </h1>
+        <p class="pane-desc">
+          Enforces statutory integrity checks across Items 8.1–8.7. Verifies spread boundaries (Min &le; Avg &le; Max), member counts (Remunerated &le; Total), and exact cross-table arithmetic reconciliations.
+        </p>
+      </div>
+
+      <!-- Audit Banner -->
+      <div class="audit-banner valid" id="reconciler-banner">
+        <div class="audit-banner-title">
+          <span style="font-size:1.2rem;">✓</span>
+          <span>STATUS: 100% AUDIT CONFORMANT (CVM Resolução 80/2022)</span>
+        </div>
+        <span class="version-pill" style="background:#065f46;color:#6ee7b7;border:none;">ZERO INVARIANT ERRORS</span>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div style="display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-outline btn-sm" id="btn-sim-valid">✓ Reset to Valid Submission</button>
+        <button type="button" class="btn btn-outline btn-sm" id="btn-sim-spread-err" style="border-color:#ef4444; color:#fca5a5;">⚠ Simulate Item 8.6 Min &gt; Max Violation</button>
+        <button type="button" class="btn btn-outline btn-sm" id="btn-sim-members-err" style="border-color:#f59e0b; color:#fcd34d;">⚠ Simulate Remunerated &gt; Total Members</button>
+      </div>
+
+      <!-- Telemetry Grid -->
+      <div class="telemetry-grid">
+        <div class="metric-pill highlight">
+          <div class="metric-label">Section 8 Grand Total</div>
+          <div class="metric-value cyan" id="fre-grand-total">R$ 16.460.000,00</div>
+        </div>
+        <div class="metric-pill">
+          <div class="metric-label">Conselho de Administração</div>
+          <div class="metric-value" id="fre-board-total">R$ 1.610.000,00</div>
+        </div>
+        <div class="metric-pill">
+          <div class="metric-label">Diretoria Estatutária</div>
+          <div class="metric-value" id="fre-officers-total">R$ 14.400.000,00</div>
+        </div>
+        <div class="metric-pill success">
+          <div class="metric-label">Invariants Passed</div>
+          <div class="metric-value emerald" id="fre-invariants-checked">6 / 6</div>
+        </div>
+      </div>
+
+      <div class="grid-split">
+        <!-- Left: Form Inputs -->
+        <div class="surface-card">
+          <div class="card-title">
+            <span>Statutory Organs Remuneration (Item 8.2 &amp; 8.6)</span>
+            <span class="version-pill">Parameters</span>
+          </div>
+
+          <h4 style="font-size:0.85rem; color:var(--accent-cyan); margin-bottom:8px;">1. Diretoria Estatutária (Executive Officers)</h4>
+          <div class="input-row">
+            <div class="form-group">
+              <label class="form-label">Total Members</label>
+              <input type="number" id="fre-off-members" class="input-box" value="5">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Remunerated Members</label>
+              <input type="number" id="fre-off-remun" class="input-box" value="5">
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="form-group">
+              <label class="form-label">Fixed Compensation (BRL)</label>
+              <input type="number" step="100000" id="fre-off-fixed" class="input-box" value="4500000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Variable Bonus (BRL)</label>
+              <input type="number" step="100000" id="fre-off-bonus" class="input-box" value="3800000">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Share-Based Payment (CPC 10) (BRL)</label>
+            <input type="number" step="100000" id="fre-off-share" class="input-box" value="5200000">
+          </div>
+
+          <div class="input-row">
+            <div class="form-group">
+              <label class="form-label">Item 8.6 Min Individual (BRL)</label>
+              <input type="number" step="50000" id="fre-off-min" class="input-box" value="1200000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Item 8.6 Max Individual (BRL)</label>
+              <input type="number" step="50000" id="fre-off-max" class="input-box" value="4500000">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Item 8.6 Average Individual (BRL)</label>
+            <input type="number" step="50000" id="fre-off-avg" class="input-box" value="2860000">
+          </div>
+
+          <hr style="border:none; border-top:1px solid var(--border-subtle); margin:18px 0;">
+
+          <h4 style="font-size:0.85rem; color:var(--accent-purple); margin-bottom:8px;">2. Conselho de Administração (Board of Directors)</h4>
+          <div class="input-row">
+            <div class="form-group">
+              <label class="form-label">Total Members</label>
+              <input type="number" id="fre-board-members" class="input-box" value="7">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Remunerated Members</label>
+              <input type="number" id="fre-board-remun" class="input-box" value="7">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fixed Retainer Total (BRL)</label>
+            <input type="number" step="50000" id="fre-board-fixed" class="input-box" value="1610000">
+          </div>
+          <div class="input-row">
+            <div class="form-group">
+              <label class="form-label">Min Individual (BRL)</label>
+              <input type="number" step="10000" id="fre-board-min" class="input-box" value="180000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max Individual (BRL)</label>
+              <input type="number" step="10000" id="fre-board-max" class="input-box" value="350000">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Average Individual (BRL)</label>
+            <input type="number" step="10000" id="fre-board-avg" class="input-box" value="230000">
+          </div>
+        </div>
+
+        <!-- Right: Audit Findings & Telemetry -->
+        <div class="surface-card">
+          <div class="card-title">
+            <span>Statutory Audit Engine Findings</span>
+            <span class="version-pill">Telemetry</span>
+          </div>
+
+          <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:14px;">
+            The audit engine verifies formal proofs and invariant rules matching CVM validator algorithms:
+          </p>
+
+          <ul id="reconciler-findings-list" style="list-style:none; display:flex; flex-direction:column; gap:10px; font-size:0.85rem;">
+            <!-- Injected via JavaScript -->
+          </ul>
+
+          <hr style="border:none; border-top:1px solid var(--border-subtle); margin:18px 0;">
+
+          <h4 style="font-size:0.85rem; color:var(--text-primary); margin-bottom:8px;">Statutory Verification Rules Enforced:</h4>
+          <ol style="font-size:0.8rem; color:var(--text-secondary); line-height:1.6; padding-left:18px;">
+            <li><code>0 &le; RemuneratedMembers &le; TotalMembers</code> (Item 8.2)</li>
+            <li><code>Min &le; Average &le; Max</code> for each statutory body (Item 8.6)</li>
+            <li><code>Sum(Fixed + Variable + Shares + PostEmployment) &equiv; TotalOrgan</code></li>
+            <li><code>Sum(Board + Officers + FiscalCouncil) &equiv; GrandTotal</code> (Item 8.2)</li>
+            <li><code>Zero Remunerated &rArr; Min = Max = Avg = R$ 0.00</code></li>
+            <li><code>CPC 10 (R1) Section 8.4 Stock Option Fair Value Accounting</code></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── TAB 3: SHARE DISTRIBUTOR ─────────────────────────────────── -->
+    <section class="tab-pane" id="tab-distributor">
+      <div class="pane-header">
+        <h1 class="pane-title">
+          <span>Largest Remainder Method Share Distributor</span>
+          <span class="version-pill">Hamilton-Hare Algorithm</span>
+        </h1>
+        <p class="pane-desc">
+          Guarantees exact integer share conservation (<code>&Sigma; s_i &equiv; S</code>) without rounding drift. Allocates fractional shares by ranking remainder components, preventing dilution lawsuits and corporate register mismatches.
+        </p>
+      </div>
+
+      <!-- Telemetry Grid -->
+      <div class="telemetry-grid">
+        <div class="metric-pill highlight">
+          <div class="metric-label">Total Share Pool (S)</div>
+          <div class="metric-value cyan" id="dist-total-pool">1,000,000</div>
+        </div>
+        <div class="metric-pill success">
+          <div class="metric-label">Allocated via Hamilton-Hare</div>
+          <div class="metric-value emerald" id="dist-allocated">1,000,000</div>
+        </div>
+        <div class="metric-pill">
+          <div class="metric-label">Hamilton-Hare Net Drift</div>
+          <div class="metric-value" id="dist-drift" style="color:#10b981;">0 shares</div>
+        </div>
+        <div class="metric-pill danger">
+          <div class="metric-label">Naive Rounding Drift</div>
+          <div class="metric-value rose" id="dist-naive-drift">+2 shares (Dilution Risk!)</div>
+        </div>
+      </div>
+
+      <div class="surface-card">
+        <div class="card-title">
+          <span>Grant Pool Allocation Breakdown</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="font-size:0.8rem; color:var(--text-secondary);">Pool Size:</label>
+            <input type="number" id="dist-pool-input" class="input-box" style="width:140px;" value="1000000">
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Beneficiary / Role</th>
+                <th>Target Quota %</th>
+                <th>Exact Quota (Float)</th>
+                <th>Fractional Remainder</th>
+                <th>Naive Math.round()</th>
+                <th>Relata Hamilton-Hare (Exact)</th>
+              </tr>
+            </thead>
+            <tbody id="share-dist-tbody">
+              <!-- Injected via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── TAB 4: LGPD ZERO-RETENTION VAULT ──────────────────────────── -->
+    <section class="tab-pane" id="tab-lgpd">
+      <div class="pane-header">
+        <h1 class="pane-title">
+          <span>LGPD Article 18 Zero-Retention Privacy Gateway</span>
+          <span class="version-pill">Lei nº 13.709/2018</span>
+        </h1>
+        <p class="pane-desc">
+          Bi-directional HMAC-SHA256 surrogate tokenization. Intercepts raw Brazilian corporate minutes (*Atas de AGO/AGE/RCA*), stripping sensitive personal data (CPF, salaries) before model ingestion, with instant cryptographic shredding.
+        </p>
+      </div>
+
+      <!-- Telemetry Grid -->
+      <div class="telemetry-grid">
+        <div class="metric-pill highlight">
+          <div class="metric-label">SPII Leakage to LLM</div>
+          <div class="metric-value emerald" id="vault-spii-leak">0 bytes (LGPD Art. 18)</div>
+        </div>
+        <div class="metric-pill">
+          <div class="metric-label">CPFs Tokenized</div>
+          <div class="metric-value cyan" id="vault-cpfs-masked">2</div>
+        </div>
+        <div class="metric-pill success">
+          <div class="metric-label">Vault Perimeter Status</div>
+          <div class="metric-value emerald" id="vault-status">TOKENIZED</div>
+        </div>
+      </div>
+
+      <div class="grid-split">
+        <!-- Input Textarea -->
+        <div class="surface-card">
+          <div class="card-title">
+            <span>Raw Corporate Meeting Minutes (*Ata de Reunião*)</span>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-run-vault">Tokenize SPII ⚡</button>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;">
+            Contains raw statutory executive CPFs and confidential board deliberations:
+          </p>
+          <textarea id="raw-minutes-input" class="input-box" style="height:260px;">Aos 15 dias do mês de março de 2025, reuniu-se o Conselho de Administração da Companhia Aberta Brasileira de Tecnologia S.A. (CNPJ 12.345.678/0001-90, Código CVM 02489-0).
+
+O Presidente deu início aos trabalhos e colocou em votação o Plano de Opção de Compra de Ações (Stock Options 2025). Foi aprovada a outorga de 500.000 opções de compra de ações ordinárias ao Diretor Presidente Pedro Marcincowski (CPF 123.456.789-00) e 250.000 opções à Diretora Financeira Maria Silva (CPF 987.654.321-11).
+
+O preço de exercício fixado foi de R$ 30,00 por ação, com carência de 36 meses e prazo máximo de exercício de 5 anos, em estrita conformidade com o CPC 10 (R1).</textarea>
+        </div>
+
+        <!-- Sanitized Textarea -->
+        <div class="surface-card">
+          <div class="card-title">
+            <span>Sanitized Payload Ingested by LLM Boundary</span>
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="btn btn-outline btn-sm" id="btn-shred-vault" style="color:#fca5a5; border-color:#ef4444;">Shred Key 🗑️</button>
+              <button type="button" class="btn btn-outline btn-sm" id="btn-reset-vault">Reset ↺</button>
+            </div>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;">
+            Raw CPFs are replaced with surrogate HMAC tokens. Real identity never leaves your perimeter:
+          </p>
+          <textarea id="sanitized-minutes-output" class="input-box" style="height:260px; color:#34d399;" readonly></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── TAB 5: SISTEMA EMPRESAS.NET XML ──────────────────────────── -->
+    <section class="tab-pane" id="tab-xml">
+      <div class="pane-header">
+        <h1 class="pane-title">
+          <span>Official CVM Sistema Empresas.NET XML</span>
+          <span class="version-pill">Schema CVM 2025</span>
+        </h1>
+        <p class="pane-desc">
+          Generates compliant XML filings formatted specifically for ingestion by the Brazilian Securities and Exchange Commission (*Comissão de Valores Mobiliários*) electronic submission portal.
+        </p>
+      </div>
+
+      <div class="surface-card">
+        <div class="card-title">
+          <span>Formulário de Referência — Seção 8 XML Document</span>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="btn btn-outline btn-sm" id="btn-copy-xml">📋 Copy XML</button>
+            <button type="button" class="btn btn-emerald btn-sm" id="btn-download-xml">⬇ Download .XML</button>
+          </div>
+        </div>
+
+        <pre class="code-block" id="xml-preview-block">
+          <!-- Injected via JavaScript -->
+        </pre>
+      </div>
+    </section>
+
+    <!-- ─── TAB 6: MODEL CONTEXT PROTOCOL (MCP) ──────────────────────── -->
+    <section class="tab-pane" id="tab-mcp">
+      <div class="pane-header">
+        <h1 class="pane-title">
+          <span>Model Context Protocol (MCP) Simulator</span>
+          <span class="version-pill" style="background:#4c1d95; color:#c4b5fd;">JSON-RPC 2.0 stdio</span>
+        </h1>
+        <p class="pane-desc">
+          Test Relata's MCP compliance tools interactively as if invoked by Claude Desktop or Cursor over standardized JSON-RPC 2.0 stdio pipes.
+        </p>
+      </div>
+
+      <!-- Telemetry Grid -->
+      <div class="telemetry-grid">
+        <div class="metric-pill highlight">
+          <div class="metric-label">Simulated Roundtrip Latency</div>
+          <div class="metric-value cyan" id="mcp-latency-metric">0.12 ms</div>
+        </div>
+        <div class="metric-pill">
+          <div class="metric-label">MCP Protocol Version</div>
+          <div class="metric-value" style="font-size:1rem;">2024-11-05</div>
+        </div>
+        <div class="metric-pill success">
+          <div class="metric-label">JSON-RPC Compliance</div>
+          <div class="metric-value emerald">100% SPEC COMPLIANT</div>
+        </div>
+      </div>
+
+      <div class="grid-split">
+        <!-- Request Builder -->
+        <div class="surface-card">
+          <div class="card-title">
+            <span>MCP Tool Call Request (Client &rarr; Server)</span>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-exec-mcp">Execute Tool ⚡</button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Select Registered MCP Tool</label>
+            <select id="mcp-tool-select" class="input-box" style="cursor:pointer;">
+              <option value="relata_calculate_cpc10_fair_value">relata_calculate_cpc10_fair_value</option>
+              <option value="relata_distribute_shares">relata_distribute_shares</option>
+              <option value="relata_reconcile_fre_section_8">relata_reconcile_fre_section_8</option>
+            </select>
+          </div>
+
+          <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;" id="mcp-tool-desc">
+            Calculate Black-Scholes call option fair value under CPC 10 Item 16 / IFRS 2.
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Input Parameters (JSON)</label>
+            <textarea id="mcp-req-payload" class="input-box" style="height:180px;"></textarea>
+          </div>
+        </div>
+
+        <!-- Response Window -->
+        <div class="surface-card">
+          <div class="card-title">
+            <span>JSON-RPC 2.0 Response (Server &rarr; Client)</span>
+            <span class="version-pill" style="color:#6ee7b7;">200 OK</span>
+          </div>
+
+          <pre class="code-block" id="mcp-res-payload" style="height:280px;">
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "protocolVersion": "2024-11-05",
+    "status": "ready"
+  }
+}
+          </pre>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div>
+        <strong>Relata</strong> — Open-Source CVM Regulatory Reporting &amp; CPC 10 Accounting Engine &bull; Architected by <a href="https://www.linkedin.com/in/pedrogriff/" target="_blank" rel="noopener" style="color:#60a5fa; text-decoration:none;">Pedro Griff Marcincowski</a>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/pedrogriff/relata" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.playgriff.me/" target="_blank" rel="noopener">playgriff.me</a>
+        <a href="https://www.cvm.gov.br/" target="_blank" rel="noopener">CVM Res. 80/2022</a>
+        <a href="http://www.cpc.org.br/" target="_blank" rel="noopener">CPC 10 (R1) / IFRS 2</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
