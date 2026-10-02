@@ -631,6 +631,84 @@ const MCP_TOOLS_CATALOG = {
       };
     },
   },
+  relata_calculate_dilution_and_intrinsic_value: {
+    description: "Calculate equity dilution % and in-the-money intrinsic value under CVM Items 8.4 and 8.5.",
+    params: {
+      total_plan_shares: 5000000,
+      total_company_shares: 100000000,
+      spot_price_brl: 42.50,
+      strike_price_brl: 30.00,
+      max_dilution_cap_pct: 5.0,
+    },
+    run: (args) => {
+      const dilution = (args.total_plan_shares / args.total_company_shares) * 100.0;
+      const spread = Math.max(0, args.spot_price_brl - args.strike_price_brl);
+      const totalIntrinsic = spread * args.total_plan_shares;
+      return {
+        total_plan_shares: args.total_plan_shares,
+        total_company_shares: args.total_company_shares,
+        dilution_percentage: Number(dilution.toFixed(4)),
+        max_dilution_cap_pct: args.max_dilution_cap_pct,
+        dilution_compliant: dilution <= (args.max_dilution_cap_pct || 100),
+        spot_price_brl: args.spot_price_brl,
+        strike_price_brl: args.strike_price_brl,
+        unit_intrinsic_spread_brl: Number(spread.toFixed(2)),
+        total_intrinsic_value_brl: Number(totalIntrinsic.toFixed(2)),
+        in_the_money: args.spot_price_brl > args.strike_price_brl,
+      };
+    },
+  },
+  relata_reconcile_ledger_trial_balance: {
+    description: "Reconcile ERP trial balance accounts (SAP / Totvs Balancete) against CVM Item 8.2 totals.",
+    params: {
+      trial_balance: [
+        { account_code: "3.1.01.001", account_name: "Honorários e Pró-labore", balance_brl: 6110000.0, component: "pro_labore" },
+        { account_code: "3.1.01.002", account_name: "Bônus Executivo", balance_brl: 3800000.0, component: "annual_bonus" },
+        { account_code: "3.1.01.003", account_name: "Ações CPC 10", balance_brl: 5200000.0, component: "share_based_equity" },
+      ],
+      submission_grand_total_brl: 15110000.0,
+      material_threshold_brl: 1.0,
+    },
+    run: (args) => {
+      const totalLedger = args.trial_balance.reduce((acc, t) => acc + t.balance_brl, 0);
+      const diff = totalLedger - args.submission_grand_total_brl;
+      const isReconciled = Math.abs(diff) <= args.material_threshold_brl;
+      return {
+        is_reconciled: isReconciled,
+        total_ledger_expense_brl: totalLedger,
+        total_fre_reported_brl: args.submission_grand_total_brl,
+        net_discrepancy_brl: Number(diff.toFixed(2)),
+        accounts_audited: args.trial_balance.length,
+      };
+    },
+  },
+  relata_audit_option_balances_item_8_5: {
+    description: "Audit CVM Item 8.5 option balance invariants: unvested + exercisable == active options.",
+    params: {
+      corporate_body: "diretoria_estatutaria",
+      total_options_granted: 100000,
+      unvested_options: 60000,
+      exercisable_options: 40000,
+      exercised_options: 0,
+      forfeited_options: 0,
+      current_year_expense_brl: 250000.0,
+      cumulative_expense_brl: 500000.0,
+    },
+    run: (args) => {
+      const sumOptions = args.unvested_options + args.exercisable_options + args.exercised_options + args.forfeited_options;
+      const isBalanced = sumOptions === args.total_options_granted;
+      const expenseCoherent = args.current_year_expense_brl <= args.cumulative_expense_brl;
+      return {
+        is_valid: isBalanced && expenseCoherent,
+        total_granted: args.total_options_granted,
+        active_options: args.unvested_options + args.exercisable_options,
+        invariants_satisfied: {
+          balance_conserved: isBalanced,
+          expense_coherent: expenseCoherent,
+        },
+      };
+    },
+  },
 };
 
 function selectMCPTool(toolName) {
