@@ -393,7 +393,7 @@
         const avg = dept.count > 0 ? (dept.compaSum / dept.count) * 100 : 0;
         const isSelected = this.selectedFamilyFilter === dept.code;
         return `
-          <div class="dept-card" style="${isSelected ? 'border-color: rgba(0, 242, 254, 0.7); background: rgba(10, 15, 29, 0.8);' : ''}">
+          <div class="dept-card" style="${isSelected ? 'border-color: var(--jewel-emerald); background: var(--jewel-emerald-subtle);' : ''}">
             <div class="dept-card-top">
               <div class="dept-card-name">
                 <span>${dept.name}</span>
@@ -455,7 +455,7 @@
                   ${hasRed ? '<span class="circle-dot red" style="display:inline-block; margin-left:4px; vertical-align:middle;"></span>' : ''}
                 </span>
               </td>
-              <td style="text-align: right; font-weight: 700; color: #fff;">
+              <td style="text-align: right; font-weight: 700; color: var(--text-main);">
                 <div>${formatUSD(b.min)}</div>
                 ${isModified ? `<div style="font-size:0.6rem; color:var(--text-dim);">was ${formatUSD(b.baselineMin)}</div>` : ''}
               </td>
@@ -479,7 +479,7 @@
                   <button type="button" class="step-btn" data-action="step-spread" data-key="${key}" data-delta="2.5" title="Widen spread +2.5%">+</button>
                 </div>
               </td>
-              <td style="text-align: right; font-weight: 700; color: #fff;">
+              <td style="text-align: right; font-weight: 700; color: var(--text-main);">
                 <div>${formatUSD(b.max)}</div>
                 ${isModified ? `<div style="font-size:0.6rem; color:var(--text-dim);">was ${formatUSD(b.baselineMax)}</div>` : ''}
               </td>
@@ -494,7 +494,7 @@
                   </div>
                   <div class="bar-labels">
                     <span>Min</span>
-                    <span style="color:var(--terminal-cyan); font-weight:bold;">Mid</span>
+                    <span style="color:var(--jewel-emerald); font-weight:bold;">Mid</span>
                     <span>Max</span>
                   </div>
                 </div>
@@ -526,7 +526,7 @@
                 <span>•</span>
                 <span>${famEmployees.length} Incumbents</span>
                 <span>•</span>
-                <span style="color:var(--terminal-cyan); font-weight:700;">Compa: ${famCompa.toFixed(1)}%</span>
+                <span style="color:var(--jewel-sapphire); font-weight:700;">Compa: ${famCompa.toFixed(1)}%</span>
               </div>
             </div>
             <div class="table-responsive">
@@ -605,26 +605,26 @@
         }
 
         return `
-          <tr style="${emp.isGreenCircle ? 'background:rgba(0,229,153,0.03);' : emp.isRedCircle ? 'background:rgba(244,63,94,0.03);' : ''}">
+          <tr style="${emp.isGreenCircle ? 'background:rgba(15, 82, 56, 0.04);' : emp.isRedCircle ? 'background:rgba(140, 29, 46, 0.04);' : ''}">
             <td>
-              <div style="font-weight:700; color:#fff; font-family:var(--font-sans);">${emp.name}</div>
+              <div style="font-weight:700; color:var(--text-main); font-family:var(--font-sans);">${emp.name}</div>
               <div style="font-size:0.65rem; color:var(--text-dim);">${emp.id} &bull; ${emp.email}</div>
             </td>
             <td>
               <div style="font-family:var(--font-sans); color:var(--text-main);">${emp.title}</div>
-              <div style="font-size:0.65rem; color:var(--terminal-cyan);">${emp.family}</div>
+              <div style="font-size:0.65rem; color:var(--jewel-sapphire); font-weight:600;">${emp.family}</div>
             </td>
             <td style="text-align:center;">
               <span class="level-tag">${emp.level}</span>
             </td>
-            <td style="text-align:right; font-weight:700; color:#fff;">
+            <td style="text-align:right; font-weight:700; color:var(--text-main);">
               ${formatUSD(emp.base)}
             </td>
             <td style="text-align:right; color:var(--text-muted);">
               ${formatUSD(emp.band.mid)}
             </td>
             <td style="text-align:center;">
-              <span style="font-weight:700; ${emp.isGreenCircle ? 'color:var(--growth-emerald);' : emp.isRedCircle ? 'color:var(--danger-rose);' : 'color:#fff;'}">
+              <span style="font-weight:700; ${emp.isGreenCircle ? 'color:var(--growth-emerald);' : emp.isRedCircle ? 'color:var(--danger-rose);' : 'color:var(--text-main);'}">
                 ${compaPct}%
               </span>
             </td>

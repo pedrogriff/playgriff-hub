@@ -316,7 +316,7 @@ async function handleDecision(decision) {
   const slackContainer = document.getElementById("slack-hitl-container");
   if (slackContainer) {
     slackContainer.innerHTML = `
-      <div style="color: #10b981; font-weight: bold; padding: 0.5rem 0;">
+      <div style="color: #0F5238; font-weight: bold; padding: 0.5rem 0;">
         ✅ Executive decision '${decision}' successfully committed to tamper-evident audit trail!
       </div>
     `;
@@ -392,14 +392,14 @@ if (btnTokenize && piiInput) {
       document.getElementById("pii-status").innerText = data.zero_pii_verified
         ? "✅ Zero PII Invariant Verified (0 raw identifiers exposed)"
         : "⚠️ Potential Leak Detected";
-      document.getElementById("pii-status").style.color = data.zero_pii_verified ? "#10b981" : "#ef4444";
+      document.getElementById("pii-status").style.color = data.zero_pii_verified ? "#0F5238" : "#8C1D2E";
     } catch (e) {
       const tokenized = localTokenize(text);
       const restored = localDetokenize(tokenized);
       document.getElementById("pii-tokenized").innerText = tokenized;
       document.getElementById("pii-restored").innerText = restored;
       document.getElementById("pii-status").innerText = "✅ Zero PII Invariant Verified (0 raw identifiers exposed)";
-      document.getElementById("pii-status").style.color = "#10b981";
+      document.getElementById("pii-status").style.color = "#0F5238";
     }
   });
 }
@@ -946,7 +946,7 @@ if (btnScanSecurity) {
         secDetectedBadges.innerHTML = '<span class="badge badge-green">None (Clean Input - Zero Signatures)</span>';
       } else {
         secDetectedBadges.innerHTML = result.matched_vectors.map(v => 
-          `<span class="badge badge-amber" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.4);">⚠️ [${v}]</span>`
+          `<span class="badge badge-red">⚠️ [${v}]</span>`
         ).join(" ");
       }
     }
@@ -1398,19 +1398,19 @@ function renderDurableTimeline(events) {
   if (!durEventsTbody) return;
   durEventsTbody.innerHTML = events.map(e => {
     let typeBadgeColor = "var(--text-primary)";
-    let bg = "rgba(255,255,255,0.03)";
+    let bg = "var(--bg-elevated)";
     if (e.event_type.includes("CRASH")) {
-      typeBadgeColor = "#ef4444";
-      bg = "rgba(239,68,68,0.15)";
+      typeBadgeColor = "#8C1D2E";
+      bg = "#F5E6E8";
     } else if (e.event_type.includes("RESTORED") || e.event_type.includes("COMPLETED")) {
-      typeBadgeColor = "#10b981";
-      bg = "rgba(16,185,129,0.1)";
+      typeBadgeColor = "#0F5238";
+      bg = "#E4EFEA";
     } else if (e.event_type.includes("SUSPENDED") || e.event_type.includes("TIMER")) {
-      typeBadgeColor = "#f59e0b";
-      bg = "rgba(245,158,11,0.1)";
+      typeBadgeColor = "#B4690E";
+      bg = "#F7EFE4";
     } else if (e.event_type.includes("SAGA") || e.event_type.includes("REJECTED")) {
-      typeBadgeColor = "#8b5cf6";
-      bg = "rgba(139,92,246,0.1)";
+      typeBadgeColor = "#16325B";
+      bg = "#E6ECF4";
     }
 
     const payloadSummary = e.summary || Object.entries(e.payload || {})
@@ -1435,12 +1435,12 @@ function updateDurableUI(status, wfId, events, hitlReason, sagaHolds) {
   if (durEventCount) durEventCount.innerText = events.length;
   if (durStatusBadge) {
     durStatusBadge.innerText = status.replace(/_/g, " ");
+    durStatusBadge.style.background = "";
+    durStatusBadge.style.color = "";
     if (status.includes("COMPLETED") || status.includes("APPROVED")) {
       durStatusBadge.className = "badge badge-green";
     } else if (status.includes("CRASH")) {
       durStatusBadge.className = "badge badge-red";
-      durStatusBadge.style.background = "#ef4444";
-      durStatusBadge.style.color = "#fff";
     } else if (status.includes("REJECTED")) {
       durStatusBadge.className = "badge badge-red";
     } else {
@@ -1457,7 +1457,7 @@ function updateDurableUI(status, wfId, events, hitlReason, sagaHolds) {
       durSagaList.innerHTML = `<div style="color: var(--text-secondary);">No active holds.</div>`;
     } else {
       durSagaList.innerHTML = sagaHolds.map(h => `
-        <div style="margin-bottom: 0.35rem; color: ${h.compensated ? '#ef4444' : '#10b981'};">
+        <div style="margin-bottom: 0.35rem; color: ${h.compensated ? '#8C1D2E' : '#0F5238'};">
           ${h.compensated ? '🔄 [ROLLED BACK]' : '🔒 [HELD]'} ${h.name}: ${h.detail}
         </div>
       `).join("");
@@ -1561,7 +1561,7 @@ if (btnCrashDurable) {
 
     if (durLossStat) {
       durLossStat.innerText = "0.0% (WAL Invariant Intact)";
-      durLossStat.style.color = "#10b981";
+      durLossStat.style.color = "#0F5238";
     }
 
     if (btnApproveDurable) btnApproveDurable.style.display = "none";

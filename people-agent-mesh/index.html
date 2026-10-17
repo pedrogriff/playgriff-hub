@@ -4,8 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PeopleAgentMesh: Enterprise Multi-Agent Orchestration Platform | playgriff.me</title>
+  <meta name="theme-color" content="#FAF6F0">
   <meta property="og:image" content="https://www.playgriff.me/assets/og-card.png">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=smeargle">
 </head>
 <body>
 
@@ -214,7 +218,7 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title">🔒 Zero-Retention Privacy Gateway (Live Tokenizer Playground)</div>
-          <button id="btn-shred" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
+          <button id="btn-shred" style="background: var(--jewel-ruby-tint); color: var(--jewel-ruby); border: 1px solid rgba(140, 29, 46, 0.35); padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
             🗑️ Shred Vault (LGPD Art. 18)
           </button>
         </div>
@@ -453,7 +457,7 @@
         <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; align-items: flex-end;">
           <div>
             <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Select Calibration Candidate:</label>
-            <select id="comm-candidate-select" style="background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); padding: 0.4rem 0.8rem; border-radius: 4px;">
+            <select id="comm-candidate-select" style="background: var(--bg-surface-1); color: var(--text-primary); border: 1px solid var(--border-strong); padding: 0.4rem 0.8rem; border-radius: 6px;">
               <option value="lucas">Lucas Silva (IC4 → IC5, Brazil CLT, 16mo Tenure, EXCEEDS)</option>
               <option value="devin">Devin Wright (IC4 → IC5, US FLSA, 26mo Tenure, EXCEEDS)</option>
               <option value="mariana">Mariana Souza (IC5 → IC6, Canada PIPEDA, 14mo Tenure, MEETS_HIGH)</option>
@@ -467,36 +471,36 @@
       <div id="committee-results" style="display: none;">
         <!-- 4 Role Cards Grid -->
         <div class="grid-2" style="margin-bottom: 1.5rem;">
-          <div class="card" style="border-left: 4px solid #10b981;">
+          <div class="card" style="border-left: 4px solid var(--jewel-emerald);">
             <div class="card-header">
-              <div class="card-title" style="color: #10b981;">🟢 Sponsor Advocate</div>
+              <div class="card-title" style="color: var(--jewel-emerald);">🟢 Sponsor Advocate</div>
               <span class="badge badge-green">Champions Velocity</span>
             </div>
             <p id="comm-advocate-text" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-primary);"></p>
             <div id="comm-advocate-args" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;"></div>
           </div>
 
-          <div class="card" style="border-left: 4px solid #ef4444;">
+          <div class="card" style="border-left: 4px solid var(--jewel-ruby);">
             <div class="card-header">
-              <div class="card-title" style="color: #ef4444;">🔴 Bar-Raiser Skeptic</div>
-              <span class="badge badge-amber" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.4);">Probes Tenure & Scope</span>
+              <div class="card-title" style="color: var(--jewel-ruby);">🔴 Bar-Raiser Skeptic</div>
+              <span class="badge badge-red">Probes Tenure & Scope</span>
             </div>
             <p id="comm-skeptic-text" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-primary);"></p>
             <div id="comm-skeptic-risks" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;"></div>
           </div>
 
-          <div class="card" style="border-left: 4px solid #f59e0b;">
+          <div class="card" style="border-left: 4px solid var(--jewel-amber);">
             <div class="card-header">
-              <div class="card-title" style="color: #f59e0b;">🟡 Equity & Budget Auditor</div>
+              <div class="card-title" style="color: var(--jewel-amber);">🟡 Equity & Budget Auditor</div>
               <span class="badge badge-amber">Compliance & Budget</span>
             </div>
             <p id="comm-equity-text" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-primary);"></p>
             <div id="comm-equity-audit" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;"></div>
           </div>
 
-          <div class="card" style="border-left: 4px solid #3b82f6;">
+          <div class="card" style="border-left: 4px solid var(--jewel-sapphire);">
             <div class="card-header">
-              <div class="card-title" style="color: #3b82f6;">🔵 Consensus Moderator</div>
+              <div class="card-title" style="color: var(--jewel-sapphire);">🔵 Consensus Moderator</div>
               <span id="comm-verdict-badge" class="badge badge-blue">Calibrated Verdict</span>
             </div>
             <p id="comm-moderator-text" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-primary);"></p>
@@ -505,19 +509,19 @@
         </div>
 
         <!-- Reflexion & Self-Correction Audit Banner -->
-        <div class="card" style="margin-bottom: 1.5rem; background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.3);">
+        <div class="card" style="margin-bottom: 1.5rem; background: var(--bg-surface-1); border: 1px solid var(--border-strong);">
           <div class="card-header">
-            <div class="card-title" style="color: #8b5cf6;">🔄 Reflexion Self-Correction Audit (Reflexion loop)</div>
+            <div class="card-title" style="color: var(--jewel-sapphire);">🔄 Reflexion Self-Correction Audit (Reflexion loop)</div>
             <span id="comm-reflexion-badge" class="badge badge-purple">1 Cycle Completed</span>
           </div>
           <div class="grid-2" style="margin-top: 0.5rem;">
-            <div style="background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 4px; border-left: 3px solid #ef4444;">
-              <strong style="font-size: 0.85rem; color: #ef4444;">Pass #1 (Pre-Reflexion Critique):</strong>
+            <div style="background: var(--bg-elevated); padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-subtle); border-left: 3px solid var(--jewel-ruby);">
+              <strong style="font-size: 0.85rem; color: var(--jewel-ruby);">Pass #1 (Pre-Reflexion Critique):</strong>
               <div id="comm-pass1-score" style="font-size: 0.8rem; margin: 0.25rem 0; font-family: monospace;">Score: 65.0% / 100.0% — REVISION REQUIRED</div>
               <div id="comm-pass1-issues" style="font-size: 0.75rem; color: var(--text-secondary);"></div>
             </div>
-            <div style="background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 4px; border-left: 3px solid #10b981;">
-              <strong style="font-size: 0.85rem; color: #10b981;">Pass #2 (Post-Reflexion Refined):</strong>
+            <div style="background: var(--bg-elevated); padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-subtle); border-left: 3px solid var(--jewel-emerald);">
+              <strong style="font-size: 0.85rem; color: var(--jewel-emerald);">Pass #2 (Post-Reflexion Refined):</strong>
               <div id="comm-pass2-score" style="font-size: 0.8rem; margin: 0.25rem 0; font-family: monospace;">Score: 100.0% / 100.0% — PASSED GATE</div>
               <div id="comm-pass2-summary" style="font-size: 0.75rem; color: var(--text-secondary);">Replaced vague language with time-bounded quarterly OKRs and mitigated tenure risk.</div>
             </div>
@@ -553,7 +557,7 @@
         <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; align-items: flex-end;">
           <div>
             <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Candidate Calibration Scenario:</label>
-            <select id="dur-candidate-select" style="background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); padding: 0.4rem 0.8rem; border-radius: 4px;">
+            <select id="dur-candidate-select" style="background: var(--bg-surface-1); color: var(--text-primary); border: 1px solid var(--border-strong); padding: 0.4rem 0.8rem; border-radius: 6px;">
               <option value="elena">Elena Rostova (IC4 → IC5, US FLSA, Exceeds, +10.0% merit → High-Risk HITL)</option>
               <option value="gabriel">Gabriel Santos (IC4 → IC5, Brazil CLT Art. 468, Exceeds, +12.0% merit)</option>
             </select>
@@ -581,11 +585,11 @@
 
             <!-- Interactive Action Controls -->
             <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-              <button class="btn btn-sm" id="btn-crash-durable" style="background: #ef4444; color: #fff;">💥 Simulate Worker Crash</button>
-              <button class="btn btn-sm" id="btn-recover-durable" style="background: #10b981; color: #fff; display: none;">🔄 Recover from SQLite WAL</button>
-              <button class="btn btn-sm btn-primary" id="btn-approve-durable">✅ Human Sign-Off (Approve)</button>
-              <button class="btn btn-sm" id="btn-reject-durable" style="background: #b91c1c; color: #fff;">❌ Reject (Trigger Saga)</button>
-              <button class="btn btn-sm" id="btn-replay-durable" style="background: #6366f1; color: #fff;">🎯 Replay Full Stream</button>
+              <button class="btn btn-sm" id="btn-crash-durable" style="background: var(--jewel-ruby); color: var(--text-on-jewel);">💥 Simulate Worker Crash</button>
+              <button class="btn btn-sm" id="btn-recover-durable" style="background: var(--jewel-emerald); color: var(--text-on-jewel); display: none;">🔄 Recover from SQLite WAL</button>
+              <button class="btn btn-sm btn-primary" id="btn-approve-durable" style="width: auto;">✅ Human Sign-Off (Approve)</button>
+              <button class="btn btn-sm" id="btn-reject-durable" style="background: var(--jewel-ruby-hover); color: var(--text-on-jewel);">❌ Reject (Trigger Saga)</button>
+              <button class="btn btn-sm" id="btn-replay-durable" style="background: var(--jewel-sapphire); color: var(--text-on-jewel);">🎯 Replay Full Stream</button>
             </div>
           </div>
 
@@ -677,7 +681,7 @@
 
   </main>
 
-  <footer style="text-align: center; padding: 16px; font-size: 0.8rem; color: #94a3b8;">Pedro Griff Marcincowski · Personal projects on synthetic data. Views are my own.</footer>
-  <script src="app.js"></script>
+  <footer style="text-align: center; padding: 24px 16px; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border-subtle); margin-top: 2rem;">Pedro Griff Marcincowski · Personal projects on synthetic data. Views are my own.</footer>
+  <script src="app.js?v=smeargle"></script>
 </body>
 </html>

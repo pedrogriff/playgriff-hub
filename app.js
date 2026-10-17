@@ -697,7 +697,7 @@ function renderMonteCarloSimulation() {
   const getX = (m) => (m / months) * (width - 60) + 40;
   const getY = (price) => height - 30 - ((price - minP) / (maxP - minP)) * (height - 50);
 
-  ctx.strokeStyle = '#24324a';
+  ctx.strokeStyle = '#DFD2C0';
   ctx.lineWidth = 1;
   for (let yStep = 0; yStep <= 4; yStep++) {
     const pVal = minP + (yStep / 4) * (maxP - minP);
@@ -707,14 +707,14 @@ function renderMonteCarloSimulation() {
     ctx.lineTo(width - 20, yPos);
     ctx.stroke();
 
-    ctx.fillStyle = '#64748b';
+    ctx.fillStyle = '#574C43';
     ctx.font = '10px JetBrains Mono';
     ctx.fillText(`$${pVal.toFixed(0)}`, 5, yPos + 3);
   }
 
-  ctx.lineWidth = 0.7;
-  paths.slice(0, 80).forEach((path) => {
-    ctx.strokeStyle = 'rgba(59, 130, 246, 0.12)';
+  ctx.lineWidth = 0.85;
+  paths.slice(0, 80).forEach((path, idx) => {
+    ctx.strokeStyle = idx % 3 === 0 ? 'rgba(15, 82, 56, 0.16)' : 'rgba(22, 50, 91, 0.14)';
     ctx.beginPath();
     ctx.moveTo(getX(0), getY(path[0]));
     for (let m = 1; m <= months; m++) {

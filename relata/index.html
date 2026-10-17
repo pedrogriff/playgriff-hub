@@ -15,7 +15,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="style.css">
 </head>
@@ -186,7 +186,7 @@
         <div class="surface-card">
           <div class="card-title">
             <span>P&amp;L Accrual Schedule with Forfeiture Decay</span>
-            <span class="version-pill" style="color:#6ee7b7;">Straight-Line Amortization</span>
+            <span class="version-pill" style="color:var(--jewel-emerald); background:var(--jewel-emerald-subtle); border-color:var(--jewel-emerald-border);">Straight-Line Amortization</span>
           </div>
           <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:12px;">
             Recognizes compensation expense on a straight-line basis over vesting period (CPC 10 Item 19), adjusted dynamically by the expected vesting retention factor <code>(1 - f)^(m/12)</code>.
@@ -233,14 +233,14 @@
           <span style="font-size:1.2rem;">✓</span>
           <span>STATUS: 100% AUDIT CONFORMANT (CVM Resolução 80/2022)</span>
         </div>
-        <span class="version-pill" style="background:#065f46;color:#6ee7b7;border:none;">ZERO INVARIANT ERRORS</span>
+        <span class="version-pill" style="background:var(--jewel-emerald-subtle);color:var(--jewel-emerald);border:1px solid var(--jewel-emerald-border);">ZERO INVARIANT ERRORS</span>
       </div>
 
       <!-- Quick Action Buttons -->
       <div style="display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap;">
         <button type="button" class="btn btn-outline btn-sm" id="btn-sim-valid">✓ Reset to Valid Submission</button>
-        <button type="button" class="btn btn-outline btn-sm" id="btn-sim-spread-err" style="border-color:#ef4444; color:#fca5a5;">⚠ Simulate Item 8.6 Min &gt; Max Violation</button>
-        <button type="button" class="btn btn-outline btn-sm" id="btn-sim-members-err" style="border-color:#f59e0b; color:#fcd34d;">⚠ Simulate Remunerated &gt; Total Members</button>
+        <button type="button" class="btn btn-outline btn-sm" id="btn-sim-spread-err" style="border-color:var(--jewel-ruby-border); color:var(--jewel-ruby); background:var(--jewel-ruby-subtle);">⚠ Simulate Item 8.6 Min &gt; Max Violation</button>
+        <button type="button" class="btn btn-outline btn-sm" id="btn-sim-members-err" style="border-color:var(--jewel-amber-border); color:var(--jewel-amber); background:var(--jewel-amber-subtle);">⚠ Simulate Remunerated &gt; Total Members</button>
       </div>
 
       <!-- Telemetry Grid -->
@@ -402,7 +402,7 @@
         </div>
         <div class="metric-pill">
           <div class="metric-label">Hamilton-Hare Net Drift</div>
-          <div class="metric-value" id="dist-drift" style="color:#10b981;">0 shares</div>
+          <div class="metric-value" id="dist-drift" style="color:var(--jewel-emerald);">0 shares</div>
         </div>
         <div class="metric-pill danger">
           <div class="metric-label">Naive Rounding Drift</div>
@@ -489,14 +489,14 @@ O preço de exercício fixado foi de R$ 30,00 por ação, com carência de 36 me
           <div class="card-title">
             <span>Sanitized Payload Ingested by LLM Boundary</span>
             <div style="display:flex; gap:6px;">
-              <button type="button" class="btn btn-outline btn-sm" id="btn-shred-vault" style="color:#fca5a5; border-color:#ef4444;">Shred Key 🗑️</button>
+              <button type="button" class="btn btn-outline btn-sm" id="btn-shred-vault" style="color:var(--jewel-ruby); border-color:var(--jewel-ruby-border); background:var(--jewel-ruby-subtle);">Shred Key 🗑️</button>
               <button type="button" class="btn btn-outline btn-sm" id="btn-reset-vault">Reset ↺</button>
             </div>
           </div>
           <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;">
             Raw CPFs are replaced with surrogate HMAC tokens. Real identity never leaves your perimeter:
           </p>
-          <textarea id="sanitized-minutes-output" class="input-box" style="height:260px; color:#34d399;" readonly></textarea>
+          <textarea id="sanitized-minutes-output" class="input-box" style="height:260px; color:var(--jewel-emerald);" readonly></textarea>
         </div>
       </div>
     </section>
@@ -533,7 +533,7 @@ O preço de exercício fixado foi de R$ 30,00 por ação, com carência de 36 me
       <div class="pane-header">
         <h1 class="pane-title">
           <span>Model Context Protocol (MCP) Simulator</span>
-          <span class="version-pill" style="background:#4c1d95; color:#c4b5fd;">JSON-RPC 2.0 stdio</span>
+          <span class="version-pill">JSON-RPC 2.0 stdio</span>
         </h1>
         <p class="pane-desc">
           Test Relata's MCP compliance tools interactively as if invoked by Claude Desktop or Cursor over standardized JSON-RPC 2.0 stdio pipes.
@@ -590,7 +590,7 @@ O preço de exercício fixado foi de R$ 30,00 por ação, com carência de 36 me
         <div class="surface-card">
           <div class="card-title">
             <span>JSON-RPC 2.0 Response (Server &rarr; Client)</span>
-            <span class="version-pill" style="color:#6ee7b7;">200 OK</span>
+            <span class="version-pill" style="color:var(--jewel-emerald); background:var(--jewel-emerald-subtle); border-color:var(--jewel-emerald-border);">200 OK</span>
           </div>
 
           <pre class="code-block" id="mcp-res-payload" style="height:280px;">
@@ -613,7 +613,7 @@ O preço de exercício fixado foi de R$ 30,00 por ação, com carência de 36 me
   <footer class="app-footer">
     <div class="footer-container">
       <div>
-        <strong>Relata</strong> — Open-Source CVM Regulatory Reporting &amp; CPC 10 Accounting Engine &bull; Architected by <a href="https://www.linkedin.com/in/pedrogriff/" target="_blank" rel="noopener" style="color:#60a5fa; text-decoration:none;">Pedro Griff Marcincowski</a> &bull; Personal projects on synthetic data. Views are my own.
+        <strong>Relata</strong> — Open-Source CVM Regulatory Reporting &amp; CPC 10 Accounting Engine &bull; Architected by <a href="https://www.linkedin.com/in/pedrogriff/" target="_blank" rel="noopener" style="color:var(--jewel-sapphire); font-weight:600; text-decoration:none;">Pedro Griff Marcincowski</a> &bull; Personal projects on synthetic data. Views are my own.
       </div>
       <div class="footer-links">
         <a href="https://github.com/pedrogriff/relata" target="_blank" rel="noopener">GitHub</a>

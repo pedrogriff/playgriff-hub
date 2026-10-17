@@ -294,7 +294,7 @@ function updateFREReconciler() {
         <span style="font-size:1.2rem;">✓</span>
         <span>STATUS: 100% AUDIT CONFORMANT (CVM Resolução 80/2022)</span>
       </div>
-      <span class="version-pill" style="background:#065f46;color:#6ee7b7;border:none;">ZERO INVARIANT ERRORS</span>
+      <span class="version-pill" style="background:rgba(15, 82, 56, 0.12);color:#0F5238;border:1px solid rgba(15, 82, 56, 0.28);">ZERO INVARIANT ERRORS</span>
     `;
   } else {
     banner.className = "audit-banner invalid";
@@ -303,7 +303,7 @@ function updateFREReconciler() {
         <span style="font-size:1.2rem;">⚠</span>
         <span>STATUS: STATUTORY AUDIT FAILURES (${findings.length} INVARIANT VIOLATIONS)</span>
       </div>
-      <span class="version-pill" style="background:#7f1d1d;color:#fca5a5;border:none;">REJECTED BY CVM VALIDATOR</span>
+      <span class="version-pill" style="background:rgba(140, 29, 46, 0.12);color:#8C1D2E;border:1px solid rgba(140, 29, 46, 0.28);">REJECTED BY CVM VALIDATOR</span>
     `;
   }
 
@@ -317,11 +317,11 @@ function updateFREReconciler() {
   const findingsList = document.getElementById("reconciler-findings-list");
   findingsList.innerHTML = "";
   if (findings.length === 0) {
-    findingsList.innerHTML = `<li style="color:#10b981;">✓ All Section 8 invariants strictly satisfied (Items 8.1, 8.2, 8.6, CPC 10).</li>`;
+    findingsList.innerHTML = `<li style="color:#0F5238; font-weight:600;">✓ All Section 8 invariants strictly satisfied (Items 8.1, 8.2, 8.6, CPC 10).</li>`;
   } else {
     findings.forEach(find => {
       const li = document.createElement("li");
-      li.style.color = "#ef4444";
+      li.style.color = "#8C1D2E";
       li.style.fontWeight = "600";
       li.textContent = `[${find.severity}] ${find.msg}`;
       findingsList.appendChild(li);
@@ -350,8 +350,8 @@ function updateShareDistributor() {
       <td>${it.weight.toFixed(2)}%</td>
       <td>${it.exactQuota.toFixed(4)}</td>
       <td>${it.remainder.toFixed(4)}</td>
-      <td style="color:#f87171;">${it.naiveRounded.toLocaleString()}</td>
-      <td style="color:#34d399;font-weight:700;">${it.allocatedShares.toLocaleString()}</td>
+      <td style="color:#8C1D2E;">${it.naiveRounded.toLocaleString()}</td>
+      <td style="color:#0F5238;font-weight:700;">${it.allocatedShares.toLocaleString()}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -364,10 +364,10 @@ function updateShareDistributor() {
   const naiveEl = document.getElementById("dist-naive-drift");
   if (naiveDelta === 0) {
     naiveEl.textContent = "0 (Exact)";
-    naiveEl.style.color = "#10b981";
+    naiveEl.style.color = "#0F5238";
   } else {
     naiveEl.textContent = `${naiveDelta > 0 ? "+" : ""}${naiveDelta} shares (Dilution Risk!)`;
-    naiveEl.style.color = "#ef4444";
+    naiveEl.style.color = "#8C1D2E";
   }
 }
 
@@ -414,7 +414,7 @@ function shredLGPDKey() {
   State.lgpdVault.shredded = true;
   State.lgpdVault.salt = "";
   document.getElementById("vault-status").textContent = "SHREDDED";
-  document.getElementById("vault-status").style.color = "#ef4444";
+  document.getElementById("vault-status").style.color = "#8C1D2E";
   document.getElementById("sanitized-minutes-output").value = "[CRYPTOGRAPHICALLY SHREDDED — SURROGATE MAPPINGS DESTROYED]";
   alert("LGPD Article 18 Cryptographic Shredding Completed. In-memory HMAC keys destroyed.");
 }
@@ -423,7 +423,7 @@ function resetLGPDKey() {
   State.lgpdVault.shredded = false;
   State.lgpdVault.salt = "sec_vault_" + Math.random().toString(36).substring(2, 10);
   document.getElementById("vault-status").textContent = "ACTIVE";
-  document.getElementById("vault-status").style.color = "#10b981";
+  document.getElementById("vault-status").style.color = "#0F5238";
   runLGPDVaultTokenization();
 }
 

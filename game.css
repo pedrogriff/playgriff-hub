@@ -10,19 +10,19 @@
    To retheme, edit only this :root block.
    ──────────────────────────────────────────────────────────────*/
 :root {
-  --clr-bg:             #0c0d14;
-  --clr-surface:        #13151f;
-  --clr-border:         rgba(255, 255, 255, 0.07);
-  --clr-accent-violet:  #7c3aed;
-  --clr-accent-cyan:    #06b6d4;
-  --clr-text-primary:   #f1f2f7;
-  --clr-text-secondary: #8892a4;
-  --clr-text-muted:     #4a5260;
+  --clr-bg:             #FAF6F0;
+  --clr-surface:        #F3ECE1;
+  --clr-border:         #E2D7C7;
+  --clr-accent-violet:  #0F5238;
+  --clr-accent-cyan:    #16325B;
+  --clr-text-primary:   #1E1915;
+  --clr-text-secondary: #574C43;
+  --clr-text-muted:     #8A7D71;
 
-  --grad-brand: linear-gradient(135deg, #7c3aed, #06b6d4);
+  --grad-brand: linear-gradient(135deg, #0F5238, #16325B);
 
-  --font-body:    'Space Grotesk', system-ui, sans-serif;
-  --font-display: 'Syne',          system-ui, sans-serif;
+  --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Newsreader', Georgia, serif;
 
   --ease-smooth:  cubic-bezier(0.4, 0, 0.2, 1);
   --ease-snappy:  cubic-bezier(0.22, 0.68, 0, 1.2);
@@ -121,7 +121,7 @@ body {
   flex-shrink: 0;
 
   /* Glass effect */
-  background: rgba(12, 13, 20, 0.85);
+  background: rgba(250, 246, 240, 0.88);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
   border-bottom: 1px solid var(--clr-border);
@@ -158,9 +158,9 @@ body {
   gap: 5px;
   flex-shrink: 0;
   padding: 8px 14px 8px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--clr-border);
-  background: rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  border: 1px solid #C9B9A6;
+  background: #EAE0D2;
   color: var(--clr-text-primary);
   font-family: var(--font-body);
   font-size: 0.82rem;
@@ -180,12 +180,12 @@ body {
 
 .gnav__back:hover,
 .gnav__back:focus-visible {
-  background:    rgba(124, 58, 237, 0.2);
-  border-color:  rgba(124, 58, 237, 0.5);
+  background:    rgba(15, 82, 56, 0.12);
+  border-color:  rgba(15, 82, 56, 0.4);
 }
 
 .gnav__back:active {
-  background: rgba(124, 58, 237, 0.38);
+  background: rgba(15, 82, 56, 0.22);
   transform: scale(0.96);
 }
 
@@ -204,16 +204,13 @@ body {
   flex: 1;
   text-align: center;
   font-family: var(--font-display);
-  font-size: 0.95rem;
-  font-weight: 800;
+  font-size: 1.05rem;
+  font-weight: 700;
   letter-spacing: -0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  background: var(--grad-brand);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--clr-text-primary);
 }
 
 /* ── Fullscreen button ───────────────────────── */
@@ -224,9 +221,9 @@ body {
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-  border-radius: 10px;
-  border: 1px solid var(--clr-border);
-  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  border: 1px solid #C9B9A6;
+  background: #EAE0D2;
   color: var(--clr-text-secondary);
   cursor: pointer;
   touch-action: manipulation;
@@ -240,8 +237,8 @@ body {
 .gnav__action:hover,
 .gnav__action:focus-visible {
   color: var(--clr-text-primary);
-  background:   rgba(6, 182, 212, 0.15);
-  border-color: rgba(6, 182, 212, 0.4);
+  background:   rgba(15, 82, 56, 0.12);
+  border-color: rgba(15, 82, 56, 0.4);
 }
 
 .gnav__action:active {
@@ -282,8 +279,8 @@ body {
   width: 38px;
   height: 4px;
   border-radius: 3px;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid var(--clr-border);
+  background: #DFD2C0;
+  border: 1px solid #C9B9A6;
   transition:
     background 0.18s,
     width      0.18s var(--ease-snappy);
@@ -509,7 +506,7 @@ body {
   border-radius: 999px;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #fff;
+  color: #FAF6F0;
   background: var(--grad-brand);
   min-height: 52px;              /* Touch-friendly */
   touch-action: manipulation;

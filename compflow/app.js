@@ -892,7 +892,7 @@ const CompFlowApp = {
     ctx.clearRect(0, 0, width, height);
 
     // Draw axes
-    ctx.strokeStyle = '#1e293b';
+    ctx.strokeStyle = '#C9B9A6';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(30, height - 30);
@@ -900,7 +900,7 @@ const CompFlowApp = {
     ctx.stroke();
 
     // Gaussian bell curve for Compa Ratio [0.80 to 1.20]
-    ctx.strokeStyle = '#3b82f6';
+    ctx.strokeStyle = '#16325B';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
 
@@ -930,7 +930,7 @@ const CompFlowApp = {
       const z = (c - mean) / stdDev;
       const ptY = (height - 35) - Math.exp(-0.5 * z * z) * (height - 70);
 
-      ctx.fillStyle = c > 1.15 ? '#f59e0b' : (c < 0.85 ? '#f43f5e' : '#10b981');
+      ctx.fillStyle = c > 1.15 ? '#B4690E' : (c < 0.85 ? '#8C1D2E' : '#0F5238');
       ctx.beginPath();
       ctx.arc(ptX, ptY, 4.5, 0, Math.PI * 2);
       ctx.fill();
@@ -1613,12 +1613,14 @@ const CompFlowApp = {
       if (tdcAdvantage) {
         if (fourYrDelta >= 0) {
           tdcAdvantage.textContent = `+$${Math.round(fourYrDelta).toLocaleString()} 4-Year TDC Lead`;
-          tdcAdvantage.style.color = '#10b981';
-          tdcAdvantage.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+          tdcAdvantage.style.color = '#0F5238';
+          tdcAdvantage.style.background = '#E4EFEA';
+          tdcAdvantage.style.borderColor = 'rgba(15, 82, 56, 0.25)';
         } else {
           tdcAdvantage.textContent = `-$${Math.round(Math.abs(fourYrDelta)).toLocaleString()} 4-Year Deficit`;
-          tdcAdvantage.style.color = '#ef4444';
-          tdcAdvantage.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+          tdcAdvantage.style.color = '#8C1D2E';
+          tdcAdvantage.style.background = '#F5E6E8';
+          tdcAdvantage.style.borderColor = 'rgba(140, 29, 46, 0.25)';
         }
       }
 

@@ -1,35 +1,77 @@
-/* Relata CVM & CPC 10 Regulatory Engine — Design System */
+/* =========================================================================
+   Relata CVM & CPC 10 Regulatory Engine — Smeargle "Cashmere & Jewel" Design System
+   ========================================================================= */
 :root {
-  --bg-primary: #0b0f19;
-  --bg-surface: #111827;
-  --bg-card: #182234;
-  --bg-card-hover: #1f2d45;
-  --bg-input: #0e1626;
-  --bg-code: #070a12;
+  /* Nude & Cashmere Surfaces */
+  --bg-canvas: #FAF6F0;
+  --bg-surface-1: #F3ECE1;
+  --bg-surface-2: #EAE0D2;
+  --bg-surface-3: #DFD2C0;
+  --bg-elevated: #FCF9F5;
+  --bg-glass: rgba(250, 246, 240, 0.86);
 
-  --border-subtle: #24324a;
-  --border-active: #3b82f6;
-  --border-emerald: #10b981;
-  --border-rose: #ef4444;
+  /* Legacy alias mappings */
+  --bg-primary: var(--bg-canvas);
+  --bg-surface: var(--bg-surface-1);
+  --bg-card: var(--bg-elevated);
+  --bg-card-hover: var(--bg-surface-1);
+  --bg-input: var(--bg-surface-1);
+  --bg-code: var(--bg-surface-2);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  /* Cashmere Hairlines & Borders */
+  --border-subtle: #E2D7C7;
+  --border-strong: #C9B9A6;
+  --border-focus: #0F5238;
+  --border-active: #0F5238;
+  --border-emerald: rgba(15, 82, 56, 0.25);
+  --border-rose: rgba(140, 29, 46, 0.25);
 
-  --accent-blue: #2563eb;
-  --accent-blue-hover: #1d4ed8;
-  --accent-cyan: #06b6d4;
-  --accent-emerald: #10b981;
-  --accent-rose: #ef4444;
-  --accent-amber: #f59e0b;
-  --accent-purple: #8b5cf6;
+  /* Warm Espresso Typography */
+  --text-primary: #1E1915;
+  --text-secondary: #574C43;
+  --text-muted: #8A7D71;
+  --text-on-jewel: #FAF6F0;
 
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Jewel Accents */
+  --jewel-emerald: #0F5238;
+  --jewel-emerald-hover: #0A3D29;
+  --jewel-emerald-subtle: rgba(15, 82, 56, 0.10);
+  --jewel-emerald-border: rgba(15, 82, 56, 0.25);
+
+  --jewel-sapphire: #16325B;
+  --jewel-sapphire-hover: #0E2240;
+  --jewel-sapphire-subtle: rgba(22, 50, 91, 0.09);
+  --jewel-sapphire-border: rgba(22, 50, 91, 0.24);
+
+  --jewel-amber: #B4690E;
+  --jewel-amber-hover: #8F5108;
+  --jewel-amber-subtle: rgba(180, 105, 14, 0.12);
+  --jewel-amber-border: rgba(180, 105, 14, 0.28);
+
+  --jewel-ruby: #8C1D2E;
+  --jewel-ruby-hover: #6B1422;
+  --jewel-ruby-subtle: rgba(140, 29, 46, 0.10);
+  --jewel-ruby-border: rgba(140, 29, 46, 0.25);
+
+  /* Legacy accent aliases */
+  --accent-emerald: var(--jewel-emerald);
+  --accent-blue: var(--jewel-emerald);
+  --accent-blue-hover: var(--jewel-emerald-hover);
+  --accent-cyan: var(--jewel-sapphire);
+  --accent-rose: var(--jewel-ruby);
+  --accent-amber: var(--jewel-amber);
+  --accent-purple: var(--jewel-sapphire);
+
+  --font-display: 'Newsreader', 'Instrument Serif', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
+
+  --shadow-sm: 0 1px 2px rgba(30, 25, 21, 0.05);
+  --shadow-md: 0 4px 12px -2px rgba(30, 25, 21, 0.08), 0 2px 6px -1px rgba(30, 25, 21, 0.04);
 }
 
 * {
@@ -40,9 +82,9 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--bg-primary);
+  background-color: var(--bg-canvas);
   color: var(--text-primary);
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   display: flex;
@@ -51,7 +93,9 @@ body {
 
 /* Header */
 .topbar {
-  background-color: var(--bg-surface);
+  background-color: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-subtle);
   padding: 12px 24px;
   position: sticky;
@@ -78,20 +122,20 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   text-decoration: none;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   padding: 6px 12px;
   border-radius: var(--radius-sm);
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-strong);
   transition: all 0.15s ease;
 }
 
 .back-btn:hover {
-  color: var(--text-primary);
-  border-color: var(--accent-blue);
+  background: var(--bg-surface-3);
+  border-color: var(--jewel-emerald);
 }
 
 .brand-box {
@@ -103,34 +147,37 @@ body {
 .brand-icon {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  background: var(--jewel-emerald);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 1rem;
-  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text-on-jewel);
 }
 
 .brand-title {
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
 }
 
 .brand-title span {
-  color: var(--accent-cyan);
+  color: var(--jewel-emerald);
 }
 
 .version-pill {
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  background: rgba(139, 92, 246, 0.15);
-  color: #c4b5fd;
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: var(--jewel-sapphire-subtle);
+  color: var(--jewel-sapphire);
+  border: 1px solid var(--jewel-sapphire-border);
   padding: 2px 8px;
-  border-radius: 9999px;
+  border-radius: var(--radius-sm);
   font-weight: 600;
 }
 
@@ -152,17 +199,16 @@ body {
 }
 
 .badge-mcp {
-  background: rgba(138, 43, 226, 0.15);
-  color: #d8b4fe;
-  border: 1px solid rgba(138, 43, 226, 0.4);
+  background: var(--jewel-emerald-subtle);
+  color: var(--jewel-emerald);
+  border: 1px solid var(--jewel-emerald-border);
 }
 
 .badge-pulse {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--accent-emerald);
-  box-shadow: 0 0 8px var(--accent-emerald);
+  background: var(--jewel-emerald);
 }
 
 .btn {
@@ -177,41 +223,43 @@ body {
   border: 1px solid transparent;
   transition: all 0.15s ease;
   text-decoration: none;
+  font-family: var(--font-sans);
 }
 
 .btn-primary {
-  background: var(--accent-blue);
-  color: #fff;
+  background: var(--jewel-emerald);
+  color: var(--text-on-jewel);
 }
 .btn-primary:hover {
-  background: var(--accent-blue-hover);
+  background: var(--jewel-emerald-hover);
 }
 
 .btn-outline {
-  background: var(--bg-card);
+  background: var(--bg-surface-2);
   color: var(--text-primary);
-  border-color: var(--border-subtle);
+  border-color: var(--border-strong);
 }
 .btn-outline:hover {
+  background: var(--bg-surface-3);
   border-color: var(--text-secondary);
 }
 
 .btn-emerald {
-  background: #059669;
-  color: #fff;
+  background: var(--jewel-emerald);
+  color: var(--text-on-jewel);
 }
 .btn-emerald:hover {
-  background: #047857;
+  background: var(--jewel-emerald-hover);
 }
 
 .btn-sm {
-  padding: 4px 10px;
+  padding: 5px 11px;
   font-size: 0.78rem;
 }
 
 /* Tab Navigation */
 .tab-bar {
-  background: var(--bg-surface);
+  background: var(--bg-surface-1);
   border-bottom: 1px solid var(--border-subtle);
   overflow-x: auto;
 }
@@ -243,20 +291,20 @@ body {
 
 .tab-btn:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--bg-surface-2);
 }
 
 .tab-btn.active {
-  color: #60a5fa;
-  border-bottom-color: #3b82f6;
-  background: rgba(59, 130, 246, 0.05);
+  color: var(--jewel-emerald);
+  border-bottom-color: var(--jewel-emerald);
+  background: var(--jewel-emerald-subtle);
 }
 
 /* Main Container */
 .main-wrapper {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 28px 24px;
   width: 100%;
   flex: 1;
 }
@@ -274,12 +322,14 @@ body {
   margin-bottom: 24px;
 }
 .pane-title {
-  font-size: 1.5rem;
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
   margin-bottom: 6px;
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 .pane-desc {
   color: var(--text-secondary);
@@ -303,16 +353,17 @@ body {
 
 /* Card */
 .surface-card {
-  background: var(--bg-card);
+  background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  padding: 22px;
+  box-shadow: var(--shadow-md);
 }
 
 .card-title {
-  font-size: 1rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
   margin-bottom: 16px;
   display: flex;
   justify-content: space-between;
@@ -336,24 +387,25 @@ body {
 
 .form-label span.badge-stat {
   font-family: var(--font-mono);
-  color: var(--accent-cyan);
+  color: var(--jewel-sapphire);
 }
 
 .input-box {
   width: 100%;
-  background: var(--bg-input);
-  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-strong);
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 0.88rem;
   padding: 8px 12px;
   border-radius: var(--radius-sm);
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .input-box:focus {
-  border-color: var(--border-active);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px var(--jewel-emerald-subtle);
 }
 
 .input-row {
@@ -367,7 +419,7 @@ textarea.input-box {
   min-height: 140px;
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 /* Math Telemetry Metric Pills */
@@ -379,25 +431,25 @@ textarea.input-box {
 }
 
 .metric-pill {
-  background: var(--bg-surface);
+  background: var(--bg-surface-1);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 12px;
 }
 
 .metric-pill.highlight {
-  border-color: rgba(59, 130, 246, 0.4);
-  background: linear-gradient(180deg, rgba(37, 99, 235, 0.1) 0%, var(--bg-surface) 100%);
+  border-color: var(--jewel-sapphire-border);
+  background: linear-gradient(180deg, var(--jewel-sapphire-subtle) 0%, var(--bg-elevated) 100%);
 }
 
 .metric-pill.success {
-  border-color: rgba(16, 185, 129, 0.4);
-  background: linear-gradient(180deg, rgba(16, 185, 129, 0.1) 0%, var(--bg-surface) 100%);
+  border-color: var(--jewel-emerald-border);
+  background: linear-gradient(180deg, var(--jewel-emerald-subtle) 0%, var(--bg-elevated) 100%);
 }
 
 .metric-pill.danger {
-  border-color: rgba(239, 68, 68, 0.4);
-  background: linear-gradient(180deg, rgba(239, 68, 68, 0.1) 0%, var(--bg-surface) 100%);
+  border-color: var(--jewel-ruby-border);
+  background: linear-gradient(180deg, var(--jewel-ruby-subtle) 0%, var(--bg-elevated) 100%);
 }
 
 .metric-label {
@@ -406,26 +458,28 @@ textarea.input-box {
   letter-spacing: 0.5px;
   color: var(--text-muted);
   margin-bottom: 4px;
+  font-weight: 600;
 }
 
 .metric-value {
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .metric-value.cyan {
-  color: var(--accent-cyan);
+  color: var(--jewel-sapphire);
 }
 .metric-value.emerald {
-  color: var(--accent-emerald);
+  color: var(--jewel-emerald);
 }
 .metric-value.rose {
-  color: var(--accent-rose);
+  color: var(--jewel-ruby);
 }
 .metric-value.purple {
-  color: var(--accent-purple);
+  color: var(--jewel-sapphire);
 }
 
 /* Audit Telemetry Banner */
@@ -440,15 +494,15 @@ textarea.input-box {
 }
 
 .audit-banner.valid {
-  background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.3);
-  color: #34d399;
+  background: var(--jewel-emerald-subtle);
+  border-color: var(--jewel-emerald-border);
+  color: var(--jewel-emerald);
 }
 
 .audit-banner.invalid {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #f87171;
+  background: var(--jewel-ruby-subtle);
+  border-color: var(--jewel-ruby-border);
+  color: var(--jewel-ruby);
 }
 
 .audit-banner-title {
@@ -475,7 +529,7 @@ table.data-table {
 }
 
 table.data-table th {
-  background: var(--bg-surface);
+  background: var(--bg-surface-2);
   color: var(--text-secondary);
   font-weight: 600;
   padding: 10px 12px;
@@ -484,23 +538,24 @@ table.data-table th {
 
 table.data-table td {
   padding: 10px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--border-subtle);
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 table.data-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--bg-surface-1);
 }
 
 /* Code Viewer */
 .code-block {
-  background: var(--bg-code);
-  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   padding: 14px;
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  color: #e2e8f0;
+  color: var(--text-primary);
   max-height: 480px;
   overflow-y: auto;
   white-space: pre-wrap;
@@ -510,14 +565,14 @@ table.data-table tr:hover td {
 /* Progress Bar */
 .progress-bar {
   height: 8px;
-  background: var(--bg-input);
+  background: var(--bg-surface-3);
   border-radius: 4px;
   overflow: hidden;
   margin-top: 6px;
 }
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+  background: var(--jewel-emerald);
   width: 0%;
   transition: width 0.3s ease;
 }
@@ -525,11 +580,11 @@ table.data-table tr:hover td {
 /* Footer */
 .app-footer {
   margin-top: auto;
-  background: var(--bg-surface);
+  background: var(--bg-surface-1);
   border-top: 1px solid var(--border-subtle);
   padding: 20px 24px;
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .footer-container {
@@ -547,9 +602,10 @@ table.data-table tr:hover td {
   gap: 16px;
 }
 .footer-links a {
-  color: var(--text-secondary);
+  color: var(--jewel-sapphire);
+  font-weight: 600;
   text-decoration: none;
 }
 .footer-links a:hover {
-  color: var(--text-primary);
+  text-decoration: underline;
 }
