@@ -101,21 +101,21 @@
       <!-- Technical Thesis: Why Agentic HR Requires Systems Rigor -->
       <div class="philosophy-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin: 24px 0;">
         <div class="system-card" style="border-left: 3px solid var(--accent-emerald);">
-          <h4 style="color: var(--accent-emerald); font-size: 0.95rem; margin-bottom: 6px;">1. Zero-Retention Perimeter Defense</h4>
+          <h4 style="color: var(--accent-emerald); font-size: 0.95rem; margin-bottom: 6px;">1. Keep identifiers out of the model</h4>
           <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
-            Enterprise HR models handle sensitive SPII (Brazilian CPF, US SSN, Canadian SIN, salaries). In-flight bi-directional surrogate tokenization guarantees zero raw identifiers cross model boundaries, with cryptographic shredding for LGPD Article 18 compliance.
+            Before any model call, names, national IDs and salaries become placeholders. They map back after the model answers, so the prompt doesn't hold the real values.
           </p>
         </div>
         <div class="system-card" style="border-left: 3px solid var(--accent-blue);">
-          <h4 style="color: var(--accent-blue); font-size: 0.95rem; margin-bottom: 6px;">2. Stateful Graphs Over Toy Prompts</h4>
+          <h4 style="color: var(--accent-blue); font-size: 0.95rem; margin-bottom: 6px;">2. Let a person approve</h4>
           <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
-            Autonomous ReAct loops risk non-deterministic loops and cannot pause for days. Enterprise HR requires checkpointed DAG state machines with asynchronous Human-in-the-Loop (HITL) approval gates for out-of-band merit and promotions.
+            Comp decisions wait on approvals that can take days. The workflow saves its state at each step and waits for a named approver before anything reaches a manager.
           </p>
         </div>
         <div class="system-card" style="border-left: 3px solid var(--accent-amber);">
-          <h4 style="color: var(--accent-amber); font-size: 0.95rem; margin-bottom: 6px;">3. Deterministic Financial Invariants</h4>
+          <h4 style="color: var(--accent-amber); font-size: 0.95rem; margin-bottom: 6px;">3. Code computes the money</h4>
           <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
-            LLMs must never perform arithmetic. Salary midpoint/spread identities, WorldatWork compa-ratio velocity, and bonus formulas must execute on deterministic fixed-point math engines with 0% rounding drift.
+            The model doesn't do arithmetic. Range math, compa-ratios and vesting run in plain code with tests. The model explains the results.
           </p>
         </div>
       </div>
@@ -346,9 +346,9 @@
     <!-- ─── TAB: PEOPLEAGENTMESH (FLAGSHIP PLATFORM) ──────────── -->
     <section class="tab-pane" id="tab-peoplemesh">
       <div class="section-intro">
-        <div class="intro-tag">Staff AI Agent Architecture</div>
+        <div class="intro-tag">Earlier experiment</div>
         <h2>PeopleAgentMesh: Enterprise Multi-Agent Orchestrator &amp; HITL Governance</h2>
-        <p>Production-grade agent platform for sensitive <strong>People Operations, Compensation Planning, and Talent Promotion Reviews</strong> across <strong>Brazil 🇧🇷, United States 🇺🇸, and Canada 🇨🇦</strong>. Features a stateful DAG with pause/resume execution, zero-retention PII tokenization, statutory labor verification, and interactive executive review checkpoints.</p>
+        <p>Agent platform for sensitive <strong>People Operations, Compensation Planning, and Talent Promotion Reviews</strong> across <strong>Brazil 🇧🇷, United States 🇺🇸, and Canada 🇨🇦</strong>. Features a stateful DAG with pause/resume execution, zero-retention PII tokenization, statutory labor verification, and interactive executive review checkpoints.</p>
         <div style="margin-top: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
           <a href="people-agent-mesh/" class="btn btn-primary">🚀 Launch Full-Screen PeopleAgentMesh UI ↗</a>
           <a href="https://github.com/pedrogriff/people-agent-mesh" target="_blank" rel="noopener" class="btn btn-outline">GitHub Repository ↗</a>
@@ -1127,11 +1127,10 @@
   <!-- ─── FOOTER ───────────────────────────────────────────── -->
   <footer class="app-footer">
     <div class="footer-container">
-      <div><strong>playgriff.me</strong> • Total Rewards Technology &amp; Systems Engineering by Pedro</div>
+      <div><strong>Pedro Griff Marcincowski</strong> · Personal projects on synthetic data. Views are my own.</div>
       <div class="footer-links">
-        <a href="https://github.com/pedrogriff" target="_blank" rel="noopener">GitHub Profile</a> • 
-        <a href="https://github.com/pedrogriff/comp-flow-platform" target="_blank" rel="noopener">CompFlow Repo</a> • 
-        <a href="https://github.com/pedrogriff/vesting-sim-engine" target="_blank" rel="noopener">VestingSim Repo</a>
+        <a href="https://www.linkedin.com/in/pedrogriff/" target="_blank" rel="me noopener">LinkedIn</a> ·
+        <a href="https://github.com/pedrogriff" target="_blank" rel="me noopener">GitHub</a>
       </div>
     </div>
   </footer>
