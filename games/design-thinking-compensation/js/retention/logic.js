@@ -29,11 +29,11 @@ export function calculateGrant(profile, targetKey) {
 export function analyzeRetention(profile) {
   const { lastRatings = [], talentDesignation = '', intendedCashFlows = {}, recentPromotionDate, currentCycleTDR = 0, previousCycleTDR = 0 } = profile;
 
-  const isExceptional = lastRatings.some(r => ["Exceptional Impact", "Exceeds Expectations"].includes(r)) ||
+  const isExceptional = lastRatings.some(r => ["Rating 5", "Rating 4"].includes(r)) ||
                         ["Strategic Key Talent - P0", "Core Tech - Tier 1", "Critical Skill - P0"].includes(talentDesignation);
-  const isHighPerformer = lastRatings.some(r => ["Exceptional Impact", "Exceeds Expectations"].includes(r));
-  const hasLowRating = lastRatings.some(r => ["Needs Improvement", "Unsatisfactory"].includes(r));
-  const allMeetsExpectations = lastRatings.length > 0 && lastRatings.every(r => r === "Meets Expectations");
+  const isHighPerformer = lastRatings.some(r => ["Rating 5", "Rating 4"].includes(r));
+  const hasLowRating = lastRatings.some(r => ["Rating 2", "Rating 1"].includes(r));
+  const allMeetsExpectations = lastRatings.length > 0 && lastRatings.every(r => r === "Rating 3");
 
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setDate(sixMonthsAgo.getDate() - 180);
@@ -61,8 +61,8 @@ export function analyzeRetention(profile) {
   } else if (allMeetsExpectations && numericPercentile > 50) {
     riskLevel = "Low";
     recommendation = "No action recommended; maintain current positioning.";
-    justification = "As a financial steward of organizational resources, we must prioritize limited retention budget for top-tier performers or those significantly below market median. This individual has received multiple 'Meets Expectations' ratings but is already positioned above the 50th percentile, indicating they are appropriately rewarded for their current impact level.";
-    performanceContext = "Consistent 'Meets Expectations' contributor with stable performance.";
+    justification = "As a financial steward of organizational resources, we must prioritize limited retention budget for top-tier performers or those significantly below market median. This individual has received multiple 'Rating 3' ratings but is already positioned above the 50th percentile, indicating they are appropriately rewarded for their current impact level.";
+    performanceContext = "Consistent 'Rating 3' contributor with stable performance.";
   } else if (isHighPerformer && numericPercentile < 40 && !recentPromo) {
     riskLevel = "High";
     recommendation = "Immediate Off-Cycle Equity Refresh (Target 75th Percentile)";

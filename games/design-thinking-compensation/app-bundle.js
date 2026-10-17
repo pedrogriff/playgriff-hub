@@ -8,14 +8,14 @@
     id: "EMP-001",
     name: "Alex Mercer",
     employeeHandle: "a.mercer@emberkeep.io",
-    role: "Principal Distributed Systems Engineer",
-    level: "L6",
+    role: "Lead Distributed Systems Engineer",
+    level: "IC4",
     divisionLead: "Cloud Infrastructure",
     talentDesignation: "Strategic Key Talent - P0",
     peerPercentile: "42nd",
     currentCycleTDR: 350000,
     previousCycleTDR: 330000,
-    lastRatings: ["Exceptional Impact", "Exceeds Expectations"],
+    lastRatings: ["Rating 5", "Rating 4"],
     hasPriorOffCycleAward: false,
     intendedCashFlows: {
       salary: [180000, 180000, 180000, 180000],
@@ -36,7 +36,7 @@
   function analyzeRetention(prof) {
     const { lastRatings = [], talentDesignation = '', intendedCashFlows = {}, currentCycleTDR = 0, previousCycleTDR = 0 } = prof;
 
-    const isExceptional = lastRatings.some(r => ["Exceptional Impact", "Exceeds Expectations"].includes(r)) ||
+    const isExceptional = lastRatings.some(r => ["Rating 5", "Rating 4"].includes(r)) ||
                           ["Strategic Key Talent - P0", "Core Tech - Tier 1", "Critical Skill - P0"].includes(talentDesignation);
     const numericPercentile = parseFloat(String(prof.peerPercentile).replace(/[^0-9.-]+/g, '')) || 0.0;
     const diffPercent = previousCycleTDR > 0 ? ((currentCycleTDR / previousCycleTDR) - 1) * 100 : 0.0;

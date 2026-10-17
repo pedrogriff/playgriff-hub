@@ -69,17 +69,23 @@ const GEO_FACTORS = {
   US_ZONE_3: 0.80,
 };
 
+const ZONE_LABELS = {
+  US_ZONE_1: 'Zone A',
+  US_ZONE_2: 'Zone B',
+  US_ZONE_3: 'Zone C',
+};
+
 const BASE_BANDS = {
-  L3: { min: 140000, mid: 165000, max: 190000, targetEquity: 400, targetBonusPct: 10 },
-  L4: { min: 170000, mid: 200000, max: 230000, targetEquity: 650, targetBonusPct: 15 },
-  L5: { min: 210000, mid: 250000, max: 290000, targetEquity: 900, targetBonusPct: 15 },
-  L6: { min: 260000, mid: 310000, max: 360000, targetEquity: 1400, targetBonusPct: 20 },
-  L7: { min: 320000, mid: 380000, max: 440000, targetEquity: 2200, targetBonusPct: 25 },
-  L8: { min: 400000, mid: 480000, max: 560000, targetEquity: 3500, targetBonusPct: 30 },
+  IC1: { min: 140000, mid: 165000, max: 190000, targetEquity: 400, targetBonusPct: 10 },
+  IC2: { min: 170000, mid: 200000, max: 230000, targetEquity: 650, targetBonusPct: 15 },
+  IC3: { min: 210000, mid: 250000, max: 290000, targetEquity: 900, targetBonusPct: 15 },
+  IC4: { min: 260000, mid: 310000, max: 360000, targetEquity: 1400, targetBonusPct: 20 },
+  IC5: { min: 320000, mid: 380000, max: 440000, targetEquity: 2200, targetBonusPct: 25 },
+  IC6: { min: 400000, mid: 480000, max: 560000, targetEquity: 3500, targetBonusPct: 30 },
 };
 
 function getAdjustedBand(level, geo) {
-  const base = BASE_BANDS[level] || BASE_BANDS.L5;
+  const base = BASE_BANDS[level] || BASE_BANDS.IC3;
   const factor = GEO_FACTORS[geo] || 1.0;
   return {
     min: Math.round(base.min * factor),
@@ -128,7 +134,7 @@ function initEmployeePlanning() {
     const geo = geoSelect ? geoSelect.value : 'US_ZONE_1';
     const band = getAdjustedBand(lvl, geo);
     if (equityHint) {
-      equityHint.textContent = `${lvl} ${geo.replace('_', ' ')} Target: ${band.targetEquity.toLocaleString()} RSUs (Bonus Target: ${band.targetBonusPct}%, Midpoint: $${(band.mid / 1000).toFixed(0)}k)`;
+      equityHint.textContent = `${lvl} ${ZONE_LABELS[geo] || geo} Target: ${band.targetEquity.toLocaleString()} RSUs (Bonus Target: ${band.targetBonusPct}%, Midpoint: $${(band.mid / 1000).toFixed(0)}k)`;
     }
   };
 
@@ -148,9 +154,9 @@ async function runAgenticAudit() {
   const rating = document.getElementById('input-rating').value;
   const currentBase = parseFloat(document.getElementById('input-current-base').value) || 0;
   const proposedBase = parseFloat(document.getElementById('input-proposed-base').value) || 0;
-  const ipf = parseFloat(document.getElementById('input-ipf').value) || 1.0;
-  const cpf = parseFloat(document.getElementById('input-cpf').value) || 1.0;
-  const proposedEquityEl = document.getElementById('input-proposed-rsus') || document.getElementById('input-proposed-gsus');
+  const individualMultiplier = parseFloat(document.getElementById('input-individual-multiplier').value) || 1.0;
+  const companyMultiplier = parseFloat(document.getElementById('input-company-multiplier').value) || 1.0;
+  const proposedEquityEl = document.getElementById('input-proposed-rsus');
   const proposedRSUs = parseInt(proposedEquityEl ? proposedEquityEl.value : '0', 10) || 0;
 
   const band = getAdjustedBand(level, geo);
@@ -158,9 +164,9 @@ async function runAgenticAudit() {
   const equityRatio = (proposedRSUs / band.targetEquity).toFixed(2);
   const velocityPct = currentBase > 0 ? (((proposedBase - currentBase) / currentBase) * 100).toFixed(1) : '0.0';
 
-  // Bonus Formula: Base * TargetBonusPct * IPF * CPF
+  // Bonus Formula: Base * TargetBonusPct * individual multiplier * company multiplier
   const targetBonusAmount = proposedBase * (band.targetBonusPct / 100);
-  const calculatedBonus = Math.round(targetBonusAmount * ipf * cpf);
+  const calculatedBonus = Math.round(targetBonusAmount * individualMultiplier * companyMultiplier);
 
   const feed = document.getElementById('tool-log-feed');
   const badgeState = document.getElementById('badge-decision-state');
@@ -177,7 +183,7 @@ async function runAgenticAudit() {
   // Step 1: Submitted
   setStepActive('step-submitted');
   feed.innerHTML = '';
-  addLog(feed, `[Workflow] Employee Review submitted (${level}, ${geo}, ${rating.replace('_', ' ')}).`, 'log-dim');
+  addLog(feed, `[Workflow] Employee Review submitted (${level}, ${ZONE_LABELS[geo] || geo}, ${rating.replace('_', ' ')}).`, 'log-dim');
 
   await sleep(220);
   setStepActive('step-auditing');
@@ -201,8 +207,8 @@ async function runAgenticAudit() {
 
   // Step 3: Tool 2 - Performance Bonus Formula
   await sleep(220);
-  addLog(feed, `[Tool Invocation] calculate_target_bonus(base=$${proposedBase.toLocaleString()}, target=${band.targetBonusPct}%, IPF=${ipf}x, CPF=${cpf}x) -> $${calculatedBonus.toLocaleString()}`, 'log-tool');
-  addLog(feed, `[Tool Finding: PASS] evaluate_bonus_compliance: Bonus fully funded within 105% CPF guideline`, 'log-success');
+  addLog(feed, `[Tool Invocation] calculate_target_bonus(base=$${proposedBase.toLocaleString()}, target=${band.targetBonusPct}%, individual=${individualMultiplier}x, company=${companyMultiplier}x) -> $${calculatedBonus.toLocaleString()}`, 'log-tool');
+  addLog(feed, `[Tool Finding: PASS] evaluate_bonus_compliance: Bonus fully funded within 105% company multiplier guideline`, 'log-success');
 
   // Step 4: Tool 3 - Equity Guidelines
   await sleep(220);
@@ -210,11 +216,11 @@ async function runAgenticAudit() {
 
   let equityPass = true;
   const ratingMults = {
-    NEEDS_IMPROVEMENT: [0, 0],
-    CONSISTENTLY_MEETS: [0.8, 1.2],
-    EXCEEDS: [1.1, 1.45],
-    STRONGLY_OUTPERFORMS: [1.35, 1.8],
-    SUPERB: [1.7, 2.3],
+    RATING_1: [0, 0],
+    RATING_2: [0.8, 1.2],
+    RATING_3: [1.1, 1.45],
+    RATING_4: [1.35, 1.8],
+    RATING_5: [1.7, 2.3],
   };
   const [minM, maxM] = ratingMults[rating] || [0.8, 1.2];
   const minG = Math.floor(band.targetEquity * minM);
@@ -233,9 +239,9 @@ async function runAgenticAudit() {
   // Step 5: Tool 4 - Velocity & Rating Compliance
   await sleep(220);
   let velocityPass = true;
-  if (rating === 'NEEDS_IMPROVEMENT' && proposedBase > currentBase) {
+  if (rating === 'RATING_1' && proposedBase > currentBase) {
     velocityPass = false;
-    addLog(feed, `[Tool Finding: FAIL] evaluate_base_increase_velocity: Base raise strictly blocked for Needs Improvement`, 'log-error');
+    addLog(feed, `[Tool Finding: FAIL] evaluate_base_increase_velocity: Base raise strictly blocked for Rating 1`, 'log-error');
   } else if (parseFloat(velocityPct) > 20.0) {
     velocityPass = false;
     addLog(feed, `[Tool Finding: FAIL] evaluate_base_increase_velocity: +${velocityPct}% exceeds +20.0% merit velocity cap`, 'log-error');
@@ -251,13 +257,13 @@ async function runAgenticAudit() {
   metricCompaStatus.textContent = `Mid: $${(band.mid / 1000).toFixed(0)}k | Band: [${(band.min / 1000).toFixed(0)}k-${(band.max / 1000).toFixed(0)}k]`;
 
   metricBonus.textContent = `$${calculatedBonus.toLocaleString()}`;
-  metricBonusSub.textContent = `${band.targetBonusPct}% Target × ${(ipf * cpf).toFixed(2)}x Multiplier`;
+  metricBonusSub.textContent = `${band.targetBonusPct}% Target × ${(individualMultiplier * companyMultiplier).toFixed(2)}x Multiplier`;
 
   metricVelocity.textContent = `+${velocityPct}%`;
 
   banner.className = 'decision-banner';
 
-  if (!velocityPass && rating === 'NEEDS_IMPROVEMENT') {
+  if (!velocityPass && rating === 'RATING_1') {
     badgeState.textContent = 'REJECTED';
     badgeState.className = 'badge badge-danger';
     banner.classList.add('rejected');
@@ -301,7 +307,7 @@ function initOfferStudio() {
     const geo = geoSelect ? geoSelect.value : 'US_ZONE_1';
     const band = getAdjustedBand(lvl, geo);
     if (equityHint) {
-      equityHint.textContent = `${lvl} ${geo.replace('_', ' ')} Guideline: ${band.targetEquity.toLocaleString()} RSUs (Max: ${Math.round(band.targetEquity * 1.5).toLocaleString()} RSUs)`;
+      equityHint.textContent = `${lvl} ${ZONE_LABELS[geo] || geo} Guideline: ${band.targetEquity.toLocaleString()} RSUs (Max: ${Math.round(band.targetEquity * 1.5).toLocaleString()} RSUs)`;
     }
   };
 
@@ -356,7 +362,7 @@ async function runOfferAudit() {
 
   const feed = document.getElementById('offer-log-feed');
   feed.innerHTML = '';
-  addLog(feed, `[Offer Workflow] Candidate offer created for ${candidateName} (${level}, ${geo}).`, 'log-dim');
+  addLog(feed, `[Offer Workflow] Candidate offer created for ${candidateName} (${level}, ${ZONE_LABELS[geo] || geo}).`, 'log-dim');
 
   setOfferStepActive('ostep-audit');
   await sleep(200);
@@ -542,7 +548,7 @@ function calculateVestingTranches(totalShares, scheduleType) {
   if (totalShares <= 0) return tranches;
 
   if (scheduleType === 'FRONT_LOADED') {
-    const yearWeights = [0.33, 0.33, 0.22, 0.12];
+    const yearWeights = [0.35, 0.30, 0.20, 0.15];
     const yearShares = distributeIntegerShares(totalShares, yearWeights);
 
     const monthWeights12 = Array(12).fill(1 / 12);

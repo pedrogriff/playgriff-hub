@@ -396,6 +396,7 @@
 
     <!-- ─── TAB: COMPFLOW AGENT (TOTAL REWARDS PLATFORM) ───── -->
     <section class="tab-pane" id="tab-compflow">
+      <p class="sys-meta">Synthetic data. Levels, ratings, zones and offers are invented.</p>
       <div class="section-intro">
         <div class="intro-tag">Distributed Microservice &amp; Agentic AI</div>
         <h2>CompFlow: Total Rewards Planning &amp; Offer Orchestration Platform</h2>
@@ -429,20 +430,20 @@
                 <div class="form-group">
                   <label for="input-level">Job Level</label>
                   <select id="input-level" class="form-control">
-                    <option value="L3">L3 (Software Engineer II)</option>
-                    <option value="L4">L4 (Software Engineer III)</option>
-                    <option value="L5" selected>L5 (Senior Software Engineer)</option>
-                    <option value="L6">L6 (Staff Software Engineer)</option>
-                    <option value="L7">L7 (Senior Staff SWE)</option>
-                    <option value="L8">L8 (Principal SWE)</option>
+                    <option value="IC1">IC1 Associate</option>
+                    <option value="IC2">IC2 Professional</option>
+                    <option value="IC3" selected>IC3 Senior</option>
+                    <option value="IC4">IC4 Lead</option>
+                    <option value="IC5">IC5 Principal</option>
+                    <option value="IC6">IC6 Distinguished</option>
                   </select>
                 </div>
                 <div class="form-group">
                   <label for="input-geo">Location Tier</label>
                   <select id="input-geo" class="form-control">
-                    <option value="US_ZONE_1" selected>US Zone 1 (SF Bay Area, NYC - 100%)</option>
-                    <option value="US_ZONE_2">US Zone 2 (Seattle, Austin - 90%)</option>
-                    <option value="US_ZONE_3">US Zone 3 (Remote, National - 80%)</option>
+                    <option value="US_ZONE_1" selected>US Zone A (100%)</option>
+                    <option value="US_ZONE_2">US Zone B (90%)</option>
+                    <option value="US_ZONE_3">US Zone C (80%)</option>
                   </select>
                 </div>
               </div>
@@ -450,11 +451,11 @@
               <div class="form-group">
                 <label for="input-rating">Performance Rating</label>
                 <select id="input-rating" class="form-control">
-                  <option value="NEEDS_IMPROVEMENT">Needs Improvement</option>
-                  <option value="CONSISTENTLY_MEETS" selected>Consistently Meets</option>
-                  <option value="EXCEEDS">Exceeds Expectations</option>
-                  <option value="STRONGLY_OUTPERFORMS">Strongly Outperforms</option>
-                  <option value="SUPERB">Superb (Top 5%)</option>
+                  <option value="RATING_1">Rating 1</option>
+                  <option value="RATING_2" selected>Rating 2</option>
+                  <option value="RATING_3">Rating 3</option>
+                  <option value="RATING_4">Rating 4</option>
+                  <option value="RATING_5">Rating 5</option>
                 </select>
               </div>
 
@@ -472,19 +473,19 @@
               <!-- Performance Bonus Formula Controls -->
               <div class="form-row">
                 <div class="form-group">
-                  <label for="input-ipf">Individual Perf Factor (IPF)</label>
-                  <input type="number" id="input-ipf" class="form-control" value="1.10" step="0.05" min="0.0" max="2.0">
+                  <label for="input-individual-multiplier">Individual Multiplier</label>
+                  <input type="number" id="input-individual-multiplier" class="form-control" value="1.10" step="0.05" min="0.0" max="2.0">
                 </div>
                 <div class="form-group">
-                  <label for="input-cpf">Company Perf Factor (CPF)</label>
-                  <input type="number" id="input-cpf" class="form-control" value="1.05" step="0.05" min="0.5" max="1.5">
+                  <label for="input-company-multiplier">Company Multiplier</label>
+                  <input type="number" id="input-company-multiplier" class="form-control" value="1.05" step="0.05" min="0.5" max="1.5">
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="input-proposed-rsus">Proposed Equity Refresh (RSUs)</label>
                 <input type="number" id="input-proposed-rsus" class="form-control" value="950" step="50">
-                <span class="field-hint" id="hint-equity-target">L5 Zone 1 Target: 900 RSUs (Bonus Target: 15%)</span>
+                <span class="field-hint" id="hint-equity-target">IC3 Zone A Target: 900 RSUs (Bonus Target: 15%)</span>
               </div>
 
               <button type="submit" id="btn-audit-proposal" class="btn btn-primary btn-block">
@@ -574,20 +575,20 @@
                 <div class="form-group">
                   <label for="offer-level">Job Level</label>
                   <select id="offer-level" class="form-control">
-                    <option value="L3">L3 (Software Engineer II)</option>
-                    <option value="L4">L4 (Software Engineer III)</option>
-                    <option value="L5" selected>L5 (Senior Software Engineer)</option>
-                    <option value="L6">L6 (Staff Software Engineer)</option>
-                    <option value="L7">L7 (Senior Staff SWE)</option>
-                    <option value="L8">L8 (Principal SWE)</option>
+                    <option value="IC1">IC1 Associate</option>
+                    <option value="IC2">IC2 Professional</option>
+                    <option value="IC3" selected>IC3 Senior</option>
+                    <option value="IC4">IC4 Lead</option>
+                    <option value="IC5">IC5 Principal</option>
+                    <option value="IC6">IC6 Distinguished</option>
                   </select>
                 </div>
                 <div class="form-group">
                   <label for="offer-geo">Candidate Location Tier</label>
                   <select id="offer-geo" class="form-control">
-                    <option value="US_ZONE_1" selected>US Zone 1 (SF/NYC - 100%)</option>
-                    <option value="US_ZONE_2">US Zone 2 (Seattle/Austin - 90%)</option>
-                    <option value="US_ZONE_3">US Zone 3 (Remote/National - 80%)</option>
+                    <option value="US_ZONE_1" selected>US Zone A (100%)</option>
+                    <option value="US_ZONE_2">US Zone B (90%)</option>
+                    <option value="US_ZONE_3">US Zone C (80%)</option>
                   </select>
                 </div>
               </div>
@@ -607,7 +608,7 @@
               <div class="form-group">
                 <label for="offer-equity">New Hire Equity Grant (RSUs)</label>
                 <input type="number" id="offer-equity" class="form-control" value="1000" step="50">
-                <span class="field-hint" id="offer-equity-hint">L5 Zone 1 Guideline: 900 RSUs (Max: 1,350 RSUs)</span>
+                <span class="field-hint" id="offer-equity-hint">IC3 Zone A Guideline: 900 RSUs (Max: 1,350 RSUs)</span>
               </div>
 
               <button type="submit" id="btn-audit-offer" class="btn btn-primary btn-block">
@@ -655,7 +656,7 @@
             <div class="tool-log-container" style="margin-top: 14px;">
               <div class="tool-log-header">Offer Policy Verification Log</div>
               <div class="tool-log-feed" id="offer-log-feed">
-                <div class="log-entry log-dim">[System Ready] Configured with location tier factors (Zone 1: 1.0, Zone 2: 0.9, Zone 3: 0.8).</div>
+                <div class="log-entry log-dim">[System Ready] Configured with location tier factors (Zone A: 1.0, Zone B: 0.9, Zone C: 0.8).</div>
               </div>
             </div>
           </div>
@@ -686,7 +687,7 @@
             <!-- Metric 2: Bonus Pool -->
             <div class="budget-meter-item">
               <div class="budget-meter-header">
-                <div><strong>Global Engineering Performance Bonus Pool Funding (105% CPF)</strong></div>
+                <div><strong>Bonus Pool Funding (105% Company Multiplier)</strong></div>
                 <div><span id="budget-bonus-spent">$252,000</span> / <span id="budget-bonus-allocated">$240,000</span> (<strong id="budget-bonus-pct">105.0%</strong>)</div>
               </div>
               <div class="budget-meter-bar">
@@ -818,7 +819,7 @@
           <div class="form-group">
             <label for="input-schedule-type">Vesting Schedule Strategy</label>
             <select id="input-schedule-type" class="form-control">
-              <option value="FRONT_LOADED">Front-Loaded Enterprise (33% / 33% / 22% / 12% Monthly)</option>
+              <option value="FRONT_LOADED">Front-Loaded Example (35% / 30% / 20% / 15% Monthly)</option>
               <option value="CLIFF_4YR">Standard 4-Year (25% 1-Yr Cliff + Monthly)</option>
               <option value="EVEN_MONTHLY">Even Monthly (1/48th per month)</option>
               <option value="EVEN_QUARTERLY">Even Quarterly (1/16th per quarter)</option>
@@ -835,10 +836,10 @@
               <!-- Rendered via JS -->
             </div>
             <div class="chart-legend">
-              <span class="legend-item"><span class="legend-dot dot-y1"></span> Year 1 (33%)</span>
-              <span class="legend-item"><span class="legend-dot dot-y2"></span> Year 2 (33%)</span>
-              <span class="legend-item"><span class="legend-dot dot-y3"></span> Year 3 (22%)</span>
-              <span class="legend-item"><span class="legend-dot dot-y4"></span> Year 4 (12%)</span>
+              <span class="legend-item"><span class="legend-dot dot-y1"></span> Year 1 (35%)</span>
+              <span class="legend-item"><span class="legend-dot dot-y2"></span> Year 2 (30%)</span>
+              <span class="legend-item"><span class="legend-dot dot-y3"></span> Year 3 (20%)</span>
+              <span class="legend-item"><span class="legend-dot dot-y4"></span> Year 4 (15%)</span>
             </div>
           </div>
         </div>

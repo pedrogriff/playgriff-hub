@@ -53,8 +53,8 @@ INSERT INTO public.employees (
 ) VALUES (
   'a.mercer@emberkeep.io',
   'Alex Mercer',
-  'Principal Distributed Systems Engineer',
-  'L6',
+  'Lead Distributed Systems Engineer',
+  'IC4',
   'Cloud Infrastructure',
   'Strategic Key Talent - P0',
   '42nd',
