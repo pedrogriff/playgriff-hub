@@ -179,12 +179,12 @@ const CompFlowApp = {
   getMarketBenchmark(level, geo) {
     const geoMult = this.state.geoFactors[geo] || 1.0;
     const baseMap = {
-      IC1: { p10: 135000, p25: 150000, p50: 165000, p75: 180000, p90: 195000, radford: 'P1' },
-      IC2: { p10: 165000, p25: 185000, p50: 205000, p75: 225000, p90: 245000, radford: 'P2' },
-      IC3: { p10: 205000, p25: 230000, p50: 255000, p75: 280000, p90: 305000, radford: 'P3' },
-      IC4: { p10: 255000, p25: 285000, p50: 315000, p75: 350000, p90: 385000, radford: 'P4' },
-      IC5: { p10: 315000, p25: 355000, p50: 395000, p75: 440000, p90: 490000, radford: 'P5' },
-      IC6: { p10: 395000, p25: 445000, p50: 500000, p75: 560000, p90: 630000, radford: 'P6' },
+      IC1: { p10: 135000, p25: 150000, p50: 165000, p75: 180000, p90: 195000, surveyLevel: 'P1' },
+      IC2: { p10: 165000, p25: 185000, p50: 205000, p75: 225000, p90: 245000, surveyLevel: 'P2' },
+      IC3: { p10: 205000, p25: 230000, p50: 255000, p75: 280000, p90: 305000, surveyLevel: 'P3' },
+      IC4: { p10: 255000, p25: 285000, p50: 315000, p75: 350000, p90: 385000, surveyLevel: 'P4' },
+      IC5: { p10: 315000, p25: 355000, p50: 395000, p75: 440000, p90: 490000, surveyLevel: 'P5' },
+      IC6: { p10: 395000, p25: 445000, p50: 500000, p75: 560000, p90: 630000, surveyLevel: 'P6' },
     };
     const b = baseMap[level] || baseMap.IC3;
     return {
@@ -193,7 +193,7 @@ const CompFlowApp = {
       p50: Math.round(b.p50 * geoMult),
       p75: Math.round(b.p75 * geoMult),
       p90: Math.round(b.p90 * geoMult),
-      radford: b.radford,
+      surveyLevel: b.surveyLevel,
     };
   },
 
@@ -478,7 +478,7 @@ const CompFlowApp = {
     const mSpread = bench.p90 - bench.p10;
     const mPenetration = mSpread > 0 ? (((emp.proposedBase - bench.p10) / mSpread) * 100).toFixed(1) : '50.0';
 
-    document.getElementById('drw-market-percentile-badge').textContent = `${mPct}th Percentile (${bench.radford})`;
+    document.getElementById('drw-market-percentile-badge').textContent = `${mPct}th Percentile (${bench.surveyLevel})`;
     document.getElementById('drw-market-bar-fill').style.width = `${mPct}%`;
     document.getElementById('drw-market-marker').style.left = `${mPct}%`;
     document.getElementById('drw-market-p10').textContent = `$${(bench.p10 / 1000).toFixed(0)}k`;
@@ -851,7 +851,7 @@ const CompFlowApp = {
       card.className = 'band-card';
       card.innerHTML = `
         <div class="band-card-header">
-          <div class="band-card-title">${lvl} SWE (Radford ${bench.radford})</div>
+          <div class="band-card-title">${lvl} SWE (Survey Provider A ${bench.surveyLevel})</div>
           <span class="badge badge-neutral">${this.state.zoneLabels[geo] || geo}</span>
         </div>
         <div class="band-range-visual">
@@ -1144,8 +1144,17 @@ const CompFlowApp = {
       return null;
     },
 
+    getApiKey() {
+      try {
+        return localStorage.getItem('compflowApiKey') || '';
+      } catch (e) {
+        return '';
+      }
+    },
+
     async triggerLiveDolEtl(dryRun = false, limit = 1728) {
-      if (this.mode !== 'LIVE_API') return null;
+      const apiKey = this.getApiKey();
+      if (this.mode !== 'LIVE_API' || !apiKey) return null;
       try {
         const ctrl = new AbortController();
         const timeout = setTimeout(() => ctrl.abort(), 10000);
@@ -1153,7 +1162,7 @@ const CompFlowApp = {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer compflow-master-service-key-2026'
+            'Authorization': `Bearer ${apiKey}`
           },
           body: JSON.stringify({ dry_run: dryRun, limit_records: limit, fiscal_year: 2026 }),
           signal: ctrl.signal,
@@ -1277,7 +1286,7 @@ const CompFlowApp = {
       btnTrigger.disabled = true;
       appendLog('Initiating US Department of Labor OFLC H-1B stream ingestion...', 'terminal-highlight');
 
-      if (this.apiGateway.mode === 'LIVE_API') {
+      if (this.apiGateway.mode === 'LIVE_API' && this.apiGateway.getApiKey()) {
         appendLog(`Connecting to live Talos microservice: POST ${this.apiGateway.baseUrl}/api/v1/benchmarks/etl/ingest-live-dol`, 'terminal-line');
         const report = await this.apiGateway.triggerLiveDolEtl(false, 1728);
         if (report) {
@@ -1535,10 +1544,10 @@ const CompFlowApp = {
         `Front-Loaded Equity Advantage: Our front-loaded 35/30/20/15 schedule vests 65% within the first 24 months, accelerating liquidity compared to ${compName}'s linear schedule.`,
         fourYrDelta >= 0
           ? `Superior 4-Year Cumulative TDC: Our package delivers $${Math.round(fourYrDelta).toLocaleString()} more in total direct compensation over 4 years.`
-          : `Near-Term Cash Flow Priority: While 4-year figures are competitive, our Year 1 cash flow guarantees immediate financial upside with less reliance on backend vesting.`,
+          : `Near-Term Cash Flow Priority: While 4-year figures are competitive, our front-loaded schedule vests 35% of the equity in Year 1, so less of the package waits on later vesting.`,
         yr1Delta >= 0
           ? `Immediate Year 1 Outperformance: You realize $${Math.round(yr1Delta).toLocaleString()} higher take-home compensation in your first 12 months.`
-          : `Guaranteed Base Salary Stability: High cash proportion provides predictable monthly earnings independent of equity market cycles.`
+          : `Base Salary Stability: Base salary is fixed cash, so it does not move with the stock price.`
       ];
 
       if (compForfeit > 0) {

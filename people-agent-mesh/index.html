@@ -611,7 +611,7 @@
           <span class="badge badge-green">SHA-256 Checksum Verified</span>
         </div>
         <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-          Strict monotonic sequence numbers guarantee deterministic replay. Even after pod kills, the engine replays from sequence #1 without making external API calls.
+          Strictly increasing sequence numbers fix the replay order. After a pod is killed, the engine replays from sequence #1 with recorded results, without new external API calls.
         </p>
         <div style="overflow-x: auto;">
           <table style="width: 100%; font-size: 0.8rem; border-collapse: collapse; text-align: left;">
