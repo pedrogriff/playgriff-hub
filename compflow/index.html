@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CompFlow Platform — Enterprise Total Rewards & Calibration Suite</title>
+  <title>CompFlow demo | playgriff.me</title>
   <meta name="description" content="Enterprise Total Rewards Calibration & Offer Orchestration Platform with deterministic AI audits, multi-tier salary bands, and real-time budget depletion tracking.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="style.css?v=20260831v3">
 </head>
 <body class="enterprise-app">
+  <p class="sys-meta" style="padding: 6px 20px; font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">Synthetic data. Levels, ratings, zones and offers are invented.</p>
 
   <!-- ─── TOP GLOBAL APPLICATION BAR ────────────────────────── -->
   <header class="app-topbar">
@@ -24,7 +25,6 @@
         <div class="brand-icon-box">⚡</div>
         <div class="brand-text">
           <span class="brand-name">CompFlow <span class="brand-suite">Platform</span></span>
-          <span class="brand-env-pill">PROD • FY2026</span>
         </div>
       </div>
     </div>
@@ -98,7 +98,7 @@
       <!-- Metric 2: Bonus Pool -->
       <div class="budget-gauge-card">
         <div class="gauge-meta">
-          <span class="gauge-label">Performance Bonus Pool (105% CPF)</span>
+          <span class="gauge-label">Performance Bonus Pool (105% Company Multiplier)</span>
           <span class="gauge-numbers"><strong id="hdr-bonus-spent">$252,000</strong> / <span id="hdr-bonus-alloc">$240,000</span></span>
         </div>
         <div class="gauge-bar-bg">
@@ -190,7 +190,7 @@
         <div class="view-header">
           <div>
             <h1 class="view-title">Team Compensation Calibration Grid</h1>
-            <p class="view-subtitle">Calibrate merit salary increases, performance bonuses (Base × Target Bonus % × IPF × CPF), and equity refreshes with deterministic AI policy governance.</p>
+            <p class="view-subtitle">Calibrate merit salary increases, performance bonuses (Base × Target Bonus % × Individual Multiplier × Company Multiplier), and equity refreshes with deterministic AI policy governance.</p>
           </div>
           <div class="view-actions">
             <button class="btn btn-secondary" id="btn-batch-audit">⚡ Batch Run AI Audits</button>
@@ -207,12 +207,12 @@
           </div>
           <div class="toolbar-filters">
             <select id="filter-level" class="filter-select">
-              <option value="ALL">All Levels (L3 - L8)</option>
-              <option value="L3">L3 (SWE II)</option>
-              <option value="L4">L4 (SWE III)</option>
-              <option value="L5">L5 (Senior SWE)</option>
-              <option value="L6">L6 (Staff SWE)</option>
-              <option value="L7">L7 (Principal)</option>
+              <option value="ALL">All Levels (IC1 - IC6)</option>
+              <option value="IC1">IC1 Associate</option>
+              <option value="IC2">IC2 Professional</option>
+              <option value="IC3">IC3 Senior</option>
+              <option value="IC4">IC4 Lead</option>
+              <option value="IC5">IC5 Principal</option>
             </select>
             <select id="filter-status" class="filter-select">
               <option value="ALL">All Governance Statuses</option>
@@ -223,11 +223,11 @@
             </select>
             <select id="filter-rating" class="filter-select">
               <option value="ALL">All Ratings</option>
-              <option value="SUPERB">Superb (Top 5%)</option>
-              <option value="STRONGLY_OUTPERFORMS">Strongly Outperforms</option>
-              <option value="EXCEEDS">Exceeds Expectations</option>
-              <option value="CONSISTENTLY_MEETS">Consistently Meets</option>
-              <option value="NEEDS_IMPROVEMENT">Needs Improvement</option>
+              <option value="RATING_5">Rating 5</option>
+              <option value="RATING_4">Rating 4</option>
+              <option value="RATING_3">Rating 3</option>
+              <option value="RATING_2">Rating 2</option>
+              <option value="RATING_1">Rating 1</option>
             </select>
           </div>
         </div>
@@ -244,7 +244,7 @@
                 <th>Current Base</th>
                 <th>Compa-Ratio</th>
                 <th>Proposed Base ($) / Raise</th>
-                <th>Bonus (IPF/CPF)</th>
+                <th>Bonus (Individual Multiplier)</th>
                 <th>Equity Refresh</th>
                 <th>Governance Status</th>
                 <th>Audit Action</th>
@@ -347,16 +347,16 @@
         <div class="view-header">
           <div>
             <h1 class="view-title">Enterprise Salary Bands &amp; Market Benchmark Matrix</h1>
-            <p class="view-subtitle">Explore verified compensation bands across job levels (L3 to L8) with 5-tier percentiles (P10–P90) sourced from US DOL (H-1B/LCA) and BLS OEWS datasets.</p>
+            <p class="view-subtitle">Explore verified compensation bands across job levels (IC1 to IC6) with 5-tier percentiles (P10–P90) sourced from US DOL (H-1B/LCA) and BLS OEWS datasets.</p>
           </div>
           <div class="view-actions">
             <div class="benchmark-provenance-pill">
               <span>🏛️ DOL OFLC + BLS OEWS • Radford P1–P6 • 4.0% Aged</span>
             </div>
             <div class="geo-tab-group">
-              <button class="geo-tab-btn active" data-geo="US_ZONE_1">Zone 1 (SF / NYC - 100%)</button>
-              <button class="geo-tab-btn" data-geo="US_ZONE_2">Zone 2 (Seattle / Austin - 90%)</button>
-              <button class="geo-tab-btn" data-geo="US_ZONE_3">Zone 3 (Remote / National - 80%)</button>
+              <button class="geo-tab-btn active" data-geo="US_ZONE_1">Zone A (100%)</button>
+              <button class="geo-tab-btn" data-geo="US_ZONE_2">Zone B (90%)</button>
+              <button class="geo-tab-btn" data-geo="US_ZONE_3">Zone C (80%)</button>
             </div>
           </div>
         </div>
@@ -444,27 +444,27 @@
             </div>
             <div class="rating-dist-bars">
               <div class="rating-bar-row">
-                <div class="rating-name">Superb (Top 5%)</div>
+                <div class="rating-name">Rating 5</div>
                 <div class="rating-meter"><div class="rating-fill fill-emerald" style="width: 85%;"></div></div>
                 <div class="rating-val">+12.5% avg</div>
               </div>
               <div class="rating-bar-row">
-                <div class="rating-name">Strongly Outperforms</div>
+                <div class="rating-name">Rating 4</div>
                 <div class="rating-meter"><div class="rating-fill fill-blue" style="width: 65%;"></div></div>
                 <div class="rating-val">+9.0% avg</div>
               </div>
               <div class="rating-bar-row">
-                <div class="rating-name">Exceeds Expectations</div>
+                <div class="rating-name">Rating 3</div>
                 <div class="rating-meter"><div class="rating-fill fill-blue" style="width: 48%;"></div></div>
                 <div class="rating-val">+6.5% avg</div>
               </div>
               <div class="rating-bar-row">
-                <div class="rating-name">Consistently Meets</div>
+                <div class="rating-name">Rating 2</div>
                 <div class="rating-meter"><div class="rating-fill fill-amber" style="width: 32%;"></div></div>
                 <div class="rating-val">+4.0% avg</div>
               </div>
               <div class="rating-bar-row">
-                <div class="rating-name">Needs Improvement</div>
+                <div class="rating-name">Rating 1</div>
                 <div class="rating-meter"><div class="rating-fill fill-rose" style="width: 0%;"></div></div>
                 <div class="rating-val">+0.0% (Cap)</div>
               </div>
@@ -552,7 +552,7 @@
               <div class="endpoint-row">
                 <div class="ep-left">
                   <span class="method-badge get">GET</span>
-                  <code>/api/v1/benchmarks/lookup?level=L5&amp;geo=US_ZONE_1</code>
+                  <code>/api/v1/benchmarks/lookup?level=IC3&amp;geo=US_ZONE_1</code>
                 </div>
                 <button class="btn btn-xs btn-outline test-ep-btn" data-ep="benchmarks">Lookup Benchmark</button>
               </div>
@@ -616,7 +616,7 @@
     <div class="drawer-header">
       <div>
         <h2 class="drawer-title" id="drawer-emp-name">Employee Profile</h2>
-        <span class="drawer-subtitle" id="drawer-emp-role">L5 Senior SWE • Infrastructure</span>
+        <span class="drawer-subtitle" id="drawer-emp-role">IC3 Senior SWE • Infrastructure</span>
       </div>
       <button class="drawer-close-btn" id="btn-close-drawer">✕</button>
     </div>
@@ -677,19 +677,19 @@
           <div class="form-group">
             <label for="drw-input-rating">Performance Rating</label>
             <select id="drw-input-rating" class="form-control">
-              <option value="SUPERB">Superb</option>
-              <option value="STRONGLY_OUTPERFORMS">Strongly Outperforms</option>
-              <option value="EXCEEDS">Exceeds</option>
-              <option value="CONSISTENTLY_MEETS">Consistently Meets</option>
-              <option value="NEEDS_IMPROVEMENT">Needs Improvement</option>
+              <option value="RATING_5">Rating 5</option>
+              <option value="RATING_4">Rating 4</option>
+              <option value="RATING_3">Rating 3</option>
+              <option value="RATING_2">Rating 2</option>
+              <option value="RATING_1">Rating 1</option>
             </select>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="drw-input-ipf">Individual Perf Factor (IPF)</label>
-            <input type="number" id="drw-input-ipf" class="form-control" step="0.05" min="0.0" max="2.0">
+            <label for="drw-input-individual-multiplier">Individual Multiplier</label>
+            <input type="number" id="drw-input-individual-multiplier" class="form-control" step="0.05" min="0.0" max="2.0">
           </div>
           <div class="form-group">
             <label for="drw-input-equity">Equity Refresh (RSUs)</label>
@@ -742,20 +742,20 @@
           <div class="form-group">
             <label for="m-job-level">Job Level</label>
             <select id="m-job-level" class="form-control">
-              <option value="L3">L3 (Software Engineer II)</option>
-              <option value="L4">L4 (Software Engineer III)</option>
-              <option value="L5" selected>L5 (Senior Software Engineer)</option>
-              <option value="L6">L6 (Staff Software Engineer)</option>
-              <option value="L7">L7 (Senior Staff SWE)</option>
-              <option value="L8">L8 (Principal SWE)</option>
+              <option value="IC1">IC1 Associate</option>
+              <option value="IC2">IC2 Professional</option>
+              <option value="IC3" selected>IC3 Senior</option>
+              <option value="IC4">IC4 Lead</option>
+              <option value="IC5">IC5 Principal</option>
+              <option value="IC6">IC6 Distinguished</option>
             </select>
           </div>
           <div class="form-group">
             <label for="m-geo-tier">Location Tier</label>
             <select id="m-geo-tier" class="form-control">
-              <option value="US_ZONE_1" selected>US Zone 1 (SF/NYC - 100%)</option>
-              <option value="US_ZONE_2">US Zone 2 (Seattle/Austin - 90%)</option>
-              <option value="US_ZONE_3">US Zone 3 (Remote/National - 80%)</option>
+              <option value="US_ZONE_1" selected>US Zone A (100%)</option>
+              <option value="US_ZONE_2">US Zone B (90%)</option>
+              <option value="US_ZONE_3">US Zone C (80%)</option>
             </select>
           </div>
         </div>
@@ -826,18 +826,18 @@
             </div>
             <select id="sim-competitor-preset" class="form-control form-control-sm">
               <option value="custom">Preset: Custom Employer</option>
-              <option value="stripe" selected>Preset: Stripe (Standard 25%)</option>
-              <option value="datadog">Preset: Datadog (Standard 25%)</option>
-              <option value="snowflake">Preset: Snowflake (Standard 25%)</option>
-              <option value="openai">Preset: OpenAI (High Cash, Flat)</option>
-              <option value="backloaded">Preset: Back-Loaded (5/15/40/40)</option>
+              <option value="competitor_a" selected>Preset: Competitor A (Standard 25%)</option>
+              <option value="competitor_b">Preset: Competitor B (Standard 25%)</option>
+              <option value="competitor_c">Preset: Competitor C (Standard 25%)</option>
+              <option value="competitor_d">Preset: Competitor D (High Cash, Flat)</option>
+              <option value="competitor_e">Preset: Competitor E, back-loaded 5 / 15 / 40 / 40</option>
             </select>
           </div>
 
           <div class="sim-form-grid">
             <div class="form-group">
               <label for="sim-comp-name">Competitor Name</label>
-              <input type="text" id="sim-comp-name" class="form-control" value="Stripe">
+              <input type="text" id="sim-comp-name" class="form-control" value="Competitor A">
             </div>
             <div class="form-group">
               <label for="sim-comp-base">Competing Base ($/yr)</label>
@@ -860,7 +860,7 @@
               <select id="sim-comp-schedule" class="form-control">
                 <option value="STANDARD_FOUR_YEAR_EQUAL_25" selected>Standard (25% / 25% / 25% / 25%)</option>
                 <option value="BACK_LOADED_5_15_40_40">Back-Loaded (5% / 15% / 40% / 40%)</option>
-                <option value="ENTERPRISE_FRONT_LOADED_33_33_22_12">Front-Loaded (33% / 33% / 22% / 12%)</option>
+                <option value="ENTERPRISE_FRONT_LOADED_35_30_20_15">Front-Loaded (35% / 30% / 20% / 15%)</option>
               </select>
             </div>
             <div class="form-group col-span-2">
@@ -877,7 +877,7 @@
               <span class="badge badge-primary">Our Company</span>
               <h4>Proposed Counter Levers</h4>
             </div>
-            <span class="badge badge-success">Enterprise 33/33/22/12 Vesting</span>
+            <span class="badge badge-success">Front-Loaded 35/30/20/15 Vesting</span>
           </div>
 
           <div class="sim-levers-container">

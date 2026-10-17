@@ -18,18 +18,24 @@ const CompFlowApp = {
 
     // Base Benchmark Bands
     bands: {
-      L3: { min: 140000, mid: 165000, max: 190000, targetEquity: 400, bonusPct: 10 },
-      L4: { min: 170000, mid: 200000, max: 230000, targetEquity: 650, bonusPct: 15 },
-      L5: { min: 210000, mid: 250000, max: 290000, targetEquity: 900, bonusPct: 15 },
-      L6: { min: 260000, mid: 310000, max: 360000, targetEquity: 1400, bonusPct: 20 },
-      L7: { min: 320000, mid: 380000, max: 440000, targetEquity: 2200, bonusPct: 25 },
-      L8: { min: 400000, mid: 480000, max: 560000, targetEquity: 3500, bonusPct: 30 },
+      IC1: { min: 140000, mid: 165000, max: 190000, targetEquity: 400, bonusPct: 10 },
+      IC2: { min: 170000, mid: 200000, max: 230000, targetEquity: 650, bonusPct: 15 },
+      IC3: { min: 210000, mid: 250000, max: 290000, targetEquity: 900, bonusPct: 15 },
+      IC4: { min: 260000, mid: 310000, max: 360000, targetEquity: 1400, bonusPct: 20 },
+      IC5: { min: 320000, mid: 380000, max: 440000, targetEquity: 2200, bonusPct: 25 },
+      IC6: { min: 400000, mid: 480000, max: 560000, targetEquity: 3500, bonusPct: 30 },
     },
 
     geoFactors: {
       US_ZONE_1: 1.0,
       US_ZONE_2: 0.90,
       US_ZONE_3: 0.80,
+    },
+
+    zoneLabels: {
+      US_ZONE_1: 'Zone A',
+      US_ZONE_2: 'Zone B',
+      US_ZONE_3: 'Zone C',
     },
 
     // Department Envelope Budget
@@ -41,35 +47,35 @@ const CompFlowApp = {
       allocatedMerit: 320000,  // ~8.5% total envelope
       allocatedBonus: 750000,  // Baseline 20% target across 15 engineers
       allocatedEquity: 36000,  // RSUs
-      cpf: 1.05,               // Company Performance Factor
+      companyMultiplier: 1.05, // Company multiplier
     },
 
     // 15 Team Members Roster
     employees: [
-      { id: 'EMP-1001', name: 'Alex Rivera', role: 'Staff Infrastructure Engineer', level: 'L6', geo: 'US_ZONE_1', rating: 'SUPERB', currentBase: 305000, proposedBase: 335000, ipf: 1.30, equity: 1800, status: 'AUTO_APPROVED', selected: true, notes: 'Designed zero-downtime distributed Redis replication cluster.' },
-      { id: 'EMP-1002', name: 'Sarah Kowalski', role: 'Senior Systems Engineer', level: 'L5', geo: 'US_ZONE_1', rating: 'EXCEEDS', currentBase: 235000, proposedBase: 252000, ipf: 1.15, equity: 1100, status: 'AUTO_APPROVED', selected: true, notes: 'Kernel eBPF telemetry performance improvements.' },
-      { id: 'EMP-1003', name: 'David Zhang', role: 'Staff Distributed Systems Engineer', level: 'L6', geo: 'US_ZONE_1', rating: 'STRONGLY_OUTPERFORMS', currentBase: 310000, proposedBase: 345000, ipf: 1.20, equity: 1600, status: 'AUTO_APPROVED', selected: true, notes: 'Led multi-region data persistence migration.' },
-      { id: 'EMP-1004', name: 'Elena Rostova', role: 'Principal Architect', level: 'L7', geo: 'US_ZONE_1', rating: 'SUPERB', currentBase: 380000, proposedBase: 425000, ipf: 1.35, equity: 2900, status: 'VP_EXCEPTION_REQUIRED', selected: true, notes: 'Core architecture overhaul; raise +11.8% and high equity grant.' },
-      { id: 'EMP-1005', name: 'Marcus Sterling', role: 'Senior Reliability Engineer', level: 'L5', geo: 'US_ZONE_2', rating: 'CONSISTENTLY_MEETS', currentBase: 215000, proposedBase: 226000, ipf: 1.00, equity: 850, status: 'AUTO_APPROVED', selected: true, notes: 'Solid platform on-call reliability execution.' },
-      { id: 'EMP-1006', name: 'Priya Sharma', role: 'Software Engineer III', level: 'L4', geo: 'US_ZONE_1', rating: 'STRONGLY_OUTPERFORMS', currentBase: 195000, proposedBase: 212000, ipf: 1.20, equity: 850, status: 'AUTO_APPROVED', selected: true, notes: 'Built automated canary deployment service.' },
-      { id: 'EMP-1007', name: 'Liam Dubois', role: 'Software Engineer II', level: 'L3', geo: 'US_ZONE_3', rating: 'CONSISTENTLY_MEETS', currentBase: 130000, proposedBase: 136000, ipf: 1.00, equity: 350, status: 'AUTO_APPROVED', selected: true, notes: 'Fast onboarding and bug fixes in queue workers.' },
-      { id: 'EMP-1008', name: 'Hannah Vogel', role: 'Senior Security Systems SWE', level: 'L5', geo: 'US_ZONE_1', rating: 'EXCEEDS', currentBase: 240000, proposedBase: 258000, ipf: 1.15, equity: 1050, status: 'AUTO_APPROVED', selected: true, notes: 'Hardened Kubernetes SPIFFE/mTLS certificates.' },
-      { id: 'EMP-1009', name: 'Kai Tanaka', role: 'Software Engineer III', level: 'L4', geo: 'US_ZONE_2', rating: 'CONSISTENTLY_MEETS', currentBase: 180000, proposedBase: 187000, ipf: 1.00, equity: 600, status: 'AUTO_APPROVED', selected: true, notes: 'Consistent contributions to CI/CD pipeline.' },
-      { id: 'EMP-1010', name: 'Julia Novak', role: 'Senior SWE (Edge & Compute)', level: 'L5', geo: 'US_ZONE_1', rating: 'NEEDS_IMPROVEMENT', currentBase: 230000, proposedBase: 230000, ipf: 0.00, equity: 0, status: 'AUTO_APPROVED', selected: true, notes: 'Base salary frozen per total rewards performance policy.' },
-      { id: 'EMP-1011', name: 'Noah Al-Mansoor', role: 'Staff Reliability Architect', level: 'L6', geo: 'US_ZONE_1', rating: 'STRONGLY_OUTPERFORMS', currentBase: 295000, proposedBase: 320000, ipf: 1.25, equity: 1500, status: 'AUTO_APPROVED', selected: true, notes: 'Led cross-functional disaster recovery exercises.' },
-      { id: 'EMP-1012', name: 'Olivia Santos', role: 'Senior Observability Engineer', level: 'L5', geo: 'US_ZONE_3', rating: 'SUPERB', currentBase: 200000, proposedBase: 228000, ipf: 1.30, equity: 1400, status: 'VP_EXCEPTION_REQUIRED', selected: true, notes: 'Massive impact on Prometheus metric scalability (+14% raise).' },
-      { id: 'EMP-1013', name: 'Gabriel Dubois', role: 'Software Engineer II', level: 'L3', geo: 'US_ZONE_1', rating: 'EXCEEDS', currentBase: 160000, proposedBase: 172000, ipf: 1.10, equity: 500, status: 'AUTO_APPROVED', selected: true, notes: 'High velocity contributions to SDK client.' },
-      { id: 'EMP-1014', name: 'Quinn Larsson', role: 'Staff Security Engineer', level: 'L6', geo: 'US_ZONE_2', rating: 'CONSISTENTLY_MEETS', currentBase: 275000, proposedBase: 286000, ipf: 1.00, equity: 1250, status: 'AUTO_APPROVED', selected: true, notes: 'Solid maintenance of vulnerability scanner pipelines.' },
-      { id: 'EMP-1015', name: 'Tara Mendoza', role: 'Software Engineer III', level: 'L4', geo: 'US_ZONE_1', rating: 'STRONGLY_OUTPERFORMS', currentBase: 190000, proposedBase: 208000, ipf: 1.25, equity: 850, status: 'AUTO_APPROVED', selected: true, notes: 'Re-architected distributed tracing collector.' },
+      { id: 'EMP-1001', name: 'Alex Rivera', role: 'Lead Infrastructure Engineer', level: 'IC4', geo: 'US_ZONE_1', rating: 'RATING_5', currentBase: 305000, proposedBase: 335000, individualMultiplier: 1.30, equity: 1800, status: 'AUTO_APPROVED', selected: true, notes: 'Designed zero-downtime distributed Redis replication cluster.' },
+      { id: 'EMP-1002', name: 'Sarah Kowalski', role: 'Senior Systems Engineer', level: 'IC3', geo: 'US_ZONE_1', rating: 'RATING_3', currentBase: 235000, proposedBase: 252000, individualMultiplier: 1.15, equity: 1100, status: 'AUTO_APPROVED', selected: true, notes: 'Kernel eBPF telemetry performance improvements.' },
+      { id: 'EMP-1003', name: 'David Zhang', role: 'Lead Distributed Systems Engineer', level: 'IC4', geo: 'US_ZONE_1', rating: 'RATING_4', currentBase: 310000, proposedBase: 345000, individualMultiplier: 1.20, equity: 1600, status: 'AUTO_APPROVED', selected: true, notes: 'Led multi-region data persistence migration.' },
+      { id: 'EMP-1004', name: 'Elena Rostova', role: 'Principal Architect', level: 'IC5', geo: 'US_ZONE_1', rating: 'RATING_5', currentBase: 380000, proposedBase: 425000, individualMultiplier: 1.35, equity: 2900, status: 'VP_EXCEPTION_REQUIRED', selected: true, notes: 'Core architecture overhaul; raise +11.8% and high equity grant.' },
+      { id: 'EMP-1005', name: 'Marcus Sterling', role: 'Senior Reliability Engineer', level: 'IC3', geo: 'US_ZONE_2', rating: 'RATING_2', currentBase: 215000, proposedBase: 226000, individualMultiplier: 1.00, equity: 850, status: 'AUTO_APPROVED', selected: true, notes: 'Solid platform on-call reliability execution.' },
+      { id: 'EMP-1006', name: 'Priya Sharma', role: 'Software Engineer', level: 'IC2', geo: 'US_ZONE_1', rating: 'RATING_4', currentBase: 195000, proposedBase: 212000, individualMultiplier: 1.20, equity: 850, status: 'AUTO_APPROVED', selected: true, notes: 'Built automated canary deployment service.' },
+      { id: 'EMP-1007', name: 'Liam Dubois', role: 'Associate Software Engineer', level: 'IC1', geo: 'US_ZONE_3', rating: 'RATING_2', currentBase: 130000, proposedBase: 136000, individualMultiplier: 1.00, equity: 350, status: 'AUTO_APPROVED', selected: true, notes: 'Fast onboarding and bug fixes in queue workers.' },
+      { id: 'EMP-1008', name: 'Hannah Vogel', role: 'Senior Security Systems SWE', level: 'IC3', geo: 'US_ZONE_1', rating: 'RATING_3', currentBase: 240000, proposedBase: 258000, individualMultiplier: 1.15, equity: 1050, status: 'AUTO_APPROVED', selected: true, notes: 'Hardened Kubernetes SPIFFE/mTLS certificates.' },
+      { id: 'EMP-1009', name: 'Kai Tanaka', role: 'Software Engineer', level: 'IC2', geo: 'US_ZONE_2', rating: 'RATING_2', currentBase: 180000, proposedBase: 187000, individualMultiplier: 1.00, equity: 600, status: 'AUTO_APPROVED', selected: true, notes: 'Consistent contributions to CI/CD pipeline.' },
+      { id: 'EMP-1010', name: 'Julia Novak', role: 'Senior SWE (Edge & Compute)', level: 'IC3', geo: 'US_ZONE_1', rating: 'RATING_1', currentBase: 230000, proposedBase: 230000, individualMultiplier: 0.00, equity: 0, status: 'AUTO_APPROVED', selected: true, notes: 'Base salary frozen per total rewards performance policy.' },
+      { id: 'EMP-1011', name: 'Noah Al-Mansoor', role: 'Lead Reliability Architect', level: 'IC4', geo: 'US_ZONE_1', rating: 'RATING_4', currentBase: 295000, proposedBase: 320000, individualMultiplier: 1.25, equity: 1500, status: 'AUTO_APPROVED', selected: true, notes: 'Led cross-functional disaster recovery exercises.' },
+      { id: 'EMP-1012', name: 'Olivia Santos', role: 'Senior Observability Engineer', level: 'IC3', geo: 'US_ZONE_3', rating: 'RATING_5', currentBase: 200000, proposedBase: 228000, individualMultiplier: 1.30, equity: 1400, status: 'VP_EXCEPTION_REQUIRED', selected: true, notes: 'Massive impact on Prometheus metric scalability (+14% raise).' },
+      { id: 'EMP-1013', name: 'Gabriel Dubois', role: 'Associate Software Engineer', level: 'IC1', geo: 'US_ZONE_1', rating: 'RATING_3', currentBase: 160000, proposedBase: 172000, individualMultiplier: 1.10, equity: 500, status: 'AUTO_APPROVED', selected: true, notes: 'High velocity contributions to SDK client.' },
+      { id: 'EMP-1014', name: 'Quinn Larsson', role: 'Lead Security Engineer', level: 'IC4', geo: 'US_ZONE_2', rating: 'RATING_2', currentBase: 275000, proposedBase: 286000, individualMultiplier: 1.00, equity: 1250, status: 'AUTO_APPROVED', selected: true, notes: 'Solid maintenance of vulnerability scanner pipelines.' },
+      { id: 'EMP-1015', name: 'Tara Mendoza', role: 'Software Engineer', level: 'IC2', geo: 'US_ZONE_1', rating: 'RATING_4', currentBase: 190000, proposedBase: 208000, individualMultiplier: 1.25, equity: 850, status: 'AUTO_APPROVED', selected: true, notes: 'Re-architected distributed tracing collector.' },
     ],
 
     // Candidate Offers Pipeline
     offers: [
-      { id: 'OFF-2026-001', name: 'Cassandra Vance', role: 'Senior Distributed SWE', level: 'L5', geo: 'US_ZONE_1', base: 245000, signon: 35000, equity: 1000, status: 'OFFER_DRAFT', targetBonusPct: 15, notes: 'Top candidate from leading cloud infrastructure provider.' },
-      { id: 'OFF-2026-002', name: 'Marcus Sterling Jr.', role: 'Staff Kernel Systems Architect', level: 'L6', geo: 'US_ZONE_1', base: 320000, signon: 65000, equity: 1600, status: 'VP_EXCEPTION_REQUIRED', targetBonusPct: 20, notes: 'Sign-on $65,000 > $50,000 threshold requires VP approval.' },
-      { id: 'OFF-2026-003', name: 'Lillian Chen', role: 'Software Engineer III', level: 'L4', geo: 'US_ZONE_2', base: 185000, signon: 20000, equity: 650, status: 'AUDIT_PENDING', targetBonusPct: 15, notes: 'Strong algorithms and distributed cache expertise.' },
-      { id: 'OFF-2026-004', name: 'Vikram Mehta', role: 'Principal AI Infrastructure Lead', level: 'L7', geo: 'US_ZONE_1', base: 390000, signon: 50000, equity: 2400, status: 'OFFER_APPROVED', targetBonusPct: 25, notes: 'Executive VP approved. Offer letter ready to extend.' },
-      { id: 'OFF-2026-005', name: 'Fiona Gallagher', role: 'Software Engineer II', level: 'L3', geo: 'US_ZONE_1', base: 165000, signon: 15000, equity: 450, status: 'OFFER_ACCEPTED', targetBonusPct: 10, notes: 'Candidate accepted offer. Start date scheduled for next month.' },
+      { id: 'OFF-2026-001', name: 'Cassandra Vance', role: 'Senior Distributed SWE', level: 'IC3', geo: 'US_ZONE_1', base: 245000, signon: 35000, equity: 1000, status: 'OFFER_DRAFT', targetBonusPct: 15, notes: 'Top candidate from leading cloud infrastructure provider.' },
+      { id: 'OFF-2026-002', name: 'Marcus Sterling Jr.', role: 'Lead Kernel Systems Architect', level: 'IC4', geo: 'US_ZONE_1', base: 320000, signon: 65000, equity: 1600, status: 'VP_EXCEPTION_REQUIRED', targetBonusPct: 20, notes: 'Sign-on $65,000 > $50,000 threshold requires VP approval.' },
+      { id: 'OFF-2026-003', name: 'Lillian Chen', role: 'Software Engineer', level: 'IC2', geo: 'US_ZONE_2', base: 185000, signon: 20000, equity: 650, status: 'AUDIT_PENDING', targetBonusPct: 15, notes: 'Strong algorithms and distributed cache expertise.' },
+      { id: 'OFF-2026-004', name: 'Vikram Mehta', role: 'Principal AI Infrastructure Lead', level: 'IC5', geo: 'US_ZONE_1', base: 390000, signon: 50000, equity: 2400, status: 'OFFER_APPROVED', targetBonusPct: 25, notes: 'Executive VP approved. Offer letter ready to extend.' },
+      { id: 'OFF-2026-005', name: 'Fiona Gallagher', role: 'Associate Software Engineer', level: 'IC1', geo: 'US_ZONE_1', base: 165000, signon: 15000, equity: 450, status: 'OFFER_ACCEPTED', targetBonusPct: 10, notes: 'Candidate accepted offer. Start date scheduled for next month.' },
     ],
   },
 
@@ -154,7 +160,7 @@ const CompFlowApp = {
 
   // ─── MATHEMATICAL & POLICY TOOLS ──────────────────────────────────────────
   getAdjustedBand(level, geo) {
-    const base = this.state.bands[level] || this.state.bands.L5;
+    const base = this.state.bands[level] || this.state.bands.IC3;
     const factor = this.state.geoFactors[geo] || 1.0;
     return {
       min: Math.round(base.min * factor),
@@ -165,22 +171,22 @@ const CompFlowApp = {
     };
   },
 
-  calculateBonus(baseSalary, bonusTargetPct, ipf) {
-    const cpf = this.state.departmentBudget.cpf;
-    return Math.round(baseSalary * (bonusTargetPct / 100) * ipf * cpf);
+  calculateBonus(baseSalary, bonusTargetPct, individualMultiplier) {
+    const companyMultiplier = this.state.departmentBudget.companyMultiplier;
+    return Math.round(baseSalary * (bonusTargetPct / 100) * individualMultiplier * companyMultiplier);
   },
 
   getMarketBenchmark(level, geo) {
     const geoMult = this.state.geoFactors[geo] || 1.0;
     const baseMap = {
-      L3: { p10: 135000, p25: 150000, p50: 165000, p75: 180000, p90: 195000, radford: 'P1' },
-      L4: { p10: 165000, p25: 185000, p50: 205000, p75: 225000, p90: 245000, radford: 'P2' },
-      L5: { p10: 205000, p25: 230000, p50: 255000, p75: 280000, p90: 305000, radford: 'P3' },
-      L6: { p10: 255000, p25: 285000, p50: 315000, p75: 350000, p90: 385000, radford: 'P4' },
-      L7: { p10: 315000, p25: 355000, p50: 395000, p75: 440000, p90: 490000, radford: 'P5' },
-      L8: { p10: 395000, p25: 445000, p50: 500000, p75: 560000, p90: 630000, radford: 'P6' },
+      IC1: { p10: 135000, p25: 150000, p50: 165000, p75: 180000, p90: 195000, radford: 'P1' },
+      IC2: { p10: 165000, p25: 185000, p50: 205000, p75: 225000, p90: 245000, radford: 'P2' },
+      IC3: { p10: 205000, p25: 230000, p50: 255000, p75: 280000, p90: 305000, radford: 'P3' },
+      IC4: { p10: 255000, p25: 285000, p50: 315000, p75: 350000, p90: 385000, radford: 'P4' },
+      IC5: { p10: 315000, p25: 355000, p50: 395000, p75: 440000, p90: 490000, radford: 'P5' },
+      IC6: { p10: 395000, p25: 445000, p50: 500000, p75: 560000, p90: 630000, radford: 'P6' },
     };
-    const b = baseMap[level] || baseMap.L5;
+    const b = baseMap[level] || baseMap.IC3;
     return {
       p10: Math.round(b.p10 * geoMult),
       p25: Math.round(b.p25 * geoMult),
@@ -219,7 +225,7 @@ const CompFlowApp = {
       if (raise > 0) totalMeritSpent += raise;
 
       const band = this.getAdjustedBand(emp.level, emp.geo);
-      const bonus = this.calculateBonus(emp.proposedBase, band.bonusPct, emp.ipf);
+      const bonus = this.calculateBonus(emp.proposedBase, band.bonusPct, emp.individualMultiplier);
       totalBonusSpent += bonus;
 
       totalEquitySpent += emp.equity;
@@ -282,7 +288,7 @@ const CompFlowApp = {
       const band = this.getAdjustedBand(emp.level, emp.geo);
       const compa = (emp.proposedBase / band.mid).toFixed(3);
       const raisePct = (((emp.proposedBase - emp.currentBase) / emp.currentBase) * 100).toFixed(1);
-      const bonusAmt = this.calculateBonus(emp.proposedBase, band.bonusPct, emp.ipf);
+      const bonusAmt = this.calculateBonus(emp.proposedBase, band.bonusPct, emp.individualMultiplier);
 
       // Mini compa dot position (0.75x to 1.25x range normalized to 0% - 100%)
       const normalizedCompaPct = Math.min(Math.max(((parseFloat(compa) - 0.75) / 0.50) * 100, 5), 95);
@@ -309,8 +315,8 @@ const CompFlowApp = {
             </div>
           </div>
         </td>
-        <td><strong>${emp.level}</strong> <span style="font-size:0.7rem; color:var(--text-muted);">(${emp.geo.replace('US_', '')})</span></td>
-        <td><span class="badge ${emp.rating === 'SUPERB' ? 'badge-success' : (emp.rating === 'NEEDS_IMPROVEMENT' ? 'badge-danger' : 'badge-draft')}">${emp.rating.replace('_', ' ')}</span></td>
+        <td><strong>${emp.level}</strong> <span style="font-size:0.7rem; color:var(--text-muted);">(${this.state.zoneLabels[emp.geo] || emp.geo})</span></td>
+        <td><span class="badge ${emp.rating === 'RATING_5' ? 'badge-success' : (emp.rating === 'RATING_1' ? 'badge-danger' : 'badge-draft')}">${emp.rating.replace('_', ' ')}</span></td>
         <td style="font-family:var(--font-mono);">$${emp.currentBase.toLocaleString()}</td>
         <td>
           <div class="compa-cell-box">
@@ -324,7 +330,7 @@ const CompFlowApp = {
           <input type="number" class="inline-input-sal" data-id="${emp.id}" value="${emp.proposedBase}" step="1000">
           <span class="inline-raise-tag ${parseFloat(raisePct) > 15 ? 'warn' : ''}">+${raisePct}%</span>
         </td>
-        <td style="font-family:var(--font-mono);">$${bonusAmt.toLocaleString()} <span style="font-size:0.65rem; color:var(--text-muted);">(${emp.ipf}x)</span></td>
+        <td style="font-family:var(--font-mono);">$${bonusAmt.toLocaleString()} <span style="font-size:0.65rem; color:var(--text-muted);">(${emp.individualMultiplier}x)</span></td>
         <td style="font-family:var(--font-mono);">${emp.equity.toLocaleString()} RSUs</td>
         <td>${statusBadge}</td>
         <td onclick="event.stopPropagation()">
@@ -386,7 +392,7 @@ const CompFlowApp = {
     const compa = parseFloat((emp.proposedBase / band.mid).toFixed(3));
     const raisePct = emp.currentBase > 0 ? ((emp.proposedBase - emp.currentBase) / emp.currentBase) * 100 : 0;
 
-    if (emp.rating === 'NEEDS_IMPROVEMENT' && emp.proposedBase > emp.currentBase) {
+    if (emp.rating === 'RATING_1' && emp.proposedBase > emp.currentBase) {
       emp.status = 'REJECTED';
     } else if (compa > 1.15 || raisePct > 15.0 || emp.equity > band.targetEquity * 1.5) {
       emp.status = 'VP_EXCEPTION_REQUIRED';
@@ -422,7 +428,7 @@ const CompFlowApp = {
 
     document.getElementById('btn-apply-baseline')?.addEventListener('click', () => {
       this.state.employees.forEach(emp => {
-        if (emp.rating !== 'NEEDS_IMPROVEMENT') {
+        if (emp.rating !== 'RATING_1') {
           emp.proposedBase = Math.round(emp.currentBase * 1.045 / 1000) * 1000;
           this.auditSingleProposal(emp);
         }
@@ -443,7 +449,7 @@ const CompFlowApp = {
     const compa = (emp.proposedBase / band.mid).toFixed(3);
 
     document.getElementById('drawer-emp-name').textContent = emp.name;
-    document.getElementById('drawer-emp-role').textContent = `${emp.level} • ${emp.role} • ${emp.geo}`;
+    document.getElementById('drawer-emp-role').textContent = `${emp.level} • ${emp.role} • ${this.state.zoneLabels[emp.geo] || emp.geo}`;
 
     document.getElementById('drw-band-min').textContent = `$${(band.min / 1000).toFixed(0)}k (Min)`;
     document.getElementById('drw-band-mid').textContent = `$${(band.mid / 1000).toFixed(0)}k (Mid)`;
@@ -483,17 +489,17 @@ const CompFlowApp = {
 
     document.getElementById('drw-input-base').value = emp.proposedBase;
     document.getElementById('drw-input-rating').value = emp.rating;
-    document.getElementById('drw-input-ipf').value = emp.ipf;
+    document.getElementById('drw-input-individual-multiplier').value = emp.individualMultiplier;
     document.getElementById('drw-input-equity').value = emp.equity;
     document.getElementById('drw-input-notes').value = emp.notes || '';
 
     // Render ReAct Log
     const logBox = document.getElementById('drw-audit-log');
     logBox.innerHTML = `
-      <div class="log-entry log-dim">[System] Evaluating ${emp.name} (${emp.level}, ${emp.geo}) against target bands.</div>
+      <div class="log-entry log-dim">[System] Evaluating ${emp.name} (${emp.level}, ${this.state.zoneLabels[emp.geo] || emp.geo}) against target bands.</div>
       <div class="log-entry log-tool">[Tool] calculate_compa_ratio(proposed=$${emp.proposedBase.toLocaleString()}, mid=$${band.mid.toLocaleString()}) -> ${compa}</div>
       <div class="log-entry ${emp.proposedBase <= band.max ? 'log-pass' : 'log-fail'}">[Finding] verify_salary_band: ${emp.proposedBase <= band.max ? 'PASS' : 'FAIL'} (Band Ceiling: $${band.max.toLocaleString()})</div>
-      <div class="log-entry log-tool">[Tool] calculate_bonus(base=$${emp.proposedBase.toLocaleString()}, target=${band.bonusPct}%, IPF=${emp.ipf}x, CPF=1.05x) -> $${this.calculateBonus(emp.proposedBase, band.bonusPct, emp.ipf).toLocaleString()}</div>
+      <div class="log-entry log-tool">[Tool] calculate_bonus(base=$${emp.proposedBase.toLocaleString()}, target=${band.bonusPct}%, individual=${emp.individualMultiplier}x, company=1.05x) -> $${this.calculateBonus(emp.proposedBase, band.bonusPct, emp.individualMultiplier).toLocaleString()}</div>
       <div class="log-entry log-tool">[Tool] evaluate_equity_guidelines(rsus=${emp.equity.toLocaleString()}, target=${band.targetEquity}) -> ${(emp.equity / band.targetEquity).toFixed(2)}x</div>
       <div class="log-entry ${emp.status === 'AUTO_APPROVED' ? 'log-pass' : 'log-warn'}">[Agent Synthesis] Outcome: ${emp.status}</div>
     `;
@@ -517,7 +523,7 @@ const CompFlowApp = {
       if (emp) {
         emp.proposedBase = parseFloat(document.getElementById('drw-input-base').value) || emp.currentBase;
         emp.rating = document.getElementById('drw-input-rating').value;
-        emp.ipf = parseFloat(document.getElementById('drw-input-ipf').value) || 1.0;
+        emp.individualMultiplier = parseFloat(document.getElementById('drw-input-individual-multiplier').value) || 1.0;
         emp.equity = parseInt(document.getElementById('drw-input-equity').value, 10) || 0;
         emp.notes = document.getElementById('drw-input-notes').value;
 
@@ -535,7 +541,7 @@ const CompFlowApp = {
       if (emp) {
         emp.proposedBase = parseFloat(document.getElementById('drw-input-base').value) || emp.currentBase;
         emp.rating = document.getElementById('drw-input-rating').value;
-        emp.ipf = parseFloat(document.getElementById('drw-input-ipf').value) || 1.0;
+        emp.individualMultiplier = parseFloat(document.getElementById('drw-input-individual-multiplier').value) || 1.0;
         emp.equity = parseInt(document.getElementById('drw-input-equity').value, 10) || 0;
         this.auditSingleProposal(emp);
         this.openCalibrationDrawer(emp.id);
@@ -575,7 +581,7 @@ const CompFlowApp = {
             <div class="candidate-name">${offer.name}</div>
             <div class="offer-role-tag">${offer.level} • ${offer.role}</div>
           </div>
-          <span class="badge ${offer.status === 'VP_EXCEPTION_REQUIRED' ? 'badge-warning' : (offer.status === 'OFFER_ACCEPTED' ? 'badge-success' : 'badge-draft')}">${offer.geo.replace('US_', '')}</span>
+          <span class="badge ${offer.status === 'VP_EXCEPTION_REQUIRED' ? 'badge-warning' : (offer.status === 'OFFER_ACCEPTED' ? 'badge-success' : 'badge-draft')}">${this.state.zoneLabels[offer.geo] || offer.geo}</span>
         </div>
         <div class="offer-comp-grid">
           <div><span>Base:</span> <strong>$${offer.base.toLocaleString()}</strong></div>
@@ -627,11 +633,11 @@ const CompFlowApp = {
     const modal = document.getElementById('offer-modal');
     const overlay = document.getElementById('offer-modal-overlay');
     const recalculateModalComp = () => {
-      const level = document.getElementById('m-job-level')?.value || 'L5';
+      const level = document.getElementById('m-job-level')?.value || 'IC3';
       const geo = document.getElementById('m-geo-tier')?.value || 'US_ZONE_1';
       const base = parseFloat(document.getElementById('m-proposed-base')?.value) || 240000;
       const signon = parseFloat(document.getElementById('m-signon-bonus')?.value) || 0;
-      const equityEl = document.getElementById('m-equity-rsus') || document.getElementById('m-equity-gsus');
+      const equityEl = document.getElementById('m-equity-rsus');
       const equity = parseInt(equityEl ? equityEl.value : '0', 10) || 1000;
 
       const band = this.getAdjustedBand(level, geo);
@@ -659,7 +665,7 @@ const CompFlowApp = {
       if (elPct) elPct.textContent = `${mPct}th`;
     };
 
-    ['m-job-level', 'm-geo-tier', 'm-proposed-base', 'm-signon-bonus', 'm-equity-rsus', 'm-equity-gsus'].forEach(id => {
+    ['m-job-level', 'm-geo-tier', 'm-proposed-base', 'm-signon-bonus', 'm-equity-rsus'].forEach(id => {
       document.getElementById(id)?.addEventListener('input', recalculateModalComp);
       document.getElementById(id)?.addEventListener('change', recalculateModalComp);
     });
@@ -686,7 +692,7 @@ const CompFlowApp = {
       const geo = document.getElementById('m-geo-tier').value;
       const base = parseFloat(document.getElementById('m-proposed-base').value) || 200000;
       const signon = parseFloat(document.getElementById('m-signon-bonus').value) || 0;
-      const eqEl = document.getElementById('m-equity-rsus') || document.getElementById('m-equity-gsus');
+      const eqEl = document.getElementById('m-equity-rsus');
       const equity = parseInt(eqEl ? eqEl.value : '0', 10) || 1000;
 
       const band = this.getAdjustedBand(level, geo);
@@ -745,7 +751,7 @@ const CompFlowApp = {
           <div class="exception-header">
             <div>
               <div class="exception-title">${emp.name} (Review Proposal)</div>
-              <div class="exception-subject">${emp.level} • ${emp.role} • ${emp.geo}</div>
+              <div class="exception-subject">${emp.level} • ${emp.role} • ${this.state.zoneLabels[emp.geo] || emp.geo}</div>
             </div>
             <span class="badge badge-warning">Review Exception</span>
           </div>
@@ -774,7 +780,7 @@ const CompFlowApp = {
           <div class="exception-header">
             <div>
               <div class="exception-title">${offer.name} (Candidate Offer)</div>
-              <div class="exception-subject">${offer.level} • ${offer.role} • ${offer.geo}</div>
+              <div class="exception-subject">${offer.level} • ${offer.role} • ${this.state.zoneLabels[offer.geo] || offer.geo}</div>
             </div>
             <span class="badge badge-warning">Offer Exception</span>
           </div>
@@ -846,7 +852,7 @@ const CompFlowApp = {
       card.innerHTML = `
         <div class="band-card-header">
           <div class="band-card-title">${lvl} SWE (Radford ${bench.radford})</div>
-          <span class="badge badge-neutral">${geo.replace('US_', '')}</span>
+          <span class="badge badge-neutral">${this.state.zoneLabels[geo] || geo}</span>
         </div>
         <div class="band-range-visual">
           <div class="range-labels">
@@ -954,7 +960,7 @@ const CompFlowApp = {
         } else if (ep === 'benchmarks') {
           resCode.textContent = JSON.stringify({
             job_family: "SOFTWARE_ENGINEERING",
-            job_level: "L5",
+            job_level: "IC3",
             radford_level: "P3",
             geo_tier: "US_ZONE_1",
             currency: "USD",
@@ -991,9 +997,9 @@ const CompFlowApp = {
             employee_id: "EMP-1001",
             proposed_base: 335000,
             proposed_bonus: 78500,
-            individual_perf_factor: 1.30,
+            individual_multiplier: 1.30,
             proposed_equity_rsus: 1800,
-            performance_rating: "SUPERB"
+            performance_rating: "RATING_5"
           }, null, 2);
         } else if (ep === 'audit') {
           resCode.textContent = JSON.stringify({
@@ -1023,9 +1029,9 @@ const CompFlowApp = {
           }, null, 2);
         } else if (ep === 'sim-counter') {
           resCode.textContent = JSON.stringify({
-            first_year_our_tdc: "367000.00",
+            first_year_our_tdc: "370500.00",
             first_year_comp_tdc: "313750.00",
-            first_year_tdc_delta: "+53250.00",
+            first_year_tdc_delta: "+56750.00",
             four_year_our_tdc: "1280000.00",
             four_year_comp_tdc: "1215000.00",
             four_year_tdc_delta: "+65000.00",
@@ -1033,10 +1039,10 @@ const CompFlowApp = {
             predicted_win_rate_pct: "84.5",
             win_rate_tier: "HIGHLY_COMPETITIVE",
             year_by_year: [
-              { year: 1, our_cash: "307500.00", our_equity_value: "59400.00", our_tdc: "366900.00", comp_tdc: "313750.00", delta_tdc: "+53150.00" },
-              { year: 2, our_cash: "270250.00", our_equity_value: "59400.00", our_tdc: "329650.00", comp_tdc: "298750.00", delta_tdc: "+30900.00" },
-              { year: 3, our_cash: "270250.00", our_equity_value: "39600.00", our_tdc: "309850.00", comp_tdc: "298750.00", delta_tdc: "+11100.00" },
-              { year: 4, our_cash: "270250.00", our_equity_value: "21600.00", our_tdc: "291850.00", comp_tdc: "298750.00", delta_tdc: "-6900.00" }
+              { year: 1, our_cash: "307500.00", our_equity_value: "63000.00", our_tdc: "370500.00", comp_tdc: "313750.00", delta_tdc: "+56750.00" },
+              { year: 2, our_cash: "270250.00", our_equity_value: "54000.00", our_tdc: "324250.00", comp_tdc: "298750.00", delta_tdc: "+25500.00" },
+              { year: 3, our_cash: "270250.00", our_equity_value: "36000.00", our_tdc: "306250.00", comp_tdc: "298750.00", delta_tdc: "+7500.00" },
+              { year: 4, our_cash: "270250.00", our_equity_value: "27000.00", our_tdc: "297250.00", comp_tdc: "298750.00", delta_tdc: "-1500.00" }
             ],
             recommended_counter: {
               recommended_base: "235000.00",
@@ -1046,9 +1052,9 @@ const CompFlowApp = {
               rationale: "Elevate sign-on bonus to $45,000 to neutralize near-term cash deficit, and expand equity grant to 1,800 RSUs to ensure long-term TDC superiority."
             },
             recruiter_talking_points: [
-              "Front-Loaded Equity Advantage: Our enterprise 33/33/22/12 schedule vests 66% within the first 24 months, accelerating liquidity compared to competitor's linear schedule.",
+              "Front-Loaded Equity Advantage: Our front-loaded 35/30/20/15 schedule vests 65% within the first 24 months, accelerating liquidity compared to competitor's linear schedule.",
               "Superior 4-Year Cumulative TDC: Our package delivers $65,000 more in total direct compensation over 4 years.",
-              "Immediate Year 1 Outperformance: You realize $53,250 higher take-home compensation in your first 12 months between base, target bonus, and initial vesting tranches.",
+              "Immediate Year 1 Outperformance: You realize $56,750 higher take-home compensation in your first 12 months between base, target bonus, and initial vesting tranches.",
               "Full Equity Forfeiture Protection: Our upfront buyout package fully covers (100%+) the $75,000 of unvested equity you leave behind."
             ]
           }, null, 2);
@@ -1359,11 +1365,11 @@ const CompFlowApp = {
     const talkingPointsList = document.getElementById('sim-talking-points-list');
 
     const presets = {
-      stripe: { name: 'Stripe', base: 225000, bonus: 15, signon: 25000, equity: 1600, sched: 'STANDARD_FOUR_YEAR_EQUAL_25', forfeit: 75000 },
-      datadog: { name: 'Datadog', base: 230000, bonus: 15, signon: 30000, equity: 1700, sched: 'STANDARD_FOUR_YEAR_EQUAL_25', forfeit: 50000 },
-      snowflake: { name: 'Snowflake', base: 235000, bonus: 15, signon: 20000, equity: 1500, sched: 'STANDARD_FOUR_YEAR_EQUAL_25', forfeit: 60000 },
-      openai: { name: 'OpenAI', base: 265000, bonus: 0, signon: 50000, equity: 2200, sched: 'STANDARD_FOUR_YEAR_EQUAL_25', forfeit: 100000 },
-      backloaded: { name: 'Enterprise Cloud Co', base: 220000, bonus: 10, signon: 20000, equity: 2400, sched: 'BACK_LOADED_5_15_40_40', forfeit: 40000 }
+      competitor_a: { name: 'Competitor A', base: 225000, bonus: 15, signon: 25000, equity: 1600, sched: 'STANDARD_FOUR_YEAR_EQUAL_25', forfeit: 75000 },
+      competitor_b: { name: 'Competitor B', base: 230000, bonus: 15, signon: 30000, equity: 1700, sched: 'STANDARD_FOUR_YEAR_EQUAL_25', forfeit: 50000 },
+      competitor_c: { name: 'Competitor C', base: 235000, bonus: 15, signon: 20000, equity: 1500, sched: 'STANDARD_FOUR_YEAR_EQUAL_25', forfeit: 60000 },
+      competitor_d: { name: 'Competitor D', base: 265000, bonus: 0, signon: 50000, equity: 2200, sched: 'STANDARD_FOUR_YEAR_EQUAL_25', forfeit: 100000 },
+      competitor_e: { name: 'Competitor E', base: 220000, bonus: 10, signon: 20000, equity: 2400, sched: 'BACK_LOADED_5_15_40_40', forfeit: 40000 }
     };
 
     let latestSimulationResult = null;
@@ -1437,7 +1443,7 @@ const CompFlowApp = {
           signon_bonus: ourSignon.toString(),
           equity_rsus_4yr: ourEquity,
           share_price_estimate: '100.00',
-          vesting_schedule: 'ENTERPRISE_FRONT_LOADED_33_33_22_12'
+          vesting_schedule: 'ENTERPRISE_FRONT_LOADED_35_30_20_15'
         },
         competing_offer: {
           competitor_name: compName,
@@ -1460,7 +1466,7 @@ const CompFlowApp = {
       }
 
       // Local In-Browser Simulation
-      const ourSchedPct = [0.33, 0.33, 0.22, 0.12];
+      const ourSchedPct = [0.35, 0.30, 0.20, 0.15];
       const compSchedPct = compSched === 'BACK_LOADED_5_15_40_40' ? [0.05, 0.15, 0.40, 0.40] : [0.25, 0.25, 0.25, 0.25];
 
       const ourBonus = ourBase * 0.15;
@@ -1515,7 +1521,7 @@ const CompFlowApp = {
       const rForfeit = Math.min(1.0, coveragePct / 100.0);
 
       let z = 5.5 * (rYr1 - 1.0) + 3.5 * (r4Yr - 1.0) + 1.5 * (rForfeit - 1.0);
-      if (compSched !== 'ENTERPRISE_FRONT_LOADED_33_33_22_12') z += 0.35;
+      if (compSched !== 'ENTERPRISE_FRONT_LOADED_35_30_20_15') z += 0.35;
 
       const prob = 1.0 / (1.0 + Math.exp(-z));
       const winPct = Math.max(5.0, Math.min(98.0, Math.round(prob * 1000) / 10));
@@ -1526,7 +1532,7 @@ const CompFlowApp = {
       else if (winPct < 80.0) tier = 'COMPETITIVE';
 
       const talkingPoints = [
-        `Front-Loaded Equity Advantage: Our enterprise 33/33/22/12 schedule vests 66% within the first 24 months, accelerating liquidity compared to ${compName}'s linear schedule.`,
+        `Front-Loaded Equity Advantage: Our front-loaded 35/30/20/15 schedule vests 65% within the first 24 months, accelerating liquidity compared to ${compName}'s linear schedule.`,
         fourYrDelta >= 0
           ? `Superior 4-Year Cumulative TDC: Our package delivers $${Math.round(fourYrDelta).toLocaleString()} more in total direct compensation over 4 years.`
           : `Near-Term Cash Flow Priority: While 4-year figures are competitive, our Year 1 cash flow guarantees immediate financial upside with less reliance on backend vesting.`,
