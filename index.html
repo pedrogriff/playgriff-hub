@@ -42,7 +42,7 @@
     <div class="header-container">
       <div class="brand">
         <div>
-          <h1 class="brand-title">playgriff<span class="dot-me">.me</span></h1>
+          <p class="brand-title">playgriff<span class="dot-me">.me</span></p>
           <p class="brand-subtitle">Compensation and AI agents, by Pedro Griff Marcincowski</p>
         </div>
       </div>
@@ -64,62 +64,69 @@
     
     <!-- ─── TAB: OVERVIEW (ALL SYSTEMS) ──────────────────────── -->
     <section class="tab-pane active" id="tab-all">
-      <div class="hero-section">
-        <div class="hero-tag">Portfolio</div>
-        <h2 class="hero-title">Pedro Griff Marcincowski</h2>
-        <p class="hero-subtitle" style="font-size: 1.15rem; color: var(--accent-emerald); font-weight: 600; margin-top: -4px; margin-bottom: 12px;">
-          Compensation partner who builds AI agents that prepare comp analysis
-        </p>
-        <p class="hero-desc">
-          I work in compensation at Google. After hours I build AI agents that prepare comp analysis, and they never make the pay decision. I test where a language model should stop, where plain code should take over, and what a person has to decide. Models write the words. Code computes the money. People decide.
-        </p>
-        <p class="hero-desc">
-          These are personal projects on synthetic data. The pay structures in the demos are invented. Views are my own. I'm also in Carnegie Mellon's executive education program in agentic AI, 2026.
-          Open to conversations about compensation and AI roles. LinkedIn messages reach me fastest.
-        </p>
-        <div class="hero-stats">
-          <div class="stat-pill">Build log every Tuesday</div>
-          <div class="stat-pill">Synthetic data only</div>
+      <div class="hero-section hero-split">
+        <div class="hero-main">
+          <h1 class="hero-title">Pedro Griff Marcincowski</h1>
+          <p class="hero-subtitle">Compensation partner who builds AI agents that prepare comp analysis</p>
+          <p class="hero-desc">
+            I work in compensation at Google. After hours I build AI agents that prepare comp analysis, and they never make the pay decision. I test where a language model should stop, where plain code should take over, and what a person has to decide.
+          </p>
+          <p class="hero-motto">Models write the words. Code computes the money. People decide.</p>
+          <div class="hero-actions">
+            <a href="https://www.linkedin.com/in/pedrogriff/" target="_blank" rel="me noopener" class="btn btn-primary">Follow the build log</a>
+            <a href="https://github.com/pedrogriff/comp-insight-advisor" target="_blank" rel="noopener" class="btn btn-outline">See the code</a>
+          </div>
+          <p class="hero-meta">
+            A new build log every Tuesday. These are personal projects on synthetic data. The pay structures in the demos are invented. Views are my own. I'm also in Carnegie Mellon's executive education program in agentic AI, 2026. Open to conversations about compensation and AI roles. <a href="https://www.linkedin.com/in/pedrogriff/" target="_blank" rel="noopener">Message me on LinkedIn</a>.
+          </p>
         </div>
-        <div style="margin-top: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-          <a href="https://www.linkedin.com/in/pedrogriff/" target="_blank" rel="me noopener" class="btn btn-sm btn-primary">Follow the build log</a>
-          <a href="https://github.com/pedrogriff/comp-insight-advisor" target="_blank" rel="noopener" class="btn btn-sm btn-outline">See the code</a>
-          <a href="https://www.linkedin.com/in/pedrogriff/" target="_blank" rel="noopener" class="btn btn-sm btn-outline">Message me on LinkedIn</a>
-        </div>
-      </div>
 
-      <div class="system-card" style="margin: 24px 0; border-left: 3px solid var(--accent-emerald);">
-        <div class="hero-tag">Now</div>
-        <h3 class="sys-title">comp-insight-advisor, build log 2 of 7</h3>
-        <p class="sys-desc">An agent I'm building that reads a synthetic company's pay, equity and offer data and drafts a retention brief for a VP. This week: "I gave a model 500 employee rows and asked how many people face a big pay drop. Then I gave it the tools summary and asked again.".</p>
-        <div class="sys-actions">
-          <a href="https://www.linkedin.com/feed/update/urn:li:activity:7518326192945430531/" target="_blank" rel="noopener" class="btn btn-sm btn-primary">Read the latest post</a>
-          <a href="https://github.com/pedrogriff/comp-insight-advisor" target="_blank" rel="noopener" class="btn btn-sm btn-outline">Status and code</a>
-        </div>
+        <aside class="proof-card" aria-labelledby="now-title">
+          <div class="hero-tag">Now &middot; build log 2 of 7</div>
+          <h2 class="proof-title" id="now-title">500 rows vs. the tool's summary</h2>
+          <p class="proof-q">Same model, same question, synthetic data. How many people face a pay drop of 15% or more, and how many of them are high performers?</p>
+          <div class="proof-row proof-bad">
+            <div class="proof-label">500 raw rows <span>21,030 tokens</span></div>
+            <div class="proof-nums">125, 111, 144, 135, 142</div>
+            <div class="proof-verdict">0 of 5 runs right</div>
+          </div>
+          <div class="proof-row proof-good">
+            <div class="proof-label">The tool's summary <span>1,198 tokens</span></div>
+            <div class="proof-nums">87, 87, 87, 87, 87</div>
+            <div class="proof-verdict">5 of 5 runs right</div>
+          </div>
+          <p class="proof-answer">Right answer: 87 people, 24 of them high performers, from one SQL query.</p>
+          <div class="sys-actions">
+            <a href="https://www.linkedin.com/feed/update/urn:li:activity:7518326192945430531/" target="_blank" rel="noopener" class="btn btn-sm btn-outline">Read build log 2</a>
+            <a href="https://github.com/pedrogriff/comp-insight-advisor/tree/main/experiments/rows_vs_summary" target="_blank" rel="noopener" class="btn btn-sm btn-outline">Prompt and all 10 answers</a>
+          </div>
+        </aside>
       </div>
 
       <!-- Technical Thesis: Why Agentic HR Requires Systems Rigor -->
-      <div class="philosophy-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin: 24px 0;">
+      <h2 class="section-title">How I build</h2>
+      <div class="philosophy-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin: 0 0 8px;">
         <div class="system-card" style="border-left: 3px solid var(--accent-emerald);">
-          <h4 style="color: var(--accent-emerald); font-size: 0.95rem; margin-bottom: 6px;">1. Keep identifiers out of the model</h4>
+          <h3 style="color: var(--accent-emerald); font-size: 0.95rem; margin-bottom: 6px;">1. Keep identifiers out of the model</h3>
           <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
             Before any model call, names, national IDs and salaries become placeholders. They map back after the model answers, so the prompt doesn't hold the real values.
           </p>
         </div>
         <div class="system-card" style="border-left: 3px solid var(--accent-blue);">
-          <h4 style="color: var(--accent-blue); font-size: 0.95rem; margin-bottom: 6px;">2. Let a person approve</h4>
+          <h3 style="color: var(--accent-blue); font-size: 0.95rem; margin-bottom: 6px;">2. Let a person approve</h3>
           <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
             Comp decisions wait on approvals that can take days. The workflow saves its state at each step and waits for a named approver before anything reaches a manager.
           </p>
         </div>
         <div class="system-card" style="border-left: 3px solid var(--accent-amber);">
-          <h4 style="color: var(--accent-amber); font-size: 0.95rem; margin-bottom: 6px;">3. Code computes the money</h4>
+          <h3 style="color: var(--jewel-amber-hover); font-size: 0.95rem; margin-bottom: 6px;">3. Code computes the money</h3>
           <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
             The model doesn't do arithmetic. Range math, compa-ratios and vesting run in plain code with tests. The model explains the results.
           </p>
         </div>
       </div>
 
+      <h2 class="section-title">Projects</h2>
       <div class="systems-grid">
         <!-- Card: comp-insight-advisor -->
         <div class="system-card" style="border-color: var(--jewel-amber-border);">
@@ -133,11 +140,11 @@
             </div>
           </div>
           <p class="sys-desc">
-            An agent I'm building that reads a synthetic company's pay, equity and offer data and drafts a retention brief for a VP.
+            An agent I'm building that reads a synthetic company's pay, equity and offer data and drafts a retention brief. A comp partner reviews the draft and decides what goes to a VP.
           </p>
           <div class="sys-actions">
-            <a href="https://github.com/pedrogriff/comp-insight-advisor" target="_blank" rel="noopener" class="btn btn-sm btn-primary">Status and code</a>
-            <a href="https://www.linkedin.com/feed/update/urn:li:activity:7518326192945430531/" target="_blank" rel="noopener" class="btn btn-sm btn-outline">Read the latest post</a>
+            <a href="https://github.com/pedrogriff/comp-insight-advisor" target="_blank" rel="noopener" class="btn btn-sm btn-outline">Status and code</a>
+            <a href="https://github.com/pedrogriff/comp-insight-advisor#build-log" target="_blank" rel="noopener" class="btn btn-sm btn-outline">All build logs</a>
           </div>
         </div>
         <!-- Card: VestingSim Engine -->
@@ -161,7 +168,7 @@
             <span class="tag">Hypothesis Verified</span>
           </div>
           <div class="sys-actions">
-            <button class="btn btn-sm btn-primary jump-tab-btn" data-target="tab-vestingsim">Run the demo</button>
+            <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-vestingsim">Run the demo</button>
             <a href="https://github.com/pedrogriff/vesting-sim-engine" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
           </div>
         </div>
@@ -193,8 +200,8 @@
             <span class="tag">Python 3.13 / Pydantic v2</span>
           </div>
           <div class="sys-actions">
-            <a href="relata/" class="btn btn-sm btn-primary">🚀 Launch Relata Live UI ↗</a>
-            <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-relata">⚡ Quick Preview</button>
+            <a href="relata/" class="btn btn-sm btn-outline">Launch Relata Live UI ↗</a>
+            <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-relata">Quick preview</button>
             <a href="https://github.com/pedrogriff/relata" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
           </div>
         </div>
@@ -221,8 +228,8 @@
             <span class="tag">Incumbent Telemetry</span>
           </div>
           <div class="sys-actions">
-            <a href="nextcomp/" class="btn btn-sm btn-primary">🚀 Launch Salary Range Workbench ↗</a>
-            <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-nextcomp">⚡ Quick Preview</button>
+            <a href="nextcomp/" class="btn btn-sm btn-outline">Launch Salary Range Workbench ↗</a>
+            <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-nextcomp">Quick preview</button>
             <a href="https://github.com/pedrogriff/nextcomp" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
           </div>
         </div>
@@ -254,8 +261,8 @@
             <span class="tag">FastAPI Web UI</span>
           </div>
           <div class="sys-actions">
-            <a href="people-agent-mesh/" class="btn btn-sm btn-primary">🚀 Launch PeopleAgentMesh UI ↗</a>
-            <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-peoplemesh">⚡ Quick Preview</button>
+            <a href="people-agent-mesh/" class="btn btn-sm btn-outline">Launch PeopleAgentMesh UI ↗</a>
+            <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-peoplemesh">Quick preview</button>
             <a href="https://github.com/pedrogriff/people-agent-mesh" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
           </div>
         </div>
@@ -282,8 +289,8 @@
             <span class="tag">ArgoCD GitOps</span>
           </div>
           <div class="sys-actions">
-            <a href="compflow/" class="btn btn-sm btn-primary">🚀 Launch Dedicated Enterprise SaaS ↗</a>
-            <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-compflow">⚡ Quick Preview</button>
+            <a href="compflow/" class="btn btn-sm btn-outline">Open the CompFlow demo ↗</a>
+            <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-compflow">Quick preview</button>
             <a href="https://github.com/pedrogriff/comp-flow-platform" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
           </div>
         </div>
@@ -310,7 +317,7 @@
             <span class="tag">O(1) Streaming Heaps</span>
           </div>
           <div class="sys-actions">
-            <button class="btn btn-sm btn-primary jump-tab-btn" data-target="tab-algocore">🏁 Open Benchmark Arena</button>
+            <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-algocore">Open Benchmark Arena</button>
             <a href="https://github.com/pedrogriff/algocore-ds" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
           </div>
         </div>
@@ -336,7 +343,7 @@
             <span class="tag">Container Orchestration</span>
           </div>
           <div class="sys-actions">
-            <button class="btn btn-sm btn-primary jump-tab-btn" data-target="tab-k8s">☸️ View Architecture</button>
+            <button class="btn btn-sm btn-outline jump-tab-btn" data-target="tab-k8s">View Architecture</button>
             <a href="https://github.com/pedrogriff/homelab-k8s-talos" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub Repo ↗</a>
           </div>
         </div>
@@ -364,6 +371,7 @@
           height="880px" 
           frameborder="0"
           title="PeopleAgentMesh Live Platform"
+          loading="lazy"
           style="display: block; border: none;">
         </iframe>
       </div>
@@ -390,6 +398,7 @@
           height="920px" 
           frameborder="0"
           title="Relata Live Regulatory Workbench"
+          loading="lazy"
           style="display: block; border: none;">
         </iframe>
       </div>

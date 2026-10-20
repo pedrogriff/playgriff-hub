@@ -21,12 +21,13 @@
   /* Warm Espresso Typography */
   --text-primary: #1E1915;
   --text-secondary: #574C43;
-  --text-muted: #8A7D71;
+  --text-muted: #6D6259;
   --text-on-jewel: #FAF6F0;
 
   /* Cashmere Hairlines & Borders */
   --border-subtle: #E2D7C7;
   --border-strong: #C9B9A6;
+  --border-control: #8A7D71;
   --border-focus: #0F5238;
   --border-active: #0F5238;
 
@@ -375,7 +376,7 @@ body {
 
 .tag-amber {
   background-color: var(--jewel-amber-subtle);
-  color: var(--jewel-amber);
+  color: var(--jewel-amber-hover);
   border-color: var(--jewel-amber-border);
   font-weight: 700;
 }
@@ -592,8 +593,8 @@ label {
 }
 
 .btn-outline {
-  background-color: var(--bg-surface-2);
-  border: 1px solid var(--border-strong);
+  background-color: transparent;
+  border: 1px solid var(--border-control);
   color: var(--text-primary);
 }
 
@@ -1196,4 +1197,233 @@ canvas {
 
 .footer-links a:hover {
   text-decoration: underline;
+}
+
+/* Prompt 23, Oct 20, 2026: split hero with the Now card, section titles, phone header */
+.hero-split {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 36px;
+  align-items: start;
+}
+
+.hero-split .hero-title {
+  font-size: 2.6rem;
+  margin-bottom: 8px;
+  text-wrap: balance;
+}
+
+.hero-split .hero-desc {
+  max-width: 60ch;
+  margin-bottom: 12px;
+  text-wrap: pretty;
+}
+
+.hero-motto {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  text-wrap: balance;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.hero-meta {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  max-width: 60ch;
+  text-wrap: pretty;
+}
+
+.hero-meta a {
+  color: var(--jewel-emerald);
+  font-weight: 600;
+}
+
+.proof-card {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--jewel-emerald);
+  border-radius: var(--radius-md);
+  padding: 22px;
+  box-shadow: var(--shadow-md);
+}
+
+.proof-card .hero-tag {
+  margin-bottom: 8px;
+}
+
+.proof-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  text-wrap: balance;
+}
+
+.proof-q {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+.proof-row {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.proof-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.proof-label span {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.proof-nums {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin: 4px 0 2px;
+}
+
+.proof-verdict {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.proof-bad {
+  background-color: var(--jewel-ruby-subtle);
+  border-color: var(--jewel-ruby-border);
+}
+
+.proof-bad .proof-nums,
+.proof-bad .proof-verdict {
+  color: var(--jewel-ruby);
+}
+
+.proof-good {
+  background-color: var(--jewel-emerald-subtle);
+  border-color: var(--jewel-emerald-border);
+}
+
+.proof-good .proof-nums,
+.proof-good .proof-verdict {
+  color: var(--jewel-emerald);
+}
+
+.proof-answer {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 6px 0 14px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 36px 0 16px;
+}
+
+#tab-all .systems-grid {
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .hero-split {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-header {
+    padding: 10px 16px;
+  }
+
+  .header-container {
+    gap: 8px;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .nav-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    width: 100%;
+  }
+
+  .nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-btn {
+    flex: 0 0 auto;
+  }
+
+  .main-content {
+    padding: 16px 12px;
+  }
+
+  .hero-section {
+    padding: 22px 18px;
+  }
+
+  .hero-split .hero-title {
+    font-size: 1.9rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.05rem;
+  }
+
+  .proof-nums {
+    font-size: 1.05rem;
+  }
+
+  .section-title {
+    margin-top: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-pane {
+    animation: none;
+  }
+
+  .system-card {
+    transition: none;
+  }
+
+  .system-card:hover {
+    transform: none;
+  }
 }
